@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  app:
+    image: cns-app
+    build:
+      context: ./
+      target: dev
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://prisma:prisma@postgres:5432/mydb?schema=public"
+
+  postgres:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: mydb
+
+volumes:
+  postgres_data:
