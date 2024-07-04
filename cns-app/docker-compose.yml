@@ -23,6 +23,8 @@ services:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma
       POSTGRES_DB: mydb
+    ports:
+      - "6500:5432"
 
 volumes:
   postgres_data:
