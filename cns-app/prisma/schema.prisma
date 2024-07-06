@@ -22,20 +22,22 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  likes     Entry[]
 }
 
 enum Role {
   ADMIN
+  AUTHOR
   USER
 }
 
-model Link {
+model Entry {
   id          String @id @default(cuid())
-  title       String
-  description String
-  url         String
+  title       String @db.VarChar(255)
+  description String @db.Text
   imageUrl    String
   category    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  users       User[]
 }
