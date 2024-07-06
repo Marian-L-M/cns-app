@@ -1,25 +1,26 @@
 import { PrismaClient } from "@prisma/client";
-// import { links } from "../data/links";
+import { entries } from "../data/entries";
 const prisma = new PrismaClient();
 
-// async function main() {
-//   await prisma.user.create({
-//     data: {
-//       email: `testemail@gmail.com`,
-//       role: "ADMIN",
-//     },
-//   });
+async function main() {
+  await prisma.user.create({
+    data: {
+      email: `testemail@gmail.com`,
+      role: "ADMIN",
+      password: "pumpers123",
+    },
+  });
 
-//   await prisma.link.createMany({
-//     data: links,
-//   });
-// }
+  await prisma.entry.createMany({
+    data: entries,
+  });
+}
 
-// main()
-//   .catch((e) => {
-//     console.error(e);
-//     process.exit(1);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
