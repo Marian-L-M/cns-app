@@ -40,4 +40,67 @@ model Entry {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   users       User[]
+  maps       Map?
+}
+
+model Map {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String @db.Text
+  imageUrl    String
+  x           Int
+  y           Int
+  wx          Int
+  wy          Int
+  mapTime     Int
+  mapScale    Int
+  entry       Entry  @relation(fields: [entryId], references: [id])
+  entryId     String @unique
+  objects     MapObject[]
+  area        MapArea[]
+}
+
+model MapObject {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String @db.Text
+  imageUrl    String
+  infobox     Json?
+  x           Int
+  y           Int
+  objectTime  Int
+  map         Map      @relation(fields: [mapId], references: [id])
+  mapId       String
+  type        MapObjectType @default(LOCATION)
+}
+
+model MapArea {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String @db.Text
+  imageUrl    String
+  infobox     Json?
+  nodes       Json?
+  objectTime  Int
+  map         Map      @relation(fields: [mapId], references: [id])
+  mapId       String
+  type        MapAreaType @default(GEOGRAPHY)
+}
+
+enum MapObjectType {
+  LOCATION
+  HISTORY
+  NATURAL
+}
+
+enum MapAreaType {
+  GEOGRAPHY
+  ABSTRACT
+  INTERACTIVE
 }
