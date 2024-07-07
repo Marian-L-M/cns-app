@@ -40,7 +40,7 @@ model Entry {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   users       User[]
-  maps       Map?
+  maps        Map?
 }
 
 model Map {
@@ -54,15 +54,16 @@ model Map {
   y           Int
   wx          Int
   wy          Int
-  mapTime     Int
   mapScale    Int
+  mapTime     Int
+  mapUrl      String
   entry       Entry  @relation(fields: [entryId], references: [id])
   entryId     String @unique
-  objects     MapObject[]
-  area        MapArea[]
+  objects     GlobalObject[]
+  area        GlobalArea[]
 }
 
-model MapObject {
+model GlobalObject {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -78,7 +79,7 @@ model MapObject {
   type        MapObjectType @default(LOCATION)
 }
 
-model MapArea {
+model GlobalArea {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
