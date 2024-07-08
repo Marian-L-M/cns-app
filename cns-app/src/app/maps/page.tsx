@@ -1,4 +1,4 @@
-import MailForm from "@/components/MailForm";
+import MailForm from "@/components/forms/MailForm";
 
 const maps_data = [
   { name: "Rozendale", stories: 4 },
@@ -8,7 +8,7 @@ const maps_data = [
   { name: "Crowlan", stories: 2 },
 ];
 
-export default function MapsArea() {
+const MapsArea = () => {
   return (
     <div>
       <h1>Maps</h1>
@@ -23,4 +23,6 @@ export default function MapsArea() {
       <MailForm />
     </div>
   );
-}
+};
+
+export default MapsArea;

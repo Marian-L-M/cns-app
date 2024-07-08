@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import MainNav from "@/components/navigation/MainNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Clouds and Spaceships",
-  description: "Dynamic map storytelling",
+  description: "Dynamic Map Storytelling",
 };
 
 export default function RootLayout({
@@ -17,9 +18,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex flex-col items-center bg-green-500">
-          <div className="max-w-6xl w-full bg-slate-100">{children}</div>
-        </div>
+        <MainNav />
+        {children}
       </body>
     </html>
   );
