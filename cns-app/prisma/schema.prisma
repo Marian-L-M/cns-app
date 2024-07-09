@@ -11,17 +11,18 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique
-  role      Role     @default(USER)
-  name      String?
-  image     String?  
-  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  email     String   @unique
+  role      Role     @default(USER)
+  name      String?  @db.VarChar(255)
+  image     String?  
+  password  String
   likes     Entry[]
 }
 
@@ -32,23 +33,23 @@ enum Role {
 }
 
 model Entry {
-  id          String @id @default(cuid())
+  id          Int @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   title       String @db.VarChar(255)
   description String @db.Text
   imageUrl    String
   category    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   users       User[]
   maps        Map?
 }
 
 model Map {
-  id          String   @id @default(cuid())
+  id          Int @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  title       String
-  description String @db.Text
+  title       String   @db.VarChar(255)
+  description String   @db.Text
   imageUrl    String
   x           Int
   y           Int
@@ -58,40 +59,48 @@ model Map {
   mapTime     Int
   mapUrl      String
   entry       Entry  @relation(fields: [entryId], references: [id])
-  entryId     String @unique
+  entryId     Int @unique
   objects     GlobalObject[]
   area        GlobalArea[]
+
+  @@index([entryId])
 }
 
 model GlobalObject {
-  id          String   @id @default(cuid())
+  id          Int @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  title       String
-  description String @db.Text
+  title       String   @db.VarChar(255)
+  description String   @db.Text
   imageUrl    String
+  thumbUrl    String
   infobox     Json?
   x           Int
   y           Int
   objectTime  Int
   map         Map      @relation(fields: [mapId], references: [id])
-  mapId       String
+  mapId       Int
   type        MapObjectType @default(LOCATION)
+
+  @@index([mapId])
 }
 
 model GlobalArea {
-  id          String   @id @default(cuid())
+  id          Int @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  title       String
+  title       String   @db.VarChar(255)
   description String @db.Text
   imageUrl    String
   infobox     Json?
   nodes       Json?
+  styles      Json?
   objectTime  Int
   map         Map      @relation(fields: [mapId], references: [id])
-  mapId       String
+  mapId       Int
   type        MapAreaType @default(GEOGRAPHY)
+
+  @@index([mapId])
 }
 
 enum MapObjectType {
