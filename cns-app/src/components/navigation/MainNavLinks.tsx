@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 const MainNavLinks = () => {
   const links = [
     { label: "Dashboard", href: "/" },
+    { label: "Stories", href: "/stories" },
     { label: "Maps", href: "/maps" },
     { label: "Wiki", href: "/wiki" },
     { label: "Users", href: "/users" },
