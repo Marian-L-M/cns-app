@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Entry" ADD COLUMN     "storyTime" INTEGER NOT NULL DEFAULT 0;
