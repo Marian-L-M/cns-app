@@ -1,3 +1,5 @@
+import EntryRating from "@/components/EntryRating";
+import EntryStatusBadge from "@/components/EntryStatusBadge";
 import {
   Table,
   TableBody,
@@ -23,6 +25,12 @@ const DataTable = ({ entries }: Props) => {
               <TableHead>Title</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>
+                <div className="flex justify-center">Status</div>
+              </TableHead>
+              <TableHead>
+                <div className="flex justify-center">Rating</div>
+              </TableHead>
               <TableHead>Created At</TableHead>
               <TableHead>Updated At</TableHead>
             </TableRow>
@@ -34,6 +42,16 @@ const DataTable = ({ entries }: Props) => {
                     <TableCell>{entry.title}</TableCell>
                     <TableCell>{entry.description}</TableCell>
                     <TableCell>{entry.category}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-center">
+                        <EntryStatusBadge status={entry.status} />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-center">
+                        <EntryRating rating={entry.rating} />
+                      </div>
+                    </TableCell>
                     <TableCell>
                       {entry.createdAt.toLocaleDateString("ja-JP", {
                         year: "2-digit",

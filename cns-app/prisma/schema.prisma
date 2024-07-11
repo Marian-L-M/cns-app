@@ -40,9 +40,17 @@ model Entry {
   description String @db.Text
   imageUrl    String
   category    String
+  rating      Int @default(0)
   storyTime   Int @default(0)
+  status      Status @default(UPCOMING)
   users       User[]
   maps        Map?
+}
+
+enum Status {
+  COMPLETED
+  ONGOING
+  UPCOMING
 }
 
 model Map {
