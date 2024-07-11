@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react";
 
-const EntryRating = (rating: number) => {
+const EntryRating = ({ rating }: number) => {
   return (
     <>
       <Heart className={`${rating >= 1 ? "text-red-500" : "text-muted"}`} />
