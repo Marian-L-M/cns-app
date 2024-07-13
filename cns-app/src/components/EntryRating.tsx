@@ -1,6 +1,8 @@
 import { Heart } from "lucide-react";
-
-const EntryRating = ({ rating }: number) => {
+interface Props {
+  rating: number; //
+}
+const EntryRating = ({ rating }: Props) => {
   return (
     <>
       <Heart className={`${rating >= 1 ? "text-red-500" : "text-muted"}`} />
