@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Button } from "../ui/button";
 
 type StoryFormData = z.infer<typeof storiesSchema>;
 
@@ -39,7 +40,7 @@ const StoryForm = () => {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ticket Title..." {...field} />
+                  <Input placeholder="Story Title..." {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -48,7 +49,11 @@ const StoryForm = () => {
             name="description"
             control={form.control}
             render={({ field }) => (
-              <SimpleMDE placeholder={"Description"} {...field} />
+              <SimpleMDE
+                placeholder={"Description"}
+                {...field}
+                defaultValue={field.value}
+              />
             )}
           />
           <div className="flex w-full space-x-4">
@@ -61,7 +66,7 @@ const StoryForm = () => {
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={"UPCOMING"}
+                      defaultValue={field.value || "UPCOMING"}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Status..." />
@@ -83,7 +88,10 @@ const StoryForm = () => {
                 <FormItem>
                   <FormLabel>Rating</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={"1"}>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={(field.value ?? 1).toString()}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Rating..." />
                       </SelectTrigger>
@@ -111,6 +119,7 @@ const StoryForm = () => {
                       placeholder="0000 - 9999"
                       {...field}
                       max={9999}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                 </FormItem>
@@ -142,11 +151,13 @@ const StoryForm = () => {
                   <Input
                     placeholder="This will turn into a dynamic cat dropdown later"
                     {...field}
+                    defaultValue={field.value}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
+          <Button type="submit">Submit</Button>
         </form>
       </Form>
     </div>
