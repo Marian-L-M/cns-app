@@ -2,7 +2,7 @@
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { storiesSchema } from "@/ValidationSchemas/stories";
 import { Controller, useForm } from "react-hook-form";
-import { set, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import SimpleMDE from "react-simplemde-editor";
