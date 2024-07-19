@@ -2,7 +2,7 @@
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { storiesSchema } from "@/ValidationSchemas/stories";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import SimpleMDE from "react-simplemde-editor";
@@ -15,16 +15,46 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
+// Rendering issue with Simplemde, need to fix
+// Needs to be created dynamically
 
 type StoryFormData = z.infer<typeof storiesSchema>;
 
 const StoryForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
   const form = useForm<StoryFormData>({
     resolver: zodResolver(storiesSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      status: "UPCOMING",
+      rating: 1,
+      storyTime: 0,
+      imageUrl: "",
+      category: "",
+    },
   });
 
   async function onSubmit(values: z.infer<typeof storiesSchema>) {
-    console.log(values);
+    try {
+      setIsSubmitting(true);
+      setError("");
+
+      await axios.post("/api/entry", values);
+      setIsSubmitting(false);
+      router.push("/stories");
+      router.refresh();
+    } catch (error) {
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
+    }
   }
   return (
     <div className="rounded-md border w-full p-4">
@@ -52,7 +82,7 @@ const StoryForm = () => {
               <SimpleMDE
                 placeholder={"Description"}
                 {...field}
-                defaultValue={field.value}
+                value={field.value ?? ""}
               />
             )}
           />
@@ -66,7 +96,7 @@ const StoryForm = () => {
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value || "UPCOMING"}
+                      value={field.value ?? "UPCOMING"}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Status..." />
@@ -118,6 +148,7 @@ const StoryForm = () => {
                       type="number"
                       placeholder="0000 - 9999"
                       {...field}
+                      value={field.value ?? 0}
                       max={9999}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -136,6 +167,7 @@ const StoryForm = () => {
                   <Input
                     placeholder="This will turn into an upload field eventually"
                     {...field}
+                    value={field.value ?? ""}
                   />
                 </FormControl>
               </FormItem>
@@ -151,13 +183,15 @@ const StoryForm = () => {
                   <Input
                     placeholder="This will turn into a dynamic cat dropdown later"
                     {...field}
-                    defaultValue={field.value}
+                    value={field.value ?? ""}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            Submit
+          </Button>
         </form>
       </Form>
     </div>
