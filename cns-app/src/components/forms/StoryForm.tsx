@@ -18,36 +18,35 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Entry } from "@prisma/client";
 
 // Rendering issue with Simplemde, need to fix
 // Needs to be created dynamically
 
 type StoryFormData = z.infer<typeof storiesSchema>;
 
-const StoryForm = () => {
+interface Props {
+  story?: Entry;
+}
+
+const StoryForm = ({ story }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
   const form = useForm<StoryFormData>({
     resolver: zodResolver(storiesSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      status: "UPCOMING",
-      rating: 1,
-      storyTime: 0,
-      imageUrl: "",
-      category: "",
-    },
   });
 
   async function onSubmit(values: z.infer<typeof storiesSchema>) {
     try {
       setIsSubmitting(true);
       setError("");
-
-      await axios.post("/api/entry", values);
+      if (story) {
+        await axios.patch(`/api/entry/${story.id}`, values);
+      } else {
+        await axios.post("/api/entry", values);
+      }
       setIsSubmitting(false);
       router.push("/stories");
       router.refresh();
@@ -66,6 +65,7 @@ const StoryForm = () => {
           <FormField
             control={form.control}
             name="title"
+            defaultValue={story?.title}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Title</FormLabel>
@@ -77,69 +77,75 @@ const StoryForm = () => {
           />
           <Controller
             name="description"
+            defaultValue={story?.description}
             control={form.control}
             render={({ field }) => (
-              <SimpleMDE
-                placeholder={"Description"}
-                {...field}
-                value={field.value ?? ""}
-              />
+              <SimpleMDE placeholder="Description" {...field} />
             )}
           />
           <div className="flex w-full space-x-4">
             <FormField
               control={form.control}
               name="status"
+              defaultValue={story?.status}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value ?? "UPCOMING"}
-                    >
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Status..." />
+                        <SelectValue
+                          placeholder="Status..."
+                          defaultValue={story?.status}
+                        />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="UPCOMING">Upcoming</SelectItem>
-                        <SelectItem value="ONGOING">Ongoing</SelectItem>
-                        <SelectItem value="COMPLETED">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="UPCOMING">Upcoming</SelectItem>
+                      <SelectItem value="ONGOING">Ongoing</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name="rating"
+              defaultValue={story?.rating}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Rating</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={(field.value ?? 1).toString()}
-                    >
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={(field.value ?? 1).toString()}
+                  >
+                    <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Rating..." />
+                        <SelectValue
+                          placeholder="Rating..."
+                          defaultValue={story?.rating}
+                        />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
-                        <SelectItem value="4">4</SelectItem>
-                        <SelectItem value="5">5</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
+                      <SelectItem value="4">4</SelectItem>
+                      <SelectItem value="5">5</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name="storyTime"
+              defaultValue={story?.storyTime}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Story Time</FormLabel>
@@ -148,7 +154,6 @@ const StoryForm = () => {
                       type="number"
                       placeholder="0000 - 9999"
                       {...field}
-                      value={field.value ?? 0}
                       max={9999}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -160,6 +165,7 @@ const StoryForm = () => {
           <FormField
             control={form.control}
             name="imageUrl"
+            defaultValue={story?.imageUrl}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Image</FormLabel>
@@ -167,7 +173,6 @@ const StoryForm = () => {
                   <Input
                     placeholder="This will turn into an upload field eventually"
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </FormControl>
               </FormItem>
@@ -176,6 +181,7 @@ const StoryForm = () => {
           <FormField
             control={form.control}
             name="category"
+            defaultValue={story?.category}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
@@ -183,14 +189,13 @@ const StoryForm = () => {
                   <Input
                     placeholder="This will turn into a dynamic cat dropdown later"
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
           <Button type="submit" disabled={isSubmitting}>
-            Submit
+            {story ? "Update Story" : "Submit Story"}
           </Button>
         </form>
       </Form>
