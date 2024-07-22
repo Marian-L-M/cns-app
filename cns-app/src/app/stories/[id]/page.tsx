@@ -1,23 +1,20 @@
-import dynamic from "next/dynamic";
 import prisma from "../../../../prisma/db";
+import StoryDetail from "./StoryDetail";
 
 interface Props {
   params: { id: string };
 }
 
-const StoryForm = dynamic(() => import("@/components/forms/StoryForm"), {
-  ssr: false,
-});
-
-const EditStory = async ({ params }: Props) => {
-  const story = await prisma?.entry.findUnique({
+const ViewStory = async ({ params }: Props) => {
+  const story = await prisma.entry.findUnique({
     where: { id: parseInt(params.id) },
   });
 
   if (!story) {
-    return <p className="text-destructive">Story not found</p>;
+    return <div className="text-destructive">Story not found</div>;
   }
-  return <StoryForm story={story} />;
+
+  return <StoryDetail story={story} />;
 };
 
-export default EditStory;
+export default ViewStory;
