@@ -13,6 +13,7 @@ import { formatTime } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import ReactMarkDown from "react-markdown";
+import DeleteButton from "@/components/buttons/DeleteButton";
 
 interface Props {
   story: Entry;
@@ -46,6 +47,7 @@ const StoryDetail = ({ story }: Props) => {
         >
           Edit Story
         </Link>
+        <DeleteButton storyId={story.id} />
       </div>
     </div>
   );

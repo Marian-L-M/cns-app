@@ -3,6 +3,7 @@ import prisma from "../../../prisma/db";
 import DataTable from "./DataTable";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import Pagination from "@/components/Pagination";
 
 const Stories = async () => {
   const stories = await prisma.entry.findMany();
@@ -15,6 +16,7 @@ const Stories = async () => {
         New Story Entry
       </Link>
       <DataTable entries={stories} />
+      <Pagination itemCount={7} pageSize={2} currentPage={2} />
     </div>
   );
 };
