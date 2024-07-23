@@ -5,8 +5,20 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import Pagination from "@/components/Pagination";
 
-const Stories = async () => {
-  const stories = await prisma.entry.findMany();
+interface SearchParams {
+  page: string;
+}
+
+const Stories = async ({ searchParams }: { SearchParams: SearchParams }) => {
+  const pageSize = 2;
+  const page = parseInt(searchParams.page) || 1;
+  const itemCount = await prisma.entry.count();
+
+  const stories = await prisma.entry.findMany({
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+  });
+
   return (
     <div>
       <Link
@@ -16,7 +28,11 @@ const Stories = async () => {
         New Story Entry
       </Link>
       <DataTable entries={stories} />
-      <Pagination itemCount={7} pageSize={2} currentPage={2} />
+      <Pagination
+        itemCount={itemCount}
+        pageSize={pageSize}
+        currentPage={page}
+      />
     </div>
   );
 };
