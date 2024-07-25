@@ -5,16 +5,19 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import Pagination from "@/components/Pagination";
 import StatusFilter from "@/components/filters/StatusFilter";
-import { Status } from "@prisma/client";
+import { Entry, Status } from "@prisma/client";
 
-interface SearchParams {
+export interface SearchParams {
   status: Status;
   page: string;
+  orderBy: keyof Entry;
 }
 
 const Stories = async ({ searchParams }: { searchParams: SearchParams }) => {
   const pageSize = 2;
   const page = parseInt(searchParams.page) || 1;
+
+  const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
 
   const statuses = Object.values(Status);
 
@@ -37,6 +40,9 @@ const Stories = async ({ searchParams }: { searchParams: SearchParams }) => {
   const itemCount = await prisma.entry.count({ where });
   const stories = await prisma.entry.findMany({
     where,
+    orderBy: {
+      [orderBy]: "desc",
+    },
     take: pageSize,
     skip: (page - 1) * pageSize,
   });
@@ -52,7 +58,7 @@ const Stories = async ({ searchParams }: { searchParams: SearchParams }) => {
         </Link>
         <StatusFilter />
       </div>
-      <DataTable entries={stories} />
+      <DataTable entries={stories} searchParams={searchParams} />
       <Pagination
         itemCount={itemCount}
         pageSize={pageSize}
