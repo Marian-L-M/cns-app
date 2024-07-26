@@ -21,6 +21,7 @@ model User {
   email     String   @unique
   role      Role     @default(USER)
   name      String?  @db.VarChar(255)
+  username  String?  @db.VarChar(255)
   image     String?  
   password  String
   likes     Entry[]
@@ -44,7 +45,11 @@ model Entry {
   storyTime   Int @default(0)
   status      Status @default(UPCOMING)
   users       User[]
-  maps        Map?
+  stories      Story[]
+  assignedToMapID Int?
+  assignedToMap Map? @relation(fields:[assignedToMapID], references: [id])
+
+  @@index([assignedToMapID])
 }
 
 enum Status {
@@ -67,10 +72,21 @@ model Map {
   mapScale    Int
   mapTime     Int
   mapUrl      String
-  entry       Entry  @relation(fields: [entryId], references: [id])
-  entryId     Int @unique
+  assignedEntries       Entry[]
   objects     GlobalObject[]
   area        GlobalArea[]
+}
+
+model Story {
+  id          Int @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  nodes       Json?
+  objectTime  Int
+  entry         Entry      @relation(fields: [entryId], references: [id])
+  entryId       Int
 
   @@index([entryId])
 }
@@ -89,9 +105,12 @@ model GlobalObject {
   objectTime  Int
   map         Map      @relation(fields: [mapId], references: [id])
   mapId       Int
+  wiki         Wiki      @relation(fields: [wikiId], references: [id])
+  wikiId       Int
   type        MapObjectType @default(LOCATION)
 
   @@index([mapId])
+  @@index([wikiId])
 }
 
 model GlobalArea {
@@ -107,15 +126,30 @@ model GlobalArea {
   objectTime  Int
   map         Map      @relation(fields: [mapId], references: [id])
   mapId       Int
+  wiki         Wiki      @relation(fields: [wikiId], references: [id])
+  wikiId       Int
   type        MapAreaType @default(GEOGRAPHY)
 
   @@index([mapId])
+  @@index([wikiId])
+}
+
+model Wiki {
+  id          Int @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String @db.Text
+  infobox     Json?
+  objects     GlobalObject[]
+  area        GlobalArea[]
 }
 
 enum MapObjectType {
   LOCATION
   HISTORY
   NATURAL
+  EVENT
 }
 
 enum MapAreaType {
