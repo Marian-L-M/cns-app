@@ -43,7 +43,7 @@ const UserForm = ({ user }: Props) => {
         await axios.post("/api/users", values);
       }
       setIsSubmitting(false);
-      router.push("/stories");
+      router.push("/users");
       router.refresh();
     } catch (error) {
       setError("Unknown error occurred");
