@@ -1,4 +1,3 @@
-import React from "react";
 import prisma from "../../../prisma/db";
 import DataTable from "./DataTable";
 import Link from "next/link";
