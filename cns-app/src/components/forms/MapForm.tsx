@@ -12,6 +12,7 @@ import { Input } from "../ui/input";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 type MapFormData = z.infer<typeof mapSchema>;
 
@@ -74,22 +75,181 @@ const MapForm = ({ map }: Props) => {
               <SimpleMDE placeholder="Description" {...field} />
             )}
           />
-          <FormField
-            control={form.control}
-            name="imageUrl"
-            defaultValue={map?.imageUrl}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Image</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="This will turn into an upload field eventually"
-                    {...field}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+          <h3>Images</h3>
+          <div className="flex gap-8 mb-8">
+            <div className="flex-col">
+              <FormField
+                control={form.control}
+                name="mapUrl"
+                defaultValue={map?.mapUrl}
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Base Map</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="This will turn into an upload field eventually"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Image
+                src="/maps/sample-map.jpg"
+                width={300}
+                height={300}
+                alt="Thumbnail"
+              />
+            </div>
+            <div className="flex-col">
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                defaultValue={map?.imageUrl}
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Thumbnail</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="This will turn into an upload field eventually"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Image
+                src="/maps/sample-map.jpg"
+                width={300}
+                height={300}
+                alt="Thumbnail"
+              />
+            </div>
+          </div>
+          <h3>Map Location & Reference</h3>
+          <Image
+            src="/maps/sample-world-map.png"
+            width={1000}
+            height={1000}
+            className="w-6/12 bg-white mx-auto"
+            alt="Reference World Map"
           />
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="x"
+              defaultValue={map?.x}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Global X (Top Left)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0-1000"
+                      {...field}
+                      max={1000}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="y"
+              defaultValue={map?.y}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Global Y (Top Left)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0-1000"
+                      {...field}
+                      max={1000}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="wx"
+              defaultValue={map?.wx}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Map Width (Bottom Right)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0-1000"
+                      {...field}
+                      max={1000}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="wy"
+              defaultValue={map?.wy}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Map Height (Bottom Right)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0-1000"
+                      {...field}
+                      max={1000}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="mapScale"
+              defaultValue={map?.mapScale}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Map Zoom Scale</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0-10"
+                      {...field}
+                      max={10}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="mapTime"
+              defaultValue={map?.mapTime}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Map Global Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0-9999"
+                      {...field}
+                      max={9999}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
           <Button type="submit" disabled={isSubmitting}>
             {map ? "Update Map" : "Submit Map"}
           </Button>
