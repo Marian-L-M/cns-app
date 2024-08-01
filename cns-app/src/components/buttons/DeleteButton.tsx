@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,18 +15,23 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
 
-Link;
+interface Props {
+  objectId: number;
+  type: string;
+  path: string;
+  redirect: string;
+}
 
-const DeleteButton = ({ storyId }: { storyId: number }) => {
+const DeleteButton = ({ objectId, type, path, redirect }: Props) => {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteStory = async () => {
+  const deleteObject = async () => {
     try {
       setIsDeleting(true);
-      await axios.delete(`/api/entry/${storyId}`);
-      router.push("/stories");
+      await axios.delete(`/api/${path}/${objectId}`);
+      router.push(`/${redirect}`);
       router.refresh();
     } catch (error) {
       setIsDeleting(false);
@@ -43,14 +47,14 @@ const DeleteButton = ({ storyId }: { storyId: number }) => {
           })}
           disabled={isDeleting}
         >
-          Delete Story
+          Delete {type}
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              Story.
+              This action cannot be undone. This will permanently delete the{" "}
+              {type}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -60,7 +64,7 @@ const DeleteButton = ({ storyId }: { storyId: number }) => {
                 variant: "destructive",
               })}
               disabled={isDeleting}
-              onClick={deleteStory}
+              onClick={deleteObject}
             >
               Delete
             </AlertDialogAction>

@@ -1,5 +1,5 @@
 import prisma from "../../../../prisma/db";
-import MapDetail from "./mapDetail";
+import MapDetail from "./MapDetail";
 
 interface Props {
   params: { id: string };

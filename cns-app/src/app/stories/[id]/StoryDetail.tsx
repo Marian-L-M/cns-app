@@ -47,7 +47,12 @@ const StoryDetail = ({ story }: Props) => {
         >
           Edit Story
         </Link>
-        <DeleteButton storyId={story.id} />
+        <DeleteButton
+          objectId={story.id}
+          type="entry"
+          path="entry"
+          redirect="stories"
+        />
       </div>
     </div>
   );
