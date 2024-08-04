@@ -21,7 +21,7 @@ interface Props {
 
 const MapDetail = ({ map }: Props) => {
   return (
-    <div className="lg:grid lg:grid-cols-4">
+    <div className="">
       {/* <Card className="mx-4 mb-4 lg:col-span-3 lg:mr-4">
         <CardHeader>
           <CardTitle>{map.title}</CardTitle>
@@ -60,7 +60,7 @@ const MapDetail = ({ map }: Props) => {
           redirect="maps"
         />
       </div> */}
-      <MapModule></MapModule>
+      <MapModule />
     </div>
   );
 };
