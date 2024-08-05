@@ -5,7 +5,7 @@ interface Props {
   params: { id: string };
 }
 
-const mapDetail = async ({ params }: Props) => {
+const mapPage = async ({ params }: Props) => {
   const map = await prisma.map.findUnique({
     where: { id: parseInt(params.id) },
   });
@@ -15,4 +15,4 @@ const mapDetail = async ({ params }: Props) => {
   return <MapDetail map={map} />;
 };
 
-export default mapDetail;
+export default mapPage;

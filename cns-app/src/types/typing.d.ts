@@ -4,4 +4,10 @@ type Draw = {
   prevPoint: Point | null;
 };
 
+type DrawMapArea = {
+  id: number;
+  name: string;
+  nodes: Point[];
+};
+
 type Point = { x: number; y: number };

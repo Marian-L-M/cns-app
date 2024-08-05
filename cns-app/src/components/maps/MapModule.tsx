@@ -2,14 +2,14 @@
 import { initializeMap } from "@/hooks/useMapMaker";
 import Image from "next/image";
 import { FC } from "react";
+import { Map } from "@prisma/client";
 
-// // Initiliaze
-interface pageProps {}
+interface MapModuleProps {
+  map: Map;
+}
 
-// //Draw
-
-const MapModule: FC<pageProps> = ({}) => {
-  const { canvasRef } = initializeMap();
+const MapModule: FC<MapModuleProps> = ({ map }) => {
+  const { canvasRef } = initializeMap(map.id);
 
   return (
     <div className="w-scren h-screen bg-white justify-center items-center">
