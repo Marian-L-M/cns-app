@@ -11,3 +11,12 @@ type DrawMapArea = {
 };
 
 type Point = { x: number; y: number };
+
+// export interface IdMappingEntity {
+//   id: number;
+//   mapId: number;
+// }
+
+type MapType = z.infer<typeof mapSchema>;
+type GlobalAreaType = z.infer<typeof GlobalAreasSchema>;
+type GlobalObjectType = z.infer<typeof GlobalObjectsSchema>;

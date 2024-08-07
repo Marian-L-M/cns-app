@@ -6,7 +6,7 @@ interface Point {
   y: number;
 }
 
-export const initializeMap = (mapId: number) => {
+export const useMapMaker = (mapId: number) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // // Get associated areas
@@ -29,44 +29,45 @@ export const initializeMap = (mapId: number) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // let data: DrawMapArea[] = [
-    //   {
-    //     id: 1,
-    //     name: "Test-Map-1",
-    //     nodes: [
-    //       { x: 700, y: 100 },
-    //       { x: 200, y: 100 },
-    //       { x: 300, y: 300 },
-    //       { x: 100, y: 200 },
-    //     ],
-    //   },
-    //   {
-    //     id: 2,
-    //     name: "Test-Map-2",
-    //     nodes: [
-    //       { x: 100, y: 800 },
-    //       { x: 300, y: 850 },
-    //       { x: 450, y: 600 },
-    //       { x: 250, y: 550 },
-    //     ],
-    //   },
-    //   {
-    //     id: 3,
-    //     name: "Test-Map-3",
-    //     nodes: [
-    //       { x: 800, y: 550 },
-    //       { x: 800, y: 750 },
-    //       { x: 950, y: 750 },
-    //       { x: 950, y: 550 },
-    //     ],
-    //   },
-    // ];
+    let data: DrawMapArea[] = [
+      {
+        id: 1,
+        name: "Test-Map-1",
+        nodes: [
+          { x: 700, y: 100 },
+          { x: 200, y: 100 },
+          { x: 300, y: 300 },
+          { x: 100, y: 200 },
+        ],
+      },
+      {
+        id: 2,
+        name: "Test-Map-2",
+        nodes: [
+          { x: 100, y: 800 },
+          { x: 300, y: 850 },
+          { x: 450, y: 600 },
+          { x: 250, y: 550 },
+        ],
+      },
+      {
+        id: 3,
+        name: "Test-Map-3",
+        nodes: [
+          { x: 800, y: 550 },
+          { x: 800, y: 750 },
+          { x: 950, y: 750 },
+          { x: 950, y: 550 },
+        ],
+      },
+    ];
 
     // 240805 To Do: Connect Areas with DB, client side vs. server side issue
+    // 240806 still unsolved / chatgpt doesnt get it./ the issue should be solvable by using get server side props
     // Draw Areas
-    // areas.forEach((area: DrawMapArea) => {
-    //   drawAreas(ctx, area.nodes);
-    // });
+    data.forEach((area: DrawMapArea) => {
+      drawAreas(ctx, area.nodes);
+    });
 
     function drawAreas(ctx: CanvasRenderingContext2D, nodes: Point[]) {
       ctx.beginPath();

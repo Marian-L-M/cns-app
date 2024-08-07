@@ -1,18 +1,40 @@
-import prisma from "../../../../prisma/db";
-import MapDetail from "./MapDetail";
+import MapModule from "@/components/maps/MapModule";
+import { fetchMapData } from "@/lib/fetchMapData";
 
-interface Props {
+interface MapPageProps {
   params: { id: string };
 }
 
-const mapPage = async ({ params }: Props) => {
-  const map = await prisma.map.findUnique({
-    where: { id: parseInt(params.id) },
-  });
-  if (!map) {
-    return <div className="text-destructive">Map not found</div>;
+const MapPage = async ({ params }: MapPageProps) => {
+  const { id } = params;
+  let map: MapType | null = null;
+  let mapAreas: GlobalAreaType[] = [];
+  let mapObjects: GlobalObjectType[] = [];
+  let error: string | null = null;
+
+  try {
+    const data = await fetchMapData(id);
+    map = data.map;
+    mapAreas = data.mapAreas;
+    mapObjects = data.mapObjects;
+
+    if (!map) {
+      error = "Map not found";
+    }
+  } catch (err) {
+    error = "Failed to fetch data";
   }
-  return <MapDetail map={map} />;
+
+  if (error) {
+    return <div className="text-destructive">{error}</div>;
+  }
+
+  console.log(mapAreas);
+  console.log(mapObjects);
+  // return <MapModule map={map} mapAreas={mapAreas} mapObjects={mapObjects} />;
+
+  // 240807 Pass data object instead and destructed in MapModule
+  return <MapModule map={map} mapObjects={mapObjects} mapAreas={mapAreas} />;
 };
 
-export default mapPage;
+export default MapPage;

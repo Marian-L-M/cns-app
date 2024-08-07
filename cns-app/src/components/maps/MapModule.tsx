@@ -1,15 +1,20 @@
 "use client";
-import { initializeMap } from "@/hooks/useMapMaker";
+import { useMapMaker } from "@/hooks/useMapMaker";
 import Image from "next/image";
 import { FC } from "react";
 import { Map } from "@prisma/client";
 
 interface MapModuleProps {
   map: Map;
+  mapObjects: GlobalObjectType[];
+  mapAreas: GlobalAreaType[];
 }
 
-const MapModule: FC<MapModuleProps> = ({ map }) => {
-  const { canvasRef } = initializeMap(map.id);
+const MapModule: FC<MapModuleProps> = ({ map, mapObjects, mapAreas }) => {
+  const { canvasRef } = useMapMaker(map.id);
+
+  console.log(mapObjects);
+  console.log(mapAreas);
 
   return (
     <div className="w-scren h-screen bg-white justify-center items-center">
