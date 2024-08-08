@@ -4,19 +4,26 @@ type Draw = {
   prevPoint: Point | null;
 };
 
+// For Map Schema
+type MapType = z.infer<typeof mapSchema>;
+type GlobalAreaType = z.infer<typeof GlobalAreasSchema>;
+type GlobalObjectType = z.infer<typeof GlobalObjectsSchema>;
+
+// For passing Map data to MapModule
+interface MapModuleProps {
+  data: {
+    map: Map;
+    mapObjects: GlobalObjectType[];
+    mapAreas: GlobalAreaType[];
+  };
+}
+
+// For Drawing Map area from nodes
 type DrawMapArea = {
   id: number;
   name: string;
   nodes: Point[];
 };
 
+// Node for drawing map area
 type Point = { x: number; y: number };
-
-// export interface IdMappingEntity {
-//   id: number;
-//   mapId: number;
-// }
-
-type MapType = z.infer<typeof mapSchema>;
-type GlobalAreaType = z.infer<typeof GlobalAreasSchema>;
-type GlobalObjectType = z.infer<typeof GlobalObjectsSchema>;

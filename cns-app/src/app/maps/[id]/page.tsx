@@ -7,18 +7,17 @@ interface MapPageProps {
 
 const MapPage = async ({ params }: MapPageProps) => {
   const { id } = params;
-  let map: MapType | null = null;
-  let mapAreas: GlobalAreaType[] = [];
-  let mapObjects: GlobalObjectType[] = [];
+  let data: {
+    map: MapType | null;
+    mapAreas: GlobalAreaType[];
+    mapObjects: GlobalObjectType[];
+  } = { map: null, mapAreas: [], mapObjects: [] };
   let error: string | null = null;
 
   try {
-    const data = await fetchMapData(id);
-    map = data.map;
-    mapAreas = data.mapAreas;
-    mapObjects = data.mapObjects;
+    data = await fetchMapData(id);
 
-    if (!map) {
+    if (!data.map) {
       error = "Map not found";
     }
   } catch (err) {
@@ -29,12 +28,7 @@ const MapPage = async ({ params }: MapPageProps) => {
     return <div className="text-destructive">{error}</div>;
   }
 
-  console.log(mapAreas);
-  console.log(mapObjects);
-  // return <MapModule map={map} mapAreas={mapAreas} mapObjects={mapObjects} />;
-
-  // 240807 Pass data object instead and destructed in MapModule
-  return <MapModule map={map} mapObjects={mapObjects} mapAreas={mapAreas} />;
+  return <MapModule data={data} />;
 };
 
 export default MapPage;
