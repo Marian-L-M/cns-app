@@ -1,0 +1,24 @@
+import { drawMetaAreas } from "./drawMetaAreas";
+
+export function checkHover(
+  event: MouseEvent,
+  canvas: HTMLCanvasElement,
+  mapAreas: GlobalAreaType[],
+  ctx: CanvasRenderingContext2D | null,
+  cw: number,
+  ch: number
+) {
+  const r = canvas.getBoundingClientRect();
+  const mouseX = event.clientX - r.x;
+  const mouseY = event.clientY - r.y;
+
+  // Return if no context
+  if (!ctx) return;
+
+  // Clear the canvas and redraw shapes
+  mapAreas?.forEach((areaSet: GlobalAreaType) => {
+    areaSet.nodes.forEach((area: DrawMapArea) => {
+      drawMetaAreas(ctx, area, cw, ch, mouseX, mouseY);
+    });
+  });
+}

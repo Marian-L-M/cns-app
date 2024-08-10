@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { drawAreas } from "@/lib/map/drawMap";
+import { checkHover } from "@/lib/map/mouseActions";
 
 export const useMapMaker = ({ data }: MapModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -10,7 +11,7 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
 
-    // Grid 1000*1000
+    // Canvas values
     const cw = canvas.width / 1000;
     const ch = canvas.height / 1000;
 
@@ -18,12 +19,21 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     // Draw Areas
     mapAreas?.forEach((area: GlobalAreaType) => {
+      ctx.lineWidth = area.styles?.lineWidth || 4;
       area.nodes.forEach((node: DrawMapArea) => {
         drawAreas(ctx, node, cw, ch);
       });
     });
+
+    // Hover actions
+    canvas.onmousemove = (e) => {
+      checkHover(e, canvas, mapAreas, ctx, cw, ch);
+    };
   }, []);
 
   return { canvasRef };

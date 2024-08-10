@@ -23,6 +23,8 @@ type DrawMapArea = {
   id: number;
   name: string;
   nodes: Point[];
+  fillStyle: string;
+  strokeStyle: string;
 };
 
 // Node for drawing map area
