@@ -13,9 +13,4 @@ export function drawMetaAreas(
     ctx.lineTo(points[i].x * cw, points[i].y * ch);
   }
   ctx.lineTo(points[0].x * cw, points[0].y * ch);
-
-  // Interactivity
-  if (ctx.isPointInPath(mouseX, mouseY)) {
-    console.log("hovering over: ", area.name);
-  }
 }

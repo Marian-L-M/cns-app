@@ -10,6 +10,9 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
   // 240811 TODO: Add story via state
   return (
     <div className="w-scren h-screen bg-white justify-center items-center">
+      <div className="w-100 text-center mb-2">
+        <p>I am a status bar</p>
+      </div>
       <div className="relative" id="map-base">
         <canvas
           // onMouseDown={onMouseDown}

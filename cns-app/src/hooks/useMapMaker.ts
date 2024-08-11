@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { drawAreas } from "@/lib/map/drawMap";
-import { checkHover } from "@/lib/map/mouseActions";
+import { checkClick, checkHover } from "@/lib/map/mouseActions";
 
 export const useMapMaker = ({ data }: MapModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,6 +34,11 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     // Hover actions
     canvas.onmousemove = (e) => {
       checkHover(e, canvas, mapAreas, ctx, cw, ch);
+    };
+
+    // Click actions
+    canvas.onmousedown = (e) => {
+      checkClick(e, canvas, mapAreas, ctx, cw, ch);
     };
   }, []);
 
