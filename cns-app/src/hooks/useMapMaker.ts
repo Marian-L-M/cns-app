@@ -23,6 +23,7 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw Areas
+    // 240811 Unify draw functions or keep together for future expansion?
     mapAreas?.forEach((area: GlobalAreaType) => {
       ctx.lineWidth = area.styles?.lineWidth || 4;
       area.nodes.forEach((node: DrawMapArea) => {

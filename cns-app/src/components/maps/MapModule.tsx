@@ -7,14 +7,15 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
   const { canvasRef } = useMapMaker({ data });
   const { map } = data;
 
+  // 240811 TODO: Add story via state
   return (
     <div className="w-scren h-screen bg-white justify-center items-center">
       <div className="relative" id="map-base">
         <canvas
           // onMouseDown={onMouseDown}
           ref={canvasRef}
-          width={1024}
-          height={1024}
+          width={window.innerWidth > 1024 ? 1024 : window.innerWidth}
+          height={window.innerWidth > 1024 ? 1024 : window.innerWidth} // Width for square maps
           className="border border-grey rounded-md relative z-10"
         />
         <Image
