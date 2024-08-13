@@ -29,29 +29,37 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
 
     // Draw Areas
     // 240811 Unify draw functions or keep together for future expansion?
-    mapAreas?.forEach((area: GlobalAreaType) => {
-      ctx.lineWidth = area.styles?.lineWidth || 4;
-      area.nodes.forEach((node: DrawMapArea) => {
-        drawAreas(ctx, node, cw, ch);
-      });
-    });
+
+    // 240813 TO DO URGENT
+    // DB logic issue
+    // Each GlobalArea object should only have one set of nodes -> multiple areas should be multiple GlobalArea objects
+    // Currently a single GlobalArea object has multiple sets of nodes
+
+    if (!mapAreas) return;
+    // move styles from node -> styles to GlobalArea
+    // To Do: mapAreas[0] is a dirty fix
+    const styles = mapAreas[0].styles;
+    ctx.lineWidth = styles.lineWidth || 4;
+    ctx.fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
+    ctx.strokeStyle = styles.strokeStyle || "black";
+    drawAreas(ctx, mapAreas[0], cw, ch);
 
     // Hover actions
-    canvas.onmousemove = (e) => {
-      checkHover(e, canvas, mapAreas, ctx, cw, ch);
-    };
+    // canvas.onmousemove = (e) => {
+    //   checkHover(e, canvas, mapAreas, ctx, cw, ch);
+    // };
 
     // Click actions
-    canvas.onmousedown = (e) => {
-      const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
-      if (!clickedArea) return;
-      const { name, id } = clickedArea[0];
-      statusCtx.showStatus({
-        title: name,
-        subtitle: id.toString(),
-        status: "active",
-      });
-    };
+    // canvas.onmousedown = (e) => {
+    //   const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
+    //   if (!clickedArea) return;
+    //   const { name, id } = clickedArea[0];
+    //   statusCtx.showStatus({
+    //     title: name,
+    //     subtitle: id.toString(),
+    //     status: "active",
+    //   });
+    // };
   }, []);
 
   return { canvasRef };

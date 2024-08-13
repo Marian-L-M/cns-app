@@ -6,8 +6,6 @@ export function drawAreas(
 ) {
   const points = node.nodes;
   ctx.beginPath();
-  ctx.fillStyle = node.fillStyle || "rgba(256, 256, 256, 0.2)";
-  ctx.strokeStyle = node.strokeStyle || "black";
   ctx.moveTo(points[0].x * cw, points[0].y * ch);
   for (var i = 1; i < points.length; i++) {
     ctx.lineTo(points[i].x * cw, points[i].y * ch);
