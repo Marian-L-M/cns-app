@@ -1,10 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 import { drawAreas } from "@/lib/map/drawMap";
 import { checkClick, checkHover } from "@/lib/map/mouseActions";
+import StatusContext from "@/store/statusContext";
+// import { statusInfo } from "../components/maps/MapModule";
 
 export const useMapMaker = ({ data }: MapModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { map, mapObjects, mapAreas } = data;
+  const { mapAreas } = data;
+  const statusCtx = useContext(StatusContext);
+
+  // const { statusBarHandler } = statusInfo();
 
   useEffect(() => {
     // Set canvas
@@ -38,7 +43,14 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
 
     // Click actions
     canvas.onmousedown = (e) => {
-      checkClick(e, canvas, mapAreas, ctx, cw, ch);
+      const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
+      if (!clickedArea) return;
+      const { name, id } = clickedArea[0];
+      statusCtx.showStatus({
+        title: name,
+        subtitle: id.toString(),
+        status: "active",
+      });
     };
   }, []);
 

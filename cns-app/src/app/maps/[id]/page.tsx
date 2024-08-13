@@ -1,5 +1,6 @@
 import MapModule from "@/components/maps/MapModule";
 import { fetchMapData } from "@/lib/fetchMapData";
+import { StatusContextProvider } from "@/store/statusContext";
 
 interface MapPageProps {
   params: { id: string };
@@ -28,7 +29,11 @@ const MapPage = async ({ params }: MapPageProps) => {
     return <div className="text-destructive">{error}</div>;
   }
 
-  return <MapModule data={data} />;
+  return (
+    <StatusContextProvider>
+      <MapModule data={data} />;
+    </StatusContextProvider>
+  );
 };
 
 export default MapPage;

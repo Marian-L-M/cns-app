@@ -27,5 +27,10 @@ type DrawMapArea = {
   strokeStyle: string;
 };
 
+type MapStatus = {
+  name: string;
+  id: number;
+};
+
 // Node for drawing map area
 type Point = { x: number; y: number };
