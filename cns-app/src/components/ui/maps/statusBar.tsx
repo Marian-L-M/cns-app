@@ -4,33 +4,20 @@ import StatusContext from "@/store/statusContext";
 
 interface StatusProps {
   title: string;
-  subtitle: string;
-  status: string;
+  id: number;
+  type: string;
 }
 
 function StatusBar(props: StatusProps) {
   const statusCtx = useContext(StatusContext);
 
-  const { title, subtitle, status } = props;
-
-  let statusClasses = "";
-
-  if (status === "success") {
-    statusClasses = "success";
-  }
-
-  if (status === "error") {
-    statusClasses = "error";
-  }
-
-  if (status === "pending") {
-    statusClasses = "pending";
-  }
+  const { title, id, type } = props;
 
   return (
     <div className="placeholder-classname" onClick={statusCtx.hideStatus}>
       <h2>{title}</h2>
-      <p>{subtitle}</p>
+      <h3>{type}</h3>
+      <p>ID: {id}</p>
     </div>
   );
 }

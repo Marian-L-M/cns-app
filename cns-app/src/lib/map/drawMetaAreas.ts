@@ -2,9 +2,7 @@ export function drawMetaAreas(
   ctx: CanvasRenderingContext2D,
   area: DrawMapArea,
   cw: number,
-  ch: number,
-  mouseX: number,
-  mouseY: number
+  ch: number
 ) {
   const points = area.nodes;
   ctx.beginPath();

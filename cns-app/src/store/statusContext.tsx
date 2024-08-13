@@ -1,16 +1,10 @@
 "use client";
 import { createContext, useState, ReactNode } from "react";
 
-interface StatusData {
-  title: string;
-  subtitle: string;
-  status: string;
-}
-
 // Interface for the context value
 interface StatusContextType {
-  status: StatusData | null;
-  showStatus: (statusData: StatusData) => void;
+  status: ClickStatus | null;
+  showStatus: (statusData: ClickStatus) => void;
   hideStatus: () => void;
 }
 
@@ -27,9 +21,9 @@ const StatusContext = createContext<StatusContextType>({
 export function StatusContextProvider({
   children,
 }: StatusContextProviderProps) {
-  const [activeStatus, setActiveStatus] = useState<StatusData | null>(null);
+  const [activeStatus, setActiveStatus] = useState<ClickStatus | null>(null);
 
-  function showStatusHandler(statusData: StatusData) {
+  function showStatusHandler(statusData: ClickStatus) {
     setActiveStatus(statusData);
   }
 

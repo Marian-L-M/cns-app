@@ -10,25 +10,16 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
   const statusCtx = useContext(StatusContext);
   const { map } = data;
 
-  function testButton() {
-    statusCtx.showStatus({
-      title: "Signing up...",
-      subtitle: "Registring for newsletter",
-      status: "pending",
-    });
-  }
-
   const activeStatus = statusCtx.status;
   // 240811 TODO: Add story via state
   return (
     <div className="w-scren h-screen bg-white justify-center items-center">
-      <button onClick={testButton}>test me</button>
       <div className="w-100 text-center mb-2">
         {activeStatus && (
           <StatusBar
+            id={activeStatus.id}
             title={activeStatus.title}
-            subtitle={activeStatus.subtitle}
-            status={activeStatus.status}
+            type={activeStatus.type}
           />
         )}
       </div>

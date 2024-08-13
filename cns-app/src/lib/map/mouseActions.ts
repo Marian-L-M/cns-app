@@ -12,19 +12,24 @@ export function checkHover(
   const mouseX = event.clientX - r.x;
   const mouseY = event.clientY - r.y;
 
+  const hoverArea: ClickStatus[] = [];
+
   // Return if no context
   if (!ctx) return;
 
   // Clear the canvas and redraw shapes
   mapAreas?.forEach((areaSet: GlobalAreaType) => {
-    areaSet.nodes.forEach((area: DrawMapArea) => {
-      drawMetaAreas(ctx, area, cw, ch, mouseX, mouseY);
-      // Interactivity;
-      if (ctx.isPointInPath(mouseX, mouseY)) {
-        console.log("hovering over: ", area.name);
-      }
-    });
+    drawMetaAreas(ctx, areaSet, cw, ch);
+    // Interactivity;
+    if (ctx.isPointInPath(mouseX, mouseY)) {
+      hoverArea.push({
+        id: areaSet.id,
+        title: areaSet.title,
+        type: "GlobalAreaType",
+      });
+    }
   });
+  return hoverArea;
 }
 
 export function checkClick(
@@ -39,22 +44,21 @@ export function checkClick(
   const mouseX = event.clientX - r.x;
   const mouseY = event.clientY - r.y;
 
-  const clickedArea: MapStatus[] = [];
+  const clickedArea: ClickStatus[] = [];
 
   // Return if no context
   if (!ctx) return;
 
   // Clear the canvas and redraw shapes
   mapAreas?.forEach((areaSet: GlobalAreaType) => {
-    areaSet.nodes.forEach((area: DrawMapArea) => {
-      drawMetaAreas(ctx, area, cw, ch, mouseX, mouseY);
-      if (ctx.isPointInPath(mouseX, mouseY)) {
-        clickedArea.push({
-          id: area.id,
-          name: area.name,
-        });
-      }
-    });
+    drawMetaAreas(ctx, areaSet, cw, ch);
+    if (ctx.isPointInPath(mouseX, mouseY)) {
+      clickedArea.push({
+        id: areaSet.id,
+        title: areaSet.title,
+        type: "GlobalAreaType",
+      });
+    }
   });
   return clickedArea;
 }

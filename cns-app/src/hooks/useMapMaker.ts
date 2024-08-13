@@ -2,14 +2,11 @@ import { useEffect, useRef, useContext } from "react";
 import { drawAreas } from "@/lib/map/drawMap";
 import { checkClick, checkHover } from "@/lib/map/mouseActions";
 import StatusContext from "@/store/statusContext";
-// import { statusInfo } from "../components/maps/MapModule";
 
 export const useMapMaker = ({ data }: MapModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { mapAreas } = data;
   const statusCtx = useContext(StatusContext);
-
-  // const { statusBarHandler } = statusInfo();
 
   useEffect(() => {
     // Set canvas
@@ -29,16 +26,8 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
 
     // Draw Areas
     // 240811 Unify draw functions or keep together for future expansion?
-
-    // 240813 TO DO URGENT
-    // DB logic issue
-    // Each GlobalArea object should only have one set of nodes -> multiple areas should be multiple GlobalArea objects
-    // Currently a single GlobalArea object has multiple sets of nodes
-
     if (!mapAreas) return;
-    // move styles from node -> styles to GlobalArea
-    // To Do: mapAreas[0] is a dirty fix
-    console.log(mapAreas);
+
     mapAreas.forEach((area) => {
       const styles = area.styles;
       ctx.lineWidth = styles.lineWidth || 4;
@@ -48,20 +37,30 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     });
 
     // Hover actions
-    // canvas.onmousemove = (e) => {
-    //   checkHover(e, canvas, mapAreas, ctx, cw, ch);
-    // };
+    //240814 Split hover actions into floating label
+    canvas.onmousemove = (e) => {
+      const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
+      if (!hoverArea || hoverArea.length == 0) return;
+      checkHover(e, canvas, mapAreas, ctx, cw, ch);
+      const { title, id, type } = hoverArea[0];
+      statusCtx.showStatus({
+        title: title,
+        id: id,
+        type: type,
+      });
+    };
 
     // Click actions
+    // 240814 Split click actions to infobox
     canvas.onmousedown = (e) => {
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
-      // if (!clickedArea) return;
-      // const { name, id } = clickedArea[0];
-      // statusCtx.showStatus({
-      //   title: name,
-      //   subtitle: id.toString(),
-      //   status: "active",
-      // });
+      if (!clickedArea || clickedArea.length == 0) return;
+      const { title, id, type } = clickedArea[0];
+      statusCtx.showStatus({
+        title: title,
+        id: id,
+        type: type,
+      });
     };
   }, []);
 
