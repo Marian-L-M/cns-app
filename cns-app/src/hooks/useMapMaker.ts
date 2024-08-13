@@ -38,11 +38,14 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     if (!mapAreas) return;
     // move styles from node -> styles to GlobalArea
     // To Do: mapAreas[0] is a dirty fix
-    const styles = mapAreas[0].styles;
-    ctx.lineWidth = styles.lineWidth || 4;
-    ctx.fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
-    ctx.strokeStyle = styles.strokeStyle || "black";
-    drawAreas(ctx, mapAreas[0], cw, ch);
+    console.log(mapAreas);
+    mapAreas.forEach((area) => {
+      const styles = area.styles;
+      ctx.lineWidth = styles.lineWidth || 4;
+      ctx.fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
+      ctx.strokeStyle = styles.strokeStyle || "black";
+      drawAreas(ctx, area, cw, ch);
+    });
 
     // Hover actions
     // canvas.onmousemove = (e) => {
@@ -50,16 +53,16 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     // };
 
     // Click actions
-    // canvas.onmousedown = (e) => {
-    //   const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
-    //   if (!clickedArea) return;
-    //   const { name, id } = clickedArea[0];
-    //   statusCtx.showStatus({
-    //     title: name,
-    //     subtitle: id.toString(),
-    //     status: "active",
-    //   });
-    // };
+    canvas.onmousedown = (e) => {
+      const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
+      // if (!clickedArea) return;
+      // const { name, id } = clickedArea[0];
+      // statusCtx.showStatus({
+      //   title: name,
+      //   subtitle: id.toString(),
+      //   status: "active",
+      // });
+    };
   }, []);
 
   return { canvasRef };

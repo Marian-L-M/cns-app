@@ -1,6 +1,3 @@
-import { useContext } from "react";
-import StatusContext from "@/store/statusContext";
-
 import { drawMetaAreas } from "./drawMetaAreas";
 
 export function checkHover(
@@ -37,7 +34,6 @@ export function checkClick(
   ctx: CanvasRenderingContext2D | null,
   cw: number,
   ch: number
-  // statusBarHandler: (statusMessage: string) => void
 ) {
   const r = canvas.getBoundingClientRect();
   const mouseX = event.clientX - r.x;
