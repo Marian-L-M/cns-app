@@ -1,6 +1,6 @@
 import MapModule from "@/components/maps/MapModule";
 import { fetchMapData } from "@/lib/fetchMapData";
-import { StatusContextProvider } from "@/store/statusContext";
+import StatusContextProvider from "@/store/statusContext";
 
 interface MapPageProps {
   params: { id: string };

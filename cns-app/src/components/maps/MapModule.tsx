@@ -2,15 +2,15 @@
 import { useMapMaker } from "@/hooks/useMapMaker";
 import Image from "next/image";
 import { FC, useContext } from "react";
-import StatusContext from "@/store/statusContext";
+import { StatusContext } from "@/store/statusContext";
 import StatusBar from "../ui/maps/statusBar";
 
 const MapModule: FC<MapModuleProps> = ({ data }) => {
   const { canvasRef } = useMapMaker({ data });
-  const statusCtx = useContext(StatusContext);
+  const statusBarCtx = useContext(StatusContext);
   const { map } = data;
 
-  const activeStatus = statusCtx.status;
+  const activeStatus = statusBarCtx.statusBar;
   // 240811 TODO: Add story via state
   return (
     <div className="w-scren h-screen bg-white justify-center items-center">

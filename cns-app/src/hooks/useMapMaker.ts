@@ -1,7 +1,7 @@
 import { useEffect, useRef, useContext } from "react";
 import { drawAreas } from "@/lib/map/drawMap";
 import { checkClick, checkHover } from "@/lib/map/mouseActions";
-import StatusContext from "@/store/statusContext";
+import { StatusContext } from "@/store/statusContext";
 
 export const useMapMaker = ({ data }: MapModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,13 +37,13 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     });
 
     // Hover actions
-    //240814 Split hover actions into floating label
+    //240814 Split hover actions into floating label (Currenlty statusbar)
     canvas.onmousemove = (e) => {
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch);
       const { title, id, type } = hoverArea[0];
-      statusCtx.showStatus({
+      statusCtx.showStatusBar({
         title: title,
         id: id,
         type: type,
@@ -51,12 +51,12 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     };
 
     // Click actions
-    // 240814 Split click actions to infobox
+    // 240814 Split click actions to show infobox
     canvas.onmousedown = (e) => {
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (!clickedArea || clickedArea.length == 0) return;
       const { title, id, type } = clickedArea[0];
-      statusCtx.showStatus({
+      statusCtx.showStatusBar({
         title: title,
         id: id,
         type: type,

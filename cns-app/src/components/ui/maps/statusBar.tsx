@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import StatusContext from "@/store/statusContext";
+import { StatusContext } from "@/store/statusContext";
 
 interface StatusProps {
   title: string;
@@ -14,7 +14,7 @@ function StatusBar(props: StatusProps) {
   const { title, id, type } = props;
 
   return (
-    <div className="placeholder-classname" onClick={statusCtx.hideStatus}>
+    <div className="placeholder-classname" onClick={statusCtx.hideStatusBar}>
       <h2>{title}</h2>
       <h3>{type}</h3>
       <p>ID: {id}</p>
