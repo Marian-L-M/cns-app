@@ -5,7 +5,7 @@ import { StatusContext } from "@/store/statusContext";
 
 export const useMapMaker = ({ data }: MapModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { mapAreas } = data;
+  const { mapAreas, mapObjects } = data;
   const statusCtx = useContext(StatusContext);
 
   useEffect(() => {
@@ -26,16 +26,34 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
 
     // Draw Areas
     // 240811 Unify draw functions or keep together for future expansion?
-    if (!mapAreas) return;
+    if (mapAreas) {
+      mapAreas.forEach((area) => {
+        const styles = area.styles;
+        ctx.lineWidth = styles.lineWidth || 4;
+        ctx.fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
+        ctx.strokeStyle = styles.strokeStyle || "black";
+        drawAreas(ctx, area, cw, ch);
+      });
+    }
 
-    mapAreas.forEach((area) => {
-      const styles = area.styles;
-      ctx.lineWidth = styles.lineWidth || 4;
-      ctx.fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
-      ctx.strokeStyle = styles.strokeStyle || "black";
-      drawAreas(ctx, area, cw, ch);
-    });
-
+    // TO DO 240816 Draw Objects
+    // Draw Objects
+    console.log(mapObjects);
+    if (mapObjects) {
+      mapObjects.forEach((object) => {
+        console.log(object.title);
+        ctx.beginPath();
+        ctx.fillStyle = "pink";
+        ctx.strokeStyle = "red";
+        ctx.moveTo(object.x * cw - 50, object.y * ch - 50);
+        ctx.lineTo(object.x * cw, object.y * ch - 50);
+        ctx.lineTo(object.x * cw, object.y * ch);
+        ctx.lineTo(object.x * cw - 50, object.y * ch);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+      });
+    }
     // Hover actions
     //240814 Split hover actions into floating label (Currenlty statusbar)
     canvas.onmousemove = (e) => {
