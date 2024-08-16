@@ -56,7 +56,7 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (!clickedArea || clickedArea.length == 0) return;
       const { title, id, type } = clickedArea[0];
-      statusCtx.showStatusBar({
+      statusCtx.showInfoBox({
         title: title,
         id: id,
         type: type,

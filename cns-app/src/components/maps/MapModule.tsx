@@ -4,16 +4,18 @@ import Image from "next/image";
 import { FC, useContext } from "react";
 import { StatusContext } from "@/store/statusContext";
 import StatusBar from "../ui/maps/statusBar";
+import InfoBox from "../ui/maps/infoBox";
 
 const MapModule: FC<MapModuleProps> = ({ data }) => {
   const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
-  const { map } = data;
+  const { map, mapAreas } = data;
 
   const activeStatus = statusBarCtx.statusBar;
+  const activeInfo = statusBarCtx.infoBox;
   // 240811 TODO: Add story via state
   return (
-    <div className="w-screen h-screen bg-white justify-center items-center">
+    <div className="w-screen h-screen justify-center items-center">
       <div className="w-full text-center mb-2">
         {activeStatus && (
           <StatusBar
@@ -43,7 +45,16 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
             height="1024"
           />
         </div>
-        <div id="infobox">I am the Infobox</div>
+        <div id="infobox">
+          {activeInfo && (
+            <InfoBox
+              id={activeInfo.id}
+              title={activeInfo.title}
+              type={activeInfo.type}
+              infoData={mapAreas}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

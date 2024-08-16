@@ -28,7 +28,6 @@ const MapPage = async ({ params }: MapPageProps) => {
   if (error) {
     return <div className="text-destructive">{error}</div>;
   }
-
   return (
     <StatusContextProvider>
       <MapModule data={data} />;
