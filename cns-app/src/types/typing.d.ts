@@ -27,6 +27,13 @@ type DrawMapArea = {
   strokeStyle: string;
 };
 
+type DrawMapObject = {
+  id: number;
+  title: string;
+  x: number;
+  y: number;
+};
+
 // For status response
 type ClickStatus = {
   title: string;

@@ -9,13 +9,21 @@ import InfoBox from "../ui/maps/infoBox";
 const MapModule: FC<MapModuleProps> = ({ data }) => {
   const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
-  const { map, mapAreas } = data;
+  const { map, mapAreas, mapObjects } = data;
 
   const activeStatus = statusBarCtx.statusBar;
   const activeInfo = statusBarCtx.infoBox;
+  console.log(activeInfo?.type);
+
+  let infoData;
+  if (activeInfo?.type == "GlobalObjectType") {
+    infoData = mapObjects;
+  } else {
+    infoData = mapAreas;
+  }
   // 240811 TODO: Add story via state
   return (
-    <div className="w-screen h-screen justify-center items-center">
+    <div className="w-screen h-screen justify-center items-center ">
       <div className="w-full text-center mb-2">
         {activeStatus && (
           <StatusBar
@@ -51,7 +59,7 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
               id={activeInfo.id}
               title={activeInfo.title}
               type={activeInfo.type}
-              infoData={mapAreas}
+              infoData={infoData}
             />
           )}
         </div>

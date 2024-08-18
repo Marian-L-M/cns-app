@@ -12,3 +12,17 @@ export function drawMetaAreas(
   }
   ctx.lineTo(points[0].x * cw, points[0].y * ch);
 }
+
+export function drawMetaObjects(
+  ctx: CanvasRenderingContext2D,
+  object: DrawMapObject,
+  cw: number,
+  ch: number
+) {
+  ctx.beginPath();
+  ctx.moveTo((object.x - 20) * cw, (object.y - 20) * ch);
+  ctx.lineTo((object.x + 20) * cw, (object.y - 20) * ch);
+  ctx.lineTo((object.x + 20) * cw, (object.y + 20) * ch);
+  ctx.lineTo((object.x - 20) * cw, (object.y + 20) * ch);
+  ctx.closePath();
+}

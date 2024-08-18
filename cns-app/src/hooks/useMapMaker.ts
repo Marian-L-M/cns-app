@@ -1,6 +1,10 @@
 import { useEffect, useRef, useContext } from "react";
 import { drawAreas } from "@/lib/map/drawMap";
-import { checkClick, checkHover } from "@/lib/map/mouseActions";
+import {
+  checkClick,
+  checkHover,
+  checkObjectClick,
+} from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
 
 export const useMapMaker = ({ data }: MapModuleProps) => {
@@ -38,20 +42,13 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
 
     // TO DO 240816 Draw Objects
     // Draw Objects
-    console.log(mapObjects);
     if (mapObjects) {
       mapObjects.forEach((object) => {
-        console.log(object.title);
-        ctx.beginPath();
-        ctx.fillStyle = "pink";
-        ctx.strokeStyle = "red";
-        ctx.moveTo(object.x * cw - 50, object.y * ch - 50);
-        ctx.lineTo(object.x * cw, object.y * ch - 50);
-        ctx.lineTo(object.x * cw, object.y * ch);
-        ctx.lineTo(object.x * cw - 50, object.y * ch);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fill();
+        const image = new Image(); // Using optional size for image
+        image.src = object.thumbUrl;
+        image.onload = () => {
+          ctx.drawImage(image, object.x * cw, object.y * ch, 40, 40);
+        };
       });
     }
     // Hover actions
@@ -70,15 +67,36 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
 
     // Click actions
     // 240814 Split click actions to show infobox
+    // 240818 Join mapAreas and mapObjects click events
     canvas.onmousedown = (e) => {
+      // Check areas
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
-      if (!clickedArea || clickedArea.length == 0) return;
-      const { title, id, type } = clickedArea[0];
-      statusCtx.showInfoBox({
-        title: title,
-        id: id,
-        type: type,
-      });
+      if (clickedArea && !(clickedArea.length == 0)) {
+        const { title, id, type } = clickedArea[0];
+        statusCtx.showInfoBox({
+          title: title,
+          id: id,
+          type: type,
+        });
+      }
+
+      // Check objects
+      const clickedObjects = checkObjectClick(
+        e,
+        canvas,
+        mapObjects,
+        ctx,
+        cw,
+        ch
+      );
+      if (clickedObjects && !(clickedObjects.length == 0)) {
+        const { title, id, type } = clickedObjects[0];
+        statusCtx.showInfoBox({
+          title: title,
+          id: id,
+          type: type,
+        });
+      }
     };
   }, []);
 
