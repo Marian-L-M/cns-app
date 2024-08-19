@@ -13,7 +13,6 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
 
   const activeStatus = statusBarCtx.statusBar;
   const activeInfo = statusBarCtx.infoBox;
-  console.log(activeInfo?.type);
 
   let infoData;
   if (activeInfo?.type == "GlobalObjectType") {

@@ -44,10 +44,17 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     // Draw Objects
     if (mapObjects) {
       mapObjects.forEach((object) => {
+        const thumbSize = 40;
         const image = new Image(); // Using optional size for image
         image.src = object.thumbUrl;
         image.onload = () => {
-          ctx.drawImage(image, object.x * cw, object.y * ch, 40, 40);
+          ctx.drawImage(
+            image,
+            object.x * cw - thumbSize / 2,
+            object.y * ch - thumbSize / 2,
+            thumbSize,
+            thumbSize
+          );
         };
       });
     }
