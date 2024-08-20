@@ -47,7 +47,7 @@ const Stories = async ({ searchParams }: { searchParams: SearchParams }) => {
   });
 
   return (
-    <div>
+    <div className="max-w-screen-xl">
       <div className="flex gap-2">
         <Link
           href="/stories/new"

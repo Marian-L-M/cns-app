@@ -46,7 +46,7 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
       mapObjects.forEach((object) => {
         const thumbSize = 40;
         const image = new Image(); // Using optional size for image
-        image.src = object.thumbUrl;
+        image.src = `/${object.thumbUrl}`;
         image.onload = () => {
           ctx.drawImage(
             image,

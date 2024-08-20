@@ -30,9 +30,7 @@ export default function RootLayout({
               <MainNav />
             </div>
           </nav>
-          <main className="flex flex-col items-center">
-            <div className="w-full">{children}</div>
-          </main>
+          <main className="flex flex-col items-center">{children}</main>
         </ThemeProvider>
       </body>
     </html>
