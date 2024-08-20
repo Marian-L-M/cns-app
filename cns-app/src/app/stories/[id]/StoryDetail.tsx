@@ -18,6 +18,7 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
 import MapModule from "@/components/maps/MapModule";
+import { fetchStoryData } from "@/lib/fetchStoryData";
 
 interface Props {
   story: Entry;
@@ -31,6 +32,7 @@ const StoryDetail = async ({ story }: Props) => {
   } = { map: null, mapAreas: [], mapObjects: [] };
   let error: string | null = null;
 
+  // fetch map
   try {
     // 240819 This is stupid - change fetchMapData to always expect an integer
     mapData = await fetchMapData(story.assignedToMapID?.toString() || "");
@@ -41,7 +43,22 @@ const StoryDetail = async ({ story }: Props) => {
   } catch (err) {
     error = "Failed to fetch data";
   }
-  // 240819 To Do 1: GlobalObjects are not showing up in stories - Image path is broken
+  let storyData;
+
+  try {
+    storyData = await fetchStoryData(story.id);
+
+    if (!storyData) {
+      error = "No story found";
+    }
+  } catch (err) {
+    error = "Failed to fetch story";
+  }
+
+  if (storyData) {
+    console.log(storyData);
+  }
+
   // 240819 To Do 2: Hook up stories
   return (
     // <div className="lg:grid lg:grid-cols-4">
