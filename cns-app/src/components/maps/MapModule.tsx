@@ -20,6 +20,12 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
   } else {
     infoData = mapAreas;
   }
+
+  let windowSize: number = 1024;
+  if (typeof window !== "undefined") {
+    windowSize = window.innerWidth;
+  }
+
   // 240811 TODO: Add story via state
   return (
     <div className="w-screen h-screen justify-center items-center ">
@@ -38,8 +44,8 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
             // onMouseDown={onMouseDown}
             // handlerFunction
             ref={canvasRef}
-            width={window.innerWidth > 1024 ? 1024 : window.innerWidth}
-            height={window.innerWidth > 1024 ? 1024 : window.innerWidth} // Width for square maps
+            width={windowSize > 1024 ? 1024 : windowSize}
+            height={windowSize > 1024 ? 1024 : windowSize} // Width for square maps
             className="border border-grey rounded-md relative z-10 w-full"
           />
           <Image
