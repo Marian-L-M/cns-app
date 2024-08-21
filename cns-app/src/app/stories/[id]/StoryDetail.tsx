@@ -1,24 +1,8 @@
-import { Entry, Map, Story } from "@prisma/client";
-import prisma from "../../../../prisma/db";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import EntryStatusBadge from "@/components/EntryStatusBadge";
-import EntryRating from "@/components/EntryRating";
-import { formatTime } from "@/lib/utils";
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import ReactMarkDown from "react-markdown";
-import DeleteButton from "@/components/buttons/DeleteButton";
+import { Entry } from "@prisma/client";
 import { fetchMapData } from "@/lib/fetchMapData";
-import StatusContextProvider from "@/store/statusContext";
-import MapModule from "@/components/maps/MapModule";
 import { fetchStoryData } from "@/lib/fetchStoryData";
+import StatusContextProvider from "@/store/statusContext";
+import StoryModule from "@/components/maps/StoryModule";
 
 interface Props {
   story: Entry;
@@ -43,61 +27,32 @@ const StoryDetail = async ({ story }: Props) => {
   } catch (err) {
     error = "Failed to fetch data";
   }
-  let storyData;
+
+  // fetch story
+  let storyData: story[] = [];
 
   try {
-    storyData = await fetchStoryData(story.id);
+    const fetchedStoryData = await fetchStoryData(story.id);
 
-    if (!storyData) {
-      error = "No story found";
+    if (!fetchedStoryData.story || fetchedStoryData.story.length === 0) {
+      throw new Error("No story found");
+    } else {
+      storyData = fetchedStoryData.story;
     }
   } catch (err) {
-    error = "Failed to fetch story";
-  }
-
-  if (storyData) {
-    console.log(storyData);
+    error = (err as Error).message || "Failed to fetch story";
   }
 
   // 240819 To Do 2: Hook up stories
+  // 240820 Unify MapModule logic and StoryModule logic
   return (
-    // <div className="lg:grid lg:grid-cols-4">
-    //   <Card className="mx-4 mb-4 lg:col-span-3 lg:mr-4">
-    //     <CardHeader>
-    //       <div className="flex justify-between mb-3">
-    //         <EntryStatusBadge status={story.status} />
-    //         <EntryRating rating={story.rating} />
-    //       </div>
-    //       <CardTitle>{story.title}</CardTitle>
-    //       <CardDescription>
-    //         Created: {formatTime(story.createdAt)}
-    //       </CardDescription>
-    //     </CardHeader>
-    //     <CardContent className="prose dark:prose-invert">
-    //       <ReactMarkDown>{story.description}</ReactMarkDown>
-    //     </CardContent>
-    //     <CardFooter>Last Update: {formatTime(story.updatedAt)}</CardFooter>
-    //   </Card>
-    //   <div className="mx-4 flex lg:flex-col lg:mx-0 gap-2">
-    //     <Link
-    //       href={`/stories/edit/${story.id}`}
-    //       className={`${buttonVariants({
-    //         variant: "default",
-    //       })}`}
-    //     >
-    //       Edit Story
-    //     </Link>
-    //     <DeleteButton
-    //       objectId={story.id}
-    //       type="entry"
-    //       path="entry"
-    //       redirect="stories"
-    //     />
-    //   </div>
-    // </div>
     <div>
       <StatusContextProvider>
-        <MapModule data={mapData} />;
+        {storyData?.length > 0 ? (
+          <StoryModule data={mapData} story={storyData} />
+        ) : (
+          <div>{error || "An error occurred"}</div>
+        )}
       </StatusContextProvider>
     </div>
   );

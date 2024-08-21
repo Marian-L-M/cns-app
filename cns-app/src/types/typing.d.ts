@@ -17,6 +17,14 @@ interface MapModuleProps {
     mapAreas: GlobalAreaType[];
   };
 }
+interface StoryModuleProps {
+  data: {
+    map: Map;
+    mapObjects: GlobalObjectType[];
+    mapAreas: GlobalAreaType[];
+  };
+  story: story[];
+}
 
 // For Drawing Map area from nodes
 type DrawMapArea = {
@@ -43,3 +51,24 @@ type ClickStatus = {
 
 // Node for drawing map area
 type Point = { x: number; y: number };
+
+interface story {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string;
+  nodes: JsonValue;
+  objectTime: number;
+  entryId: number;
+}
+
+interface storyNode {
+  id: number;
+  name: string;
+  description: string;
+  timeStart: number;
+  timeEnd: number;
+  x: number;
+  y: number;
+}
