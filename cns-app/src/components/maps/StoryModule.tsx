@@ -6,6 +6,7 @@ import { StatusContext } from "@/store/statusContext";
 import StatusBar from "../ui/maps/statusBar";
 import InfoBox from "../ui/maps/infoBox";
 
+//240822 Unify story module with map module
 const StoryModule: FC<StoryModuleProps> = ({ data, story }) => {
   const { canvasRef } = useStoryMaker({ data, story });
   const statusBarCtx = useContext(StatusContext);

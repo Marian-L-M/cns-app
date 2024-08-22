@@ -60,33 +60,35 @@ export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
     }
 
     // Draw Story Nodes
+    // 240822 Nodes are drawn behind theimage by default, overwriting seems pretty painful, so might be smarter to split the canvas (into 3: image canvas, drawing/interaction canvas, animation canvas) in future iterations.
     if (story) {
       story.forEach((storyObject) => {
-        let currentNode: Point;
         let previousNode: Point;
+
         storyObject.nodes.forEach((node: storyNode) => {
-          ctx.fillStyle = "black";
-          ctx.strokeStyle = "green";
+          // Draw Story Line
+          if (previousNode) {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
+            ctx.lineTo(node.x * cw, node.y * ch);
+            ctx.closePath;
+            ctx.stroke();
+          }
+          previousNode = { x: node.x, y: node.y };
+        });
+        storyObject.nodes.forEach((node: storyNode) => {
+          // Draw Current Story node
+          ctx.fillStyle = "red";
           ctx.beginPath();
-          ctx.moveTo((node.x - 10) * cw, (node.y - 10) * ch);
-          ctx.lineTo((node.x + 10) * cw, (node.y - 10) * ch);
-          ctx.lineTo((node.x + 10) * cw, (node.y + 10) * ch);
-          ctx.lineTo((node.x - 10) * cw, (node.y + 10) * ch);
+          ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
+          ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
+          ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
+          ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
           ctx.closePath();
           ctx.stroke();
           ctx.fill();
-
-          // Update current node
-          // To Do 240821 Line logic not working
-          currentNode = { x: node.x, y: node.y };
-          if (previousNode) {
-            ctx.beginPath();
-            ctx.strokeStyle = "green";
-            ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
-            ctx.lineTo(currentNode.x * cw, previousNode.y * ch);
-            ctx.stroke();
-          }
-          previousNode == currentNode;
         });
       });
     }
