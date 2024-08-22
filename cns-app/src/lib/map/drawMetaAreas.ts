@@ -27,3 +27,18 @@ export function drawMetaObjects(
   ctx.lineTo((object.x - 20) * cw, (object.y + 20) * ch);
   ctx.closePath();
 }
+
+export function drawMetaStoryNodes(
+  ctx: CanvasRenderingContext2D,
+  object: DrawMapObject,
+  cw: number,
+  ch: number
+) {
+  // console.log(object);
+  ctx.beginPath();
+  ctx.moveTo((object.x - 5) * cw, (object.y - 5) * ch);
+  ctx.lineTo((object.x + 5) * cw, (object.y - 5) * ch);
+  ctx.lineTo((object.x + 5) * cw, (object.y + 5) * ch);
+  ctx.lineTo((object.x - 5) * cw, (object.y + 5) * ch);
+  ctx.closePath();
+}

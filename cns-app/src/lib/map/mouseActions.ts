@@ -1,4 +1,8 @@
-import { drawMetaAreas, drawMetaObjects } from "./drawMetaAreas";
+import {
+  drawMetaAreas,
+  drawMetaObjects,
+  drawMetaStoryNodes,
+} from "./drawMetaAreas";
 
 export function checkHover(
   event: MouseEvent,
@@ -66,7 +70,7 @@ export function checkClick(
 export function checkObjectClick(
   event: MouseEvent,
   canvas: HTMLCanvasElement,
-  mapObjects: GlobalAreaType[],
+  mapObjects: GlobalObjectType[],
   ctx: CanvasRenderingContext2D | null,
   cw: number,
   ch: number
@@ -81,7 +85,7 @@ export function checkObjectClick(
   if (!ctx) return;
 
   // Clear the canvas and redraw shapes
-  mapObjects?.forEach((objectSet: GlobalAreaType) => {
+  mapObjects?.forEach((objectSet: GlobalObjectType) => {
     drawMetaObjects(ctx, objectSet, cw, ch);
     if (ctx.isPointInPath(mouseX, mouseY)) {
       clickedObject.push({
@@ -92,4 +96,39 @@ export function checkObjectClick(
     }
   });
   return clickedObject;
+}
+
+// 240822 Memo: Click triggered story nodes can actually go above images
+export function checkStoryNodeClick(
+  event: MouseEvent,
+  canvas: HTMLCanvasElement,
+  story: GlobalStoryType[],
+  ctx: CanvasRenderingContext2D | null,
+  cw: number,
+  ch: number
+) {
+  const r = canvas.getBoundingClientRect();
+  const mouseX = event.clientX - r.x;
+  const mouseY = event.clientY - r.y;
+
+  const clickedStoryNode: StoryClickStatus[] = [];
+
+  // Return if no context
+  if (!ctx) return;
+
+  // Clear the canvas and redraw shapes
+  story.forEach((mapNodes) => {
+    mapNodes.nodes.forEach((nodeSet: GlobalStoryType) => {
+      drawMetaStoryNodes(ctx, nodeSet, cw, ch);
+      if (ctx.isPointInPath(mouseX, mouseY)) {
+        clickedStoryNode.push({
+          id: nodeSet.id,
+          title: nodeSet.name,
+          description: nodeSet.description,
+          type: "StoryNode",
+        });
+      }
+    });
+  });
+  return clickedStoryNode;
 }

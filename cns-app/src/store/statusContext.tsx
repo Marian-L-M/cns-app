@@ -9,8 +9,8 @@ interface StatusContextType {
   infoBox: ClickStatus | null;
   showInfoBox: (statusData: ClickStatus) => void;
   hideInfoBox: () => void;
-  storyBox: ClickStatus | null;
-  showStoryBox: (statusData: ClickStatus) => void;
+  storyBox: StoryClickStatus | null;
+  showStoryBox: (statusData: StoryClickStatus) => void;
   hideStoryBox: () => void;
 }
 
@@ -85,7 +85,8 @@ export default function StatusContextProvider({
   const showInfoBox = (statusData: ClickStatus) => setInfoBox(statusData);
   const hideInfoBox = () => setInfoBox(null);
 
-  const showStoryBox = (statusData: ClickStatus) => setStoryBox(statusData);
+  const showStoryBox = (statusData: StoryClickStatus) =>
+    setStoryBox(statusData);
   const hideStoryBox = () => setStoryBox(null);
 
   return (

@@ -8,6 +8,7 @@ type Draw = {
 type MapType = z.infer<typeof mapSchema>;
 type GlobalAreaType = z.infer<typeof GlobalAreasSchema>;
 type GlobalObjectType = z.infer<typeof GlobalObjectsSchema>;
+type GlobalStoryType = z.infer<typeof storyObjectsSchema>;
 
 // For passing Map data to MapModule
 interface MapModuleProps {
@@ -45,6 +46,13 @@ type DrawMapObject = {
 // For status response
 type ClickStatus = {
   title: string;
+  type: string;
+  id: number;
+};
+
+type StoryClickStatus = {
+  title: string;
+  description: string;
   type: string;
   id: number;
 };

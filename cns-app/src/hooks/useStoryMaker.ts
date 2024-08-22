@@ -4,6 +4,7 @@ import {
   checkClick,
   checkHover,
   checkObjectClick,
+  checkStoryNodeClick,
 } from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
 
@@ -135,6 +136,25 @@ export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
         const { title, id, type } = clickedObjects[0];
         statusCtx.showInfoBox({
           title: title,
+          id: id,
+          type: type,
+        });
+      }
+
+      // Check stories
+      const clickedStoryNodes = checkStoryNodeClick(
+        e,
+        canvas,
+        story,
+        ctx,
+        cw,
+        ch
+      );
+      if (clickedStoryNodes && !(clickedStoryNodes.length == 0)) {
+        const { title, id, type, description } = clickedStoryNodes[0];
+        statusCtx.showStoryBox({
+          title: title,
+          description: description,
           id: id,
           type: type,
         });
