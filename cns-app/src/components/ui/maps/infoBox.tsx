@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { StatusContext } from "@/store/statusContext";
+import Link from "next/link";
 
 interface StatusProps {
   title: string;
@@ -9,6 +10,7 @@ interface StatusProps {
     id: number;
     title: string;
     description: string;
+    wikiId: number;
   }>;
 }
 
@@ -26,6 +28,9 @@ function InfoBox(props: StatusProps) {
         <div>
           <h4>{activeInfoData.title}</h4>
           <p>{activeInfoData.description}</p>
+          {activeInfoData.wikiId ? (
+            <Link href={`/wiki/${activeInfoData.wikiId}`}>Wikiへ</Link>
+          ) : null}
         </div>
       ) : (
         <p>No matching data found.</p>
