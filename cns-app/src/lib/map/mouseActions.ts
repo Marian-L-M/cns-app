@@ -47,6 +47,7 @@ export function checkClick(
   const r = canvas.getBoundingClientRect();
   const mouseX = event.clientX - r.x;
   const mouseY = event.clientY - r.y;
+  console.log("MouseX: ", mouseX, "MouseY: ", mouseY);
 
   const clickedArea: ClickStatus[] = [];
 

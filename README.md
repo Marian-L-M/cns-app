@@ -12,3 +12,8 @@ Clouds and Spaceships APP - NextJS + Typescript
     - Character
     - Journey
     - Event
+
+# Map Module To Do:
+
+- Draw Areas
+- Draw Icons
