@@ -141,6 +141,7 @@ model Wiki {
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(255)
   description String @db.Text
+  wikiText    String @db.Text @default("")
   infobox     Json?
   objects     GlobalObject[]
   area        GlobalArea[]
