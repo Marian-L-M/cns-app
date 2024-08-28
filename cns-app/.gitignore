@@ -38,3 +38,5 @@ next-env.d.ts
 
 # Test data
 /data/globalAreas.json
+/data/sample.json
+/data/stories.json

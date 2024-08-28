@@ -12,7 +12,6 @@ import { Input } from "../ui/input";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { Button } from "../ui/button";
-import Image from "next/image";
 
 type WikiFormData = z.infer<typeof wikiSchema>;
 
@@ -39,7 +38,7 @@ const WikiForm = ({ wiki }: Props) => {
         await axios.post(`/api/wiki`, values);
       }
       setIsSubmitting(false);
-      router.push("/maps");
+      router.push("/wiki");
       router.refresh();
     } catch (error) {
       setError("Unknown error occurred");

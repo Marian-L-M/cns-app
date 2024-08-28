@@ -80,3 +80,34 @@ interface storyNode {
   x: number;
   y: number;
 }
+
+// For Wiki Infobox
+type ImageType = {
+  id: number;
+  type: "image";
+  url: string;
+  title: string;
+  caption: string;
+};
+
+type BarType = {
+  id: number;
+  key: string;
+  content: string;
+};
+
+type CollectionType = {
+  id: number;
+  type: "collection";
+  title: string;
+  bars: BarType[];
+};
+
+type TextType = {
+  id: number;
+  type: "text";
+  title: string;
+  content: string;
+};
+
+type InfoBoxItem = ImageType | CollectionType | TextType;
