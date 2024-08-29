@@ -12,13 +12,24 @@ import { Input } from "../ui/input";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { Button } from "../ui/button";
+import WikiInfoboxFormField from "./WikiInfoboxForm";
 
 type WikiFormData = z.infer<typeof wikiSchema>;
 
 interface Props {
   wiki?: Wiki;
 }
+// var json = [
+//   { name: 'Bob the dog' },
+//   { name: 'Claudine the cat' },
+// ] as Prisma.JsonArray
 
+// const createUser = await prisma.user.create({
+//   data: {
+//     email: 'birgitte@prisma.io',
+//     extendedPetsData: json,
+//   },
+// })
 const WikiForm = ({ wiki }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -79,7 +90,21 @@ const WikiForm = ({ wiki }: Props) => {
               </FormItem>
             )}
           />
-          {/* To do 240826: Add infobox json field submission component */}
+          <FormField
+            control={form.control}
+            name="infobox"
+            render={() => (
+              <FormItem>
+                <FormLabel>Infobox</FormLabel>
+                <FormControl>
+                  <WikiInfoboxFormField
+                    control={form.control}
+                    register={form.register}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <Controller
             name="wikiText"
             defaultValue={wiki?.wikiText}

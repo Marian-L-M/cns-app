@@ -11,6 +11,7 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
   const collections = infoBox.filter(
     (item) => item?.type === "collection"
   ) as CollectionType[];
+  const texts = infoBox.filter((item) => item?.type === "text") as TextType[];
 
   //   useEffect(() => {
 
@@ -27,31 +28,48 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
   //   }, []);
 
   return (
-    <div className="col-span-1" id="info-box">
-      <h2>Infobox</h2>
-      <div id="image-container">
-        {/* 240828 To do: Get proper samples images to prevent  Next from breaking */}
-        {/* {images.map((image) => (
+    <div
+      className="col-span-3 flex flex-col  gap-4 p-4 pb-20 bg-slate-100"
+      id="info-box"
+    >
+      <h2 className="bg-slate-300 text-center">Infobox</h2>
+      <div
+        className="flex flex-col items-center gap-4 mb-4"
+        id="image-container"
+      >
+        {images.map((image) => (
           <Image
             key={"image-" + image.id}
-            width={240}
-            height={240}
+            width={280}
+            height={280}
             src={image.url}
             alt={image.title}
           />
-        ))} */}
+        ))}
       </div>
-      {collections.map((collection) => (
-        <dl key={"collection-" + collection.id}>
-          <h3 className="bg-slate-200">{collection.title}</h3>
-          {collection.bars.map((bar) => (
-            <div key={"bar-" + bar.id} className="flex gap-1 ">
-              <dt>{bar.key}</dt>
-              <dd>{bar.content}</dd>
-            </div>
-          ))}
-        </dl>
-      ))}
+      <div id="collection-container">
+        {collections.map((collection) => (
+          <dl key={"collection-" + collection.id}>
+            <h3 className="bg-slate-300 text-center mb-2">
+              {collection.title}
+            </h3>
+            {collection.bars.map((bar) => (
+              <div key={"bar-" + bar.id} className="flex gap-1">
+                <dt className="flex-1">{bar.key}</dt>
+                <dd className="flex-1">{bar.content}</dd>
+              </div>
+            ))}
+          </dl>
+        ))}
+      </div>
+      <div className="" id="text-container">
+        {texts.map((text) => (
+          <div key={"text-" + text.id}>
+            <h3 className="bg-slate-300 text-center mb-2">{text.title}</h3>
+            <p>{text.content}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

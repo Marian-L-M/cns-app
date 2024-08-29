@@ -19,12 +19,12 @@ const WikiPage = async ({ params }: WikiPageProps) => {
 
   return (
     <div className="flex flex-col gap-20 w-5/6 max-w-screen-xl mt-10">
-      <div className="grid gap-4 grid-cols-4" id="intro-content">
-        <div className="content-col col-span-3">
+      <div className="grid gap-4 grid-cols-8" id="intro-content">
+        <div className="content-col col-span-5">
           <h1>{wiki.title}</h1>
           <p>{wiki.description}</p>
         </div>
-        <InfoBox infoBox={infoBox} />
+        {infoBox && <InfoBox infoBox={infoBox} />}
       </div>
       <div className="flex flex-col gap-10 " id="main-content">
         <ReactMarkDown>{wiki.wikiText}</ReactMarkDown>

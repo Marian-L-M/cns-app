@@ -4,4 +4,7 @@ export const wikiSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   description: z.string().min(1, "Description is required").max(65535),
   wikiText: z.string().min(1, "Please write a meaningful article").max(65535),
+  // infobox :
 });
+
+//240829 -> add jsonn schema for infobox
