@@ -1,5 +1,6 @@
 "use client";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { z } from "zod";
 import { wikiSchema } from "@/ValidationSchemas/wiki";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Wiki } from "@prisma/client";
@@ -7,29 +8,18 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 import { Input } from "../ui/input";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { Button } from "../ui/button";
 import WikiInfoboxFormField from "./WikiInfoboxForm";
 
-type WikiFormData = z.infer<typeof wikiSchema>;
+export type WikiFormData = z.infer<typeof wikiSchema>;
 
 interface Props {
   wiki?: Wiki;
 }
-// var json = [
-//   { name: 'Bob the dog' },
-//   { name: 'Claudine the cat' },
-// ] as Prisma.JsonArray
 
-// const createUser = await prisma.user.create({
-//   data: {
-//     email: 'birgitte@prisma.io',
-//     extendedPetsData: json,
-//   },
-// })
 const WikiForm = ({ wiki }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -39,7 +29,7 @@ const WikiForm = ({ wiki }: Props) => {
     resolver: zodResolver(wikiSchema),
   });
 
-  async function onSubmit(values: z.infer<typeof wikiSchema>) {
+  async function onSubmit(values: WikiFormData) {
     try {
       setIsSubmitting(true);
       setError("");
