@@ -188,6 +188,8 @@
 
 import { useFieldArray } from "react-hook-form";
 import WikiInfoBoxCollection from "./WikiInfoBoxCollection";
+import { Button } from "../ui/button";
+import { Trash2 } from "lucide-react";
 
 let renderCount = 0;
 
@@ -213,17 +215,22 @@ const WikiInfoboxFormField = ({
   renderCount++;
 
   return (
-    <div>
-      <div className="border border-sky-500">
-        <h3>Infobox contents here</h3>
+    <div className="flex flex-col gap-4">
+      <div className="border border-sky-500 p-4">
+        <h3 className="mb-4">Infobox contents here</h3>
         {fields.map((item, index) => {
           return (
-            <div key={item.id}>
-              <input {...register(`test.${index}.name`)} />
-
-              <button type="button" onClick={() => remove(index)}>
-                Delete
-              </button>
+            <div key={item.id} className="flex flex-col gap-4 p-4">
+              <div className="flex gap-4">
+                <input {...register(`test.${index}.name`)} />
+                <Button
+                  variant={"outline"}
+                  type="button"
+                  onClick={() => remove(index)}
+                >
+                  <Trash2 />
+                </Button>
+              </div>
               <WikiInfoBoxCollection
                 nestIndex={index}
                 {...{ control, register }}
@@ -233,17 +240,17 @@ const WikiInfoboxFormField = ({
         })}
       </div>
 
-      <section className="border border-red-500 flex flex-col gap-2">
-        <button
+      <section className="flex gap-2">
+        <Button
           type="button"
           onClick={() => {
             append({ name: "append" });
           }}
         >
           append (Non nested)
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={() => {
             setValue("test", [
@@ -256,18 +263,18 @@ const WikiInfoboxFormField = ({
           }}
         >
           Append Nested (Append collection)
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={() => {
             prepend({ name: "append" });
           }}
         >
           prepend (Non nested)
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
           onClick={() => {
             setValue("test", [
@@ -280,7 +287,7 @@ const WikiInfoboxFormField = ({
           }}
         >
           prepend Nested (Append collection)
-        </button>
+        </Button>
       </section>
 
       <span className="counter">Render Count: {renderCount}</span>

@@ -1,4 +1,6 @@
 import { useFieldArray } from "react-hook-form";
+import { Button } from "../ui/button";
+import { Trash2 } from "lucide-react";
 
 // Nested structure reference:
 // https://codesandbox.io/p/sandbox/react-hook-form-usefieldarray-nested-arrays-m8w6j?file=%2Fsrc%2FnestedFieldArray.js%3A1%2C1-47%2C1
@@ -10,7 +12,7 @@ const WikiInfoBoxCollection = ({ nestIndex, control, register }: any) => {
   });
 
   return (
-    <div>
+    <div className="border border-sky-200 p-2">
       {fields.map((item, k) => {
         return (
           <div key={item.id} style={{ marginLeft: 20 }}>
@@ -23,14 +25,14 @@ const WikiInfoBoxCollection = ({ nestIndex, control, register }: any) => {
             />
 
             <input {...register(`test.${nestIndex}.nestedArray.${k}.field2`)} />
-            <button type="button" onClick={() => remove(k)}>
-              Delete Nested
-            </button>
+            <Button variant={"outline"} type="button" onClick={() => remove(k)}>
+              <Trash2 />
+            </Button>
           </div>
         );
       })}
 
-      <button
+      <Button
         type="button"
         onClick={() =>
           append({
@@ -40,9 +42,7 @@ const WikiInfoBoxCollection = ({ nestIndex, control, register }: any) => {
         }
       >
         Append Nested
-      </button>
-
-      <hr />
+      </Button>
     </div>
   );
 };
