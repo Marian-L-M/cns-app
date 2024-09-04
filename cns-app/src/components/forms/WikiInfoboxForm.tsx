@@ -1,297 +1,188 @@
-// import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
-// import { WikiFormData } from "./WikiForm";
-// import { Trash2, Plus } from "lucide-react";
-// import { Button } from "../ui/button";
-// import { Input } from "../ui/input";
+import React from "react";
+import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
+import { WikiFormData } from "./WikiForm";
+import { Trash2, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-// // Later unify with typings -> names are clashing
-// interface ImageItem {
-//   id: string;
-//   type: "image";
-//   url: string;
-//   title: string;
-//   caption: string;
-// }
+interface InfoboxItem {
+  id: string;
+  type: "image" | "collection" | "text";
+  url?: string;
+  title: string;
+  caption?: string;
+  content?: string;
+  bars?: { id: string; key: string; value: string }[];
+}
 
-// interface CollectionItem {
-//   id: string;
-//   type: "collection";
-//   title: string;
-//   bars: { key: string; value: string }[];
-// }
+interface InfoboxFormFieldProps {
+  control: Control<WikiFormData>;
+  register: UseFormRegister<WikiFormData>;
+}
 
-// interface TextItem {
-//   id: string;
-//   type: "text";
-//   title: string;
-//   content: string;
-// }
-
-// type InfoboxItem = ImageItem | CollectionItem | TextItem;
-
-// interface InfoboxFormFieldProps {
-//   control: Control<WikiFormData>;
-//   register: UseFormRegister<WikiFormData>;
-// }
-
-// const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
-//   control,
-//   register,
-// }) => {
-//   const { fields, append, remove } = useFieldArray({
-//     control,
-//     name: "infobox", // Name of the JSON field in the form
-//   });
-
-//   const addField = (type: InfoboxItem["type"]) => {
-//     switch (type) {
-//       case "image":
-//         append({
-//           id: Date.now().toString(),
-//           url: "",
-//           type: "image",
-//           title: "",
-//           caption: "",
-//         });
-//         break;
-//       case "collection":
-//         append({
-//           id: Date.now().toString(),
-//           type: "collection",
-//           title: "",
-//           bars: [{ id: Date.now().toString(), key: "", value: "" }],
-//         });
-//         break;
-//       case "text":
-//         append({
-//           id: Date.now().toString(),
-//           type: "text",
-//           title: "",
-//           content: "",
-//         });
-//         break;
-//       default:
-//         break;
-//     }
-//   };
-
-//   // 240830 Todo : Add a button to add & remove a new bar
-//   // 240830 Todo: weird auto submission bug when adding text field or completing all inputs?
-//   // 240830 Collection -> bar -> value not displaying, I suspect its a naming issue somewhere
-//   // 240902 Issue: Form rerenders when selecting an input field
-
-//   return (
-//     <div>
-//       <div className="flex space-x-4" id="infobox-control">
-//         <Button onClick={() => addField("image")}>Add Image</Button>
-//         <Button onClick={() => addField("collection")}>Add Collection</Button>
-//         <Button onClick={() => addField("text")}>Add Text</Button>
-//       </div>
-//       <div className="flex flex-col gap-2" id="infobox-list">
-//         {fields.map((field, index) => (
-//           <div key={field.id} className="border p-4 my-2 flex flex-col gap-4">
-//             <Button onClick={() => remove(index)} className="p-1 w-8">
-//               <Trash2 />
-//             </Button>
-//             {/* Consider if any issues could arise from the hidden fields */}
-//             <Input
-//               {...register(`infobox.${index}.id`)}
-//               className="invisible absolute"
-//               hidden
-//             />
-//             <Input
-//               {...register(`infobox.${index}.type`)}
-//               className="invisible absolute"
-//               hidden
-//             />
-//             <div className="flex flex-col gap-2">
-//               {field.type === "image" && (
-//                 <div className="flex flex-col gap-2">
-//                   <Input
-//                     {...register(`infobox.${index}.url`)}
-//                     placeholder="Image URL"
-//                   />
-//                   <Input
-//                     {...register(`infobox.${index}.title`)}
-//                     placeholder="Title"
-//                   />
-//                   <Input
-//                     {...register(`infobox.${index}.caption`)}
-//                     placeholder="Caption"
-//                   />
-//                 </div>
-//               )}
-//               {field.type === "collection" && (
-//                 <div className="flex flex-col gap-2">
-//                   <Input
-//                     {...register(`infobox.${index}.title`)}
-//                     placeholder="Collection Title"
-//                   />
-//                   {field.bars?.map((bar, barIndex) => (
-//                     <div key={barIndex} className="flex space-x-2">
-//                       <Input
-//                         {...register(`infobox.${index}.bars.${barIndex}.key`)}
-//                         placeholder="Bar Key"
-//                       />
-//                       <Input
-//                         {...register(`infobox.${index}.bars.${barIndex}.value`)}
-//                         placeholder="Bar Value"
-//                       />
-//                       <Button
-//                         onClick={
-//                           () => remove(index, barIndex) // Removing specific bar
-//                         }
-//                         className="p-1 w-8"
-//                       >
-//                         <Trash2 />
-//                       </Button>
-//                     </div>
-//                   ))}
-//                   <Button
-//                     onClick={() =>
-//                       append(
-//                         {
-//                           id: Date.now().toString(),
-//                           key: "",
-//                           value: "",
-//                         },
-//                         `infobox.${index}.bars`
-//                       )
-//                     }
-//                     className="mt-2"
-//                   >
-//                     <Plus /> Add Bar
-//                   </Button>
-//                 </div>
-//               )}
-//               {field.type === "text" && (
-//                 <div className="flex flex-col gap-2">
-//                   <Input
-//                     {...register(`infobox.${index}.title`)}
-//                     placeholder="Text Title"
-//                   />
-//                   <Input
-//                     {...register(`infobox.${index}.content`)}
-//                     placeholder="Text"
-//                   />
-//                 </div>
-//               )}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default WikiInfoboxFormField;
-
-import { useFieldArray } from "react-hook-form";
-import WikiInfoBoxCollection from "./WikiInfoBoxCollection";
-import { Button } from "../ui/button";
-import { Trash2 } from "lucide-react";
-
-let renderCount = 0;
-
-// const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
-//   control,
-//   register,
-// }) => {
-//   const { fields, append, remove } = useFieldArray({
-//     control,
-//     name: "infobox", // Name of the JSON field in the form
-//   });
-const WikiInfoboxFormField = ({
+const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
   control,
   register,
-  setValue,
-  getValues,
-}: any) => {
-  const { fields, append, remove, prepend } = useFieldArray({
+}) => {
+  const { fields, append, remove } = useFieldArray({
     control,
-    name: "test",
+    name: "infobox",
   });
 
-  renderCount++;
+  const addField = (type: InfoboxItem["type"]) => {
+    const newItem: InfoboxItem = {
+      id: Date.now().toString(),
+      type,
+      title: "",
+    };
+
+    switch (type) {
+      case "image":
+        newItem.url = "";
+        newItem.caption = "";
+        break;
+      case "collection":
+        newItem.bars = [{ id: Date.now().toString(), key: "", value: "" }];
+        break;
+      case "text":
+        newItem.content = "";
+        break;
+    }
+
+    append(newItem);
+  };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="border border-sky-500 p-4">
-        <h3 className="mb-4">Infobox contents here</h3>
-        {fields.map((item, index) => {
-          return (
-            <div key={item.id} className="flex flex-col gap-4 p-4">
-              <div className="flex gap-4">
-                <input {...register(`test.${index}.name`)} />
+    <div>
+      <div className="flex space-x-4" id="infobox-control">
+        <Button type="button" onClick={() => addField("image")}>
+          Add Image
+        </Button>
+        <Button type="button" onClick={() => addField("collection")}>
+          Add Collection
+        </Button>
+        <Button type="button" onClick={() => addField("text")}>
+          Add Text
+        </Button>
+      </div>
+      <div className="flex flex-col gap-2" id="infobox-list">
+        {fields.map((field, index) => (
+          <InfoboxItem
+            key={field.id}
+            field={field}
+            index={index}
+            register={register}
+            control={control}
+            remove={remove}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const InfoboxItem: React.FC<{
+  field: InfoboxItem;
+  index: number;
+  register: UseFormRegister<WikiFormData>;
+  control: Control<WikiFormData>;
+  remove: (index: number) => void;
+}> = ({ field, index, register, control, remove }) => {
+  const {
+    fields: bars,
+    append: appendBar,
+    remove: removeBar,
+  } = useFieldArray({
+    control,
+    name: `infobox.${index}.bars`,
+  });
+
+  return (
+    <div className="border p-4 my-2 flex flex-col gap-4">
+      <Button type="button" onClick={() => remove(index)} className="p-1 w-8">
+        <Trash2 />
+      </Button>
+      <Input
+        {...register(`infobox.${index}.id`)}
+        className="invisible absolute"
+        hidden
+      />
+      <Input
+        {...register(`infobox.${index}.type`)}
+        className="invisible absolute"
+        hidden
+      />
+      <div className="flex flex-col gap-2">
+        {field.type === "image" && (
+          <>
+            <p>Image group</p>
+            <Input
+              {...register(`infobox.${index}.url`)}
+              placeholder="Image URL"
+            />
+            <Input
+              {...register(`infobox.${index}.title`)}
+              placeholder="Title"
+            />
+            <Input
+              {...register(`infobox.${index}.caption`)}
+              placeholder="Caption"
+            />
+          </>
+        )}
+        {field.type === "collection" && (
+          <>
+            <Input
+              {...register(`infobox.${index}.title`)}
+              placeholder="Collection Title"
+            />
+            {bars?.map((bar, barIndex) => (
+              <div key={bar.id} className="flex space-x-2">
+                <p>Bar Group</p>
+                <Input
+                  {...register(`infobox.${index}.bars.${barIndex}.key`)}
+                  placeholder="Bar Key"
+                />
+                <Input
+                  {...register(`infobox.${index}.bars.${barIndex}.value`)}
+                  placeholder="Bar Value"
+                />
                 <Button
-                  variant={"outline"}
                   type="button"
-                  onClick={() => remove(index)}
+                  onClick={() => removeBar(barIndex)}
+                  className="p-1 w-8"
                 >
                   <Trash2 />
                 </Button>
               </div>
-              <WikiInfoBoxCollection
-                nestIndex={index}
-                {...{ control, register }}
-              />
-            </div>
-          );
-        })}
+            ))}
+            <Button
+              type="button"
+              onClick={() =>
+                appendBar({ id: Date.now().toString(), key: "", value: "" })
+              }
+              className="mt-2"
+            >
+              <Plus /> Add Bar
+            </Button>
+          </>
+        )}
+        {field.type === "text" && (
+          <>
+            <p>Text group</p>
+            <Input
+              {...register(`infobox.${index}.title`)}
+              placeholder="Text Title"
+            />
+            <Input
+              {...register(`infobox.${index}.content`)}
+              placeholder="Text"
+            />
+          </>
+        )}
       </div>
-
-      <section className="flex gap-2">
-        <Button
-          type="button"
-          onClick={() => {
-            append({ name: "append" });
-          }}
-        >
-          append (Non nested)
-        </Button>
-
-        <Button
-          type="button"
-          onClick={() => {
-            setValue("test", [
-              ...(getValues().test || []),
-              {
-                name: "append",
-                nestedArray: [{ field1: "append", field2: "append" }],
-              },
-            ]);
-          }}
-        >
-          Append Nested (Append collection)
-        </Button>
-
-        <Button
-          type="button"
-          onClick={() => {
-            prepend({ name: "append" });
-          }}
-        >
-          prepend (Non nested)
-        </Button>
-
-        <Button
-          type="button"
-          onClick={() => {
-            setValue("test", [
-              {
-                name: "append",
-                nestedArray: [{ field1: "Prepend", field2: "Prepend" }],
-              },
-              ...(getValues().test || []),
-            ]);
-          }}
-        >
-          prepend Nested (Append collection)
-        </Button>
-      </section>
-
-      <span className="counter">Render Count: {renderCount}</span>
     </div>
   );
 };
+
 export default WikiInfoboxFormField;

@@ -19,18 +19,6 @@ export type WikiFormData = z.infer<typeof wikiSchema>;
 interface Props {
   wiki?: Wiki;
 }
-const defaultValues = {
-  test: [
-    {
-      name: "useFieldArray1",
-      nestedArray: [{ field1: "field1", field2: "field2" }],
-    },
-    {
-      name: "useFieldArray2",
-      nestedArray: [{ field1: "field1", field2: "field2" }],
-    },
-  ],
-};
 
 const WikiForm = ({ wiki }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,10 +27,6 @@ const WikiForm = ({ wiki }: Props) => {
 
   const form = useForm<WikiFormData>({
     resolver: zodResolver(wikiSchema),
-  });
-
-  const { control, register, getValues, reset, setValue } = useForm({
-    defaultValues,
   });
 
   async function onSubmit(values: WikiFormData) {
@@ -96,7 +80,7 @@ const WikiForm = ({ wiki }: Props) => {
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
             name="infobox"
             render={() => (
@@ -110,16 +94,6 @@ const WikiForm = ({ wiki }: Props) => {
                 </FormControl>
               </FormItem>
             )}
-          /> */}
-          <WikiInfoboxFormField
-            {...{
-              control,
-              register,
-              defaultValues,
-              getValues,
-              setValue,
-              error,
-            }}
           />
           <Controller
             name="wikiText"
@@ -129,9 +103,6 @@ const WikiForm = ({ wiki }: Props) => {
               <SimpleMDE placeholder="Wiki Text" {...field} />
             )}
           />
-          <button type="button" onClick={() => reset(defaultValues)}>
-            Reset
-          </button>
           <Button type="submit" disabled={isSubmitting}>
             {wiki ? "Update Wiki" : "Submit Wiki"}
           </Button>
