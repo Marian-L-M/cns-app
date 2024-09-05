@@ -48,64 +48,71 @@ const WikiForm = ({ wiki }: Props) => {
   }
 
   return (
-    <div className="rounded-md border w-full p-4">
+    <div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
+          className="flex flex-col gap-20 w-5/6 max-w-screen-xl mt-10"
         >
-          <FormField
-            control={form.control}
-            name="title"
-            defaultValue={wiki?.title}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Wiki Title..." {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            defaultValue={wiki?.description}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input placeholder="Wiki description" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="infobox"
-            render={() => (
-              <FormItem>
-                <FormLabel>Infobox</FormLabel>
-                <FormControl>
-                  <WikiInfoboxFormField
-                    control={form.control}
-                    register={form.register}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <Controller
-            name="wikiText"
-            defaultValue={wiki?.wikiText}
-            control={form.control}
-            render={({ field }) => (
-              <SimpleMDE placeholder="Wiki Text" {...field} />
-            )}
-          />
-          <Button type="submit" disabled={isSubmitting}>
-            {wiki ? "Update Wiki" : "Submit Wiki"}
-          </Button>
+          <div className="grid gap-4 grid-cols-8">
+            <div className="content-col col-span-5">
+              <FormField
+                control={form.control}
+                name="title"
+                defaultValue={wiki?.title}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Wiki Title..." {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                defaultValue={wiki?.description}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Wiki description" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="infobox"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Infobox</FormLabel>
+                  <FormControl>
+                    <WikiInfoboxFormField
+                      control={form.control}
+                      register={form.register}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex flex-col gap-4 mb-12" id="main-content">
+            <h4 className="font-bold">Wiki Body</h4>
+            <Controller
+              name="wikiText"
+              defaultValue={wiki?.wikiText}
+              control={form.control}
+              render={({ field }) => (
+                <SimpleMDE placeholder="Wiki Text" {...field} />
+              )}
+            />
+            <Button type="submit" disabled={isSubmitting}>
+              {wiki ? "Update Wiki" : "Submit Wiki"}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

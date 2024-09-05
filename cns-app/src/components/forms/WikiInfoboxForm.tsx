@@ -51,31 +51,73 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
 
     append(newItem);
   };
-
   return (
-    <div>
-      <div className="flex space-x-4" id="infobox-control">
-        <Button type="button" onClick={() => addField("image")}>
-          Add Image
-        </Button>
-        <Button type="button" onClick={() => addField("collection")}>
-          Add Collection
-        </Button>
-        <Button type="button" onClick={() => addField("text")}>
-          Add Text
-        </Button>
-      </div>
-      <div className="flex flex-col gap-2" id="infobox-list">
-        {fields.map((field, index) => (
-          <InfoboxItem
-            key={field.id}
-            field={field}
-            index={index}
-            register={register}
-            control={control}
-            remove={remove}
-          />
-        ))}
+    <div
+      className="col-span-3 flex flex-col  gap-4 p-4 pb-20 bg-slate-100"
+      id="info-box"
+    >
+      <h2 className="bg-slate-300 text-center">Infobox</h2>
+      <div className="flex flex-col gap-4" id="infobox-control">
+        <div
+          className="flex flex-col items-center gap-4 mb-4"
+          id="image-container"
+        >
+          <Button type="button" onClick={() => addField("image")}>
+            Add Image
+          </Button>
+          {fields
+            .filter((field) => {
+              return field.type === "image";
+            })
+            .map((field, index) => (
+              <InfoboxItem
+                key={field.id}
+                field={field}
+                index={index}
+                register={register}
+                control={control}
+                remove={remove}
+              />
+            ))}
+        </div>
+        <div id="collection-container">
+          <Button type="button" onClick={() => addField("collection")}>
+            Add Collection
+          </Button>
+          {fields
+            .filter((field) => {
+              return field.type === "collection";
+            })
+            .map((field, index) => (
+              <InfoboxItem
+                key={field.id}
+                field={field}
+                index={index}
+                register={register}
+                control={control}
+                remove={remove}
+              />
+            ))}
+        </div>
+        <div className="" id="text-container">
+          <Button type="button" onClick={() => addField("text")}>
+            Add Text
+          </Button>
+          {fields
+            .filter((field) => {
+              return field.type === "text";
+            })
+            .map((field, index) => (
+              <InfoboxItem
+                key={field.id}
+                field={field}
+                index={index}
+                register={register}
+                control={control}
+                remove={remove}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );
