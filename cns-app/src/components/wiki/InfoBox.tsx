@@ -28,10 +28,7 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
   //   }, []);
 
   return (
-    <div
-      className="col-span-3 flex flex-col  gap-4 p-4 pb-20 bg-slate-100"
-      id="info-box"
-    >
+    <div id="info-box">
       <h2 className="bg-slate-300 text-center">Infobox</h2>
       <div
         className="flex flex-col items-center gap-4 mb-4"

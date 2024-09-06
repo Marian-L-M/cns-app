@@ -48,12 +48,10 @@ const WikiForm = ({ wiki }: Props) => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-20 w-5/6 max-w-screen-xl mt-10">
+      <h1 className="text-3xl">Add new Wiki entry</h1>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-20 w-5/6 max-w-screen-xl mt-10"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-4 grid-cols-8">
             <div className="content-col col-span-5">
               <FormField
@@ -83,21 +81,26 @@ const WikiForm = ({ wiki }: Props) => {
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="infobox"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Infobox</FormLabel>
-                  <FormControl>
-                    <WikiInfoboxFormField
-                      control={form.control}
-                      register={form.register}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <div
+              className="col-span-3 flex flex-col  gap-4 p-4 pb-20 bg-slate-100"
+              id="info-box"
+            >
+              <FormField
+                control={form.control}
+                name="infobox"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Infobox</FormLabel>
+                    <FormControl>
+                      <WikiInfoboxFormField
+                        control={form.control}
+                        register={form.register}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-4 mb-12" id="main-content">
             <h4 className="font-bold">Wiki Body</h4>

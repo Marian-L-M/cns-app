@@ -1,8 +1,8 @@
 import React from "react";
 import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
 import { WikiFormData } from "./WikiForm";
-import { Trash2, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Trash2, Plus, ImagePlus, ListPlus, SquarePlus } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface InfoboxItem {
@@ -52,19 +52,13 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
     append(newItem);
   };
   return (
-    <div
-      className="col-span-3 flex flex-col  gap-4 p-4 pb-20 bg-slate-100"
-      id="info-box"
-    >
+    <div className="flex flex-col  gap-4 p-4 pb-20 bg-slate-100" id="info-box">
       <h2 className="bg-slate-300 text-center">Infobox</h2>
       <div className="flex flex-col gap-4" id="infobox-control">
         <div
-          className="flex flex-col items-center gap-4 mb-4"
+          className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4"
           id="image-container"
         >
-          <Button type="button" onClick={() => addField("image")}>
-            Add Image
-          </Button>
           {fields
             .filter((field) => {
               return field.type === "image";
@@ -79,11 +73,22 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
                 remove={remove}
               />
             ))}
-        </div>
-        <div id="collection-container">
-          <Button type="button" onClick={() => addField("collection")}>
-            Add Collection
+          <Button
+            className={`${buttonVariants({
+              variant: "secondary",
+            })} flex gap-2 text-xs w-2/4 block"`}
+            type="button"
+            onClick={() => addField("image")}
+          >
+            <ImagePlus />
+            Image
           </Button>
+        </div>
+        <hr />
+        <div
+          className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4"
+          id="collection-container"
+        >
           {fields
             .filter((field) => {
               return field.type === "collection";
@@ -98,11 +103,20 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
                 remove={remove}
               />
             ))}
-        </div>
-        <div className="" id="text-container">
-          <Button type="button" onClick={() => addField("text")}>
-            Add Text
+          <Button
+            className={`${buttonVariants({
+              variant: "secondary",
+            })} flex gap-2 text-xs w-2/4 block"`}
+            type="button"
+            onClick={() => addField("collection")}
+          >
+            <ListPlus /> Collection
           </Button>
+        </div>
+        <div
+          className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4"
+          id="text-container"
+        >
           {fields
             .filter((field) => {
               return field.type === "text";
@@ -117,6 +131,16 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
                 remove={remove}
               />
             ))}
+          <Button
+            className={`${buttonVariants({
+              variant: "secondary",
+            })} flex gap-2 text-xs w-2/4 block"`}
+            type="button"
+            onClick={() => addField("text")}
+          >
+            <SquarePlus />
+            Text
+          </Button>
         </div>
       </div>
     </div>
@@ -140,10 +164,17 @@ const InfoboxItem: React.FC<{
   });
 
   return (
-    <div className="border p-4 my-2 flex flex-col gap-4">
-      <Button type="button" onClick={() => remove(index)} className="p-1 w-8">
-        <Trash2 />
-      </Button>
+    <div className="w-full border p-4 my-2 flex flex-col gap-4">
+      <div className="flex justify-between items-center" id="meta-bar">
+        <p className="capitalize">{field.type}</p>
+        <Button
+          type="button"
+          onClick={() => remove(index)}
+          className={`${buttonVariants({ variant: "destructive" })} p-1 w-8`}
+        >
+          <Trash2 />
+        </Button>
+      </div>
       <Input
         {...register(`infobox.${index}.id`)}
         className="invisible absolute"
@@ -157,7 +188,6 @@ const InfoboxItem: React.FC<{
       <div className="flex flex-col gap-2">
         {field.type === "image" && (
           <>
-            <p>Image group</p>
             <Input
               {...register(`infobox.${index}.url`)}
               placeholder="Image URL"
@@ -180,7 +210,6 @@ const InfoboxItem: React.FC<{
             />
             {bars?.map((bar, barIndex) => (
               <div key={bar.id} className="flex space-x-2">
-                <p>Bar Group</p>
                 <Input
                   {...register(`infobox.${index}.bars.${barIndex}.key`)}
                   placeholder="Bar Key"
@@ -192,7 +221,9 @@ const InfoboxItem: React.FC<{
                 <Button
                   type="button"
                   onClick={() => removeBar(barIndex)}
-                  className="p-1 w-8"
+                  className={`${buttonVariants({
+                    variant: "destructive",
+                  })} p-1 w-8`}
                 >
                   <Trash2 />
                 </Button>
@@ -203,15 +234,16 @@ const InfoboxItem: React.FC<{
               onClick={() =>
                 appendBar({ id: Date.now().toString(), key: "", value: "" })
               }
-              className="mt-2"
+              className={`${buttonVariants({
+                variant: "secondary",
+              })} flex gap-2 text-xs w-2/4"`}
             >
-              <Plus /> Add Bar
+              <Plus /> Bar
             </Button>
           </>
         )}
         {field.type === "text" && (
           <>
-            <p>Text group</p>
             <Input
               {...register(`infobox.${index}.title`)}
               placeholder="Text Title"
