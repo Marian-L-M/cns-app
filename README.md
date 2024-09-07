@@ -1,19 +1,35 @@
-# cns-app
+# 240907 To Do
 
-Clouds and Spaceships APP - NextJS + Typescript
+## General
 
-# Data Concept
+### Users
 
-- Entry is a collection of data
-  - Map Object
-    - Global Latitue & longitude for placing
-    - Places & Area objects
-  - Possible multiple story objects
-    - Character
-    - Journey
-    - Event
+- Create private routes for editing and commenting
+- Add editor role
 
-# Map Module To Do:
+## Dashboard
 
-- Draw Areas
-- Draw Icons
+- Create Dashboard display concept
+- Create admin dashboard to control what is displayed on dashboard
+- Create analytics
+
+## Stories
+
+- Work on UI
+- Add story body section below
+- Add story editor (Adding story item + json story points)
+
+## Maps
+
+- Add Map editor tool (adding areas by clicking on map)
+
+## Wiki
+
+- Wiki edit screen
+- Create Wiki Dashboard and Dashboard editing too
+- Make Wiki fields generative
+
+## Timelines & History
+
+- Create a timeline tool
+- Integrate with Wiki
