@@ -1,7 +1,11 @@
 "use client";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { z } from "zod";
-import { wikiSchema } from "@/ValidationSchemas/wiki";
+import {
+  barItemSchema,
+  infoBoxItemSchema,
+  wikiSchema,
+} from "@/ValidationSchemas/wiki";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Wiki } from "@prisma/client";
 import axios from "axios";
@@ -14,7 +18,11 @@ import "easymde/dist/easymde.min.css";
 import { Button } from "../ui/button";
 import WikiInfoboxFormField from "./WikiInfoboxForm";
 
-export type WikiFormData = z.infer<typeof wikiSchema>;
+type bar = z.infer<typeof barItemSchema>;
+type InfoboxItem = z.infer<typeof infoBoxItemSchema>;
+export type WikiFormData = z.infer<typeof wikiSchema> & {
+  infobox: InfoboxItem[];
+};
 
 interface Props {
   wiki?: Wiki;
@@ -25,8 +33,35 @@ const WikiForm = ({ wiki }: Props) => {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  const parseInfobox = (data: unknown): InfoboxItem[] => {
+    if (Array.isArray(data)) {
+      return data.map((item) => ({
+        id: item.id || "",
+        type: item.type as "image" | "collection" | "text",
+        title: item.title || "",
+        url: item.url,
+        caption: item.caption,
+        content: item.content,
+        bars: Array.isArray(item.bars)
+          ? item.bars.map((bar: bar) => ({
+              id: bar.id || "",
+              key: bar.key || "",
+              value: bar.value || "",
+            }))
+          : undefined,
+      }));
+    }
+    return [];
+  };
+
   const form = useForm<WikiFormData>({
     resolver: zodResolver(wikiSchema),
+    defaultValues: {
+      title: wiki?.title || "",
+      description: wiki?.description || "",
+      wikiText: wiki?.wikiText || "",
+      infobox: parseInfobox(wiki?.infobox),
+    },
   });
 
   async function onSubmit(values: WikiFormData) {

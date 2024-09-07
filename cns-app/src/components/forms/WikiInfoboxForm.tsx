@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
 import { WikiFormData } from "./WikiForm";
 import { Trash2, Plus, ImagePlus, ListPlus, SquarePlus } from "lucide-react";
