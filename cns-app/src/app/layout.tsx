@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import MainNav from "@/components/navigation/MainNav";
 import { ThemeProvider } from "@/components/theme-provider";
+import Sidebar from "@/components/navigation/Sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,12 +26,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <nav className="flex flex-col items-center border-b mb-5 px-5 py-3">
-            <div className="max-w-6xl w-full">
-              <MainNav />
+          <div className="flex w-screen h-screen" id="layout-wrapper">
+            <Sidebar />
+            <div className="main-column w-full h-screen overflow-scroll">
+              <nav className="flex flex-col items-center border-b mb-5 px-5 py-3">
+                <div className="max-w-6xl w-full">
+                  <MainNav />
+                </div>
+              </nav>
+              <main className="flex flex-col items-center">{children}</main>
             </div>
-          </nav>
-          <main className="flex flex-col items-center">{children}</main>
+          </div>
         </ThemeProvider>
       </body>
     </html>
