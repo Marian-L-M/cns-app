@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-const barItemSchema = z.object({
+export const barItemSchema = z.object({
   id: z.string().min(1, "Id is required").max(255),
   key: z.string().min(1, "Key is required").max(255),
   value: z.string().min(1, "Content is required").max(255),
 });
 
-const infoBoxItemSchema = z.object({
+export const infoBoxItemSchema = z.object({
   id: z.string().min(1, "Id is required").max(255),
   type: z.enum(["image", "collection", "text"]),
   title: z.string().max(255),

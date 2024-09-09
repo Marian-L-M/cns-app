@@ -4,6 +4,7 @@ import "./globals.css";
 import MainNav from "@/components/navigation/MainNav";
 import { ThemeProvider } from "@/components/theme-provider";
 import Sidebar from "@/components/navigation/Sidebar";
+import TopNav from "@/components/navigation/TopNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,11 +30,7 @@ export default function RootLayout({
           <div className="flex w-screen h-screen" id="layout-wrapper">
             <Sidebar />
             <div className="main-column w-full h-screen overflow-scroll">
-              <nav className="flex flex-col items-center border-b mb-5 px-5 py-3">
-                <div className="max-w-6xl w-full">
-                  <MainNav />
-                </div>
-              </nav>
+              <TopNav />
               <main className="flex flex-col items-center">{children}</main>
             </div>
           </div>

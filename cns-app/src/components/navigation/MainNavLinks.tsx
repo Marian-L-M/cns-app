@@ -4,30 +4,105 @@ import { usePathname } from "next/navigation";
 
 const MainNavLinks = () => {
   const links = [
-    { label: "Dashboard", href: "/" },
-    { label: "Stories", href: "/stories" },
-    { label: "Maps", href: "/maps" },
-    { label: "Wiki", href: "/wiki" },
-    { label: "Users", href: "/users" },
+    {
+      label: "Main Page",
+      href: "/",
+      subLinks: [
+        { label: "Contents", href: "/content" },
+        { label: "Featured Content", href: "/featured" },
+        { label: "Store", href: "/store" },
+        { label: "Donate", href: "/donate" },
+      ],
+    },
+    {
+      label: "Stories",
+      href: "/stories",
+      subLinks: [
+        { label: "Create Story", href: "/story/create" },
+        { label: "Featured Story", href: "/story/featured" },
+        { label: "Search", href: "/story/search" },
+        { label: "Categories", href: "/story/categories" },
+        { label: "Random Story", href: "" },
+      ],
+    },
+    {
+      label: "Maps",
+      href: "/maps",
+      subLinks: [
+        { label: "Create Map", href: "/map/create" },
+        { label: "Featured Map", href: "/map/featured" },
+        { label: "Search", href: "/map/search" },
+        { label: "Categories", href: "/map/categories" },
+        { label: "Random Map", href: "" },
+      ],
+    },
+    {
+      label: "Wiki",
+      href: "/wiki",
+      subLinks: [
+        { label: "Create Wiki", href: "/wiki/create" },
+        { label: "Featured Article", href: "/wiki/featured" },
+        { label: "Search", href: "/wiki/search" },
+        { label: "Categories", href: "/wiki/categories" },
+        { label: "Random Article", href: "" },
+      ],
+    },
+    {
+      label: "Dashboard",
+      href: "/dashboard",
+      subLinks: [
+        { label: "Analytics", href: "/dashboard/analytics" },
+        { label: "Settings", href: "/dashboard/settings" },
+      ],
+    },
+    {
+      label: "Users",
+      href: "/users",
+      subLinks: [
+        { label: "Manage Users", href: "/users/manage" },
+        { label: "Settings", href: "/users/settings" },
+        { label: "Profile", href: "/users/profile" },
+      ],
+    },
   ];
 
   const currentPath = usePathname();
 
   return (
-    <div className="flex items-center gap-2">
+    <ul className="flex flex-col gap-6 mt-6">
       {links.map((link) => (
-        <Link
-          key={link.label}
-          href={link.href}
-          className={`navbar-link ${
-            currentPath == link.href &&
-            "cursor-default text-primary/70 hover:text-primary/60"
-          }`}
-        >
-          {link.label}
-        </Link>
+        <li key={link.label + "-container"}>
+          <Link
+            key={link.label}
+            href={link.href}
+            className={`navbar-link ${
+              currentPath == link.href &&
+              "cursor-default text-primary/70 hover:text-primary/60"
+            }`}
+          >
+            {link.label}
+          </Link>
+          {link.subLinks && (
+            <ul>
+              {link.subLinks.map((sublink) => (
+                <li key={sublink.label + "-container"}>
+                  <Link
+                    key={sublink.label}
+                    href={sublink.href}
+                    className={`ml-2 font-light navbar-link ${
+                      currentPath == sublink.href &&
+                      "cursor-default text-primary/70 hover:text-primary/60"
+                    }`}
+                  >
+                    {sublink.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
       ))}
-    </div>
+    </ul>
   );
 };
 

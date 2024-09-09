@@ -25,3 +25,4 @@ export default EditWikiPage;
 
 // 2240907 Next action: Change description to a text field
 // 2240907 Next action: Make Wiki body text fields generative
+// 240908 fix structure -> Move edit into [id] folder

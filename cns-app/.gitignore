@@ -40,3 +40,4 @@ next-env.d.ts
 /data/globalAreas.json
 /data/sample.json
 /data/stories.json
+/public
