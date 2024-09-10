@@ -27,11 +27,21 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex w-screen h-screen" id="layout-wrapper">
+          <div
+            className="flex w-screen h-screen bg-slate-100"
+            id="layout-wrapper"
+          >
             <Sidebar />
-            <div className="main-column w-full h-screen overflow-scroll">
+            <div className="main-column w-full h-screen overflow-scroll ">
               <TopNav />
-              <main className="flex flex-col items-center">{children}</main>
+              <main className="flex flex-col items-center pr-8 h-full">
+                <div
+                  className=" w-full pl-6 py-6 pr-12 bg-white rounded relative"
+                  id="contents"
+                >
+                  {children}
+                </div>
+              </main>
             </div>
           </div>
         </ThemeProvider>

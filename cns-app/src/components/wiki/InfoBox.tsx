@@ -29,7 +29,6 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
 
   return (
     <div className="col-span-2" id="info-box">
-      <h2 className="bg-slate-300 text-center">Infobox</h2>
       <div
         className="flex flex-col items-center gap-4 mb-4"
         id="image-container"
@@ -47,9 +46,7 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
       <div id="collection-container">
         {collections.map((collection) => (
           <dl key={"collection-" + collection.id}>
-            <h3 className="bg-slate-300 text-center mb-2">
-              {collection.title}
-            </h3>
+            <h3 className="bg-gray-100 text-center mb-2">{collection.title}</h3>
             {collection.bars.map((bar) => (
               <div key={"bar-" + bar.id} className="flex gap-1">
                 <dt className="flex-1">{bar.key}</dt>
@@ -62,7 +59,7 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
       <div className="" id="text-container">
         {texts.map((text) => (
           <div key={"text-" + text.id}>
-            <h3 className="bg-slate-300 text-center mb-2">{text.title}</h3>
+            <h3 className="bg-gray-100 text-center mb-2">{text.title}</h3>
             <p>{text.content}</p>
           </div>
         ))}
