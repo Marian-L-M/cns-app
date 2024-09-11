@@ -3,6 +3,7 @@ import ReactMarkDown from "react-markdown";
 import InfoBox from "@/components/wiki/InfoBox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { ThumbsUp } from "lucide-react";
 
 interface WikiPageProps {
   params: { id: string };
@@ -18,6 +19,16 @@ const WikiPage = async ({ params }: WikiPageProps) => {
   }
 
   const infoBox = wiki.infobox as InfoBoxItem[];
+  const dateCreated = wiki.createdAt.toLocaleDateString("ja-JP", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  });
+  const dateUpdated = wiki.updatedAt.toLocaleDateString("ja-JP", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  });
 
   return (
     <div className="flex flex-col gap-20 w-full">
@@ -40,9 +51,14 @@ const WikiPage = async ({ params }: WikiPageProps) => {
               className="flex flex-col justify-end gap-4 text-sm"
               id="wiki-meta"
             >
-              <div className="flex gap-4" id="meta-top">
-                <Button variant={"outline"}>Like</Button>
-                <p id="wiki-date">Date here</p>
+              <div className="flex gap-8 justify-between" id="meta-top">
+                <Button variant={"ghost"}>
+                  <ThumbsUp className="text-lime-900" />
+                </Button>
+                <div className="text-xs text-end" id="wiki-date">
+                  <p>Created: {dateCreated}</p>
+                  <p>Last Update: {dateUpdated}</p>
+                </div>
               </div>
               <p
                 className="bg-slate-100 border-1 rounded-sm px-4 py-1 "
