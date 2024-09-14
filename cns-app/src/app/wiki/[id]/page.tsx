@@ -2,8 +2,9 @@ import prisma from "../../../../prisma/db";
 import ReactMarkDown from "react-markdown";
 import InfoBox from "@/components/wiki/InfoBox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ThumbsUp } from "lucide-react";
+import Link from "next/link";
 
 interface WikiPageProps {
   params: { id: string };
@@ -59,6 +60,15 @@ const WikiPage = async ({ params }: WikiPageProps) => {
                   <p>Created: {dateCreated}</p>
                   <p>Last Update: {dateUpdated}</p>
                 </div>
+                <Link
+                  type="button"
+                  className={`${buttonVariants({
+                    variant: "outline",
+                  })} w-16`}
+                  href={`/wiki/edit/${wiki.id}`}
+                >
+                  Edit
+                </Link>
               </div>
               <p
                 className="bg-slate-100 border-1 rounded-sm px-4 py-1 "
@@ -70,12 +80,16 @@ const WikiPage = async ({ params }: WikiPageProps) => {
           </div>
           <div className="grid gap-4 grid-cols-8" id="intro-content">
             <div className="content-col col-span-6">
-              <p>{wiki.description}</p>
+              <ReactMarkDown className={"prose lg:prose-xl dark:prose-invert"}>
+                {wiki.description}
+              </ReactMarkDown>
             </div>
             {infoBox && <InfoBox infoBox={infoBox} />}
           </div>
           <div className="flex flex-col gap-10 " id="main-content">
-            <ReactMarkDown>{wiki.wikiText}</ReactMarkDown>
+            <ReactMarkDown className={"prose lg:prose-xl dark:prose-invert"}>
+              {wiki.wikiText}
+            </ReactMarkDown>
           </div>
         </TabsContent>
         <TabsContent value="discussion">Discuss contents</TabsContent>
