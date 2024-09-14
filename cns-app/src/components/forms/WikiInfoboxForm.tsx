@@ -1,19 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
 import { WikiFormData } from "./WikiForm";
-import { Trash2, Plus, ImagePlus, ListPlus, SquarePlus } from "lucide-react";
+import { ImagePlus, ListPlus, SquarePlus } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
-interface InfoboxItem {
-  id: string;
-  type: "image" | "collection" | "text";
-  url?: string;
-  title: string;
-  caption?: string;
-  content?: string;
-  bars?: { id: string; key: string; value: string }[];
-}
+import InfoboxItem from "./InfoboxItem";
 
 interface InfoboxFormFieldProps {
   control: Control<WikiFormData>;
@@ -57,203 +47,50 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
       <div className="flex flex-col gap-4" id="infobox-control">
         <div
           className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4"
-          id="image-container"
+          id="infoboxitem-container"
         >
-          {fields
-            .filter((field) => {
-              return field.type === "image";
-            })
-            .map((field, index) => (
-              <InfoboxItem
-                key={field.id}
-                field={field}
-                index={index}
-                register={register}
-                control={control}
-                remove={remove}
-              />
-            ))}
-          <Button
-            className={`${buttonVariants({
-              variant: "secondary",
-            })} flex gap-2 text-xs w-2/4 block"`}
-            type="button"
-            onClick={() => addField("image")}
-          >
-            <ImagePlus />
-            Image
-          </Button>
-        </div>
-        <hr />
-        <div
-          className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4"
-          id="collection-container"
-        >
-          {fields
-            .filter((field) => {
-              return field.type === "collection";
-            })
-            .map((field, index) => (
-              <InfoboxItem
-                key={field.id}
-                field={field}
-                index={index}
-                register={register}
-                control={control}
-                remove={remove}
-              />
-            ))}
-          <Button
-            className={`${buttonVariants({
-              variant: "secondary",
-            })} flex gap-2 text-xs w-2/4 block"`}
-            type="button"
-            onClick={() => addField("collection")}
-          >
-            <ListPlus /> Collection
-          </Button>
-        </div>
-        <div
-          className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4"
-          id="text-container"
-        >
-          {fields
-            .filter((field) => {
-              return field.type === "text";
-            })
-            .map((field, index) => (
-              <InfoboxItem
-                key={field.id}
-                field={field}
-                index={index}
-                register={register}
-                control={control}
-                remove={remove}
-              />
-            ))}
-          <Button
-            className={`${buttonVariants({
-              variant: "secondary",
-            })} flex gap-2 text-xs w-2/4 block"`}
-            type="button"
-            onClick={() => addField("text")}
-          >
-            <SquarePlus />
-            Text
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const InfoboxItem: React.FC<{
-  field: InfoboxItem;
-  index: number;
-  register: UseFormRegister<WikiFormData>;
-  control: Control<WikiFormData>;
-  remove: (index: number) => void;
-}> = ({ field, index, register, control, remove }) => {
-  const {
-    fields: bars,
-    append: appendBar,
-    remove: removeBar,
-  } = useFieldArray({
-    control,
-    name: `infobox.${index}.bars`,
-  });
-
-  return (
-    <div className="w-full border p-4 my-2 flex flex-col gap-4">
-      <div className="flex justify-between items-center" id="meta-bar">
-        <p className="capitalize">{field.type}</p>
-        <Button
-          type="button"
-          onClick={() => remove(index)}
-          className={`${buttonVariants({ variant: "destructive" })} p-1 w-8`}
-        >
-          <Trash2 />
-        </Button>
-      </div>
-      <Input
-        {...register(`infobox.${index}.id`)}
-        className="invisible absolute"
-        hidden
-      />
-      <Input
-        {...register(`infobox.${index}.type`)}
-        className="invisible absolute"
-        hidden
-      />
-      <div className="flex flex-col gap-2">
-        {field.type === "image" && (
-          <>
-            <Input
-              {...register(`infobox.${index}.url`)}
-              placeholder="Image URL"
+          {fields.map((field, index) => (
+            <InfoboxItem
+              key={field.id}
+              field={field}
+              index={index}
+              register={register}
+              control={control}
+              remove={remove}
             />
-            <Input
-              {...register(`infobox.${index}.title`)}
-              placeholder="Title"
-            />
-            <Input
-              {...register(`infobox.${index}.caption`)}
-              placeholder="Caption"
-            />
-          </>
-        )}
-        {field.type === "collection" && (
-          <>
-            <Input
-              {...register(`infobox.${index}.title`)}
-              placeholder="Collection Title"
-            />
-            {bars?.map((bar, barIndex) => (
-              <div key={bar.id} className="flex space-x-2">
-                <Input
-                  {...register(`infobox.${index}.bars.${barIndex}.key`)}
-                  placeholder="Bar Key"
-                />
-                <Input
-                  {...register(`infobox.${index}.bars.${barIndex}.value`)}
-                  placeholder="Bar Value"
-                />
-                <Button
-                  type="button"
-                  onClick={() => removeBar(barIndex)}
-                  className={`${buttonVariants({
-                    variant: "destructive",
-                  })} p-1 w-8`}
-                >
-                  <Trash2 />
-                </Button>
-              </div>
-            ))}
+          ))}
+          <div className="flex flex-row gap-1 justify-center">
             <Button
-              type="button"
-              onClick={() =>
-                appendBar({ id: Date.now().toString(), key: "", value: "" })
-              }
               className={`${buttonVariants({
                 variant: "secondary",
-              })} flex gap-2 text-xs w-2/4"`}
+              })} flex gap-2 text-xs w-2/4 block"`}
+              type="button"
+              onClick={() => addField("image")}
             >
-              <Plus /> Bar
+              <ImagePlus />
+              Image
             </Button>
-          </>
-        )}
-        {field.type === "text" && (
-          <>
-            <Input
-              {...register(`infobox.${index}.title`)}
-              placeholder="Text Title"
-            />
-            <Input
-              {...register(`infobox.${index}.content`)}
-              placeholder="Text"
-            />
-          </>
-        )}
+            <Button
+              className={`${buttonVariants({
+                variant: "secondary",
+              })} flex gap-2 text-xs w-2/4 block"`}
+              type="button"
+              onClick={() => addField("collection")}
+            >
+              <ListPlus /> Collection
+            </Button>
+            <Button
+              className={`${buttonVariants({
+                variant: "secondary",
+              })} flex gap-2 text-xs w-2/4 block"`}
+              type="button"
+              onClick={() => addField("text")}
+            >
+              <SquarePlus />
+              Text
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -34,21 +34,30 @@ const WikiForm = ({ wiki }: Props) => {
   const router = useRouter();
 
   const parseInfobox = (data: unknown): InfoboxItem[] => {
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+        console.error("Failed to parse infobox data:", e);
+        return [];
+      }
+    }
+
     if (Array.isArray(data)) {
       return data.map((item) => ({
         id: item.id || "",
         type: item.type as "image" | "collection" | "text",
         title: item.title || "",
-        url: item.url,
-        caption: item.caption,
-        content: item.content,
+        url: item.url || "",
+        caption: item.caption || "",
+        content: item.content || "",
         bars: Array.isArray(item.bars)
           ? item.bars.map((bar: bar) => ({
               id: bar.id || "",
               key: bar.key || "",
               value: bar.value || "",
             }))
-          : undefined,
+          : [],
       }));
     }
     return [];
@@ -70,12 +79,15 @@ const WikiForm = ({ wiki }: Props) => {
       setError("");
       if (wiki) {
         await axios.patch(`/api/wiki/${wiki.id}`, values);
+        router.push(`/wiki/${wiki?.id}`);
+        router.refresh();
       } else {
-        await axios.post(`/api/wiki`, values);
+        const response = await axios.post(`/api/wiki`, values);
+        const newWiki = response.data;
+        router.push(`/wiki/${newWiki.id}`);
+        router.refresh();
       }
       setIsSubmitting(false);
-      router.push("/wiki");
-      router.refresh();
     } catch (error) {
       setError("Unknown error occurred");
       setIsSubmitting(false);
@@ -88,7 +100,7 @@ const WikiForm = ({ wiki }: Props) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-4 grid-cols-8">
-            <div className="content-col col-span-5">
+            <div className="flex flex-col gap-4 col-span-5" id="content-col">
               <FormField
                 control={form.control}
                 name="title"
@@ -102,19 +114,17 @@ const WikiForm = ({ wiki }: Props) => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="description"
-                defaultValue={wiki?.description}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Wiki description" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <div className="markdown-group">
+                <p className="font-bold">Description</p>
+                <Controller
+                  name="description"
+                  defaultValue={wiki?.description}
+                  control={form.control}
+                  render={({ field }) => (
+                    <SimpleMDE placeholder="Wiki Description" {...field} />
+                  )}
+                />
+              </div>
             </div>
             <div
               className="col-span-3 flex flex-col  gap-4 p-4 pb-20 bg-slate-100"
