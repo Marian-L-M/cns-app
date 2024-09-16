@@ -18,10 +18,10 @@ const MainNavLinks = () => {
       label: "Stories",
       href: "/stories",
       subLinks: [
-        { label: "Create Story", href: "/story/create" },
-        { label: "Featured Story", href: "/story/featured" },
-        { label: "Search", href: "/story/search" },
-        { label: "Categories", href: "/story/categories" },
+        { label: "Create Story", href: "/stories/new" },
+        { label: "Featured Story", href: "/stories/featured" },
+        { label: "Search", href: "/stories/search" },
+        { label: "Categories", href: "/stories/categories" },
         { label: "Random Story", href: "" },
       ],
     },
@@ -40,7 +40,7 @@ const MainNavLinks = () => {
       label: "Wiki",
       href: "/wiki",
       subLinks: [
-        { label: "Create Wiki", href: "/wiki/create" },
+        { label: "Create Wiki", href: "/wiki/new" },
         { label: "Featured Article", href: "/wiki/featured" },
         { label: "Search", href: "/wiki/search" },
         { label: "Categories", href: "/wiki/categories" },
