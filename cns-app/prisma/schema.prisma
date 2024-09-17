@@ -139,12 +139,27 @@ model Wiki {
   id          Int @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  featured    Boolean    @default(false)
+  thumbUrl    String @default("")
   title       String   @db.VarChar(255)
   description String @db.Text
   wikiText    String @db.Text @default("")
   infobox     Json?
   objects     GlobalObject[]
   area        GlobalArea[]
+  type        WikiType @default(GENERAL)
+}
+
+enum WikiType {
+  GENERAL
+  STORY
+  AREA
+  CHARACTER
+  OBJECT
+  HISTORY
+  SCIENCE
+  EXPLANATION
+  OTHER
 }
 
 enum MapObjectType {
