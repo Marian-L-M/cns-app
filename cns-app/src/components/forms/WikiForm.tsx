@@ -95,71 +95,78 @@ const WikiForm = ({ wiki }: Props) => {
   }
 
   return (
-    <div className="flex flex-col gap-20 w-5/6 max-w-screen-xl mt-10">
-      <h1 className="text-3xl">Add new Wiki entry</h1>
+    <div className="flex flex-col gap-20 w-full">
+      <h1 className="text-3xl">
+        {wiki ? "Update Wiki entry" : "Add new Wiki entry"}
+      </h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid gap-4 grid-cols-8">
-            <div className="flex flex-col gap-4 col-span-5" id="content-col">
-              <FormField
-                control={form.control}
-                name="title"
-                defaultValue={wiki?.title}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Wiki Title..." {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <div className="markdown-group">
-                <p className="font-bold">Description</p>
-                <Controller
-                  name="description"
-                  defaultValue={wiki?.description}
+          <div className="flex flex-wrap gap-y-8 justify-between">
+            <div className="w-full" id="form-top">
+              <div className="w-9/12 pr-8" id="title-container">
+                <FormField
                   control={form.control}
+                  name="title"
+                  defaultValue={wiki?.title}
                   render={({ field }) => (
-                    <SimpleMDE placeholder="Wiki Description" {...field} />
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Wiki Title..." {...field} />
+                      </FormControl>
+                    </FormItem>
                   )}
                 />
               </div>
             </div>
-            <div
-              className="col-span-3 flex flex-col  gap-4 p-4 pb-20 bg-slate-100"
-              id="info-box"
-            >
-              <FormField
-                control={form.control}
-                name="infobox"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Infobox</FormLabel>
-                    <FormControl>
-                      <WikiInfoboxFormField
-                        control={form.control}
-                        register={form.register}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+            <div className="w-9/12 pr-8" id="left-col">
+              <div className="flex flex-col gap-4" id="content-col">
+                <div className="markdown-group">
+                  <h4 className="font-bold">Description</h4>
+                  <Controller
+                    name="description"
+                    defaultValue={wiki?.description}
+                    control={form.control}
+                    render={({ field }) => (
+                      <SimpleMDE placeholder="Wiki Description" {...field} />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-4 mb-12" id="main-content">
+                <h4 className="font-bold">Wiki Body</h4>
+                <Controller
+                  name="wikiText"
+                  defaultValue={wiki?.wikiText}
+                  control={form.control}
+                  render={({ field }) => (
+                    <SimpleMDE placeholder="Wiki Text" {...field} />
+                  )}
+                />
+                <Button type="submit" disabled={isSubmitting}>
+                  {wiki ? "Update Wiki" : "Submit Wiki"}
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-4 mb-12" id="main-content">
-            <h4 className="font-bold">Wiki Body</h4>
-            <Controller
-              name="wikiText"
-              defaultValue={wiki?.wikiText}
-              control={form.control}
-              render={({ field }) => (
-                <SimpleMDE placeholder="Wiki Text" {...field} />
-              )}
-            />
-            <Button type="submit" disabled={isSubmitting}>
-              {wiki ? "Update Wiki" : "Submit Wiki"}
-            </Button>
+            <div className="w-3/12 flex flex-col " id="info-box">
+              <h4 className="font-bold">Infobox</h4>
+              <div className="p-4 pb-20 bg-slate-100" id="form-wrapper">
+                <FormField
+                  control={form.control}
+                  name="infobox"
+                  render={() => (
+                    <FormItem>
+                      <FormControl>
+                        <WikiInfoboxFormField
+                          control={form.control}
+                          register={form.register}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
           </div>
         </form>
       </Form>

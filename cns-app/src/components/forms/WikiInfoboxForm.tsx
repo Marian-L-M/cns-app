@@ -42,11 +42,10 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
     append(newItem);
   };
   return (
-    <div className="flex flex-col  gap-4 p-4 pb-20 bg-slate-100" id="info-box">
-      <h2 className="bg-slate-300 text-center">Infobox</h2>
+    <div className="flex flex-col  gap-4 py-4 pb-20 bg-slate-100" id="info-box">
       <div className="flex flex-col gap-4" id="infobox-control">
         <div
-          className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4"
+          className="flex flex-col items-center gap-4 bg-slate-200 rounded-md py-4 px-2"
           id="infoboxitem-container"
         >
           {fields.map((field, index) => (

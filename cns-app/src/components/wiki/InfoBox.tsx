@@ -13,22 +13,8 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
   ) as CollectionType[];
   const texts = infoBox.filter((item) => item?.type === "text") as TextType[];
 
-  //   useEffect(() => {
-
-  //     function createInfoBoxBars() {
-  //       const infoBox = document.getElementById("info-box");
-  //       result.forEach((collection) => {
-  //         const collectionHeader = document.createElement("h3");
-  //         const headerContent = document.createTextNode(collection.title);
-  //         collectionHeader.appendChild(headerContent);
-  //         infoBox?.appendChild(collectionHeader);
-  //       });
-  //     }
-  //     createInfoBoxBars();
-  //   }, []);
-
   return (
-    <div className="flex flex-col gap-4 col-span-2" id="info-box">
+    <div className="w-full flex flex-col gap-4" id="info-box">
       <div className="flex flex-col gap-4" id="image-container">
         {images.map((image) => (
           <div

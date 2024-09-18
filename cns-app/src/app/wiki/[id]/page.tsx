@@ -78,18 +78,26 @@ const WikiPage = async ({ params }: WikiPageProps) => {
               </p>
             </div>
           </div>
-          <div className="grid gap-4 grid-cols-8" id="intro-content">
-            <div className="content-col col-span-6">
-              <ReactMarkDown className={"prose lg:prose-xl dark:prose-invert"}>
-                {wiki.description}
-              </ReactMarkDown>
+          <div className="flex flex-wrap gap-y-8 justify-between">
+            <div className="w-9/12 pr-8" id="left-col">
+              <div className="flex flex-col gap-4" id="content-col">
+                <ReactMarkDown
+                  className={"prose lg:prose-xl dark:prose-invert"}
+                >
+                  {wiki.description}
+                </ReactMarkDown>
+                <div className="flex flex-col gap-10 " id="main-content">
+                  <ReactMarkDown
+                    className={"prose lg:prose-xl dark:prose-invert"}
+                  >
+                    {wiki.wikiText}
+                  </ReactMarkDown>
+                </div>
+              </div>
             </div>
-            {infoBox && <InfoBox infoBox={infoBox} />}
-          </div>
-          <div className="flex flex-col gap-10 " id="main-content">
-            <ReactMarkDown className={"prose lg:prose-xl dark:prose-invert"}>
-              {wiki.wikiText}
-            </ReactMarkDown>
+            <div className="w-3/12" id="right-col">
+              {infoBox && <InfoBox infoBox={infoBox} />}
+            </div>
           </div>
         </TabsContent>
         <TabsContent value="discussion">Discuss contents</TabsContent>
@@ -102,9 +110,3 @@ const WikiPage = async ({ params }: WikiPageProps) => {
 export default WikiPage;
 
 // Todo 240823 rework database schema to allow name as slug + add content section json fields -> Think about good breakdown
-// Todo 240827 add edit button to wiki page
-
-// Layout inspiration
-// https://dribbble.com/shots/6468579/attachments/6468579-Wikipedia-Redesign?mode=media
-// https://dribbble.com/shots/6482210-Wikipedia-redesign/attachments/6482210-Wikipedia-redesign?mode=media
-// https://dribbble.com/shots/21516412-Wikipedia-Redesign
