@@ -10,10 +10,22 @@ interface WikiPageProps {
   params: { id: string };
 }
 
+// 240919 Working but hacky solution
+// See if there is a better way to handle this
+// Recheck get static props and static paths (Redo max schwarzmueller)
 const WikiPage = async ({ params }: WikiPageProps) => {
-  const wiki = await prisma?.wiki.findUnique({
-    where: { id: parseInt(params.id) },
-  });
+  let wiki;
+  if (!/[a-z]/i.test(params.id)) {
+    wiki = await prisma?.wiki.findUnique({
+      where: { id: parseInt(params.id) },
+    });
+  } else {
+    wiki = await prisma?.wiki.findFirst({
+      where: {
+        title: { contains: params.id, mode: "insensitive" },
+      },
+    });
+  }
 
   if (!wiki) {
     return <p className="text-destructive">Wiki Not Found</p>;
