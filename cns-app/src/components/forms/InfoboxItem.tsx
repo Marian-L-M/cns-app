@@ -4,10 +4,6 @@ import { Button, buttonVariants } from "../ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Input } from "../ui/input";
 
-//20240912 Consisting issue with updating the infobox (not posting) - updates dont go to their respective infobox item. Too complex for AI.
-
-//20240913 The issue is not the barindex but the infoboxitem index
-
 interface InfoboxItem {
   id: string;
   type: "image" | "collection" | "text";
