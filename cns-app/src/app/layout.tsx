@@ -13,13 +13,15 @@ export const metadata: Metadata = {
   description: "Dynamic Map Storytelling",
 };
 
+// Remove extra attribute error
+// https://stackoverflow.com/questions/78456897/how-to-remove-extra-attributes-error-in-nextjs-andclerk
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
