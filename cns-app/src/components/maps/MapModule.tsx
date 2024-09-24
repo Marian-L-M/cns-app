@@ -28,7 +28,7 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
 
   // 240811 TODO: Add story via state
   return (
-    <div className="w-screen h-screen justify-center items-center ">
+    <div className="w-full ">
       <div className="w-full text-center mb-2">
         {activeStatus && (
           <StatusBar
@@ -38,8 +38,8 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
           />
         )}
       </div>
-      <div className="grid grid-cols-3 gap-4 max-w-screen-2xl mx-auto">
-        <div className="relative max-w-screen-lg col-span-2 " id="map-base">
+      <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto">
+        <div className="relative max-w-screen-lg col-span-4 " id="map-base">
           <canvas
             // onMouseDown={onMouseDown}
             // handlerFunction
@@ -58,7 +58,7 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
             height="1024"
           />
         </div>
-        <div id="infobox">
+        <div className="col-span-2" id="infobox">
           {activeInfo && (
             <InfoBox
               id={activeInfo.id}

@@ -13,6 +13,7 @@ interface WikiPageProps {
 // 240919 Working but hacky solution
 // See if there is a better way to handle this
 // Recheck get static props and static paths (Redo max schwarzmueller)
+// Add regex check -> change dashes to whitespaces
 const WikiPage = async ({ params }: WikiPageProps) => {
   let wiki;
   if (!/[a-z]/i.test(params.id)) {

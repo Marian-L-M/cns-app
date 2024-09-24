@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { StatusContext } from "@/store/statusContext";
 import Link from "next/link";
+import InfoBoxContents from "./infoBoxContents";
 
 interface StatusProps {
   title: string;
@@ -20,16 +21,19 @@ function InfoBox(props: StatusProps) {
   const activeInfoData = infoData.find((active) => active.id === id);
 
   return (
-    <div className="placeholder-classname">
+    <div className="w-full">
       <h2>{title}</h2>
       <h3>{type}</h3>
       <p>ID: {id}</p>
       {activeInfoData ? (
-        <div>
+        <div className="flex-col gap-2">
           <h4>{activeInfoData.title}</h4>
           <p>{activeInfoData.description}</p>
           {activeInfoData.wikiId ? (
-            <Link href={`/wiki/${activeInfoData.wikiId}`}>Wikiへ</Link>
+            <div className="flex-col gap-2">
+              <InfoBoxContents wikiId={activeInfoData.id} />
+              <Link href={`/wiki/${activeInfoData.wikiId}`}>Wikiへ</Link>
+            </div>
           ) : null}
         </div>
       ) : (
