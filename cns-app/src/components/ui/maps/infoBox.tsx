@@ -22,19 +22,10 @@ function InfoBox(props: StatusProps) {
 
   return (
     <div className="w-full">
-      <h2>{title}</h2>
-      <h3>{type}</h3>
-      <p>ID: {id}</p>
-      {activeInfoData ? (
+      {activeInfoData?.wikiId ? (
         <div className="flex-col gap-2">
-          <h4>{activeInfoData.title}</h4>
-          <p>{activeInfoData.description}</p>
-          {activeInfoData.wikiId ? (
-            <div className="flex-col gap-2">
-              <InfoBoxContents wikiId={activeInfoData.id} />
-              <Link href={`/wiki/${activeInfoData.wikiId}`}>Wikiへ</Link>
-            </div>
-          ) : null}
+          <InfoBoxContents wikiId={activeInfoData.wikiId} />
+          <Link href={`/wiki/${activeInfoData.wikiId}`}>Wikiへ</Link>
         </div>
       ) : (
         <p>No matching data found.</p>
