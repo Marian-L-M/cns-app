@@ -14,7 +14,10 @@ function StatusBar(props: StatusProps) {
   const { title, id, type } = props;
 
   return (
-    <div className="placeholder-classname" onClick={statusCtx.hideStatusBar}>
+    <div
+      className="flex gap-2 p-1 w-full justify-center bg-zinc-800/75 text-white "
+      onClick={statusCtx.hideStatusBar}
+    >
       <h2>{title}</h2>
       <h3>{type}</h3>
       <p>ID: {id}</p>

@@ -2,6 +2,8 @@ import { useContext } from "react";
 import { StatusContext } from "@/store/statusContext";
 import Link from "next/link";
 import InfoBoxContents from "./infoBoxContents";
+import { SquareX } from "lucide-react";
+import { Button } from "../button";
 
 interface StatusProps {
   title: string;
@@ -21,16 +23,23 @@ function InfoBox(props: StatusProps) {
   const activeInfoData = infoData.find((active) => active.id === id);
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      <button
+        className="absolute z-10 -right-3 -top-3 text-gray-100 bg-slate-900/80 rounded-sm hover:opacity-80"
+        onClick={statusCtx.hideInfoBox}
+      >
+        <SquareX size={32} />
+      </button>
       {activeInfoData?.wikiId ? (
-        <div className="flex-col gap-2">
+        <div className="flex flex-col gap-8">
           <InfoBoxContents wikiId={activeInfoData.wikiId} />
-          <Link href={`/wiki/${activeInfoData.wikiId}`}>Wikiへ</Link>
+          <Button className="w-fit self-center" variant={"outline"}>
+            <Link href={`/wiki/${activeInfoData.wikiId}`}>Read more</Link>
+          </Button>
         </div>
       ) : (
         <p>No matching data found.</p>
       )}
-      <button onClick={statusCtx.hideInfoBox}>Close Infobox</button>
     </div>
   );
 }

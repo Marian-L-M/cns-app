@@ -28,25 +28,25 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
 
   // 240925 Make map resizable
   return (
-    <div className="w-full ">
-      <div className="w-full text-center mb-2">
-        {activeStatus && (
-          <StatusBar
-            id={activeStatus.id}
-            title={activeStatus.title}
-            type={activeStatus.type}
-          />
-        )}
-      </div>
-      <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto">
+    <div className="w-full">
+      <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
         <div className="relative max-w-screen-lg col-span-4 " id="map-base">
+          <div className="w-full mb-2 absolute z-10 top-0 left-0 ">
+            {activeStatus && (
+              <StatusBar
+                id={activeStatus.id}
+                title={activeStatus.title}
+                type={activeStatus.type}
+              />
+            )}
+          </div>
           <canvas
             // onMouseDown={onMouseDown}
             // handlerFunction
             ref={canvasRef}
             width={windowSize > 1024 ? 1024 : windowSize}
             height={windowSize > 1024 ? 1024 : windowSize} // Width for square maps
-            className="border border-grey rounded-md relative z-10 w-full"
+            className="border border-grey relative z-10 w-full"
           />
           <Image
             // 240808 TODO: get placeholder image if map is not found
