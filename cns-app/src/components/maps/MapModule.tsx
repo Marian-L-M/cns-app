@@ -26,7 +26,7 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
     windowSize = window.innerWidth;
   }
 
-  // 240811 TODO: Add story via state
+  // 240925 Make map resizable
   return (
     <div className="w-full ">
       <div className="w-full text-center mb-2">
