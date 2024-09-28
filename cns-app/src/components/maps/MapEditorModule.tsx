@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "../ui/button";
 
 function MapEditorModule() {
-  const { canvasRef, nodeList } = useMapEditor();
+  const { canvasRef, nodeList, styles } = useMapEditor();
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
@@ -14,6 +14,7 @@ function MapEditorModule() {
     event.preventDefault();
     console.log("Submit");
     console.log(nodeList);
+    console.log(styles);
   };
   return (
     <div className="w-full">

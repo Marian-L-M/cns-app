@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 
 interface editableAreaObject {
   id: number;
@@ -15,62 +16,6 @@ interface areaNode {
 export const useMapEditor = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const draw = (
-    ctx: CanvasRenderingContext2D,
-    area: areaNode[],
-    cw: number,
-    ch: number
-  ) => {
-    // current drawArea function is nonsensical (nested nodes structure used in mapmaker -> Find better way to unify)
-    ctx.beginPath();
-    ctx.moveTo(area[0].x * cw, area[0].y * ch);
-    for (var i = 1; i < area.length; i++) {
-      ctx.lineTo(area[i].x * cw, area[i].y * ch);
-    }
-    ctx.lineTo(area[0].x * cw, area[0].y * ch);
-    ctx.closePath;
-    ctx.stroke();
-    ctx.fill();
-  };
-  const drawEditNodes = (
-    ctx: CanvasRenderingContext2D,
-    area: areaNode[],
-    cw: number,
-    ch: number
-  ) => {
-    const offset = 5;
-    area.forEach((node, index) => {
-      ctx.beginPath();
-      ctx.fillStyle = "white";
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 1;
-      ctx.moveTo(node.x * cw - offset, node.y * ch - offset);
-      ctx.lineTo(node.x * cw + offset, node.y * ch - offset);
-      ctx.lineTo(node.x * cw + offset, node.y * ch + offset);
-      ctx.lineTo(node.x * cw - offset, node.y * ch + offset);
-      ctx.lineTo(node.x * cw - offset, node.y * ch - offset);
-      ctx.closePath;
-      ctx.stroke();
-      ctx.fill();
-    });
-  };
-  const drawMetaNode = (
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    cw: number,
-    ch: number
-  ) => {
-    const offset = 7;
-    ctx.beginPath();
-    ctx.moveTo(x * cw - offset, y * ch - offset);
-    ctx.lineTo(x * cw + offset, y * ch - offset);
-    ctx.lineTo(x * cw + offset, y * ch + offset);
-    ctx.lineTo(x * cw - offset, y * ch + offset);
-    ctx.lineTo(x * cw - offset, y * ch - offset);
-    ctx.closePath;
-  };
-
   // 20240926 Next actions
   // 1. Draw object by clicking on map
   // 2. Add object function (preset forms)
@@ -79,6 +24,13 @@ export const useMapEditor = () => {
   // 5. Activated object on click
   // 6. Work on object nodes click on node to remove, drag to reposition
   let nodeList: areaNode[] = [];
+
+  let styles = {
+    fillStyle: "rgba(0, 255, 16, 0.4)",
+    lineWidth: 4,
+    strokeStyle: "pink",
+  };
+
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -126,9 +78,9 @@ export const useMapEditor = () => {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           // Redraw nodes
-          ctx.fillStyle = "grey";
-          ctx.strokeStyle = "black";
-          ctx.lineWidth = 3;
+          ctx.fillStyle = styles.fillStyle || "grey";
+          ctx.strokeStyle = styles.strokeStyle || "black";
+          ctx.lineWidth = styles.lineWidth || 3;
           draw(ctx, nodeList, cw, ch);
           drawEditNodes(ctx, nodeList, cw, ch);
           return;
@@ -141,9 +93,9 @@ export const useMapEditor = () => {
         idCounter++;
 
         if (nodeList.length > 0) {
-          ctx.fillStyle = "grey";
-          ctx.strokeStyle = "black";
-          ctx.lineWidth = 3;
+          ctx.fillStyle = styles.fillStyle || "grey";
+          ctx.strokeStyle = styles.strokeStyle || "black";
+          ctx.lineWidth = styles.lineWidth || 3;
           draw(ctx, nodeList, cw, ch);
           drawEditNodes(ctx, nodeList, cw, ch);
         }
@@ -152,5 +104,5 @@ export const useMapEditor = () => {
       return;
     };
   }, [nodeList]);
-  return { canvasRef, nodeList };
+  return { canvasRef, nodeList, styles };
 };
