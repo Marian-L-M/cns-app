@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { drawAreas } from "@/lib/map/drawMap";
 
 interface editableAreaObject {
   id: number;
@@ -62,7 +61,7 @@ export const useMapEditor = () => {
     cw: number,
     ch: number
   ) => {
-    const offset = 5;
+    const offset = 7;
     ctx.beginPath();
     ctx.moveTo(x * cw - offset, y * ch - offset);
     ctx.lineTo(x * cw + offset, y * ch - offset);
@@ -108,12 +107,30 @@ export const useMapEditor = () => {
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;
 
-      // Check if clicked area is existing node
-      nodeList.forEach((node: areaNode) => {
+      // If existing node remove from nodelist
+      nodeList.forEach((node: areaNode, index) => {
         drawMetaNode(ctx, node.x, node.y, cw, ch);
         if (ctx.isPointInPath(mouseX, mouseY)) {
-          console.log("hit-" + node.id);
+          if (index == 0) {
+            nodeList.shift();
+          } else if (index == nodeList.length - 1) {
+            nodeList.pop();
+          } else {
+            nodeList.splice(index, index);
+          }
+
+          // Set existing flag
           existingFlag = true;
+
+          // Clear canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Redraw nodes
+          ctx.fillStyle = "grey";
+          ctx.strokeStyle = "black";
+          ctx.lineWidth = 3;
+          draw(ctx, nodeList, cw, ch);
+          drawEditNodes(ctx, nodeList, cw, ch);
           return;
         }
       });
@@ -122,12 +139,11 @@ export const useMapEditor = () => {
       if (!existingFlag) {
         nodeList.push({ id: idCounter, x: mouseX, y: mouseY });
         idCounter++;
-        console.log(nodeList);
 
         if (nodeList.length > 0) {
           ctx.fillStyle = "grey";
           ctx.strokeStyle = "black";
-          ctx.lineWidth = 4;
+          ctx.lineWidth = 3;
           draw(ctx, nodeList, cw, ch);
           drawEditNodes(ctx, nodeList, cw, ch);
         }
@@ -135,6 +151,6 @@ export const useMapEditor = () => {
       }
       return;
     };
-  }, []);
-  return { canvasRef };
+  }, [nodeList]);
+  return { canvasRef, nodeList };
 };

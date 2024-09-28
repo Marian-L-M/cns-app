@@ -1,14 +1,20 @@
 "use client";
 import { useMapEditor } from "@/hooks/useMapEditor";
 import React from "react";
+import { Button } from "../ui/button";
 
 function MapEditorModule() {
-  const { canvasRef } = useMapEditor();
+  const { canvasRef, nodeList } = useMapEditor();
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
   }
 
+  const onSubmitHandler = (event: any) => {
+    event.preventDefault();
+    console.log("Submit");
+    console.log(nodeList);
+  };
   return (
     <div className="w-full">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
@@ -20,6 +26,9 @@ function MapEditorModule() {
             className="border border-grey relative z-10 w-full"
             // {...props}
           />
+        </div>
+        <div className="col-span-2" id="sidebar">
+          <Button onClick={onSubmitHandler}>Submit</Button>
         </div>
       </div>
     </div>
