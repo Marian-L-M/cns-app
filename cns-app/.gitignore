@@ -37,7 +37,7 @@ yarn-error.log*
 next-env.d.ts
 
 # Test data
-/data/globalAreas.json
+/data/area.json
 /data/sample.json
 /data/stories.json
 /public
