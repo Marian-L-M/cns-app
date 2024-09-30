@@ -23,6 +23,8 @@ export const useMapEditor = () => {
   // 4. Activated object form list
   // 5. Activated object on click
   // 6. Work on object nodes click on node to remove, drag to reposition
+
+  //20240926 Next actions : Connect styles to UI
   let nodeList: areaNode[] = [];
 
   let styles = {

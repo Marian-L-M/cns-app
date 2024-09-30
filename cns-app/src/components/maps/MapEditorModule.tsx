@@ -2,6 +2,8 @@
 import { useMapEditor } from "@/hooks/useMapEditor";
 import React from "react";
 import { Button } from "../ui/button";
+import ColorPicker from "../ui/colorPicker/ColorPicker";
+import { Palette } from "lucide-react";
 
 function MapEditorModule() {
   const { canvasRef, nodeList, styles } = useMapEditor();
@@ -17,7 +19,7 @@ function MapEditorModule() {
     console.log(styles);
   };
   return (
-    <div className="w-full">
+    <div className="w-full" id="map-editor-module">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
         <div className="relative max-w-screen-lg col-span-4 " id="map-base">
           <canvas
@@ -29,6 +31,9 @@ function MapEditorModule() {
           />
         </div>
         <div className="col-span-2" id="sidebar">
+          <div className="flex justify-between gap-1" id="color-pickers">
+            <ColorPicker icon={<Palette className="text-slate-300" />} />
+          </div>
           <Button onClick={onSubmitHandler}>Submit</Button>
         </div>
       </div>
