@@ -18,46 +18,6 @@ interface StatusContextProviderProps {
   children: ReactNode;
 }
 
-// export const StatusBarContext = createContext<StatusContextType>({
-//   status: null, // {title, subtitle, status}
-//   showStatus: () => {},
-//   hideStatus: () => {},
-// });
-// export const InfoBoxContext = createContext<StatusContextType>({
-//   status: null, // {title, subtitle, status}
-//   showStatus: () => {},
-//   hideStatus: () => {},
-// });
-// export const StoryBoxContext = createContext<StatusContextType>({
-//   status: null, // {title, subtitle, status}
-//   showStatus: () => {},
-//   hideStatus: () => {},
-// });
-
-// const StatusContext = createContext<StatusContextType>({
-//   status: null, // {title, subtitle, status}
-//   showStatus: () => {},
-//   hideStatus: () => {},
-// });
-
-// export function StatusContextProvider({
-//   children,
-// }: StatusContextProviderProps) {
-//   const [activeStatus, setActiveStatus] = useState<ClickStatus | null>(null);
-
-//   function showStatusHandler(statusData: ClickStatus) {
-//     setActiveStatus(statusData);
-//   }
-
-//   function hideStatusHandler() {
-//     setActiveStatus(null);
-//   }
-
-// const StatusBarContext: StatusContextType = {
-//   status: activeStatus,
-//   showStatus: showStatusHandler,
-//   hideStatus: hideStatusHandler,
-// };
 // Define the context
 export const StatusContext = createContext<StatusContextType>({
   statusBar: null,
