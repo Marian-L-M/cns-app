@@ -28,7 +28,7 @@ const ColorPicker = (props: ColorPickerProps) => {
             exit={{ opacity: 0, scale: 0.6 }}
           >
             <ColorBox>
-              <ColorPanel />
+              <ColorPanel setOpenColorPicker={setOpenColorPicker} />
             </ColorBox>
           </motion.div>
         )}

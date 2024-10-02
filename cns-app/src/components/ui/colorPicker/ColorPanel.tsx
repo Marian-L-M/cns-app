@@ -7,7 +7,11 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const tabs = ["Preset", "Custom"];
 
-const ColorPanel = () => {
+interface ViewProps {
+  setOpenColorPicker: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ColorPanel = ({ setOpenColorPicker }: ViewProps) => {
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
   return (
@@ -26,7 +30,7 @@ const ColorPanel = () => {
             exit={{ x: -10, opacity: 0 }}
             transition={{ duration: 0.2, type: "spring", bounce: 0.3 }}
           >
-            <PresetView />
+            <PresetView setOpenColorPicker={setOpenColorPicker} />
           </motion.div>
         )}
         {selectedTab === "Custom" && (
@@ -37,7 +41,7 @@ const ColorPanel = () => {
             exit={{ x: -10, opacity: 0 }}
             transition={{ duration: 0.2, type: "spring", bounce: 0.3 }}
           >
-            <CustomView />
+            <CustomView setOpenColorPicker={setOpenColorPicker} />
           </motion.div>
         )}
       </AnimatePresence>

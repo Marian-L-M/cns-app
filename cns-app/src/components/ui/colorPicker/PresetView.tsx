@@ -1,5 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import Hex from "./Hex";
+import { Save } from "lucide-react";
+import SaveButton from "./saveButton";
 
 const colors = [
   "#FF6969",
@@ -19,34 +22,47 @@ const colors = [
   "#561C24",
 ];
 
-const PresetView = () => {
+interface PresetViewProps {
+  setOpenColorPicker: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const PresetView = ({ setOpenColorPicker }: PresetViewProps) => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   return (
-    <div className="flex gap-3 flex-wrap justify-center my-4">
-      {colors.map((color) => (
-        <button
-          key={color}
-          onClick={() => setSelectedColor(color)}
-          className="relative flex justify-center items-center"
-        >
-          <div
-            className="w-6 h-6 border-none rounded-full z-10"
-            style={{ backgroundColor: color }}
-          />
-          <AnimatePresence mode="wait">
-            {selectedColor === color && (
-              <motion.div
-                transition={{ type: "spring", duration: 0.3, bounce: 0.3 }}
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.6 }}
-                className="z-0 w-7 h-7 ring-2 ring-blue-500 absolute rounded-full"
-              />
-            )}
-          </AnimatePresence>
-        </button>
-      ))}
-    </div>
+    <>
+      <div className="flex gap-3 flex-wrap justify-center my-4">
+        {colors.map((color) => (
+          <button
+            key={color}
+            onClick={() => setSelectedColor(color)}
+            className="flex justify-center items-center"
+          >
+            <div
+              className="w-6 h-6 border-none rounded-full z-10 relative"
+              style={{ backgroundColor: color }}
+            />
+            <AnimatePresence mode="wait">
+              {selectedColor === color && (
+                <motion.div
+                  transition={{ type: "spring", duration: 0.3, bounce: 0.3 }}
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.6 }}
+                  className="z-0 w-7 h-7 ring-2 ring-blue-500 absolute rounded-full"
+                />
+              )}
+            </AnimatePresence>
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-between mt-8">
+        <Hex color={selectedColor} />
+        <SaveButton
+          color={selectedColor}
+          setOpenColorPicker={setOpenColorPicker}
+        />
+      </div>
+    </>
   );
 };
 
