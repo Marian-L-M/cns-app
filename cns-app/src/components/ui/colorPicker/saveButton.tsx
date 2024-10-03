@@ -10,7 +10,7 @@ interface SaveButtonProps {
 const SaveButton = ({ color, setOpenColorPicker }: SaveButtonProps) => {
   const editorCtx = useContext(EditorContext);
   const saveHandler = () => {
-    editorCtx.pickObjectColor("green");
+    editorCtx.pickObjectColor(color);
     setOpenColorPicker(false);
   };
   return (

@@ -17,7 +17,6 @@ function MapEditorModule() {
   }
   const styleCheck = (event: any) => {
     event.preventDefault();
-    editorCtx.pickObjectColor("red");
     console.log(editorCtx.objectColor);
   };
 

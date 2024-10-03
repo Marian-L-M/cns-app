@@ -10,8 +10,11 @@ const Tabs = (props: TabsProps) => {
   const { tabs, selectedTab, setSelectedTab } = props;
   return (
     <div className="flex gap-2">
-      {tabs.map((tab) => (
-        <div className="relative h-7 w-16 flex justify-center items-center">
+      {tabs.map((tab, index) => (
+        <div
+          className="relative h-7 w-16 flex justify-center items-center"
+          key={"key-" + index}
+        >
           <button
             onClick={() => setSelectedTab(tab)}
             className={`text-xs transition-colors ${
