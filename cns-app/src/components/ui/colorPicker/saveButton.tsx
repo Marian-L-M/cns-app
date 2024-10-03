@@ -1,4 +1,6 @@
 import { Check } from "lucide-react";
+import { EditorContext } from "@/store/mapEditorContext";
+import { useContext } from "react";
 
 interface SaveButtonProps {
   color: string;
@@ -6,6 +8,11 @@ interface SaveButtonProps {
 }
 
 const SaveButton = ({ color, setOpenColorPicker }: SaveButtonProps) => {
+  const editorCtx = useContext(EditorContext);
+  const saveHandler = () => {
+    editorCtx.pickObjectColor("green");
+    setOpenColorPicker(false);
+  };
   return (
     <div>
       <button
@@ -15,7 +22,7 @@ const SaveButton = ({ color, setOpenColorPicker }: SaveButtonProps) => {
           backgroundColor: color === "" ? "#1e293b" : "#22c55e",
           color: color === "" ? "#64748b" : "white",
         }}
-        onClick={() => setOpenColorPicker(false)}
+        onClick={saveHandler}
       >
         <Check className="w-4 h-4" />
       </button>
