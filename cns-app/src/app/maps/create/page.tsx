@@ -1,11 +1,11 @@
 import MapEditorModule from "@/components/maps/MapEditorModule";
-import React from "react";
+import EditorContextProvider from "@/store/mapEditorContext";
 
 function createMap() {
   return (
-    <div>
+    <EditorContextProvider>
       <MapEditorModule />
-    </div>
+    </EditorContextProvider>
   );
 }
 
