@@ -93,7 +93,7 @@ type ImageType = {
 type BarType = {
   id: number;
   key: string;
-  content: string;
+  value: string;
 };
 
 type CollectionType = {

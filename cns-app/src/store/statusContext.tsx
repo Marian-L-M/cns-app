@@ -49,6 +49,10 @@ export default function StatusContextProvider({
     setStoryBox(statusData);
   const hideStoryBox = () => setStoryBox(null);
 
+  // TOdo: 241003
+  // Fix typing issue* StoryClickStatus requires a description field (Normal ClickStatus does not)
+  // statusData cannot be used for both types
+
   return (
     <StatusContext.Provider
       value={{
