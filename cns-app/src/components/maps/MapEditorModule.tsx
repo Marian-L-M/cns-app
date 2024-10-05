@@ -10,11 +10,20 @@ import { set, z } from "zod";
 import { GlobalArea } from "@prisma/client";
 import axios from "axios";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
+import { useRouter } from "next/navigation";
 
-function MapEditorModule() {
+interface GlobalAreaProps {
+  globalArea?: GlobalArea;
+}
+
+function MapEditorModule({ globalArea }: GlobalAreaProps) {
   const { canvasRef, nodeList, styles } = useMapEditor();
   const editorCtx = useContext(EditorContext);
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
+  // To do - make this dynamic
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
@@ -30,36 +39,69 @@ function MapEditorModule() {
   // Proceed with submission logic and isolating each drawn object, before returning to this issue
   styles.fillStyle = editorCtx.objectColor;
 
-  const onSubmitHandler = (event: any) => {
-    event.preventDefault();
-    console.log("Submit");
-    console.log(nodeList);
-    console.log(styles);
+  const constructSubmissionData = () => {
+    return {
+      title: "Crowland2",
+      description: "A multicultural nation in the Northern Heart of Kamolin",
+      imageUrl: "/placeholder.pnh",
+      mapId: 2, // Required field from schema
+      nodes: nodeList || null,
+      styles: {
+        fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
+        lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
+        strokeStyle: styles.strokeStyle || "black",
+      },
+      objectTime: 1000,
+      type: "GEOGRAPHY",
+      infobox: null,
+      wikiId: 2,
+    };
   };
 
-  // Submission logic
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  interface GlobalAreaProps {
-    GlobalArea?: GlobalArea;
-  }
-
-  let GlobalArea = {} as GlobalArea;
+  // const onSubmitHandler = (event: any) => {
+  //   event.preventDefault();
+  //   console.log("Submit");
+  //   console.log(nodeList);
+  //   console.log(styles);
+  // };
 
   // To do: How to get map id?
-  const onSubmit = async (values: z.infer<typeof GlobalAreasSchema>) => {
+  // const testSubmit = async (values: z.infer<typeof GlobalAreasSchema>) => {
+  const testSubmit = async () => {
     try {
       setIsSubmitting(true);
       setError("");
-      if (GlobalArea) {
-        await axios.patch(`/api/globalarea/${GlobalArea.id}`, values);
+
+      const submissionData = constructSubmissionData();
+      console.log("Submitting data:", submissionData); // Debug log
+
+      // Validate the data before sending
+      const validatedData = GlobalAreasSchema.parse(submissionData);
+      console.log("Validated data:", validatedData); // Debug log
+
+      if (globalArea) {
+        await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
       } else {
-        await axios.post("/api/globalarea", values);
+        await axios.post("/api/globalarea", validatedData);
       }
+      setIsSubmitting(false);
+      router.push("/maps/create");
+      router.refresh();
     } catch (error) {
-      setError("Unknown error occurred");
-      console.log(error);
+      if (error instanceof z.ZodError) {
+        setError(
+          "Validation error: " + error.errors.map((e) => e.message).join(", ")
+        );
+        console.error("Validation error:", error.errors);
+      } else if (axios.isAxiosError(error)) {
+        setError(
+          `Server error: ${error.response?.data?.message || error.message}`
+        );
+        console.error("Server response:", error.response?.data);
+      } else {
+        setError("An unexpected error occurred");
+        console.error("Unknown error:", error);
+      }
     }
   };
 
@@ -82,8 +124,11 @@ function MapEditorModule() {
           <div className="flex justify-between gap-1" id="color-pickers">
             <ColorPicker icon={<Palette className="text-slate-300" />} />
           </div>
-          <Button onClick={onSubmitHandler}>Submit</Button>
-          <Button onClick={styleCheck}>Style</Button>
+          {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
+          {/* <Button onClick={styleCheck}>Style</Button> */}
+          <Button onClick={testSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Test Submit"}
+          </Button>
         </div>
       </div>
     </div>
