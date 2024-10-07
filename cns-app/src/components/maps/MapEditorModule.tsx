@@ -43,9 +43,9 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
     return {
       title: "Crowland2",
       description: "A multicultural nation in the Northern Heart of Kamolin",
-      imageUrl: "/placeholder.pnh",
+      imageUrl: "/placeholder.png",
       mapId: 2, // Required field from schema
-      nodes: nodeList || null,
+      nodes: nodeList || null, // Missing node will break MapModule
       styles: {
         fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
         lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
@@ -67,26 +67,28 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
 
   // To do: How to get map id?
   // const testSubmit = async (values: z.infer<typeof GlobalAreasSchema>) => {
-  const testSubmit = async () => {
+  const onSubmit = async () => {
+    if (nodeList.length < 1) {
+      alert("Please draw nodes on the map before submitting");
+      return;
+    }
     try {
-      setIsSubmitting(true);
-      setError("");
-
-      const submissionData = constructSubmissionData();
-      console.log("Submitting data:", submissionData); // Debug log
-
-      // Validate the data before sending
-      const validatedData = GlobalAreasSchema.parse(submissionData);
-      console.log("Validated data:", validatedData); // Debug log
-
-      if (globalArea) {
-        await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
-      } else {
-        await axios.post("/api/globalarea", validatedData);
-      }
-      setIsSubmitting(false);
-      router.push("/maps/create");
-      router.refresh();
+      console.log(constructSubmissionData());
+      // setIsSubmitting(true);
+      // setError("");
+      // const submissionData = constructSubmissionData();
+      // console.log("Submitting data:", submissionData); // Debug log
+      // // Validate the data before sending
+      // const validatedData = GlobalAreasSchema.parse(submissionData);
+      // console.log("Validated data:", validatedData); // Debug log
+      // if (globalArea) {
+      //   await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
+      // } else {
+      //   await axios.post("/api/globalarea", validatedData);
+      // }
+      // setIsSubmitting(false);
+      // router.push("/maps/create");
+      // router.refresh();
     } catch (error) {
       if (error instanceof z.ZodError) {
         setError(
@@ -126,7 +128,7 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
           </div>
           {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
           {/* <Button onClick={styleCheck}>Style</Button> */}
-          <Button onClick={testSubmit} disabled={isSubmitting}>
+          <Button onClick={onSubmit} disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Test Submit"}
           </Button>
         </div>
@@ -139,8 +141,11 @@ export default MapEditorModule;
 
 // 20241004 Next actions
 // Map editor is designed to be a popup module on top of the map.
+
+// 20241007 Next actions
+
 // For now: One area - one popup
-// 1. Create API endpoint for GlobalArea (patch)
 // 2. Create API endpoint for GlobalArea (post)
+// 1. Create API endpoint for GlobalArea (patch)
 // 3. Create API endpoint for GlobalArea (delete)
 // 4. Change Mapeditor module to a form
