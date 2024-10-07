@@ -2,7 +2,7 @@
 import { useMapEditor } from "@/hooks/useMapEditor";
 import { Button } from "../ui/button";
 import ColorPicker from "../ui/colorPicker/ColorPicker";
-import { Palette } from "lucide-react";
+import { Menu, Palette } from "lucide-react";
 
 import { useContext, useState } from "react";
 import { EditorContext } from "@/store/mapEditorContext";
@@ -11,6 +11,7 @@ import { GlobalArea } from "@prisma/client";
 import axios from "axios";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 import { useRouter } from "next/navigation";
+import LineWidthPicker from "../ui/lineWidthPicker/LineWidthPicker";
 
 interface GlobalAreaProps {
   globalArea?: GlobalArea;
@@ -125,6 +126,8 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
         <div className="relative z-20 col-span-2" id="sidebar">
           <div className="flex justify-between gap-1" id="color-pickers">
             <ColorPicker icon={<Palette className="text-slate-300" />} />
+            {/* 20241007 - Create a better icon */}
+            <LineWidthPicker icon={<Menu className="text-slate-300" />} />
           </div>
           {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
           {/* <Button onClick={styleCheck}>Style</Button> */}
