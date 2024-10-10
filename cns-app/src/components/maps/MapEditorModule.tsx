@@ -39,6 +39,7 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   // Current object will not be updated/remains as a dead object
   // Proceed with submission logic and isolating each drawn object, before returning to this issue
   styles.fillStyle = editorCtx.objectColor;
+  styles.lineWidth = editorCtx.objectLineWidth;
 
   const constructSubmissionData = () => {
     return {

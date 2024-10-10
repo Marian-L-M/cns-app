@@ -4,6 +4,8 @@ import { createContext, useState, ReactNode } from "react";
 interface MapEditorStyleContextType {
   objectColor: string;
   pickObjectColor: (color: string) => void;
+  objectLineWidth: number;
+  pickLineWidth: (lineWidth: number) => void;
 }
 
 interface MapEditorContextProviderProps {
@@ -13,6 +15,8 @@ interface MapEditorContextProviderProps {
 export const EditorContext = createContext<MapEditorStyleContextType>({
   objectColor: "red",
   pickObjectColor: () => {},
+  objectLineWidth: 1,
+  pickLineWidth: () => {},
 });
 
 // type EditorObjectStatus = {
@@ -23,14 +27,18 @@ export default function EditorContextProvider({
   children,
 }: MapEditorContextProviderProps) {
   const [objectColor, setObjectColor] = useState("");
+  const [objectLineWidth, setObjectLineWidth] = useState<number>(0);
 
   const pickObjectColor = (color: string) => setObjectColor(color);
+  const pickLineWidth = (lineWidth: number) => setObjectLineWidth(lineWidth);
 
   return (
     <EditorContext.Provider
       value={{
         objectColor,
         pickObjectColor,
+        objectLineWidth,
+        pickLineWidth,
       }}
     >
       {children}

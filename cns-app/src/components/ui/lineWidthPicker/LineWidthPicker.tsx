@@ -4,6 +4,7 @@ import { useState } from "react";
 import LineWidthPickerButton from "./LineWidthPickerButton";
 import { AnimatePresence, motion } from "framer-motion";
 import LineWidthBox from "./LineWidthBox";
+import LineWidthPanel from "./LineWidthPanel";
 
 interface LineWidthPickerProps {
   icon: React.ReactNode;
@@ -29,7 +30,7 @@ function LineWidthPicker(props: LineWidthPickerProps) {
             exit={{ opacity: 0, scale: 0.6 }}
           >
             <LineWidthBox>
-              {/* <ColorPanel setOpenColorPicker={setOpenColorPicker} /> */}
+              <LineWidthPanel setOpenLineWidthPicker={setOpenLineWidthPicker} />
             </LineWidthBox>
           </motion.div>
         )}
