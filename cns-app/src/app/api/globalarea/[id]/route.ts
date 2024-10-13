@@ -3,7 +3,7 @@ import prisma from "../../../../../prisma/db";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 
 interface Props {
-  params: { id: number };
+  params: { id: string };
 }
 
 export async function PATCH(request: NextRequest, { params }: Props) {
@@ -15,7 +15,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
   }
 
   const globalArea = await prisma.globalArea.findUnique({
-    where: { id: params.id },
+    where: { id: parseInt(params.id) },
   });
 
   if (!globalArea) {

@@ -43,6 +43,7 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
 
   const constructSubmissionData = () => {
     return {
+      id: globalArea?.id || null,
       title: "Crowland2",
       description: "A multicultural nation in the Northern Heart of Kamolin",
       imageUrl: "/placeholder.png",
@@ -75,20 +76,20 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
       return;
     }
     try {
-      console.log(constructSubmissionData());
-      // setIsSubmitting(true);
-      // setError("");
-      // const submissionData = constructSubmissionData();
-      // console.log("Submitting data:", submissionData); // Debug log
-      // // Validate the data before sending
-      // const validatedData = GlobalAreasSchema.parse(submissionData);
-      // console.log("Validated data:", validatedData); // Debug log
-      // if (globalArea) {
-      //   await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
-      // } else {
-      //   await axios.post("/api/globalarea", validatedData);
-      // }
-      // setIsSubmitting(false);
+      // console.log(constructSubmissionData());
+      setIsSubmitting(true);
+      setError("");
+      const submissionData = constructSubmissionData();
+      console.log("Submitting data:", submissionData); // Debug log
+      // Validate the data before sending
+      const validatedData = GlobalAreasSchema.parse(submissionData);
+      console.log("Validated data:", validatedData); // Debug log
+      if (globalArea) {
+        await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
+      } else {
+        await axios.post("/api/globalarea", validatedData);
+      }
+      setIsSubmitting(false);
       // router.push("/maps/create");
       // router.refresh();
     } catch (error) {
