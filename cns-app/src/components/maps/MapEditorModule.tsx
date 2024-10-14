@@ -12,6 +12,7 @@ import axios from "axios";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 import { useRouter } from "next/navigation";
 import LineWidthPicker from "../ui/lineWidthPicker/LineWidthPicker";
+import LineColorPicker from "../ui/colorPicker/LineColorPicker";
 
 interface GlobalAreaProps {
   globalArea?: GlobalArea;
@@ -127,7 +128,16 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
         </div>
         <div className="relative z-20 col-span-2" id="sidebar">
           <div className="flex justify-between gap-1" id="color-pickers">
-            <ColorPicker icon={<Palette className="text-slate-300" />} />
+            <ColorPicker
+              label={"Fill Style"}
+              icon={<Palette className="text-slate-300" />}
+              editorContext={"objectColor"}
+            />
+            <LineColorPicker
+              label={"Line Style"}
+              icon={<Palette className="text-slate-300" />}
+              editorContext={"lineColor"}
+            />
             {/* 20241007 - Create a better icon */}
             <LineWidthPicker icon={<Menu className="text-slate-300" />} />
           </div>

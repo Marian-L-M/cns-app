@@ -24,9 +24,10 @@ const colors = [
 
 interface PresetViewProps {
   setOpenColorPicker: React.Dispatch<React.SetStateAction<boolean>>;
+  editorContext: string;
 }
 
-const PresetView = ({ setOpenColorPicker }: PresetViewProps) => {
+const PresetView = ({ setOpenColorPicker, editorContext }: PresetViewProps) => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   return (
     <>
@@ -60,6 +61,7 @@ const PresetView = ({ setOpenColorPicker }: PresetViewProps) => {
         <SaveButton
           color={selectedColor}
           setOpenColorPicker={setOpenColorPicker}
+          editorContext={editorContext}
         />
       </div>
     </>

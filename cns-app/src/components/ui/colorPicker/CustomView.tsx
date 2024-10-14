@@ -5,6 +5,7 @@ interface SaveButtonProps {
   setOpenColorPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// 241014 Not connected to the rest of the app -> unify with save button
 const CustomView = ({ setOpenColorPicker }: SaveButtonProps) => {
   return (
     <div className="relative flex my-4 items-center">

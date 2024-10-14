@@ -11,7 +11,7 @@ interface ColorPickerProps {
   editorContext: string;
 }
 
-const ColorPicker = (props: ColorPickerProps) => {
+const LineColorPicker = (props: ColorPickerProps) => {
   const { icon, label, editorContext } = props;
   const [openFillColorPicker, setOpenFillColorPicker] =
     useState<boolean>(false);
@@ -43,4 +43,4 @@ const ColorPicker = (props: ColorPickerProps) => {
   );
 };
 
-export default ColorPicker;
+export default LineColorPicker;

@@ -9,9 +9,10 @@ const tabs = ["Preset", "Custom"];
 
 interface ViewProps {
   setOpenColorPicker: React.Dispatch<React.SetStateAction<boolean>>;
+  editorContext: string;
 }
 
-const ColorPanel = ({ setOpenColorPicker }: ViewProps) => {
+const ColorPanel = ({ setOpenColorPicker, editorContext }: ViewProps) => {
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
   return (
@@ -30,7 +31,10 @@ const ColorPanel = ({ setOpenColorPicker }: ViewProps) => {
             exit={{ x: -10, opacity: 0 }}
             transition={{ duration: 0.2, type: "spring", bounce: 0.3 }}
           >
-            <PresetView setOpenColorPicker={setOpenColorPicker} />
+            <PresetView
+              setOpenColorPicker={setOpenColorPicker}
+              editorContext={editorContext}
+            />
           </motion.div>
         )}
         {selectedTab === "Custom" && (

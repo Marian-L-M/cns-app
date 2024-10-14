@@ -5,12 +5,27 @@ import { useContext } from "react";
 interface SaveButtonProps {
   color: string;
   setOpenColorPicker: React.Dispatch<React.SetStateAction<boolean>>;
+  editorContext: string;
 }
 
-const SaveButton = ({ color, setOpenColorPicker }: SaveButtonProps) => {
+const SaveButton = ({
+  color,
+  setOpenColorPicker,
+  editorContext,
+}: SaveButtonProps) => {
   const editorCtx = useContext(EditorContext);
   const saveHandler = () => {
-    editorCtx.pickObjectColor(color);
+    switch (editorContext) {
+      case "objectColor":
+        editorCtx.pickObjectColor(color);
+        break;
+      case "lineColor":
+        editorCtx.pickLineColor(color);
+        break;
+      default:
+        console.log("Invalid editor context");
+        break;
+    }
     setOpenColorPicker(false);
   };
   return (
