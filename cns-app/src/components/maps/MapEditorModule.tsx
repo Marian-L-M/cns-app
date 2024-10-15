@@ -13,10 +13,27 @@ import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 import { useRouter } from "next/navigation";
 import LineWidthPicker from "../ui/lineWidthPicker/LineWidthPicker";
 import LineColorPicker from "../ui/colorPicker/LineColorPicker";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "../ui/input";
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface GlobalAreaProps {
   globalArea?: GlobalArea;
 }
+
+export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
+  globalArea: GlobalArea;
+};
 
 function MapEditorModule({ globalArea }: GlobalAreaProps) {
   const { canvasRef, nodeList, styles } = useMapEditor();
@@ -39,16 +56,19 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   // Updating styles will create new context
   // Current object will not be updated/remains as a dead object
   // Proceed with submission logic and isolating each drawn object, before returning to this issue
+  let area = globalArea;
+  const mapId = 2; // temporary fixed map id
   styles.fillStyle = editorCtx.objectColor;
   styles.lineWidth = editorCtx.objectLineWidth;
+  styles.strokeStyle = editorCtx.objectLineColor;
 
   const constructSubmissionData = () => {
     return {
       id: globalArea?.id || null,
       title: "Crowland2",
-      description: "A multicultural nation in the Northern Heart of Kamolin",
+      description: area?.description || "Desceiption sample data",
       imageUrl: "/placeholder.png",
-      mapId: 2, // Required field from schema
+      mapId: mapId,
       nodes: nodeList || null, // Missing node will break MapModule
       styles: {
         fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
@@ -62,54 +82,62 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
     };
   };
 
-  // const onSubmitHandler = (event: any) => {
-  //   event.preventDefault();
-  //   console.log("Submit");
-  //   console.log(nodeList);
-  //   console.log(styles);
-  // };
+  const form = useForm<GlobalAreaFormData>({
+    resolver: zodResolver(GlobalAreasSchema),
+    defaultValues: {
+      title: area?.title || "",
+      description: area?.description || "",
+      imageUrl: area?.imageUrl || "/placeholder.png",
+      objectTime: 1000,
+      type: "GEOGRAPHY",
+      infobox: null,
+      wikiId: area?.wikiId || 2, // temporary fixed wiki id
+    },
+  });
 
   // To do: How to get map id?
   // const testSubmit = async (values: z.infer<typeof GlobalAreasSchema>) => {
-  const onSubmit = async () => {
+  // const onSubmit = async () => {
+  async function onSubmit(values: GlobalAreaFormData) {
     if (nodeList.length < 1) {
       alert("Please draw nodes on the map before submitting");
       return;
     }
-    try {
-      // console.log(constructSubmissionData());
-      setIsSubmitting(true);
-      setError("");
-      const submissionData = constructSubmissionData();
-      console.log("Submitting data:", submissionData); // Debug log
-      // Validate the data before sending
-      const validatedData = GlobalAreasSchema.parse(submissionData);
-      console.log("Validated data:", validatedData); // Debug log
-      if (globalArea) {
-        await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
-      } else {
-        await axios.post("/api/globalarea", validatedData);
-      }
-      setIsSubmitting(false);
-      // router.push("/maps/create");
-      // router.refresh();
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        setError(
-          "Validation error: " + error.errors.map((e) => e.message).join(", ")
-        );
-        console.error("Validation error:", error.errors);
-      } else if (axios.isAxiosError(error)) {
-        setError(
-          `Server error: ${error.response?.data?.message || error.message}`
-        );
-        console.error("Server response:", error.response?.data);
-      } else {
-        setError("An unexpected error occurred");
-        console.error("Unknown error:", error);
-      }
-    }
-  };
+    console.log(values);
+    // try {
+    //   // console.log(constructSubmissionData());
+    //   setIsSubmitting(true);
+    //   setError("");
+    //   const submissionData = constructSubmissionData();
+    //   console.log("Submitting data:", submissionData); // Debug log
+    //   // Validate the data before sending
+    //   const validatedData = GlobalAreasSchema.parse(submissionData);
+    //   console.log("Validated data:", validatedData); // Debug log
+    //   if (globalArea) {
+    //     await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
+    //   } else {
+    //     await axios.post("/api/globalarea", validatedData);
+    //   }
+    //   setIsSubmitting(false);
+    //   router.push(`/maps/${mapId}`);
+    //   router.refresh();
+    // } catch (error) {
+    //   if (error instanceof z.ZodError) {
+    //     setError(
+    //       "Validation error: " + error.errors.map((e) => e.message).join(", ")
+    //     );
+    //     console.error("Validation error:", error.errors);
+    //   } else if (axios.isAxiosError(error)) {
+    //     setError(
+    //       `Server error: ${error.response?.data?.message || error.message}`
+    //     );
+    //     console.error("Server response:", error.response?.data);
+    //   } else {
+    //     setError("An unexpected error occurred");
+    //     console.error("Unknown error:", error);
+    //   }
+    // }
+  }
 
   return (
     <div className="w-full" id="map-editor-module">
@@ -126,27 +154,122 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
             // {...props}
           />
         </div>
-        <div className="relative z-20 col-span-2" id="sidebar">
-          <div className="flex justify-between gap-1" id="color-pickers">
-            <ColorPicker
-              label={"Fill Style"}
-              icon={<Palette className="text-slate-300" />}
-              editorContext={"objectColor"}
-            />
-            <LineColorPicker
-              label={"Line Style"}
-              icon={<Palette className="text-slate-300" />}
-              editorContext={"lineColor"}
-            />
-            {/* 20241007 - Create a better icon */}
-            <LineWidthPicker icon={<Menu className="text-slate-300" />} />
-          </div>
-          {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
-          {/* <Button onClick={styleCheck}>Style</Button> */}
-          <Button onClick={onSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Test Submit"}
-          </Button>
-        </div>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="relative z-20 col-span-2 flex flex-col gap-4"
+            id="sidebar"
+          >
+            <div className="w-full flex flex-col gap-4" id="form-top">
+              <div className="w-full" id="title-container">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  defaultValue={area?.title}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Area Title..." {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full" id="description-container">
+                <h4 className="font-bold">Description</h4>
+                <Controller
+                  name="description"
+                  defaultValue={area?.description}
+                  control={form.control}
+                  render={({ field }) => (
+                    <SimpleMDE placeholder="Area description" {...field} />
+                  )}
+                />
+              </div>
+              <div className="w-full" id="thumbnail-container">
+                <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  defaultValue={area?.imageUrl}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thumbnail</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Area Thumbnail" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full" id="thumbnail-container">
+                <FormField
+                  control={form.control}
+                  name="objectTime"
+                  defaultValue={area?.objectTime}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Area Timestamp</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Area Timestamp" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full" id="type-container">
+                <FormField
+                  control={form.control}
+                  name="type"
+                  defaultValue={area?.type}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder="Type..."
+                              defaultValue={area?.type}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="GEOGRAPHY">Geography</SelectItem>
+                          <SelectItem value="POLITICAL">Political</SelectItem>
+                          <SelectItem value="OTHER">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            {/* Move pickers into an overlay over the map editor */}
+            <div className="flex justify-between gap-1" id="color-pickers">
+              <ColorPicker
+                label={"Fill Style"}
+                icon={<Palette className="text-slate-300" />}
+                editorContext={"objectColor"}
+              />
+              <LineColorPicker
+                label={"Line Style"}
+                icon={<Palette className="text-slate-300" />}
+                editorContext={"lineColor"}
+              />
+              {/* 20241007 - Create a better icon */}
+              <LineWidthPicker icon={<Menu className="text-slate-300" />} />
+            </div>
+            {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
+            {/* <Button onClick={styleCheck}>Style</Button> */}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Test Submit"}
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );
