@@ -13,7 +13,7 @@ interface areaNode {
   y: number;
 }
 
-export const useMapEditor = () => {
+export const useMapEditor = (nodes: areaNode[]) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // 20240926 Next actions
@@ -27,8 +27,15 @@ export const useMapEditor = () => {
   // 241007 Next actions
   // If an area objects exists without nodes, it will break the map maker module
 
+  // 241018 Next actions
+  // Extract drawing loop into separate function -> It needs to run once on load + clear canvas
+
   //20240926 Next actions : Connect styles to UI
   let nodeList: areaNode[] = [];
+  console.log("editor nodes" + nodes);
+  if (nodes?.length > 0) {
+    nodeList = nodes;
+  }
 
   let styles = {
     fillStyle: "rgba(0, 255, 16, 0.4)",
@@ -60,6 +67,7 @@ export const useMapEditor = () => {
 
     // Draw area
     canvas.onmousedown = (e) => {
+      console.log(nodeList);
       let existingFlag = false;
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;

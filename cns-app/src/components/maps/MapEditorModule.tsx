@@ -35,8 +35,21 @@ export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
   globalArea: GlobalArea;
 };
 
+interface areaNode {
+  id: number;
+  x: number;
+  y: number;
+}
+
 function MapEditorModule({ globalArea }: GlobalAreaProps) {
-  const { canvasRef, nodeList, styles } = useMapEditor();
+  const nodes: areaNode[] = [
+    { id: 1, x: 0, y: 298 },
+    { id: 2, x: 25, y: 304 },
+    { id: 3, x: 48, y: 304 },
+    { id: 4, x: 22, y: 179 },
+    { id: 5, x: 11, y: 193 },
+  ];
+  const { canvasRef, nodeList, styles } = useMapEditor(nodes);
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,10 +60,6 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
   }
-  const styleCheck = (event: any) => {
-    event.preventDefault();
-    console.log(editorCtx.objectColor);
-  };
 
   //241004 - Issue with apllying styles to canvas
   // Updating styles will create new context
@@ -62,36 +71,23 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   styles.lineWidth = editorCtx.objectLineWidth;
   styles.strokeStyle = editorCtx.objectLineColor;
 
-  const constructSubmissionData = () => {
-    return {
-      id: globalArea?.id || null,
-      title: "Crowland2",
-      description: area?.description || "Desceiption sample data",
-      imageUrl: "/placeholder.png",
-      mapId: mapId,
-      nodes: nodeList || null, // Missing node will break MapModule
-      styles: {
-        fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
-        lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
-        strokeStyle: styles.strokeStyle || "black",
-      },
-      objectTime: 1000,
-      type: "GEOGRAPHY",
-      infobox: null,
-      wikiId: 2,
-    };
-  };
-
   const form = useForm<GlobalAreaFormData>({
     resolver: zodResolver(GlobalAreasSchema),
     defaultValues: {
       title: area?.title || "",
       description: area?.description || "",
-      imageUrl: area?.imageUrl || "/placeholder.png",
-      objectTime: 1000,
-      type: "GEOGRAPHY",
-      infobox: null,
+      imageUrl: area?.imageUrl || "",
+      mapId: 2, // temporary fixed wiki id
       wikiId: area?.wikiId || 2, // temporary fixed wiki id
+      type: (area?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") || "GEOGRAPHY",
+      infobox: null,
+      nodes: nodeList,
+      styles: {
+        fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
+        lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
+        strokeStyle: styles.strokeStyle || "black",
+      },
+      objectTime: area?.objectTime || 1000,
     },
   });
 
@@ -103,40 +99,39 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
       alert("Please draw nodes on the map before submitting");
       return;
     }
-    console.log(values);
-    // try {
-    //   // console.log(constructSubmissionData());
-    //   setIsSubmitting(true);
-    //   setError("");
-    //   const submissionData = constructSubmissionData();
-    //   console.log("Submitting data:", submissionData); // Debug log
-    //   // Validate the data before sending
-    //   const validatedData = GlobalAreasSchema.parse(submissionData);
-    //   console.log("Validated data:", validatedData); // Debug log
-    //   if (globalArea) {
-    //     await axios.patch(`/api/globalarea/${globalArea.id}`, validatedData);
-    //   } else {
-    //     await axios.post("/api/globalarea", validatedData);
-    //   }
-    //   setIsSubmitting(false);
-    //   router.push(`/maps/${mapId}`);
-    //   router.refresh();
-    // } catch (error) {
-    //   if (error instanceof z.ZodError) {
-    //     setError(
-    //       "Validation error: " + error.errors.map((e) => e.message).join(", ")
-    //     );
-    //     console.error("Validation error:", error.errors);
-    //   } else if (axios.isAxiosError(error)) {
-    //     setError(
-    //       `Server error: ${error.response?.data?.message || error.message}`
-    //     );
-    //     console.error("Server response:", error.response?.data);
-    //   } else {
-    //     setError("An unexpected error occurred");
-    //     console.error("Unknown error:", error);
-    //   }
-    // }
+    try {
+      // console.log(constructSubmissionData());
+      setIsSubmitting(true);
+      setError("");
+      // const submissionData = constructSubmissionData();
+      console.log("Submitting data:", values); // Debug log
+      // Validate the data before sending
+      // const validatedData = GlobalAreasSchema.parse(submissionData);
+      // console.log("Validated data:", validatedData); // Debug log
+      if (globalArea) {
+        await axios.patch(`/api/globalarea/${globalArea.id}`, values);
+      } else {
+        await axios.post("/api/globalarea", values);
+      }
+      setIsSubmitting(false);
+      router.push(`/maps/${mapId}`);
+      router.refresh();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setError(
+          "Validation error: " + error.errors.map((e) => e.message).join(", ")
+        );
+        console.error("Validation error:", error.errors);
+      } else if (axios.isAxiosError(error)) {
+        setError(
+          `Server error: ${error.response?.data?.message || error.message}`
+        );
+        console.error("Server response:", error.response?.data);
+      } else {
+        setError("An unexpected error occurred");
+        console.error("Unknown error:", error);
+      }
+    }
   }
 
   return (
@@ -156,6 +151,7 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
         </div>
         <Form {...form}>
           <form
+            // 241016 - searching for bug: Form not submitting properly
             onSubmit={form.handleSubmit(onSubmit)}
             className="relative z-20 col-span-2 flex flex-col gap-4"
             id="sidebar"
@@ -202,7 +198,7 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
                   )}
                 />
               </div>
-              <div className="w-full" id="thumbnail-container">
+              <div className="w-full" id="timestamp-container">
                 <FormField
                   control={form.control}
                   name="objectTime"
@@ -221,20 +217,16 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
                 <FormField
                   control={form.control}
                   name="type"
-                  defaultValue={area?.type}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Role</FormLabel>
+                      <FormLabel>Type</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue
-                              placeholder="Type..."
-                              defaultValue={area?.type}
-                            />
+                            <SelectValue placeholder="Type..." />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -260,11 +252,16 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
                 icon={<Palette className="text-slate-300" />}
                 editorContext={"lineColor"}
               />
-              {/* 20241007 - Create a better icon */}
               <LineWidthPicker icon={<Menu className="text-slate-300" />} />
             </div>
             {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
-            {/* <Button onClick={styleCheck}>Style</Button> */}
+            <Button
+              onClick={() => {
+                console.log(nodeList);
+              }}
+            >
+              Style
+            </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Test Submit"}
             </Button>
