@@ -42,14 +42,18 @@ interface areaNode {
 }
 
 function MapEditorModule({ globalArea }: GlobalAreaProps) {
-  const nodes: areaNode[] = [
-    { id: 1, x: 0, y: 298 },
-    { id: 2, x: 25, y: 304 },
-    { id: 3, x: 48, y: 304 },
-    { id: 4, x: 22, y: 179 },
-    { id: 5, x: 11, y: 193 },
-  ];
-  const { canvasRef, nodeList, styles } = useMapEditor(nodes);
+  // let nodes: areaNode[] = [
+  //   { id: 1, x: 0, y: 298 },
+  //   { id: 2, x: 25, y: 304 },
+  //   { id: 3, x: 48, y: 304 },
+  //   { id: 4, x: 22, y: 179 },
+  //   { id: 5, x: 11, y: 193 },
+  // ];
+
+  // const [currentNodes, setCurrentNodes] = useState();
+  const { canvasRef, styles } = useMapEditor();
+
+  // nodes = nodeList;
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,6 +74,10 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   styles.fillStyle = editorCtx.objectColor;
   styles.lineWidth = editorCtx.objectLineWidth;
   styles.strokeStyle = editorCtx.objectLineColor;
+  const nodeList = editorCtx.nodeList;
+
+  // Synchronization issue with the editor context
+  console.log("this is the nodelist: " + nodeList);
 
   const form = useForm<GlobalAreaFormData>({
     resolver: zodResolver(GlobalAreasSchema),
@@ -256,11 +264,12 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
             </div>
             {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
             <Button
+              type="button"
               onClick={() => {
-                console.log(nodeList);
+                console.log("Current nodes:", editorCtx.nodeList);
               }}
             >
-              Style
+              NodeList check
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Test Submit"}

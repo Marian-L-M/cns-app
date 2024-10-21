@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
+import { EditorContext } from "@/store/mapEditorContext";
 
 interface editableAreaObject {
   id: number;
@@ -13,8 +14,16 @@ interface areaNode {
   y: number;
 }
 
-export const useMapEditor = (nodes: areaNode[]) => {
+export const useMapEditor = () => {
+  const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // let nodes: areaNode[] = [
+  //   { id: 1, x: 0, y: 298 },
+  //   { id: 2, x: 25, y: 304 },
+  //   { id: 3, x: 48, y: 304 },
+  //   { id: 4, x: 22, y: 179 },
+  //   { id: 5, x: 11, y: 193 },
+  // ];
 
   // 20240926 Next actions
   // 1. Draw object by clicking on map
@@ -32,10 +41,9 @@ export const useMapEditor = (nodes: areaNode[]) => {
 
   //20240926 Next actions : Connect styles to UI
   let nodeList: areaNode[] = [];
-  console.log("editor nodes" + nodes);
-  if (nodes?.length > 0) {
-    nodeList = nodes;
-  }
+  // if (nodes?.length > 0) {
+  //   nodeList = nodes;
+  // }
 
   let styles = {
     fillStyle: "rgba(0, 255, 16, 0.4)",
@@ -55,19 +63,27 @@ export const useMapEditor = (nodes: areaNode[]) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // // Clear canvas
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     // Click events
-
     const r = canvas.getBoundingClientRect();
 
     // rudimentary id system
     let idCounter = 0;
 
-    // Draw area
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw initial
+    ctx.fillStyle = styles.fillStyle || "grey";
+    ctx.strokeStyle = styles.strokeStyle || "black";
+    ctx.lineWidth = styles.lineWidth || 3;
+
+    if (nodeList.length > 0) {
+      draw(ctx, nodeList, cw, ch);
+      drawEditNodes(ctx, nodeList, cw, ch);
+    }
+
+    // Draw new ares on click
     canvas.onmousedown = (e) => {
-      console.log(nodeList);
       let existingFlag = false;
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;
@@ -91,9 +107,6 @@ export const useMapEditor = (nodes: areaNode[]) => {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           // Redraw nodes
-          ctx.fillStyle = styles.fillStyle || "grey";
-          ctx.strokeStyle = styles.strokeStyle || "black";
-          ctx.lineWidth = styles.lineWidth || 3;
           draw(ctx, nodeList, cw, ch);
           drawEditNodes(ctx, nodeList, cw, ch);
           return;
@@ -114,6 +127,9 @@ export const useMapEditor = (nodes: areaNode[]) => {
         }
         return;
       }
+
+      // editorCtx.nodeList = nodeList;
+      editorCtx.updateNodeList(nodeList);
       return;
     };
   }, [nodeList]);
