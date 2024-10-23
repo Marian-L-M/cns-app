@@ -52,10 +52,6 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   let windowSize: number =
     typeof window !== "undefined" ? window.innerWidth : 1024;
 
-  //241004 - Issue with apllying styles to canvas
-  // Updating styles will create new context
-  // Current object will not be updated/remains as a dead object
-  // Proceed with submission logic and isolating each drawn object, before returning to this issue
   let area = globalArea;
   const mapId = 2; // temporary fixed map id
   styles.fillStyle = editorCtx.objectColor;
@@ -63,9 +59,7 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   styles.strokeStyle = editorCtx.objectLineColor;
   const nodeList = editorCtx.nodeList;
 
-  // Synchronization issue with the editor context
-  console.log("this is the nodelist: " + nodeList);
-
+  // Set form data
   const form = useForm<GlobalAreaFormData>({
     resolver: zodResolver(GlobalAreasSchema),
     defaultValues: {
@@ -89,33 +83,41 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
   // Keep form values synchronized with context
   useEffect(() => {
     form.setValue("nodes", editorCtx.nodeList);
-  }, [editorCtx.nodeList, form]);
+    form.setValue("styles", {
+      fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
+      lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
+      strokeStyle: styles.strokeStyle || "black",
+    });
+  }, [editorCtx.nodeList, form, styles]);
 
-  // To do: How to get map id?
-  // const testSubmit = async (values: z.infer<typeof GlobalAreasSchema>) => {
-  // const onSubmit = async () => {
   async function onSubmit(values: GlobalAreaFormData) {
     if (editorCtx.nodeList.length < 1) {
       alert("Please draw nodes on the map before submitting");
       return;
     }
 
-    // Ensure we're using the latest nodeList from context
+    // Set submission values to lates canvas values
     const submissionValues = {
       ...values,
+      styles: {
+        fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
+        lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
+        strokeStyle: styles.strokeStyle || "black",
+      },
       nodes: editorCtx.nodeList,
     };
 
     try {
       setIsSubmitting(true);
       setError("");
-      console.log("Submitting data:", values); // Debug log
+      console.log("Submitting data:", submissionValues);
 
       if (globalArea) {
-        await axios.patch(`/api/globalarea/${globalArea.id}`, values);
+        await axios.patch(`/api/globalarea/${globalArea.id}`, submissionValues);
       } else {
-        await axios.post("/api/globalarea", values);
+        await axios.post("/api/globalarea", submissionValues);
       }
+
       setIsSubmitting(false);
       router.push(`/maps/${mapId}`);
       router.refresh();
@@ -159,7 +161,6 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
         </div>
         <Form {...form}>
           <form
-            // 241016 - searching for bug: Form not submitting properly
             onSubmit={form.handleSubmit(onSubmit)}
             className="relative z-20 col-span-2 flex flex-col gap-4"
             id="sidebar"
@@ -293,3 +294,9 @@ export default MapEditorModule;
 // 1. Create API endpoint for GlobalArea (patch)
 // 3. Create API endpoint for GlobalArea (delete)
 // 4. Change Mapeditor module to a form
+
+// 20241023 Next actions
+// 1. Add opacity to the fill style
+// 2. Clean up the map editor module
+// 3. Change map editor to popup + list of global areas
+// 4. Add global objects functionality
