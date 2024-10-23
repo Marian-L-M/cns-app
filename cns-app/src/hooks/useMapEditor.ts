@@ -17,13 +17,6 @@ interface areaNode {
 export const useMapEditor = () => {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // let nodes: areaNode[] = [
-  //   { id: 1, x: 0, y: 298 },
-  //   { id: 2, x: 25, y: 304 },
-  //   { id: 3, x: 48, y: 304 },
-  //   { id: 4, x: 22, y: 179 },
-  //   { id: 5, x: 11, y: 193 },
-  // ];
 
   // 20240926 Next actions
   // 1. Draw object by clicking on map
@@ -67,20 +60,25 @@ export const useMapEditor = () => {
     const r = canvas.getBoundingClientRect();
 
     // rudimentary id system
-    let idCounter = 0;
+    let idCounter = editorCtx.nodeList.length;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const redrawCanvas = () => {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw initial
-    ctx.fillStyle = styles.fillStyle || "grey";
-    ctx.strokeStyle = styles.strokeStyle || "black";
-    ctx.lineWidth = styles.lineWidth || 3;
+      // Set styles
+      ctx.fillStyle = styles.fillStyle || "grey";
+      ctx.strokeStyle = styles.strokeStyle || "black";
+      ctx.lineWidth = styles.lineWidth || 3;
 
-    if (nodeList.length > 0) {
-      draw(ctx, nodeList, cw, ch);
-      drawEditNodes(ctx, nodeList, cw, ch);
-    }
+      if (editorCtx.nodeList.length > 0) {
+        draw(ctx, editorCtx.nodeList, cw, ch);
+        drawEditNodes(ctx, editorCtx.nodeList, cw, ch);
+      }
+    };
+
+    // Initial draw
+    redrawCanvas();
 
     // Draw new ares on click
     canvas.onmousedown = (e) => {
@@ -88,50 +86,40 @@ export const useMapEditor = () => {
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;
 
-      // If existing node remove from nodelist
-      nodeList.forEach((node: areaNode, index) => {
+      let updatedNodes = [...editorCtx.nodeList];
+
+      // Check for existing nodes
+      updatedNodes.forEach((node: areaNode, index) => {
         drawMetaNode(ctx, node.x, node.y, cw, ch);
         if (ctx.isPointInPath(mouseX, mouseY)) {
-          if (index == 0) {
-            nodeList.shift();
-          } else if (index == nodeList.length - 1) {
-            nodeList.pop();
-          } else {
-            nodeList.splice(index, index);
-          }
-
-          // Set existing flag
           existingFlag = true;
-
-          // Clear canvas
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-          // Redraw nodes
-          draw(ctx, nodeList, cw, ch);
-          drawEditNodes(ctx, nodeList, cw, ch);
-          return;
+          if (index === 0) {
+            updatedNodes.shift();
+          } else if (index === updatedNodes.length - 1) {
+            updatedNodes.pop();
+          } else {
+            updatedNodes.splice(index, 1);
+          }
         }
       });
 
-      // If not existing node add to nodelist
+      // Add new node if not clicking existing one
       if (!existingFlag) {
-        nodeList.push({ id: idCounter, x: mouseX, y: mouseY });
-        idCounter++;
-
-        if (nodeList.length > 0) {
-          ctx.fillStyle = styles.fillStyle || "grey";
-          ctx.strokeStyle = styles.strokeStyle || "black";
-          ctx.lineWidth = styles.lineWidth || 3;
-          draw(ctx, nodeList, cw, ch);
-          drawEditNodes(ctx, nodeList, cw, ch);
-        }
-        return;
+        updatedNodes.push({ id: idCounter++, x: mouseX, y: mouseY });
       }
 
-      // editorCtx.nodeList = nodeList;
-      editorCtx.updateNodeList(nodeList);
-      return;
+      // Update context with new nodes
+      editorCtx.updateNodeList(updatedNodes);
+
+      // Redraw canvas
+      redrawCanvas();
     };
-  }, [nodeList]);
+
+    // Cleanup
+    return () => {
+      canvas.onmousedown = null;
+    };
+  }, [editorCtx, styles]);
+
   return { canvasRef, nodeList, styles };
 };

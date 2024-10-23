@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import ColorPicker from "../ui/colorPicker/ColorPicker";
 import { Menu, Palette } from "lucide-react";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { EditorContext } from "@/store/mapEditorContext";
 import { set, z } from "zod";
 import { GlobalArea } from "@prisma/client";
@@ -42,28 +42,15 @@ interface areaNode {
 }
 
 function MapEditorModule({ globalArea }: GlobalAreaProps) {
-  // let nodes: areaNode[] = [
-  //   { id: 1, x: 0, y: 298 },
-  //   { id: 2, x: 25, y: 304 },
-  //   { id: 3, x: 48, y: 304 },
-  //   { id: 4, x: 22, y: 179 },
-  //   { id: 5, x: 11, y: 193 },
-  // ];
-
-  // const [currentNodes, setCurrentNodes] = useState();
   const { canvasRef, styles } = useMapEditor();
-
-  // nodes = nodeList;
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   // To do - make this dynamic
-  let windowSize: number = 1024;
-  if (typeof window !== "undefined") {
-    windowSize = window.innerWidth;
-  }
+  let windowSize: number =
+    typeof window !== "undefined" ? window.innerWidth : 1024;
 
   //241004 - Issue with apllying styles to canvas
   // Updating styles will create new context
@@ -99,23 +86,31 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
     },
   });
 
+  // Keep form values synchronized with context
+  useEffect(() => {
+    form.setValue("nodes", editorCtx.nodeList);
+  }, [editorCtx.nodeList, form]);
+
   // To do: How to get map id?
   // const testSubmit = async (values: z.infer<typeof GlobalAreasSchema>) => {
   // const onSubmit = async () => {
   async function onSubmit(values: GlobalAreaFormData) {
-    if (nodeList.length < 1) {
+    if (editorCtx.nodeList.length < 1) {
       alert("Please draw nodes on the map before submitting");
       return;
     }
+
+    // Ensure we're using the latest nodeList from context
+    const submissionValues = {
+      ...values,
+      nodes: editorCtx.nodeList,
+    };
+
     try {
-      // console.log(constructSubmissionData());
       setIsSubmitting(true);
       setError("");
-      // const submissionData = constructSubmissionData();
       console.log("Submitting data:", values); // Debug log
-      // Validate the data before sending
-      // const validatedData = GlobalAreasSchema.parse(submissionData);
-      // console.log("Validated data:", validatedData); // Debug log
+
       if (globalArea) {
         await axios.patch(`/api/globalarea/${globalArea.id}`, values);
       } else {
@@ -125,22 +120,27 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
       router.push(`/maps/${mapId}`);
       router.refresh();
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        setError(
-          "Validation error: " + error.errors.map((e) => e.message).join(", ")
-        );
-        console.error("Validation error:", error.errors);
-      } else if (axios.isAxiosError(error)) {
-        setError(
-          `Server error: ${error.response?.data?.message || error.message}`
-        );
-        console.error("Server response:", error.response?.data);
-      } else {
-        setError("An unexpected error occurred");
-        console.error("Unknown error:", error);
-      }
+      handleError(error);
     }
   }
+
+  const handleError = (error: unknown) => {
+    if (error instanceof z.ZodError) {
+      setError(
+        "Validation error: " + error.errors.map((e) => e.message).join(", ")
+      );
+      console.error("Validation error:", error.errors);
+    } else if (axios.isAxiosError(error)) {
+      setError(
+        `Server error: ${error.response?.data?.message || error.message}`
+      );
+      console.error("Server response:", error.response?.data);
+    } else {
+      setError("An unexpected error occurred");
+      console.error("Unknown error:", error);
+    }
+    setIsSubmitting(false);
+  };
 
   return (
     <div className="w-full" id="map-editor-module">
@@ -266,7 +266,8 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
             <Button
               type="button"
               onClick={() => {
-                console.log("Current nodes:", editorCtx.nodeList);
+                console.log("NodeList from context:", editorCtx.nodeList);
+                console.log("Form nodes value:", form.getValues("nodes"));
               }}
             >
               NodeList check
@@ -282,7 +283,6 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
 }
 
 export default MapEditorModule;
-
 // 20241004 Next actions
 // Map editor is designed to be a popup module on top of the map.
 
