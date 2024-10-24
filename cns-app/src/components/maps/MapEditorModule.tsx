@@ -27,7 +27,8 @@ import {
   SelectValue,
 } from "../ui/select";
 
-interface GlobalAreaProps {
+interface Props {
+  mapId: number;
   globalArea?: GlobalArea;
 }
 
@@ -41,7 +42,11 @@ interface areaNode {
   y: number;
 }
 
-function MapEditorModule({ globalArea }: GlobalAreaProps) {
+// 241024 To do
+// Careful mapId is live
+// Connect map image to the mapId
+
+function MapEditorModule({ mapId, globalArea }: Props) {
   const { canvasRef, styles } = useMapEditor();
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
@@ -53,7 +58,6 @@ function MapEditorModule({ globalArea }: GlobalAreaProps) {
     typeof window !== "undefined" ? window.innerWidth : 1024;
 
   let area = globalArea;
-  const mapId = 2; // temporary fixed map id
   styles.fillStyle = editorCtx.objectColor;
   styles.lineWidth = editorCtx.objectLineWidth;
   styles.strokeStyle = editorCtx.objectLineColor;
