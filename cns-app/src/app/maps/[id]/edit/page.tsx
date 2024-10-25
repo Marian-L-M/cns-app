@@ -21,14 +21,14 @@ const EditMap = async ({ params }: Props) => {
   }
   return (
     <>
-      <div className="flex gap-2 justify-end mb-4">
+      {/* <div className="flex gap-2 justify-end mb-4">
         <Link href={`/maps/edit/${params.id}/areas`}>
           <Button variant={"secondary"}>Areas</Button>
         </Link>
         <Link href={`/maps/edit/${params.id}/objects`}>
           <Button variant={"secondary"}>Objects</Button>
         </Link>
-      </div>
+      </div> */}
       <MapForm map={map} />
     </>
   );

@@ -13,6 +13,7 @@ import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 type MapFormData = z.infer<typeof mapSchema>;
 
@@ -77,13 +78,13 @@ const MapForm = ({ map }: Props) => {
           />
           <h3>Images</h3>
           <div className="flex gap-8 mb-8">
-            <div className="flex-col">
+            <div className="flex flex-col gap-4">
               <FormField
                 control={form.control}
                 name="mapUrl"
                 defaultValue={map?.mapUrl}
                 render={({ field }) => (
-                  <FormItem className="mb-4">
+                  <FormItem>
                     <FormLabel>Base Map</FormLabel>
                     <FormControl>
                       <Input
@@ -100,6 +101,16 @@ const MapForm = ({ map }: Props) => {
                 height={300}
                 alt="Thumbnail"
               />
+              {map?.id && (
+                <>
+                  <Link href={`/maps/${map.id}/edit/areas`}>
+                    <Button variant={"secondary"}>Edit Areas</Button>
+                  </Link>
+                  <Link href={`/maps/${map.id}/edit/objects`}>
+                    <Button variant={"secondary"}>Edit Objects</Button>
+                  </Link>
+                </>
+              )}
             </div>
             <div className="flex-col">
               <FormField

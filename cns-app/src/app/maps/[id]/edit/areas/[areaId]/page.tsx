@@ -7,9 +7,9 @@ interface Props {
 
 const MapAreaEditor = ({ params }: Props) => {
   return (
-    <>
-      <MapEditor mapId={params.id} />
-    </>
+    <div>
+      <MapEditor mapId={params.areaId} />
+    </div>
   );
 };
 

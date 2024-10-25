@@ -5,21 +5,15 @@ import { FC, useContext } from "react";
 import { StatusContext } from "@/store/statusContext";
 import StatusBar from "../ui/maps/statusBar";
 import InfoBox from "../ui/maps/infoBox";
+import Link from "next/link";
 
 const MapModule: FC<MapModuleProps> = ({ id, data }) => {
+  console.log(data);
   const { canvasRef } = useMapMaker({ id, data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
 
   const activeStatus = statusBarCtx.statusBar;
-  const activeInfo = statusBarCtx.infoBox;
-
-  let infoData;
-  if (activeInfo?.type == "GlobalObjectType") {
-    infoData = mapObjects;
-  } else {
-    infoData = mapAreas;
-  }
 
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
@@ -58,15 +52,19 @@ const MapModule: FC<MapModuleProps> = ({ id, data }) => {
             height="1024"
           />
         </div>
-        <div className="col-span-2" id="infobox">
-          {activeInfo && (
-            <InfoBox
-              id={activeInfo.id}
-              title={activeInfo.title}
-              type={activeInfo.type}
-              infoData={infoData}
-            />
-          )}
+        <div className="col-span-2 flex flex-col gap-4" id="area-list">
+          <h4>Areas</h4>
+          <div className="flex flex-col gap-4" id="area-container">
+            {mapAreas.map((area) => (
+              <Link
+                key={area.id}
+                href={`/maps/${id}/edit/areas/${area.id}`}
+                className="flex gap-2 p-4 bg-slate-800 text-white rounded-lg hover:opacity-90"
+              >
+                <h6>{area.title}</h6>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>
