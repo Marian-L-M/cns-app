@@ -1,10 +1,16 @@
 import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
+import { GlobalArea } from "@prisma/client";
 
-const MapEditor = ({ mapId }: String) => {
+interface Props {
+  id: number;
+  area: GlobalArea;
+}
+
+const MapEditor = ({ id, area }: Props) => {
   return (
     <EditorContextProvider>
-      <MapEditorModule mapId={mapId} />
+      <MapEditorModule mapId={id} globalArea={area} />
     </EditorContextProvider>
   );
 };

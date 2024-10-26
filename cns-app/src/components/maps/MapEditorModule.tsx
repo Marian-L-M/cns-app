@@ -7,7 +7,7 @@ import { Menu, Palette } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { EditorContext } from "@/store/mapEditorContext";
 import { set, z } from "zod";
-import { GlobalArea } from "@prisma/client";
+import { GlobalArea, GlobalObject } from "@prisma/client";
 import axios from "axios";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,7 @@ import {
 interface Props {
   mapId: number;
   globalArea?: GlobalArea;
+  globalObject?: GlobalObject;
 }
 
 export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
@@ -42,9 +43,10 @@ interface areaNode {
   y: number;
 }
 
-// 241024 To do
-// Careful mapId is live
-// Connect map image to the mapId
+// 241026 To do
+// mapId (id) and global Area are live
+// Connect to drawing functions - Form is populated but canvas is not drawn
+// For future use consider using API instead of drilling down the data
 
 function MapEditorModule({ mapId, globalArea }: Props) {
   const { canvasRef, styles } = useMapEditor();
@@ -57,7 +59,6 @@ function MapEditorModule({ mapId, globalArea }: Props) {
   let windowSize: number =
     typeof window !== "undefined" ? window.innerWidth : 1024;
 
-  let area = globalArea;
   styles.fillStyle = editorCtx.objectColor;
   styles.lineWidth = editorCtx.objectLineWidth;
   styles.strokeStyle = editorCtx.objectLineColor;
