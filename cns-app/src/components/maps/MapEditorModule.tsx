@@ -3,6 +3,7 @@ import { useMapEditor } from "@/hooks/useMapEditor";
 import { Button } from "../ui/button";
 import ColorPicker from "../ui/colorPicker/ColorPicker";
 import { Menu, Palette } from "lucide-react";
+import Image from "next/image";
 
 import { useContext, useEffect, useState } from "react";
 import { EditorContext } from "@/store/mapEditorContext";
@@ -54,24 +55,34 @@ function MapEditorModule({ mapId, globalArea }: Props) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  // console.log("globalArea:", globalArea?.nodes);
+
+  if (globalArea?.nodes) {
+    editorCtx.updateNodeList(globalArea?.nodes); // Working, but in Prisma Schema declared as JSON not list of objects
+  }
 
   // To do - make this dynamic
-  let windowSize: number =
-    typeof window !== "undefined" ? window.innerWidth : 1024;
+  let windowSize: number = 1024;
+  if (typeof window !== "undefined") {
+    windowSize = window.innerWidth;
+  }
 
   styles.fillStyle = editorCtx.objectColor;
   styles.lineWidth = editorCtx.objectLineWidth;
   styles.strokeStyle = editorCtx.objectLineColor;
   const nodeList = editorCtx.nodeList;
 
+  const area = globalArea;
+
   // Set form data
+  // console.log("nodes:", globalArea?.nodes);
   const form = useForm<GlobalAreaFormData>({
     resolver: zodResolver(GlobalAreasSchema),
     defaultValues: {
       title: area?.title || "",
       description: area?.description || "",
       imageUrl: area?.imageUrl || "",
-      mapId: 2, // temporary fixed wiki id
+      mapId: mapId,
       wikiId: area?.wikiId || 2, // temporary fixed wiki id
       type: (area?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") || "GEOGRAPHY",
       infobox: null,
@@ -153,7 +164,7 @@ function MapEditorModule({ mapId, globalArea }: Props) {
     <div className="w-full" id="map-editor-module">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
         <div
-          className="relative z-10 max-w-screen-lg col-span-4 "
+          className="relative z-10 max-w-screen-lg col-span-4 bg-black"
           id="map-base"
         >
           <canvas
@@ -162,6 +173,14 @@ function MapEditorModule({ mapId, globalArea }: Props) {
             height={windowSize > 1024 ? 1024 : windowSize}
             className="border border-grey relative z-10 w-full"
             // {...props}
+          />
+          <Image
+            priority={true}
+            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+            src={`/maps/kamolin-map.jpg`} // make dynamic
+            alt="Map of Kamolin"
+            width="1024"
+            height="1024"
           />
         </div>
         <Form {...form}>

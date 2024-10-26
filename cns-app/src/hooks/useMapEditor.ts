@@ -78,6 +78,7 @@ export const useMapEditor = () => {
     };
 
     // Initial draw
+    console.log("Initial draw");
     redrawCanvas();
 
     // Draw new ares on click
