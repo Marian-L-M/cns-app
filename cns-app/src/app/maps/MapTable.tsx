@@ -38,7 +38,7 @@ const MapTable = ({ maps }: Props) => {
               </CardDescription>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Link href={`/maps/edit/${mapObject.id}`}>
+              <Link href={`/maps/${mapObject.id}/edit`}>
                 <Button variant="outline">Edit</Button>
               </Link>
               <Link href={`/maps/${mapObject.id}`}>
