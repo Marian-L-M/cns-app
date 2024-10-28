@@ -8,6 +8,10 @@ interface TabsProps {
 
 const Tabs = (props: TabsProps) => {
   const { tabs, selectedTab, setSelectedTab } = props;
+  const handleClick = (e: React.MouseEvent, tab: string) => {
+    e.preventDefault();
+    setSelectedTab(tab);
+  };
   return (
     <div className="flex gap-2">
       {tabs.map((tab, index) => (
@@ -16,7 +20,8 @@ const Tabs = (props: TabsProps) => {
           key={"key-" + index}
         >
           <button
-            onClick={() => setSelectedTab(tab)}
+            type="button"
+            onClick={(e) => handleClick(e, tab)}
             className={`text-xs transition-colors ${
               selectedTab === tab ? "text-slate-100" : "text-slate-600"
             }`}

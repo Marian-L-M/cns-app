@@ -17,14 +17,20 @@ interface ButtonProps {
 const ColorPickerButton = (props: ButtonProps) => {
   const { icon, openColorPicker, setOpenColorPicker } = props;
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpenColorPicker(!openColorPicker);
+  };
+
   return (
     <motion.button
+      type="button"
       whileTap={{ scale: 0.97 }}
       className={clsx(
         "text-sm h-10 bg-slate-900 font-medium rounded-full border border-slate-600 p-2 relative transition-colors duration-75 text-slate-500",
         openColorPicker ? "text-slate-300" : "text-slate-500"
       )}
-      onClick={() => setOpenColorPicker(!openColorPicker)}
+      onClick={handleClick}
     >
       {icon}
     </motion.button>

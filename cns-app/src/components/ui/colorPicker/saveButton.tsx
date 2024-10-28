@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 import { EditorContext } from "@/store/mapEditorContext";
-import { useContext } from "react";
+import React, { useContext } from "react";
 
 interface SaveButtonProps {
   color: string;
@@ -14,7 +14,8 @@ const SaveButton = ({
   editorContext,
 }: SaveButtonProps) => {
   const editorCtx = useContext(EditorContext);
-  const saveHandler = () => {
+  const saveHandler = (e: React.MouseEvent) => {
+    e.preventDefault();
     switch (editorContext) {
       case "objectColor":
         editorCtx.pickObjectColor(color);
@@ -31,6 +32,7 @@ const SaveButton = ({
   return (
     <div>
       <button
+        type="button"
         disabled={color === ""}
         className="rounded-full p-1.5 transition-colors duration-75"
         style={{

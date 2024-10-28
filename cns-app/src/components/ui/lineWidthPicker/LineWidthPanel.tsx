@@ -8,64 +8,29 @@ interface ViewProps {
 }
 
 const LineWidthPanel = ({ setOpenLineWidthPicker }: ViewProps) => {
+  const lineDefaults = [1, 2, 4, 8, 16];
   const [selectedLineWidth, setSelectedLineWidth] = useState<number>(0);
+
+  const handleClick = (e: React.MouseEvent, lineWidth: number) => {
+    e.preventDefault();
+    setSelectedLineWidth(lineWidth);
+  };
+
   return (
     <div className="flex flex-col gap-2">
-      <button
-        key={`bar-1`}
-        onClick={() => setSelectedLineWidth(1)}
-        className={`w-full h-[16px] hover:opacity-75`}
-      >
-        <div
-          className={`w-full h-[1px]  ${
-            selectedLineWidth == 1 ? "bg-slate-100" : "bg-slate-400"
-          }`}
-        />
-      </button>
-      <button
-        key={`bar-2`}
-        onClick={() => setSelectedLineWidth(2)}
-        className={`w-full h-[16px] hover:opacity-75`}
-      >
-        <div
-          className={`w-full h-[2px] ${
-            selectedLineWidth == 2 ? "bg-slate-100" : "bg-slate-400"
-          }`}
-        />
-      </button>
-      <button
-        key={`bar-3`}
-        onClick={() => setSelectedLineWidth(4)}
-        className={`w-full h-[16px] hover:opacity-75`}
-      >
-        <div
-          className={`w-full h-[4px] ${
-            selectedLineWidth == 4 ? "bg-slate-100" : "bg-slate-400"
-          }`}
-        />
-      </button>
-      <button
-        key={`bar-4`}
-        onClick={() => setSelectedLineWidth(8)}
-        className={`w-full h-[16px] hover:opacity-75`}
-      >
-        <div
-          className={`w-full h-[8px] ${
-            selectedLineWidth == 8 ? "bg-slate-100" : "bg-slate-400"
-          }`}
-        />
-      </button>
-      <button
-        key={`bar-5`}
-        onClick={() => setSelectedLineWidth(16)}
-        className={`w-full h-[16px] hover:opacity-75`}
-      >
-        <div
-          className={`w-full h-[16px] ${
-            selectedLineWidth == 16 ? "bg-slate-100" : "bg-slate-400"
-          }`}
-        />
-      </button>
+      {lineDefaults.map((lineWidth) => (
+        <button
+          key={`bar-${lineWidth}`}
+          onClick={(e) => handleClick(e, lineWidth)}
+          className={`w-full h-[16px] hover:opacity-75`}
+        >
+          <div
+            className={`w-full h-[${lineWidth}px] ${
+              selectedLineWidth == lineWidth ? "bg-slate-100" : "bg-slate-400"
+            }`}
+          />
+        </button>
+      ))}
       <SaveButton
         lineWidth={selectedLineWidth}
         setOpenLineWidthPicker={setOpenLineWidthPicker}

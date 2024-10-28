@@ -7,6 +7,11 @@ interface SaveButtonProps {
 
 // 241014 Not connected to the rest of the app -> unify with save button
 const CustomView = ({ setOpenColorPicker }: SaveButtonProps) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpenColorPicker(false);
+  };
+
   return (
     <div className="relative flex my-4 items-center">
       <div className="flex flex-col gap-1 items-center">
@@ -18,9 +23,10 @@ const CustomView = ({ setOpenColorPicker }: SaveButtonProps) => {
       </div>
       <div className="absolute -bottom-4 right-0">
         <button
+          type="button"
           className="rounded-full p-1.5 transition-colors duration-75"
           style={{ backgroundColor: "#22c553", color: "#fff" }}
-          onClick={() => setOpenColorPicker(false)}
+          onClick={handleClick}
         >
           <Check className="w-4 h-4" />
         </button>

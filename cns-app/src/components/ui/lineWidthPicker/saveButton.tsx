@@ -9,13 +9,15 @@ interface SaveButtonProps {
 
 const SaveButton = ({ lineWidth, setOpenLineWidthPicker }: SaveButtonProps) => {
   const editorCtx = useContext(EditorContext);
-  const saveHandler = () => {
+  const saveHandler = (e: React.MouseEvent) => {
+    e.preventDefault();
     editorCtx.pickLineWidth(lineWidth);
     setOpenLineWidthPicker(false);
   };
   return (
     <div>
       <button
+        type="button"
         disabled={lineWidth <= 0}
         className="rounded-full p-1.5 transition-colors duration-75"
         style={{

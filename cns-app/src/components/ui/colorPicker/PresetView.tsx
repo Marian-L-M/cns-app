@@ -29,13 +29,18 @@ interface PresetViewProps {
 
 const PresetView = ({ setOpenColorPicker, editorContext }: PresetViewProps) => {
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const handleColorSelect = (e: React.MouseEvent, color: string) => {
+    e.preventDefault();
+    setSelectedColor(color);
+  };
+
   return (
     <>
       <div className="flex gap-3 flex-wrap justify-center my-4">
         {colors.map((color) => (
           <button
             key={color}
-            onClick={() => setSelectedColor(color)}
+            onClick={(e) => handleColorSelect(e, color)}
             className="flex justify-center items-center"
           >
             <div
