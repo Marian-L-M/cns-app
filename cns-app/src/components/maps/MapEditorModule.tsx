@@ -50,16 +50,11 @@ interface areaNode {
 // For future use consider using API instead of drilling down the data
 
 function MapEditorModule({ mapId, globalArea }: Props) {
-  const { canvasRef, styles } = useMapEditor();
+  const { canvasRef, styles } = useMapEditor(globalArea?.nodes);
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  // console.log("globalArea:", globalArea?.nodes);
-
-  if (globalArea?.nodes) {
-    editorCtx.updateNodeList(globalArea?.nodes); // Working, but in Prisma Schema declared as JSON not list of objects
-  }
 
   // To do - make this dynamic
   let windowSize: number = 1024;

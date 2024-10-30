@@ -14,7 +14,7 @@ interface areaNode {
   y: number;
 }
 
-export const useMapEditor = () => {
+export const useMapEditor = (nodes: areaNode[]) => {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -33,16 +33,24 @@ export const useMapEditor = () => {
   // Extract drawing loop into separate function -> It needs to run once on load + clear canvas
 
   //20240926 Next actions : Connect styles to UI
-  let nodeList: areaNode[] = [];
-  // if (nodes?.length > 0) {
-  //   nodeList = nodes;
-  // }
-
+  //20241030 This is unnecessarily complicated: Set up API in page pass through Map editor Module into hook
+  // Initialize styles
   let styles = {
     fillStyle: "rgba(0, 255, 16, 0.4)",
     lineWidth: 4,
     strokeStyle: "pink",
   };
+
+  // Initialize context
+  useEffect(() => {
+    editorCtx.updateNodeList(nodes); // Working, but in Prisma Schema declared as JSON not list of objects
+
+    let styles = {
+      fillStyle: "rgba(0, 255, 16, 0.4)",
+      lineWidth: 4,
+      strokeStyle: "pink",
+    };
+  }, [nodes]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -106,11 +114,11 @@ export const useMapEditor = () => {
 
       // Add new node if not clicking existing one
       if (!existingFlag) {
+        console.log("Adding new node");
         updatedNodes.push({ id: idCounter++, x: mouseX, y: mouseY });
+        // Update context with new nodes
+        editorCtx.updateNodeList(updatedNodes);
       }
-
-      // Update context with new nodes
-      editorCtx.updateNodeList(updatedNodes);
 
       // Redraw canvas
       redrawCanvas();
@@ -122,5 +130,5 @@ export const useMapEditor = () => {
     };
   }, [editorCtx, styles]);
 
-  return { canvasRef, nodeList, styles };
+  return { canvasRef, styles };
 };
