@@ -14,7 +14,7 @@ interface areaNode {
   y: number;
 }
 
-export const useMapEditor = (nodes: areaNode[]) => {
+export const useMapEditor = (nodes: areaNode[], styles) => {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -35,22 +35,14 @@ export const useMapEditor = (nodes: areaNode[]) => {
   //20240926 Next actions : Connect styles to UI
   //20241030 This is unnecessarily complicated: Set up API in page pass through Map editor Module into hook
   // Initialize styles
-  let styles = {
-    fillStyle: "rgba(0, 255, 16, 0.4)",
-    lineWidth: 4,
-    strokeStyle: "pink",
-  };
 
   // Initialize context
   useEffect(() => {
     editorCtx.updateNodeList(nodes); // Working, but in Prisma Schema declared as JSON not list of objects
-
-    let styles = {
-      fillStyle: "rgba(0, 255, 16, 0.4)",
-      lineWidth: 4,
-      strokeStyle: "pink",
-    };
-  }, [nodes]);
+    editorCtx.pickObjectColor(styles.fillStyle);
+    editorCtx.pickLineColor(styles.strokeStyle);
+    editorCtx.pickLineWidth(styles.lineWidth);
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -75,9 +67,9 @@ export const useMapEditor = (nodes: areaNode[]) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Set styles
-      ctx.fillStyle = styles.fillStyle || "grey";
-      ctx.strokeStyle = styles.strokeStyle || "black";
-      ctx.lineWidth = styles.lineWidth || 3;
+      ctx.fillStyle = editorCtx.objectColor || "grey";
+      ctx.strokeStyle = editorCtx.objectLineColor || "black";
+      ctx.lineWidth = editorCtx.objectLineWidth || 3;
 
       if (editorCtx.nodeList.length > 0) {
         draw(ctx, editorCtx.nodeList, cw, ch);
@@ -86,7 +78,6 @@ export const useMapEditor = (nodes: areaNode[]) => {
     };
 
     // Initial draw
-    console.log("Initial draw");
     redrawCanvas();
 
     // Draw new ares on click
@@ -114,7 +105,6 @@ export const useMapEditor = (nodes: areaNode[]) => {
 
       // Add new node if not clicking existing one
       if (!existingFlag) {
-        console.log("Adding new node");
         updatedNodes.push({ id: idCounter++, x: mouseX, y: mouseY });
         // Update context with new nodes
         editorCtx.updateNodeList(updatedNodes);
@@ -128,7 +118,7 @@ export const useMapEditor = (nodes: areaNode[]) => {
     return () => {
       canvas.onmousedown = null;
     };
-  }, [editorCtx, styles]);
+  }, [editorCtx]);
 
   return { canvasRef, styles };
 };

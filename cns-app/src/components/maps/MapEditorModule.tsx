@@ -50,7 +50,10 @@ interface areaNode {
 // For future use consider using API instead of drilling down the data
 
 function MapEditorModule({ mapId, globalArea }: Props) {
-  const { canvasRef, styles } = useMapEditor(globalArea?.nodes);
+  const { canvasRef, styles } = useMapEditor(
+    globalArea?.nodes,
+    globalArea?.styles
+  );
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,15 +65,9 @@ function MapEditorModule({ mapId, globalArea }: Props) {
     windowSize = window.innerWidth;
   }
 
-  styles.fillStyle = editorCtx.objectColor;
-  styles.lineWidth = editorCtx.objectLineWidth;
-  styles.strokeStyle = editorCtx.objectLineColor;
-  const nodeList = editorCtx.nodeList;
-
   const area = globalArea;
 
   // Set form data
-  // console.log("nodes:", globalArea?.nodes);
   const form = useForm<GlobalAreaFormData>({
     resolver: zodResolver(GlobalAreasSchema),
     defaultValues: {
@@ -81,7 +78,7 @@ function MapEditorModule({ mapId, globalArea }: Props) {
       wikiId: area?.wikiId || 2, // temporary fixed wiki id
       type: (area?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") || "GEOGRAPHY",
       infobox: null,
-      nodes: nodeList,
+      nodes: area?.nodes || [],
       styles: {
         fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
         lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
@@ -111,9 +108,10 @@ function MapEditorModule({ mapId, globalArea }: Props) {
     const submissionValues = {
       ...values,
       styles: {
-        fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
-        lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
-        strokeStyle: styles.strokeStyle || "black",
+        fillStyle: editorCtx.objectColor || "rgba(0, 0, 0, 0.5)",
+        strokeStyle: editorCtx.objectLineColor || "black",
+        lineWidth:
+          typeof editorCtx.objectLineWidth === "number" ? styles.lineWidth : 5,
       },
       nodes: editorCtx.nodeList,
     };
@@ -130,7 +128,7 @@ function MapEditorModule({ mapId, globalArea }: Props) {
       }
 
       setIsSubmitting(false);
-      router.push(`/maps/${mapId}`);
+      router.push(`/maps/${mapId}/edit`);
       router.refresh();
     } catch (error) {
       handleError(error);
@@ -282,18 +280,8 @@ function MapEditorModule({ mapId, globalArea }: Props) {
               />
               <LineWidthPicker icon={<Menu className="text-slate-300" />} />
             </div>
-            {/* <Button onClick={onSubmitHandler}>Submit</Button> */}
-            <Button
-              type="button"
-              onClick={() => {
-                console.log("NodeList from context:", editorCtx.nodeList);
-                console.log("Form nodes value:", form.getValues("nodes"));
-              }}
-            >
-              NodeList check
-            </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Test Submit"}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </Button>
           </form>
         </Form>
