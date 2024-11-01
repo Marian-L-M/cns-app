@@ -66,6 +66,7 @@ function MapEditorModule({ mapId, globalArea }: Props) {
   }
 
   const area = globalArea;
+  console.log(area);
 
   // Set form data
   const form = useForm<GlobalAreaFormData>({
@@ -233,7 +234,15 @@ function MapEditorModule({ mapId, globalArea }: Props) {
                     <FormItem>
                       <FormLabel>Area Timestamp</FormLabel>
                       <FormControl>
-                        <Input placeholder="Area Timestamp" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Area Timestamp"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                          value={field.value || ""}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
