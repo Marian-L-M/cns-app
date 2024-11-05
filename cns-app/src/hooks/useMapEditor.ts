@@ -14,7 +14,13 @@ interface areaNode {
   y: number;
 }
 
-export const useMapEditor = (nodes: areaNode[], styles) => {
+interface styles {
+  fillStyle: string;
+  strokeStyle: string;
+  lineWidth: number;
+}
+
+export const useMapEditor = (nodes?: areaNode[], styles?: any) => {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -29,15 +35,9 @@ export const useMapEditor = (nodes: areaNode[], styles) => {
   // 241007 Next actions
   // If an area objects exists without nodes, it will break the map maker module
 
-  // 241018 Next actions
-  // Extract drawing loop into separate function -> It needs to run once on load + clear canvas
-
-  //20240926 Next actions : Connect styles to UI
-  //20241030 This is unnecessarily complicated: Set up API in page pass through Map editor Module into hook
-  // Initialize styles
-
   // Initialize context
   useEffect(() => {
+    if (!nodes) return;
     editorCtx.updateNodeList(nodes); // Working, but in Prisma Schema declared as JSON not list of objects
     editorCtx.pickObjectColor(styles.fillStyle);
     editorCtx.pickLineColor(styles.strokeStyle);

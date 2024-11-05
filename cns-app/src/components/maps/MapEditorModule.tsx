@@ -30,8 +30,24 @@ import {
 
 interface Props {
   mapId: number;
-  globalArea?: GlobalArea;
   globalObject?: GlobalObject;
+  globalArea?:
+    | {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string;
+        imageUrl: string;
+        infobox: {};
+        nodes?: areaNode[];
+        styles: {};
+        objectTime: number;
+        mapId: number;
+        wikiId: number;
+        type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+      }
+    | undefined;
 }
 
 export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
@@ -44,11 +60,6 @@ interface areaNode {
   y: number;
 }
 
-// 241026 To do
-// mapId (id) and global Area are live
-// Connect to drawing functions - Form is populated but canvas is not drawn
-// For future use consider using API instead of drilling down the data
-
 function MapEditorModule({ mapId, globalArea }: Props) {
   const { canvasRef, styles } = useMapEditor(
     globalArea?.nodes,
@@ -59,7 +70,6 @@ function MapEditorModule({ mapId, globalArea }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // To do - make this dynamic
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
@@ -166,7 +176,6 @@ function MapEditorModule({ mapId, globalArea }: Props) {
             width={windowSize > 1024 ? 1024 : windowSize}
             height={windowSize > 1024 ? 1024 : windowSize}
             className="border border-grey relative z-10 w-full"
-            // {...props}
           />
           <Image
             priority={true}

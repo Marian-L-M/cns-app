@@ -1,5 +1,4 @@
 import MapEditor from "@/components/editors/MapEditor";
-import { GlobalArea } from "@prisma/client";
 import prisma from "../../../../../../../prisma/db";
 
 interface MapAreaEditorProps {
