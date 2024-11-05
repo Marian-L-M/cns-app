@@ -91,9 +91,9 @@ function MapEditorModule({ mapId, globalArea }: Props) {
       infobox: null,
       nodes: area?.nodes || [],
       styles: {
-        fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
-        lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
-        strokeStyle: styles.strokeStyle || "black",
+        fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
+        lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
+        strokeStyle: styles?.strokeStyle || "black",
       },
       objectTime: area?.objectTime || 1000,
     },
@@ -103,9 +103,9 @@ function MapEditorModule({ mapId, globalArea }: Props) {
   useEffect(() => {
     form.setValue("nodes", editorCtx.nodeList);
     form.setValue("styles", {
-      fillStyle: styles.fillStyle || "rgba(0, 0, 0, 0.5)",
-      lineWidth: typeof styles.lineWidth === "number" ? styles.lineWidth : 5,
-      strokeStyle: styles.strokeStyle || "black",
+      fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
+      lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
+      strokeStyle: styles?.strokeStyle || "black",
     });
   }, [editorCtx.nodeList, form, styles]);
 
@@ -122,7 +122,7 @@ function MapEditorModule({ mapId, globalArea }: Props) {
         fillStyle: editorCtx.objectColor || "rgba(0, 0, 0, 0.5)",
         strokeStyle: editorCtx.objectLineColor || "black",
         lineWidth:
-          typeof editorCtx.objectLineWidth === "number" ? styles.lineWidth : 5,
+          typeof editorCtx.objectLineWidth === "number" ? styles?.lineWidth : 5,
       },
       nodes: editorCtx.nodeList,
     };

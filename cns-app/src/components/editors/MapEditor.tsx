@@ -4,7 +4,7 @@ import { GlobalArea } from "@prisma/client";
 
 interface Props {
   id: number;
-  area: GlobalArea;
+  area?: GlobalArea;
 }
 
 const MapEditor = ({ id, area }: Props) => {
