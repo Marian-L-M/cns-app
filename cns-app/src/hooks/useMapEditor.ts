@@ -93,13 +93,12 @@ export const useMapEditor = (nodes?: areaNode[], styles?: any) => {
         drawMetaNode(ctx, node.x, node.y, cw, ch);
         if (ctx.isPointInPath(mouseX, mouseY)) {
           existingFlag = true;
-          if (index === 0) {
-            updatedNodes.shift();
-          } else if (index === updatedNodes.length - 1) {
-            updatedNodes.pop();
-          } else {
-            updatedNodes.splice(index, 1);
-          }
+
+          // Create a new array with the node removed and update context
+          const filteredNodes = updatedNodes.filter((_, i) => i !== index);
+          editorCtx.updateNodeList(filteredNodes);
+
+          return;
         }
       });
 

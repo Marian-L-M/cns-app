@@ -76,7 +76,6 @@ function MapEditorModule({ mapId, globalArea }: Props) {
   }
 
   const area = globalArea;
-  console.log(area);
 
   // Set form data
   const form = useForm<GlobalAreaFormData>({

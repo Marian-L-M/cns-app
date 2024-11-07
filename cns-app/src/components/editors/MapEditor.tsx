@@ -2,9 +2,31 @@ import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
 import { GlobalArea } from "@prisma/client";
 
+interface areaNode {
+  id: number;
+  x: number;
+  y: number;
+}
+
 interface Props {
   id: number;
-  area?: GlobalArea;
+  area?:
+    | {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string;
+        imageUrl: string;
+        infobox: {};
+        nodes?: areaNode[];
+        styles: {};
+        objectTime: number;
+        mapId: number;
+        wikiId: number;
+        type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+      }
+    | undefined;
 }
 
 const MapEditor = ({ id, area }: Props) => {
