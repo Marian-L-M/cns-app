@@ -1,6 +1,5 @@
 import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
-import { GlobalArea } from "@prisma/client";
 
 interface areaNode {
   id: number;
@@ -27,12 +26,13 @@ interface Props {
         type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
       }
     | undefined;
+  object?: any;
 }
 
-const MapEditor = ({ id, area }: Props) => {
+const MapEditor = ({ id, area, object }: Props) => {
   return (
     <EditorContextProvider>
-      <MapEditorModule mapId={id} globalArea={area} />
+      <MapEditorModule mapId={id} globalArea={area} globalObject={object} />
     </EditorContextProvider>
   );
 };

@@ -60,7 +60,7 @@ interface areaNode {
   y: number;
 }
 
-function MapEditorModule({ mapId, globalArea }: Props) {
+function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
   const { canvasRef, styles } = useMapEditor(
     globalArea?.nodes,
     globalArea?.styles
@@ -76,6 +76,13 @@ function MapEditorModule({ mapId, globalArea }: Props) {
   }
 
   const area = globalArea;
+  const object = globalObject;
+  if (area) {
+    console.log("area: " + area);
+  }
+  if (object) {
+    console.log("object: " + object);
+  }
 
   // Set form data
   const form = useForm<GlobalAreaFormData>({
@@ -308,6 +315,10 @@ function MapEditorModule({ mapId, globalArea }: Props) {
 }
 
 export default MapEditorModule;
+
+// 241127 To do:
+// Split form into area and object form
+
 // 20241004 Next actions
 // Map editor is designed to be a popup module on top of the map.
 
