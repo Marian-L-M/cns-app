@@ -65,10 +65,6 @@ function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
     globalArea?.nodes,
     globalArea?.styles
   );
-  const editorCtx = useContext(EditorContext);
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
@@ -81,27 +77,75 @@ function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
     console.log("area: " + area);
   }
   if (object) {
-    console.log("object: " + object);
+    console.log("object: " + object.id);
+    Object.entries(object).forEach(([key, val]) => {
+      console.log(key); // the name of the current key.
+      console.log(val); // the value of the current key.
+    });
   }
+
+  return (
+    <div className="w-full" id="map-editor-module">
+      <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
+        <div
+          className="relative z-10 max-w-screen-lg col-span-4 bg-black"
+          id="map-base"
+        >
+          <canvas
+            ref={canvasRef}
+            width={windowSize > 1024 ? 1024 : windowSize}
+            height={windowSize > 1024 ? 1024 : windowSize}
+            className="border border-grey relative z-10 w-full"
+          />
+          <Image
+            priority={true}
+            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+            src={`/maps/kamolin-map.jpg`} // make dynamic
+            alt="Map of Kamolin"
+            width="1024"
+            height="1024"
+          />
+        </div>
+        <AreaForm mapId={mapId} globalArea={globalArea} />
+      </div>
+    </div>
+  );
+}
+
+export default MapEditorModule;
+
+// 241127 To do:
+// Split form into area and object form
+// Rewiring Area
+// Create object form
+
+function AreaForm({ mapId, globalArea }: Props) {
+  const { styles } = useMapEditor(globalArea?.nodes, globalArea?.styles);
+  const editorCtx = useContext(EditorContext);
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   // Set form data
   const form = useForm<GlobalAreaFormData>({
     resolver: zodResolver(GlobalAreasSchema),
     defaultValues: {
-      title: area?.title || "",
-      description: area?.description || "",
-      imageUrl: area?.imageUrl || "",
+      title: globalArea?.title || "",
+      description: globalArea?.description || "",
+      imageUrl: globalArea?.imageUrl || "",
       mapId: mapId,
-      wikiId: area?.wikiId || 2, // temporary fixed wiki id
-      type: (area?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") || "GEOGRAPHY",
+      wikiId: globalArea?.wikiId || 2, // temporary fixed wiki id
+      type:
+        (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
+        "GEOGRAPHY",
       infobox: null,
-      nodes: area?.nodes || [],
+      nodes: globalArea?.nodes || [],
       styles: {
         fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
         lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
         strokeStyle: styles?.strokeStyle || "black",
       },
-      objectTime: area?.objectTime || 1000,
+      objectTime: globalArea?.objectTime || 1000,
     },
   });
 
@@ -171,153 +215,127 @@ function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
   };
 
   return (
-    <div className="w-full" id="map-editor-module">
-      <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
-        <div
-          className="relative z-10 max-w-screen-lg col-span-4 bg-black"
-          id="map-base"
-        >
-          <canvas
-            ref={canvasRef}
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize}
-            className="border border-grey relative z-10 w-full"
-          />
-          <Image
-            priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-            src={`/maps/kamolin-map.jpg`} // make dynamic
-            alt="Map of Kamolin"
-            width="1024"
-            height="1024"
-          />
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="relative z-20 col-span-2 flex flex-col gap-4"
+        id="sidebar"
+      >
+        <div className="w-full flex flex-col gap-4" id="form-top">
+          <div className="w-full" id="title-container">
+            <FormField
+              control={form.control}
+              name="title"
+              defaultValue={globalArea?.title}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Area Title..." {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="description-container">
+            <h4 className="font-bold">Description</h4>
+            <Controller
+              name="description"
+              defaultValue={globalArea?.description}
+              control={form.control}
+              render={({ field }) => (
+                <SimpleMDE placeholder="Area description" {...field} />
+              )}
+            />
+          </div>
+          <div className="w-full" id="thumbnail-container">
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              defaultValue={globalArea?.imageUrl}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thumbnail</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Area Thumbnail" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="timestamp-container">
+            <FormField
+              control={form.control}
+              name="objectTime"
+              defaultValue={globalArea?.objectTime}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Area Timestamp</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Area Timestamp"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="type-container">
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Type..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="GEOGRAPHY">Geography</SelectItem>
+                      <SelectItem value="POLITICAL">Political</SelectItem>
+                      <SelectItem value="OTHER">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="relative z-20 col-span-2 flex flex-col gap-4"
-            id="sidebar"
-          >
-            <div className="w-full flex flex-col gap-4" id="form-top">
-              <div className="w-full" id="title-container">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  defaultValue={area?.title}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Area Title..." {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="w-full" id="description-container">
-                <h4 className="font-bold">Description</h4>
-                <Controller
-                  name="description"
-                  defaultValue={area?.description}
-                  control={form.control}
-                  render={({ field }) => (
-                    <SimpleMDE placeholder="Area description" {...field} />
-                  )}
-                />
-              </div>
-              <div className="w-full" id="thumbnail-container">
-                <FormField
-                  control={form.control}
-                  name="imageUrl"
-                  defaultValue={area?.imageUrl}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thumbnail</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Area Thumbnail" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="w-full" id="timestamp-container">
-                <FormField
-                  control={form.control}
-                  name="objectTime"
-                  defaultValue={area?.objectTime}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Area Timestamp</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Area Timestamp"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                          value={field.value || ""}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="w-full" id="type-container">
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Type..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="GEOGRAPHY">Geography</SelectItem>
-                          <SelectItem value="POLITICAL">Political</SelectItem>
-                          <SelectItem value="OTHER">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            {/* Move pickers into an overlay over the map editor */}
-            <div className="flex justify-between gap-1" id="color-pickers">
-              <ColorPicker
-                label={"Fill Style"}
-                icon={<Palette className="text-slate-300" />}
-                editorContext={"objectColor"}
-              />
-              <LineColorPicker
-                label={"Line Style"}
-                icon={<Palette className="text-slate-300" />}
-                editorContext={"lineColor"}
-              />
-              <LineWidthPicker icon={<Menu className="text-slate-300" />} />
-            </div>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
-          </form>
-        </Form>
-      </div>
-    </div>
+        {/* Move pickers into an overlay over the map editor */}
+        <div className="flex justify-between gap-1" id="color-pickers">
+          <ColorPicker
+            label={"Fill Style"}
+            icon={<Palette className="text-slate-300" />}
+            editorContext={"objectColor"}
+          />
+          <LineColorPicker
+            label={"Line Style"}
+            icon={<Palette className="text-slate-300" />}
+            editorContext={"lineColor"}
+          />
+          <LineWidthPicker icon={<Menu className="text-slate-300" />} />
+        </div>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </Button>
+      </form>
+    </Form>
   );
 }
 
-export default MapEditorModule;
-
-// 241127 To do:
-// Split form into area and object form
+function ObjectForm() {
+  return <h1>I am an Object Form</h1>;
+}
 
 // 20241004 Next actions
 // Map editor is designed to be a popup module on top of the map.

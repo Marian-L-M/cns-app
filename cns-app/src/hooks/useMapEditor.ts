@@ -1,23 +1,13 @@
 import { useContext, useEffect, useRef } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
-
-interface editableAreaObject {
-  id: number;
-  style: {};
-  areaNodes: areaNode[];
-}
+import { z } from "zod";
+import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
 
 interface areaNode {
   id: number;
   x: number;
   y: number;
-}
-
-interface styles {
-  fillStyle: string;
-  strokeStyle: string;
-  lineWidth: number;
 }
 
 export const useMapEditor = (nodes?: areaNode[], styles?: any) => {
@@ -120,4 +110,35 @@ export const useMapEditor = (nodes?: areaNode[], styles?: any) => {
   }, [editorCtx]);
 
   return { canvasRef, styles };
+};
+
+export const useObjectEditor = (globalObject: any) => {
+  const editorCtx = useContext(EditorContext);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+
+    // Canvas values
+    const cw = canvas.width / 1000;
+    const ch = canvas.height / 1000;
+
+    // Get context
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const thumbSize = 40;
+    const image = new Image(); // Using optional size for image
+    image.src = `/${globalObject.thumbUrl}`;
+    image.onload = () => {
+      ctx.drawImage(
+        image,
+        globalObject.x * cw - thumbSize / 2,
+        globalObject.y * ch - thumbSize / 2,
+        thumbSize,
+        thumbSize
+      );
+    };
+  });
 };
