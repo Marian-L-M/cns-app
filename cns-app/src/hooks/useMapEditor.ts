@@ -10,7 +10,23 @@ interface areaNode {
   y: number;
 }
 
-export const useMapEditor = (nodes?: areaNode[], styles?: any) => {
+// Rewrite useMapEditor as a relay between useAreaEditor and useObjectEditor
+export const useMapEditor = ({ globalArea, globalObject }: any) => {
+  if (globalArea) {
+    const { canvasRef } = useAreaEditor(globalArea?.nodes, globalArea?.styles);
+    console.log("area mode");
+    return { canvasRef };
+  } else if (globalObject) {
+    const { canvasRef } = useObjectEditor(globalObject);
+    console.log("object mode");
+    return { canvasRef };
+  }
+  const canvasRef = "";
+
+  return { canvasRef };
+};
+
+function useAreaEditor(nodes?: areaNode[], styles?: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -108,13 +124,13 @@ export const useMapEditor = (nodes?: areaNode[], styles?: any) => {
       canvas.onmousedown = null;
     };
   }, [editorCtx]);
+  return { canvasRef };
+}
 
-  return { canvasRef, styles };
-};
-
-export const useObjectEditor = (globalObject: any) => {
+function useObjectEditor(globalObject: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  console.log(editorCtx);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -141,4 +157,5 @@ export const useObjectEditor = (globalObject: any) => {
       );
     };
   });
-};
+  return { canvasRef };
+}

@@ -7,6 +7,12 @@ interface areaNode {
   y: number;
 }
 
+interface globalObject {
+  url: string;
+  x: number;
+  y: number;
+}
+
 interface MapEditorStyleContextType {
   objectColor: string;
   pickObjectColor: (color: string) => void;
@@ -16,6 +22,8 @@ interface MapEditorStyleContextType {
   pickLineWidth: (lineWidth: number) => void;
   nodeList: areaNode[];
   updateNodeList: (nodeList: areaNode[]) => void;
+  globalObjectSettings: globalObject;
+  updateGlobalObjectSettings: (globalObject: globalObject) => void;
 }
 
 interface MapEditorContextProviderProps {
@@ -31,11 +39,13 @@ export const EditorContext = createContext<MapEditorStyleContextType>({
   pickLineWidth: () => {},
   nodeList: [],
   updateNodeList: () => {},
+  globalObjectSettings: {
+    url: "",
+    x: 0,
+    y: 0,
+  },
+  updateGlobalObjectSettings: () => {},
 });
-
-// type EditorObjectStatus = {
-//   objectColor: string;
-// };
 
 export default function EditorContextProvider({
   children,
@@ -44,11 +54,19 @@ export default function EditorContextProvider({
   const [objectLineColor, setLineObjectColor] = useState("");
   const [objectLineWidth, setObjectLineWidth] = useState<number>(0);
   const [nodeList, setNodeList] = useState<areaNode[]>([]);
+  const [globalObjectSettings, setGlobalObjectSettings] =
+    useState<globalObject>({
+      url: "",
+      x: 0,
+      y: 0,
+    });
 
   const pickObjectColor = (color: string) => setObjectColor(color);
   const pickLineColor = (color: string) => setLineObjectColor(color);
   const pickLineWidth = (lineWidth: number) => setObjectLineWidth(lineWidth);
   const updateNodeList = (nodeList: areaNode[]) => setNodeList(nodeList);
+  const updateGlobalObjectSettings = (globalObjectSettings: globalObject) =>
+    setGlobalObjectSettings(globalObjectSettings);
 
   return (
     <EditorContext.Provider
@@ -61,6 +79,8 @@ export default function EditorContextProvider({
         pickLineWidth,
         nodeList,
         updateNodeList,
+        globalObjectSettings,
+        updateGlobalObjectSettings,
       }}
     >
       {children}
