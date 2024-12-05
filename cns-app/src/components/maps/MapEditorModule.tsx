@@ -61,10 +61,10 @@ interface areaNode {
 }
 
 function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
-  const { canvasRef, styles } = useMapEditor(
-    globalArea?.nodes,
-    globalArea?.styles
-  );
+  if (!globalArea && !globalObject) {
+    return <div>No Object found</div>;
+  }
+  const { canvasRef } = useMapEditor({ globalArea, globalObject });
 
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
@@ -73,16 +73,16 @@ function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
 
   const area = globalArea;
   const object = globalObject;
-  if (area) {
-    console.log("area: " + area);
-  }
-  if (object) {
-    console.log("object: " + object.id);
-    Object.entries(object).forEach(([key, val]) => {
-      console.log(key); // the name of the current key.
-      console.log(val); // the value of the current key.
-    });
-  }
+  // if (area) {
+  //   console.log("area: " + area);
+  // }
+  // if (object) {
+  //   console.log("object: " + object.id);
+  //   Object.entries(object).forEach(([key, val]) => {
+  //     console.log(key); // the name of the current key.
+  //     console.log(val); // the value of the current key.
+  //   });
+  // }
 
   return (
     <div className="w-full" id="map-editor-module">
@@ -106,7 +106,8 @@ function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
             height="1024"
           />
         </div>
-        <AreaForm mapId={mapId} globalArea={globalArea} />
+        {globalArea && <AreaForm mapId={mapId} globalArea={globalArea} />}
+        {globalObject && <ObjectForm mapId={mapId} />}
       </div>
     </div>
   );
@@ -333,8 +334,18 @@ function AreaForm({ mapId, globalArea }: Props) {
   );
 }
 
-function ObjectForm() {
-  return <h1>I am an Object Form</h1>;
+function ObjectForm({ mapId, globalObject }: Props) {
+  return (
+    // <Form {...form}>
+    <form
+      // onSubmit={form.handleSubmit(onSubmit)}
+      className="relative z-20 col-span-2 flex flex-col gap-4 text-black"
+      id="sidebar"
+    >
+      <h1>Le object est moi</h1>
+    </form>
+    // </Form>
+  );
 }
 
 // 20241004 Next actions
