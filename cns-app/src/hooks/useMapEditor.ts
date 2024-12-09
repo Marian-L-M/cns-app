@@ -1,13 +1,20 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
 
 interface areaNode {
   id: number;
   x: number;
   y: number;
+}
+
+interface IconBounds {
+  left: number;
+  right: number;
+  bottom: number;
+  top: number;
 }
 
 // Rewrite useMapEditor as a relay between useAreaEditor and useObjectEditor
@@ -126,10 +133,12 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
 }
 
 function useObjectEditor(globalObject: any) {
-  const editorCtx = useContext(EditorContext);
+  // const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [editState, setEditState] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [iconBounds, setIconBounds] = useState<IconBounds | null>(null);
   const thumbSize = 40;
+  const thumbRadius = thumbSize / 2; // this is kind of stupid
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -138,90 +147,87 @@ function useObjectEditor(globalObject: any) {
     // Canvas values
     const cw = canvas.width / 1000;
     const ch = canvas.height / 1000;
+    const rect = canvas.getBoundingClientRect();
 
     // Get context
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Click events
-    const r = canvas.getBoundingClientRect();
-
     // Draw initial icon
-    drawIcon(thumbSize, ctx, globalObject, cw, ch);
 
-    // Icon outder bounds
-    const thumbDiameter = thumbSize / 2;
-    const icon = {
-      left: globalObject.x * cw - thumbDiameter,
-      right: globalObject.x * cw + thumbDiameter,
-      top: globalObject.y * ch - thumbDiameter,
-      bottom: globalObject.y * ch + thumbDiameter,
-    };
-
-    // Activate editor mode if icon is clicked
-    canvas.onmousedown = (e) => {
-      const mouseX = e.clientX - r.x;
-      const mouseY = e.clientY - r.y;
-      // Check if existing image is clicked
-      if (
-        mouseX > icon.left &&
-        mouseX < icon.right &&
-        mouseY > icon.top &&
-        mouseY < icon.bottom
-      ) {
-        setEditState(true);
-      } else {
-        setEditState(false);
-
-        // // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Redraw icon
-        drawIcon(thumbSize, ctx, globalObject, cw, ch);
-      }
-
-      // // update image position
-      // globalObject.x = mouseX;
-      // globalObject.y = mouseY;
-
-      // // Draw image
-      // const image = new Image(); // Using optional size for image
-      // image.src = `/${globalObject.thumbUrl}`;
-      // image.onload = () => {
-      //   ctx.drawImage(
-      //     image,
-      //     globalObject.x * cw - thumbSize / 2,
-      //     globalObject.y * ch - thumbSize / 2,
-      //     thumbSize,
-      //     thumbSize
-      //   );
-      // };
-      // if (editState) {
-      //   alert("activated edit mode");
-      //   // Draw Edit Frame
-      //   // ctx.beginPath();
-      //   // ctx.moveTo
-      // }
-    };
-    if (editState) {
-      ctx.strokeStyle = "pink";
-      ctx.lineWidth = 5;
-      ctx.lineJoin = "round";
-      ctx.beginPath();
-      ctx.moveTo(icon.left - 5, icon.top - 5);
-      ctx.lineTo(icon.right + 5, icon.top - 5);
-      ctx.lineTo(icon.right + 5, icon.bottom + 5);
-      ctx.lineTo(icon.left - 5, icon.bottom + 5);
-      ctx.lineTo(icon.left - 5, icon.top - 7.5);
-      ctx.closePath;
-      ctx.stroke();
+    // Calculate initial icon bounds only once
+    if (!iconBounds) {
+      setIconBounds({
+        left: globalObject.x * cw - thumbRadius,
+        right: globalObject.x * cw + thumbRadius,
+        top: globalObject.y * ch - thumbRadius,
+        bottom: globalObject.y * ch + thumbRadius,
+      });
     }
-  }, [editState]);
+
+    // Mouse events
+    const handleMouseDown = (e: MouseEvent) => {
+      const mouseX = e.clientX - rect.x;
+      const mouseY = e.clientY - rect.y;
+
+      if (isEditing) {
+        // Update position while in edit mode
+        globalObject.x = mouseX / cw;
+        globalObject.y = mouseY / ch;
+
+        const newBounds = {
+          left: mouseX - thumbRadius,
+          right: mouseX + thumbRadius,
+          top: mouseY - thumbRadius,
+          bottom: mouseY + thumbRadius,
+        };
+
+        setIconBounds(newBounds);
+      } else if (iconBounds) {
+        // Check if clicking on the icon
+        const isInsideIcon =
+          mouseX > iconBounds.left &&
+          mouseX < iconBounds.right &&
+          mouseY > iconBounds.top &&
+          mouseY < iconBounds.bottom;
+
+        setIsEditing(isInsideIcon);
+      }
+    };
+
+    canvas.addEventListener("mousedown", handleMouseDown);
+    if (iconBounds) {
+      redrawCanvas(canvas, isEditing, globalObject, thumbSize, iconBounds);
+    }
+
+    return () => {
+      canvas.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [globalObject, isEditing, iconBounds, thumbSize]);
 
   return { canvasRef };
 }
 
-//241203 -> To do: Create a draw image function and hook up to context
+export function redrawCanvas(
+  canvas: HTMLCanvasElement,
+  isEditing: Boolean,
+  globalObject: GlobalObjectType,
+  thumbSize: number,
+  iconBounds: IconBounds
+) {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const cw = canvas.width / 1000;
+  const ch = canvas.height / 1000;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawIcon(thumbSize, ctx, globalObject, cw, ch);
+  if (isEditing && iconBounds) {
+    drawEditMarker(ctx, iconBounds);
+  }
+}
+
 export function drawIcon(
   thumbSize: number,
   ctx: CanvasRenderingContext2D,
@@ -242,4 +248,21 @@ export function drawIcon(
       thumbSize
     );
   };
+}
+
+export function drawEditMarker(
+  ctx: CanvasRenderingContext2D,
+  icon: IconBounds
+) {
+  ctx.strokeStyle = "pink";
+  ctx.lineWidth = 5;
+  ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(icon.left - 5, icon.top - 5);
+  ctx.lineTo(icon.right + 5, icon.top - 5);
+  ctx.lineTo(icon.right + 5, icon.bottom + 5);
+  ctx.lineTo(icon.left - 5, icon.bottom + 5);
+  ctx.lineTo(icon.left - 5, icon.top - 7.5);
+  ctx.closePath();
+  ctx.stroke();
 }
