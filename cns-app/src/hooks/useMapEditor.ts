@@ -1,8 +1,9 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
-import { boolean, z } from "zod";
+import { z } from "zod";
 import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
+import EditMapObjects from "@/app/maps/[id]/edit/objects/page";
 
 interface areaNode {
   id: number;
@@ -133,13 +134,23 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
 }
 
 function useObjectEditor(globalObject: any) {
-  // const editorCtx = useContext(EditorContext);
+  const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [iconBounds, setIconBounds] = useState<IconBounds | null>(null);
   const thumbSize = 40;
   const thumbRadius = thumbSize / 2; // this is kind of stupid
 
+  // Initialize context
+  useEffect(() => {
+    editorCtx.updateGlobalObjectSettings({
+      x: globalObject.x,
+      y: globalObject.y,
+      url: "",
+    });
+  }, []);
+
+  // Editor actions
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -153,8 +164,6 @@ function useObjectEditor(globalObject: any) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Draw initial icon
-
     // Calculate initial icon bounds only once
     if (!iconBounds) {
       setIconBounds({
@@ -165,8 +174,16 @@ function useObjectEditor(globalObject: any) {
       });
     }
 
+    // Keyboard events
+    const keyboardHandler = (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === "e") {
+        setIsEditing(false);
+        return;
+      }
+    };
+
     // Mouse events
-    const handleMouseDown = (e: MouseEvent) => {
+    const mouseDownHandler = (e: MouseEvent) => {
       const mouseX = e.clientX - rect.x;
       const mouseY = e.clientY - rect.y;
 
@@ -175,6 +192,12 @@ function useObjectEditor(globalObject: any) {
         globalObject.x = mouseX / cw;
         globalObject.y = mouseY / ch;
 
+        editorCtx.updateGlobalObjectSettings({
+          x: globalObject.x,
+          y: globalObject.y,
+          url: "",
+        });
+        console.log("editor context: " + editorCtx.globalObjectSettings.x);
         const newBounds = {
           left: mouseX - thumbRadius,
           right: mouseX + thumbRadius,
@@ -195,13 +218,16 @@ function useObjectEditor(globalObject: any) {
       }
     };
 
-    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousedown", mouseDownHandler);
     if (iconBounds) {
       redrawCanvas(canvas, isEditing, globalObject, thumbSize, iconBounds);
     }
 
+    window.addEventListener("keydown", keyboardHandler);
+
     return () => {
-      canvas.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("keydown", keyboardHandler);
+      canvas.removeEventListener("mousedown", mouseDownHandler);
     };
   }, [globalObject, isEditing, iconBounds, thumbSize]);
 
@@ -262,7 +288,6 @@ export function drawEditMarker(
   ctx.lineTo(icon.right + 5, icon.top - 5);
   ctx.lineTo(icon.right + 5, icon.bottom + 5);
   ctx.lineTo(icon.left - 5, icon.bottom + 5);
-  ctx.lineTo(icon.left - 5, icon.top - 7.5);
   ctx.closePath();
   ctx.stroke();
 }
