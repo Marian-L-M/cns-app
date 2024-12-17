@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import IconPicker from "../ui/iconPicker/IconPicker";
 
 interface Props {
   mapId: number;
@@ -342,7 +343,9 @@ function ObjectForm({ mapId, globalObject }: Props) {
       className="relative z-20 col-span-2 flex flex-col gap-4 text-black"
       id="sidebar"
     >
-      <h1>Le object est moi</h1>
+      <div className="flex justify-between gap-1" id="color-pickers">
+        <IconPicker editorContext={"icon"} />
+      </div>
     </form>
     // </Form>
   );
@@ -364,3 +367,7 @@ function ObjectForm({ mapId, globalObject }: Props) {
 // 2. Clean up the map editor module
 // 3. Change map editor to popup + list of global areas
 // 4. Add global objects functionality
+
+// 20241217 Solution to editor module not showing the other icons
+// Grey out normal map in the back with the edior only rendering the current object (Two canvas elements)
+// Would reduce rerendering stress
