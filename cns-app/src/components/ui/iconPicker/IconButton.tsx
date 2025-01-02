@@ -1,22 +1,37 @@
 import Image from "next/image";
-interface IconButtonProps {
+import { Button } from "../button";
+import { EditorContext } from "@/store/mapEditorContext";
+import { useContext } from "react";
+interface IconProps {
   name: string;
   url: string;
 }
 
-interface IconProps {
-  icon: IconButtonProps;
+interface IconButtonProps {
+  icon: IconProps;
+  setSelectedIcon: React.Dispatch<React.SetStateAction<IconProps>>;
 }
 
-function IconButton({ icon }: IconProps) {
+function IconButton({ icon, setSelectedIcon }: IconButtonProps) {
+  const editorCtx = useContext(EditorContext);
+  // console.log(editorCtx);
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setSelectedIcon({
+      name: icon.name,
+      url: icon.url,
+    });
+  };
   return (
-    <Image
-      key={icon.name}
-      src={icon.url}
-      alt={icon.name}
-      width={40}
-      height={40}
-    />
+    <Button onClick={handleButtonClick}>
+      <Image
+        key={icon.name}
+        src={icon.url}
+        alt={icon.name}
+        width={40}
+        height={40}
+      />
+    </Button>
   );
 }
 

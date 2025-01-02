@@ -9,6 +9,9 @@ export const GlobalObjectsSchema = z.object({
   y: z.number().min(0, "Global Y").max(1000).optional(),
   objectTime: z.number().min(0, "Object time").max(9999).optional(),
   type: z.string().min(1, "object type").max(255).optional(),
+  infobox: z.any().nullable().optional(),
+  mapId: z.number().int().positive("Map ID is required"),
+  wikiId: z.number().int().positive("Wiki ID is required"),
 });
 
 // export const GlobalAreasSchema = z.object({

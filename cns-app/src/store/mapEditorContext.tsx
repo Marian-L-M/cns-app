@@ -8,6 +8,7 @@ interface areaNode {
 }
 
 interface globalObject {
+  name: string;
   url: string;
   x: number;
   y: number;
@@ -40,6 +41,7 @@ export const EditorContext = createContext<MapEditorStyleContextType>({
   nodeList: [],
   updateNodeList: () => {},
   globalObjectSettings: {
+    name: "",
     url: "",
     x: 0,
     y: 0,
@@ -56,6 +58,7 @@ export default function EditorContextProvider({
   const [nodeList, setNodeList] = useState<areaNode[]>([]);
   const [globalObjectSettings, setGlobalObjectSettings] =
     useState<globalObject>({
+      name: "",
       url: "",
       x: 0,
       y: 0,

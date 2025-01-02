@@ -10,7 +10,10 @@ import { EditorContext } from "@/store/mapEditorContext";
 import { set, z } from "zod";
 import { GlobalArea, GlobalObject } from "@prisma/client";
 import axios from "axios";
-import { GlobalAreasSchema } from "@/ValidationSchemas/global";
+import {
+  GlobalAreasSchema,
+  GlobalObjectsSchema,
+} from "@/ValidationSchemas/global";
 import { useRouter } from "next/navigation";
 import LineWidthPicker from "../ui/lineWidthPicker/LineWidthPicker";
 import LineColorPicker from "../ui/colorPicker/LineColorPicker";
@@ -61,6 +64,10 @@ interface areaNode {
   y: number;
 }
 
+export type GlobalObjectFormData = z.infer<typeof GlobalObjectsSchema> & {
+  globalObject: GlobalObject;
+};
+
 function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
   if (!globalArea && !globalObject) {
     return <div>No Object found</div>;
@@ -107,8 +114,10 @@ function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
             height="1024"
           />
         </div>
-        {globalArea && <AreaForm mapId={mapId} globalArea={globalArea} />}
-        {globalObject && <ObjectForm mapId={mapId} />}
+        {/* {globalArea && <AreaForm mapId={mapId} globalArea={globalArea} />} */}
+        {globalObject && (
+          <ObjectForm mapId={mapId} globalObject={globalObject} />
+        )}
       </div>
     </div>
   );
@@ -336,18 +345,142 @@ function AreaForm({ mapId, globalArea }: Props) {
 }
 
 function ObjectForm({ mapId, globalObject }: Props) {
+  const editorCtx = useContext(EditorContext);
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const form = useForm<GlobalObjectFormData>({
+    resolver: zodResolver(GlobalObjectsSchema),
+    defaultValues: {
+      title: globalObject?.title || "",
+      description: globalObject?.description || "",
+      imageUrl: globalObject?.imageUrl || "",
+      thumbUrl: globalObject?.thumbUrl || "",
+      mapId: mapId,
+      wikiId: globalObject?.wikiId || 2, // temporary fixed wiki id
+      x: globalObject?.x || 100,
+      y: globalObject?.y || 100,
+    },
+  });
+
+  async function onSubmit(values: GlobalObjectFormData) {
+    console.log("click");
+    const submissionValues = {
+      ...values,
+      mapId: mapId,
+    };
+
+    try {
+      setIsSubmitting(true);
+      setError("");
+      console.log("Submitting data:", submissionValues);
+
+      if (globalObject) {
+        await axios.patch(
+          `/api/globalobject/${globalObject.id}`,
+          submissionValues
+        );
+      } else {
+        await axios.post("/api/globalobject", submissionValues);
+      }
+
+      setIsSubmitting(false);
+      router.push(`/maps/${mapId}/edit/objects`);
+      router.refresh();
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  const handleError = (error: unknown) => {
+    if (error instanceof z.ZodError) {
+      setError(
+        "Validation error: " + error.errors.map((e) => e.message).join(", ")
+      );
+      console.error("Validation error:", error.errors);
+    } else if (axios.isAxiosError(error)) {
+      setError(
+        `Server error: ${error.response?.data?.message || error.message}`
+      );
+      console.error("Server response:", error.response?.data);
+    } else {
+      setError("An unexpected error occurred");
+      console.error("Unknown error:", error);
+    }
+    setIsSubmitting(false);
+  };
+
   return (
-    // <Form {...form}>
-    <form
-      // onSubmit={form.handleSubmit(onSubmit)}
-      className="relative z-20 col-span-2 flex flex-col gap-4 text-black"
-      id="sidebar"
-    >
-      <div className="flex justify-between gap-1" id="color-pickers">
-        <IconPicker editorContext={"icon"} />
-      </div>
-    </form>
-    // </Form>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="relative z-20 col-span-2 flex flex-col gap-4 text-black"
+        id="sidebar"
+      >
+        <div className="w-full flex flex-col gap-4" id="form-top">
+          <div className="w-full" id="title-container">
+            <FormField
+              control={form.control}
+              name="title"
+              defaultValue={globalObject?.title}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Object Title..." {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="description-container">
+            <h4 className="font-bold">Description</h4>
+            <Controller
+              name="description"
+              defaultValue={globalObject?.description}
+              control={form.control}
+              render={({ field }) => (
+                <SimpleMDE placeholder="Object description" {...field} />
+              )}
+            />
+          </div>
+          <div className="w-full" id="image-container">
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              defaultValue={globalObject?.imageUrl}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Object Image" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="thumbnail-container">
+            <FormField
+              control={form.control}
+              name="thumbUrl"
+              defaultValue={globalObject?.thumbUrl}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thumbnail</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Object Thumbnail" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </Button>
+      </form>
+    </Form>
   );
 }
 

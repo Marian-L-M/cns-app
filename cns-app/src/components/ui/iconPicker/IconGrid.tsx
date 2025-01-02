@@ -1,5 +1,6 @@
-import { Button } from "../button";
+import { useState } from "react";
 import IconButton from "./IconButton";
+import SaveButton from "./SaveButton";
 
 interface IconButtonProps {
   name: string;
@@ -8,19 +9,28 @@ interface IconButtonProps {
 
 interface IconGridProps {
   iconList: IconButtonProps[];
+  setOpenIconPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function IconGrid({ iconList }: IconGridProps) {
-  const handleButtonClick = () => {
-    alert("let's goooo!");
-  };
+function IconGrid({ iconList, setOpenIconPicker }: IconGridProps) {
+  const [selectedIcon, setSelectedIcon] = useState({
+    name: "",
+    url: "",
+  });
+
   return (
     <div className="grid grid-cols-3 gap-2">
       {iconList.map((icon) => (
-        <Button onClick={handleButtonClick}>
-          <IconButton icon={icon} />
-        </Button>
+        <IconButton
+          key={`ib-${icon.name}`}
+          icon={icon}
+          setSelectedIcon={setSelectedIcon}
+        />
       ))}
+      <SaveButton
+        selectedIcon={selectedIcon}
+        setOpenIconPicker={setOpenIconPicker}
+      />
     </div>
   );
 }

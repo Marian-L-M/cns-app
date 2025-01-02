@@ -146,7 +146,8 @@ function useObjectEditor(globalObject: any) {
     editorCtx.updateGlobalObjectSettings({
       x: globalObject.x,
       y: globalObject.y,
-      url: "",
+      url: globalObject.url,
+      name: globalObject.name,
     });
   }, []);
 
@@ -196,6 +197,7 @@ function useObjectEditor(globalObject: any) {
           x: globalObject.x,
           y: globalObject.y,
           url: "",
+          name: "",
         });
         console.log("editor context: " + editorCtx.globalObjectSettings.x);
         const newBounds = {
