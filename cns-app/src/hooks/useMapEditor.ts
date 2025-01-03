@@ -142,12 +142,14 @@ function useObjectEditor(globalObject: any) {
   const thumbRadius = thumbSize / 2; // this is kind of stupid
 
   // Initialize context
+
   useEffect(() => {
+    console.log("initialize editor object context");
     editorCtx.updateGlobalObjectSettings({
       x: globalObject.x,
       y: globalObject.y,
-      url: globalObject.url,
-      name: globalObject.name,
+      url: globalObject.thumbUrl,
+      name: globalObject.title,
     });
   }, []);
 
@@ -165,13 +167,16 @@ function useObjectEditor(globalObject: any) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Get editor context global object settings (gos)
+    const gos = editorCtx.globalObjectSettings;
+
     // Calculate initial icon bounds only once
     if (!iconBounds) {
       setIconBounds({
-        left: globalObject.x * cw - thumbRadius,
-        right: globalObject.x * cw + thumbRadius,
-        top: globalObject.y * ch - thumbRadius,
-        bottom: globalObject.y * ch + thumbRadius,
+        left: gos.x * cw - thumbRadius,
+        right: gos.x * cw + thumbRadius,
+        top: gos.y * ch - thumbRadius,
+        bottom: gos.y * ch + thumbRadius,
       });
     }
 
@@ -190,8 +195,8 @@ function useObjectEditor(globalObject: any) {
 
       if (isEditing) {
         // Update position while in edit mode
-        globalObject.x = mouseX / cw;
-        globalObject.y = mouseY / ch;
+        gos.x = mouseX / cw;
+        gos.y = mouseY / ch;
 
         editorCtx.updateGlobalObjectSettings({
           x: globalObject.x,
@@ -222,7 +227,7 @@ function useObjectEditor(globalObject: any) {
 
     canvas.addEventListener("mousedown", mouseDownHandler);
     if (iconBounds) {
-      redrawCanvas(canvas, isEditing, globalObject, thumbSize, iconBounds);
+      redrawCanvas(canvas, isEditing, gos, thumbSize, iconBounds);
     }
 
     window.addEventListener("keydown", keyboardHandler);
@@ -231,7 +236,7 @@ function useObjectEditor(globalObject: any) {
       window.removeEventListener("keydown", keyboardHandler);
       canvas.removeEventListener("mousedown", mouseDownHandler);
     };
-  }, [globalObject, isEditing, iconBounds, thumbSize]);
+  }, [editorCtx, isEditing, iconBounds, thumbSize]);
 
   return { canvasRef };
 }
@@ -266,7 +271,8 @@ export function drawIcon(
   const icon = new Image();
   const thumbDiamater = thumbSize / 2;
 
-  icon.src = `/${globalObject.thumbUrl}`;
+  icon.src = `/${globalObject.url}`;
+  console.log("drawing " + icon.src);
   icon.onload = () => {
     ctx.drawImage(
       icon,

@@ -15,17 +15,17 @@ interface iconButton {
 function IconPicker(editorContext: IconPickerProps) {
   const [openIconPicker, setOpenIconPicker] = useState<boolean>(false);
   const iconList: iconButton[] = [
-    { name: "airplane", url: "/objects/icons/airplane.svg" },
-    { name: "airship_submarine", url: "/objects/icons/airship_submarine.svg" },
-    { name: "alert_error", url: "/objects/icons/alert_error.svg" },
-    { name: "anchor", url: "/objects/icons/anchor.svg" },
-    { name: "aperture", url: "/objects/icons/aperture.svg" },
-    { name: "arrow_down", url: "/objects/icons/arrow_down.svg" },
-    { name: "arrow_gps", url: "/objects/icons/arrow_gps.svg" },
-    { name: "arrow_join_path", url: "/objects/icons/arrow_join_path.svg" },
-    { name: "arrow_up", url: "/objects/icons/arrow_up.svg" },
-    { name: "art_canvas", url: "/objects/icons/art_canvas.svg" },
-    { name: "atom", url: "/objects/icons/atom.svg" },
+    { name: "airplane", url: "objects/icons/airplane.svg" },
+    { name: "airship_submarine", url: "objects/icons/airship_submarine.svg" },
+    { name: "alert_error", url: "objects/icons/alert_error.svg" },
+    { name: "anchor", url: "objects/icons/anchor.svg" },
+    { name: "aperture", url: "objects/icons/aperture.svg" },
+    { name: "arrow_down", url: "objects/icons/arrow_down.svg" },
+    { name: "arrow_gps", url: "objects/icons/arrow_gps.svg" },
+    { name: "arrow_join_path", url: "objects/icons/arrow_join_path.svg" },
+    { name: "arrow_up", url: "objects/icons/arrow_up.svg" },
+    { name: "art_canvas", url: "objects/icons/art_canvas.svg" },
+    { name: "atom", url: "objects/icons/atom.svg" },
   ];
 
   return (

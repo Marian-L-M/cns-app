@@ -7,7 +7,7 @@ import Image from "next/image";
 
 import { useContext, useEffect, useState } from "react";
 import { EditorContext } from "@/store/mapEditorContext";
-import { set, z } from "zod";
+import { z } from "zod";
 import { GlobalArea, GlobalObject } from "@prisma/client";
 import axios from "axios";
 import {
@@ -474,6 +474,9 @@ function ObjectForm({ mapId, globalObject }: Props) {
                 </FormItem>
               )}
             />
+          </div>
+          <div className="w-full" id="icon-container">
+            <IconPicker editorContext={editorCtx} />
           </div>
         </div>
         <Button type="submit" disabled={isSubmitting}>

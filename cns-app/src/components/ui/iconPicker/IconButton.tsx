@@ -26,7 +26,7 @@ function IconButton({ icon, setSelectedIcon }: IconButtonProps) {
     <Button onClick={handleButtonClick}>
       <Image
         key={icon.name}
-        src={icon.url}
+        src={`/${icon.url}`}
         alt={icon.name}
         width={40}
         height={40}
