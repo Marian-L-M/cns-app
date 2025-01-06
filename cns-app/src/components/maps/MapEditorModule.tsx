@@ -364,6 +364,13 @@ function ObjectForm({ mapId, globalObject }: Props) {
     },
   });
 
+  // Keep form values synchronized with context
+  useEffect(() => {
+    form.setValue("thumbUrl", editorCtx.globalObjectSettings.url);
+    form.setValue("x", editorCtx.globalObjectSettings.x);
+    form.setValue("y", editorCtx.globalObjectSettings.y);
+  }, [editorCtx.globalObjectSettings]);
+
   async function onSubmit(values: GlobalObjectFormData) {
     console.log("click");
     const submissionValues = {
@@ -476,7 +483,7 @@ function ObjectForm({ mapId, globalObject }: Props) {
             />
           </div>
           <div className="w-full" id="icon-container">
-            <IconPicker editorContext={editorCtx} />
+            <IconPicker />
           </div>
         </div>
         <Button type="submit" disabled={isSubmitting}>

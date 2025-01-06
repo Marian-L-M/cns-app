@@ -142,9 +142,7 @@ function useObjectEditor(globalObject: any) {
   const thumbRadius = thumbSize / 2; // this is kind of stupid
 
   // Initialize context
-
   useEffect(() => {
-    console.log("initialize editor object context");
     editorCtx.updateGlobalObjectSettings({
       x: globalObject.x,
       y: globalObject.y,
@@ -198,12 +196,6 @@ function useObjectEditor(globalObject: any) {
         gos.x = mouseX / cw;
         gos.y = mouseY / ch;
 
-        editorCtx.updateGlobalObjectSettings({
-          x: globalObject.x,
-          y: globalObject.y,
-          url: "",
-          name: "",
-        });
         console.log("editor context: " + editorCtx.globalObjectSettings.x);
         const newBounds = {
           left: mouseX - thumbRadius,
@@ -225,11 +217,13 @@ function useObjectEditor(globalObject: any) {
       }
     };
 
+    // Mouse actions
     canvas.addEventListener("mousedown", mouseDownHandler);
     if (iconBounds) {
       redrawCanvas(canvas, isEditing, gos, thumbSize, iconBounds);
     }
 
+    // Keyboard actions
     window.addEventListener("keydown", keyboardHandler);
 
     return () => {
@@ -272,7 +266,6 @@ export function drawIcon(
   const thumbDiamater = thumbSize / 2;
 
   icon.src = `/${globalObject.url}`;
-  console.log("drawing " + icon.src);
   icon.onload = () => {
     ctx.drawImage(
       icon,

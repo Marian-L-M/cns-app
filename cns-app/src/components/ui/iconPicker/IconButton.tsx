@@ -14,7 +14,6 @@ interface IconButtonProps {
 
 function IconButton({ icon, setSelectedIcon }: IconButtonProps) {
   const editorCtx = useContext(EditorContext);
-  // console.log(editorCtx);
   const handleButtonClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setSelectedIcon({

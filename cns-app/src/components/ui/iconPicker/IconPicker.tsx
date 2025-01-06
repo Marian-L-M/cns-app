@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import IconPickerButton from "./IconPickerButton";
 import IconGrid from "./IconGrid";
+import { useContext } from "react";
+import { EditorContext } from "@/store/mapEditorContext";
 
 interface IconPickerProps {
   editorContext: string;
@@ -12,7 +14,8 @@ interface iconButton {
   url: string;
 }
 
-function IconPicker(editorContext: IconPickerProps) {
+function IconPicker() {
+  const editorCtx = useContext(EditorContext);
   const [openIconPicker, setOpenIconPicker] = useState<boolean>(false);
   const iconList: iconButton[] = [
     { name: "airplane", url: "objects/icons/airplane.svg" },
