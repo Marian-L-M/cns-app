@@ -149,6 +149,14 @@ function useObjectEditor(globalObject: any) {
       url: globalObject.thumbUrl,
       name: globalObject.title,
     });
+    // 20250107 Issue: This will break on small computers due to lack of cw/ch
+    // Doesn't matter for alpha as it breaks anyway on small computers
+    setIconBounds({
+      left: globalObject.x - thumbRadius,
+      right: globalObject.x + thumbRadius,
+      top: globalObject.y - thumbRadius,
+      bottom: globalObject.y + thumbRadius,
+    });
   }, []);
 
   // Editor actions
@@ -168,16 +176,6 @@ function useObjectEditor(globalObject: any) {
     // Get editor context global object settings (gos)
     const gos = editorCtx.globalObjectSettings;
 
-    // Calculate initial icon bounds only once
-    if (!iconBounds) {
-      setIconBounds({
-        left: gos.x * cw - thumbRadius,
-        right: gos.x * cw + thumbRadius,
-        top: gos.y * ch - thumbRadius,
-        bottom: gos.y * ch + thumbRadius,
-      });
-    }
-
     // Keyboard events
     const keyboardHandler = (e: KeyboardEvent) => {
       if (e.key === "Enter" || e.key === "e") {
@@ -190,6 +188,13 @@ function useObjectEditor(globalObject: any) {
     const mouseDownHandler = (e: MouseEvent) => {
       const mouseX = e.clientX - rect.x;
       const mouseY = e.clientY - rect.y;
+
+      setIconBounds({
+        left: gos.x * cw - thumbRadius,
+        right: gos.x * cw + thumbRadius,
+        top: gos.y * ch - thumbRadius,
+        bottom: gos.y * ch + thumbRadius,
+      });
 
       if (isEditing) {
         // Update position while in edit mode
