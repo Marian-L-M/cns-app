@@ -201,6 +201,13 @@ function useObjectEditor(globalObject: any) {
         gos.x = mouseX / cw;
         gos.y = mouseY / ch;
 
+        editorCtx.updateGlobalObjectSettings({
+          name: gos.name,
+          url: gos.url,
+          x: gos.x,
+          y: gos.y,
+        });
+
         console.log("editor context: " + editorCtx.globalObjectSettings.x);
         const newBounds = {
           left: mouseX - thumbRadius,
