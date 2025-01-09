@@ -1,6 +1,8 @@
 import MapModule from "@/components/maps/MapAreaModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 
 interface Props {
   params: { id: string };
@@ -31,6 +33,12 @@ const EditMapAreas = async ({ params }: Props) => {
   return (
     <StatusContextProvider>
       <MapModule id={id} data={data} />;
+      <Link
+        href={`/maps/${params.id}/edit/areas/add`}
+        className="fixed right-16 bottom-8 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
+      >
+        <Plus width={48} height={48} />
+      </Link>
     </StatusContextProvider>
   );
 };

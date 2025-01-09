@@ -27,12 +27,18 @@ interface Props {
       }
     | undefined;
   object?: any;
+  editorMode?: string;
 }
 
-const MapEditor = ({ id, area, object }: Props) => {
+const MapEditor = ({ id, area, object, editorMode }: Props) => {
   return (
     <EditorContextProvider>
-      <MapEditorModule mapId={id} globalArea={area} globalObject={object} />
+      <MapEditorModule
+        mapId={id}
+        globalArea={area}
+        globalObject={object}
+        editorMode={editorMode}
+      />
     </EditorContextProvider>
   );
 };
@@ -42,3 +48,6 @@ export default MapEditor;
 // 241024 To do
 // Split MapEditor into two:
 // Map Area Editor and Map Object Editor
+
+// 250109 The whole editor -> mapeditormodule -> usemapeditor structure is a mess
+// Fix structure and inconsiten naming pattern

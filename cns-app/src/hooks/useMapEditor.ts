@@ -19,7 +19,7 @@ interface IconBounds {
 }
 
 // Rewrite useMapEditor as a relay between useAreaEditor and useObjectEditor
-export const useMapEditor = ({ globalArea, globalObject }: any) => {
+export const useMapEditor = ({ globalArea, globalObject }: any = {}) => {
   if (globalArea) {
     const { canvasRef } = useAreaEditor(globalArea?.nodes, globalArea?.styles);
     return { canvasRef };
@@ -27,8 +27,7 @@ export const useMapEditor = ({ globalArea, globalObject }: any) => {
     const { canvasRef } = useObjectEditor(globalObject);
     return { canvasRef };
   }
-  const canvasRef = "";
-
+  const canvasRef = useRef(null);
   return { canvasRef };
 };
 

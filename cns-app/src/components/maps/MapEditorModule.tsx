@@ -52,6 +52,7 @@ interface Props {
         type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
       }
     | undefined;
+  editorMode?: string;
 }
 
 export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
@@ -68,10 +69,16 @@ export type GlobalObjectFormData = z.infer<typeof GlobalObjectsSchema> & {
   globalObject: GlobalObject;
 };
 
-function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
-  if (!globalArea && !globalObject) {
-    return <div>No Object found</div>;
-  }
+function MapEditorModule({
+  mapId,
+  globalArea,
+  globalObject,
+  editorMode,
+}: Props) {
+  //250108 TODO - Map this to new object editor
+  // if (!globalArea && !globalObject) {
+  //   return <div>No Data found</div>;
+  // }
   const { canvasRef } = useMapEditor({ globalArea, globalObject });
 
   let windowSize: number = 1024;
@@ -114,8 +121,10 @@ function MapEditorModule({ mapId, globalArea, globalObject }: Props) {
             height="1024"
           />
         </div>
-        {/* {globalArea && <AreaForm mapId={mapId} globalArea={globalArea} />} */}
-        {globalObject && (
+        {(globalArea || editorMode === "area") && (
+          <AreaForm mapId={mapId} globalArea={globalArea} />
+        )}
+        {(globalObject || editorMode === "object") && (
           <ObjectForm mapId={mapId} globalObject={globalObject} />
         )}
       </div>
