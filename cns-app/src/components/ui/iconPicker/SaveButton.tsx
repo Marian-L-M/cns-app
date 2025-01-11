@@ -15,8 +15,8 @@ function SaveButton({ selectedIcon, setOpenIconPicker }: SaveButtonProps) {
     editorCtx.updateGlobalObjectSettings({
       name: selectedIcon.name,
       url: selectedIcon.url,
-      x: editorCtx.globalObjectSettings.x,
-      y: editorCtx.globalObjectSettings.y,
+      x: editorCtx.globalObjectSettings.x ?? 100,
+      y: editorCtx.globalObjectSettings.y ?? 100,
     });
     console.log("selectedIcon");
     console.log(selectedIcon);

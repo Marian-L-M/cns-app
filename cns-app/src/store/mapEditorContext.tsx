@@ -68,8 +68,9 @@ export default function EditorContextProvider({
   const pickLineColor = (color: string) => setLineObjectColor(color);
   const pickLineWidth = (lineWidth: number) => setObjectLineWidth(lineWidth);
   const updateNodeList = (nodeList: areaNode[]) => setNodeList(nodeList);
-  const updateGlobalObjectSettings = (globalObjectSettings: globalObject) =>
+  const updateGlobalObjectSettings = (globalObjectSettings: globalObject) => {
     setGlobalObjectSettings(globalObjectSettings);
+  };
 
   return (
     <EditorContext.Provider

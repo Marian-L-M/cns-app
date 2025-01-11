@@ -19,11 +19,15 @@ interface IconBounds {
 }
 
 // Rewrite useMapEditor as a relay between useAreaEditor and useObjectEditor
-export const useMapEditor = ({ globalArea, globalObject }: any = {}) => {
-  if (globalArea) {
+export const useMapEditor = ({
+  globalArea,
+  globalObject,
+  editorMode,
+}: any = {}) => {
+  if (globalArea && editorMode == "area") {
     const { canvasRef } = useAreaEditor(globalArea?.nodes, globalArea?.styles);
     return { canvasRef };
-  } else if (globalObject) {
+  } else if (globalObject || editorMode == "object") {
     const { canvasRef } = useObjectEditor(globalObject);
     return { canvasRef };
   }
@@ -142,20 +146,41 @@ function useObjectEditor(globalObject: any) {
 
   // Initialize context
   useEffect(() => {
-    editorCtx.updateGlobalObjectSettings({
-      x: globalObject.x,
-      y: globalObject.y,
-      url: globalObject.thumbUrl,
-      name: globalObject.title,
-    });
-    // 20250107 Issue: This will break on small computers due to lack of cw/ch
-    // Doesn't matter for alpha as it breaks anyway on small computers
-    setIconBounds({
-      left: globalObject.x - thumbRadius,
-      right: globalObject.x + thumbRadius,
-      top: globalObject.y - thumbRadius,
-      bottom: globalObject.y + thumbRadius,
-    });
+    if (globalObject) {
+      editorCtx.updateGlobalObjectSettings({
+        x: globalObject.x,
+        y: globalObject.y,
+        url: globalObject.thumbUrl,
+        name: globalObject.title,
+      });
+      // 20250107 Issue: This will break on small computers due to lack of cw/ch
+      // Doesn't matter for alpha as it breaks anyway on small computers
+      setIconBounds({
+        left: globalObject.x - thumbRadius,
+        right: globalObject.x + thumbRadius,
+        top: globalObject.y - thumbRadius,
+        bottom: globalObject.y + thumbRadius,
+      });
+    } else {
+      const objectInitializer = {
+        x: 100,
+        y: 100,
+        url: "objects/icons/dummy.svg",
+        name: "dummy",
+      };
+      editorCtx.updateGlobalObjectSettings({
+        x: objectInitializer.x,
+        y: objectInitializer.y,
+        url: objectInitializer.url,
+        name: objectInitializer.name,
+      });
+      setIconBounds({
+        left: objectInitializer.x - thumbRadius,
+        right: objectInitializer.x + thumbRadius,
+        top: objectInitializer.y - thumbRadius,
+        bottom: objectInitializer.y + thumbRadius,
+      });
+    }
   }, []);
 
   // Editor actions
@@ -207,7 +232,6 @@ function useObjectEditor(globalObject: any) {
           y: gos.y,
         });
 
-        console.log("editor context: " + editorCtx.globalObjectSettings.x);
         const newBounds = {
           left: mouseX - thumbRadius,
           right: mouseX + thumbRadius,
@@ -275,6 +299,10 @@ export function drawIcon(
 ) {
   const icon = new Image();
   const thumbDiamater = thumbSize / 2;
+
+  icon.onerror = (e) => {
+    console.error("Error loading icon:", e);
+  };
 
   icon.src = `/${globalObject.url}`;
   icon.onload = () => {

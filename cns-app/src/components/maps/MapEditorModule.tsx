@@ -75,11 +75,12 @@ function MapEditorModule({
   globalObject,
   editorMode,
 }: Props) {
+  //250111 TODO - Editormode should be state
   //250108 TODO - Map this to new object editor
   // if (!globalArea && !globalObject) {
   //   return <div>No Data found</div>;
   // }
-  const { canvasRef } = useMapEditor({ globalArea, globalObject });
+  const { canvasRef } = useMapEditor({ globalArea, globalObject, editorMode });
 
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
@@ -353,7 +354,7 @@ function AreaForm({ mapId, globalArea }: Props) {
   );
 }
 
-function ObjectForm({ mapId, globalObject }: Props) {
+function ObjectForm({ mapId, globalObject, editorMode }: Props) {
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);

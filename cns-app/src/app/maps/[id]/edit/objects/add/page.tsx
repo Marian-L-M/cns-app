@@ -6,7 +6,7 @@ interface Props {
   };
 }
 
-const MapAreaEditor = async ({ params }: Props) => {
+const AddMapObject = async ({ params }: Props) => {
   const id = parseInt(params.id);
 
   // Imperfect validation, will return false even if letters are mixed with numbers
@@ -21,6 +21,6 @@ const MapAreaEditor = async ({ params }: Props) => {
   );
 };
 
-export default MapAreaEditor;
+export default AddMapObject;
 
 // 250109 Issue: Icon is not rendered on initial selection of thumbnail
