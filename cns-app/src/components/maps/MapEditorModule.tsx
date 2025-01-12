@@ -76,29 +76,12 @@ function MapEditorModule({
   editorMode,
 }: Props) {
   //250111 TODO - Editormode should be state
-  //250108 TODO - Map this to new object editor
-  // if (!globalArea && !globalObject) {
-  //   return <div>No Data found</div>;
-  // }
   const { canvasRef } = useMapEditor({ globalArea, globalObject, editorMode });
 
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
   }
-
-  const area = globalArea;
-  const object = globalObject;
-  // if (area) {
-  //   console.log("area: " + area);
-  // }
-  // if (object) {
-  //   console.log("object: " + object.id);
-  //   Object.entries(object).forEach(([key, val]) => {
-  //     console.log(key); // the name of the current key.
-  //     console.log(val); // the value of the current key.
-  //   });
-  // }
 
   return (
     <div className="w-full" id="map-editor-module">
@@ -141,11 +124,18 @@ export default MapEditorModule;
 // Create object form
 
 function AreaForm({ mapId, globalArea }: Props) {
-  const { styles } = useMapEditor(globalArea?.nodes, globalArea?.styles);
+  // const { styles } = useMapEditor(globalArea);
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Intialize styles (250112 - Structure inefficient)
+  const styles = {
+    fillStyle: editorCtx.objectColor,
+    lineWidth: editorCtx.objectLineWidth,
+    strokeStyle: editorCtx.objectLineWidth,
+  };
 
   // Set form data
   const form = useForm<GlobalAreaFormData>({
@@ -210,7 +200,7 @@ function AreaForm({ mapId, globalArea }: Props) {
       }
 
       setIsSubmitting(false);
-      router.push(`/maps/${mapId}/edit`);
+      router.push(`/maps/${mapId}/edit/areas`);
       router.refresh();
     } catch (error) {
       handleError(error);

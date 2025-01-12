@@ -24,7 +24,9 @@ export const useMapEditor = ({
   globalObject,
   editorMode,
 }: any = {}) => {
-  if (globalArea && editorMode == "area") {
+  // 2025011 Todo implement area editormode logic
+  // if (globalArea && editorMode == "area") {
+  if (globalArea || editorMode == "area") {
     const { canvasRef } = useAreaEditor(globalArea?.nodes, globalArea?.styles);
     return { canvasRef };
   } else if (globalObject || editorMode == "object") {
