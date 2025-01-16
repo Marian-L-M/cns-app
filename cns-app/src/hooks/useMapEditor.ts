@@ -1,9 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
-import { z } from "zod";
-import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
-import EditMapObjects from "@/app/maps/[id]/edit/objects/page";
 
 interface areaNode {
   id: number;
@@ -40,6 +37,8 @@ export const useMapEditor = ({
 function useAreaEditor(nodes?: areaNode[], styles?: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [activeNode, setActiveNode] = useState<number | null>(null);
+  const [isActiveFlag, setIsActiveFlag] = useState(false);
 
   // 20240926 Next actions
   // 1. Draw object by clicking on map
@@ -61,6 +60,7 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
     editorCtx.pickLineWidth(styles.lineWidth);
   }, []);
 
+  // Draw logic
   useEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -90,7 +90,18 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
 
       if (editorCtx.nodeList.length > 0) {
         draw(ctx, editorCtx.nodeList, cw, ch);
-        drawEditNodes(ctx, editorCtx.nodeList, cw, ch);
+        drawEditNodes(ctx, editorCtx.nodeList, cw, ch, activeNode);
+      }
+    };
+
+    // Keyboar shortcuts
+    const keyboardHandler = (e: KeyboardEvent) => {
+      console.log("keyboardHandler activated");
+      if (e.key === "Enter" || e.key === "e") {
+        setIsActiveFlag(false);
+        setActiveNode(null);
+        redrawCanvas();
+        return;
       }
     };
 
@@ -99,42 +110,49 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
 
     // Draw new ares on click
     canvas.onmousedown = (e) => {
-      let existingFlag = false;
+      console.log(isActiveFlag);
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;
-
       let updatedNodes = [...editorCtx.nodeList];
+      let nodeClicked = false;
 
       // Check for existing nodes
       updatedNodes.forEach((node: areaNode, index) => {
         drawMetaNode(ctx, node.x, node.y, cw, ch);
         if (ctx.isPointInPath(mouseX, mouseY)) {
-          existingFlag = true;
-
-          // Create a new array with the node removed and update context
-          const filteredNodes = updatedNodes.filter((_, i) => i !== index);
-          editorCtx.updateNodeList(filteredNodes);
-
+          nodeClicked = true;
+          setIsActiveFlag(true);
+          setActiveNode(index);
           return;
         }
       });
 
-      // Add new node if not clicking existing one
-      if (!existingFlag) {
+      // Split into two loops to prevent stacking order issue when switching editing nodes
+      updatedNodes.forEach((node: areaNode, index) => {
+        if (isActiveFlag && activeNode === index && !nodeClicked) {
+          updatedNodes[index].x = mouseX;
+          updatedNodes[index].y = mouseY;
+          return;
+        }
+      });
+
+      // Only add a new node if we didn't click an existing one and we're not in active mode
+      if (!nodeClicked && !isActiveFlag) {
         updatedNodes.push({ id: idCounter++, x: mouseX, y: mouseY });
-        // Update context with new nodes
-        editorCtx.updateNodeList(updatedNodes);
       }
 
-      // Redraw canvas
+      // Update context with any changes
+      editorCtx.updateNodeList(updatedNodes);
       redrawCanvas();
     };
 
+    // // Keyboard actions
+    window.addEventListener("keydown", keyboardHandler);
     // Cleanup
     return () => {
       canvas.onmousedown = null;
     };
-  }, [editorCtx]);
+  }, [editorCtx, activeNode]);
   return { canvasRef };
 }
 

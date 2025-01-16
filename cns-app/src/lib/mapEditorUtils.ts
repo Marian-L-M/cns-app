@@ -26,12 +26,17 @@ export const drawEditNodes = (
   ctx: CanvasRenderingContext2D,
   area: areaNode[],
   cw: number,
-  ch: number
+  ch: number,
+  activeNode?: number | null
 ) => {
-  const offset = 5;
+  const offset = 10;
   area.forEach((node, index) => {
     ctx.beginPath();
-    ctx.fillStyle = "white";
+    if (index === activeNode) {
+      ctx.fillStyle = "black";
+    } else {
+      ctx.fillStyle = "white";
+    }
     ctx.strokeStyle = "red";
     ctx.lineWidth = 1;
     ctx.moveTo(node.x * cw - offset, node.y * ch - offset);
@@ -52,7 +57,7 @@ export const drawMetaNode = (
   cw: number,
   ch: number
 ) => {
-  const offset = 7;
+  const offset = 10;
   ctx.beginPath();
   ctx.moveTo(x * cw - offset, y * ch - offset);
   ctx.lineTo(x * cw + offset, y * ch - offset);
