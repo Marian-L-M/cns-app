@@ -31,7 +31,7 @@ const StoryModule: FC<StoryModuleProps> = ({ data, story }) => {
 
   // 240811 TODO: Add story via state
   return (
-    <div className="w-screen h-screen justify-center items-center ">
+    <div className="w-full flex flex-col">
       <div className="w-full text-center mb-2">
         {activeStatus && (
           <StatusBar
@@ -41,7 +41,7 @@ const StoryModule: FC<StoryModuleProps> = ({ data, story }) => {
           />
         )}
       </div>
-      <div className="grid grid-cols-3 gap-4 max-w-screen-2xl mx-auto">
+      <div className="w-full grid grid-cols-3 gap-4 max-w-screen-2xl mx-auto">
         <div className="relative max-w-screen-lg col-span-2 " id="map-base">
           <canvas
             // onMouseDown={onMouseDown}

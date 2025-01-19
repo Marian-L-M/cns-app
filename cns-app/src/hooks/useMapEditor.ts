@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { ContextType, useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
 
@@ -96,8 +96,14 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
 
     // Keyboar shortcuts
     const keyboardHandler = (e: KeyboardEvent) => {
-      console.log("keyboardHandler activated");
       if (e.key === "Enter" || e.key === "e") {
+        setIsActiveFlag(false);
+        setActiveNode(null);
+        redrawCanvas();
+        return;
+      } else if (e.key === "Backspace" || e.key === "r") {
+        if (!activeNode) return;
+        removeNodeFromContext(editorCtx, activeNode);
         setIsActiveFlag(false);
         setActiveNode(null);
         redrawCanvas();
@@ -108,9 +114,9 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
     // Initial draw
     redrawCanvas();
 
+    // 250116 Todo: Add fix broken exit editor node functionality (Enter needs to be pressed twice)
     // Draw new ares on click
     canvas.onmousedown = (e) => {
-      console.log(isActiveFlag);
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;
       let updatedNodes = [...editorCtx.nodeList];
@@ -136,7 +142,7 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
         }
       });
 
-      // Only add a new node if we didn't click an existing one and we're not in active mode
+      // Add node if not editing or clicking on existing node
       if (!nodeClicked && !isActiveFlag) {
         updatedNodes.push({ id: idCounter++, x: mouseX, y: mouseY });
       }
@@ -350,4 +356,12 @@ export function drawEditMarker(
   ctx.lineTo(icon.left - 5, icon.bottom + 5);
   ctx.closePath();
   ctx.stroke();
+}
+
+export function removeNodeFromContext(editorCtx: any, index: number) {
+  let updatedNodes = [...editorCtx.nodeList];
+  const filteredNodes = updatedNodes.filter((_, i) => i !== index);
+  editorCtx.updateNodeList(filteredNodes);
+
+  return;
 }

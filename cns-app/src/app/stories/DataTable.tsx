@@ -13,6 +13,7 @@ import Link from "next/link";
 import React from "react";
 import { ArrowDown } from "lucide-react";
 import { SearchParams } from "./page";
+import { buttonVariants } from "@/components/ui/button";
 
 interface Props {
   entries: Entry[];
@@ -82,6 +83,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
                   <ArrowDown className="inline p-1" />
                 )}
               </TableHead>
+              <TableHead>...</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -120,6 +122,14 @@ const DataTable = ({ entries, searchParams }: Props) => {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
+                    </TableCell>
+                    <TableCell>
+                      <Link
+                        href={`/stories/${entry.id}/edit`}
+                        className={buttonVariants({ variant: "outline" })}
+                      >
+                        Edit
+                      </Link>
                     </TableCell>
                   </TableRow>
                 ))
