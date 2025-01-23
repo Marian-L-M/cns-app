@@ -19,6 +19,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Entry } from "@prisma/client";
+import Link from "next/link";
 
 // Rendering issue with Simplemde, need to fix
 // Needs to be created dynamically
@@ -56,7 +57,7 @@ const StoryForm = ({ story }: Props) => {
     }
   }
   return (
-    <div className="rounded-md border w-full p-4">
+    <div className="rounded-md border w-full p-4 flex flex-col gap-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -199,6 +200,11 @@ const StoryForm = ({ story }: Props) => {
           </Button>
         </form>
       </Form>
+      {story && (
+        <section id="substories">
+          <Link href={`/stories/${story.id}/substories/edit`}></Link>
+        </section>
+      )}
     </div>
   );
 };

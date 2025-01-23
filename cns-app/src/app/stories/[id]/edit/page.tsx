@@ -1,5 +1,5 @@
+import StoryForm from "@/components/forms/StoryForm";
 import prisma from "../../../../../prisma/db";
-import StoryEditor from "@/components/editors/StoryEditor";
 
 interface Props {
   params: { id: string };
@@ -15,7 +15,9 @@ const EditStory = async ({ params }: Props) => {
   }
   return (
     <div className="w-full" id="story-editor-module">
-      <StoryEditor entry={entry} />
+      {/* This page should be the form for the overall story/entry */}
+      {/* <StoryEditor entry={entry} /> */}
+      <StoryForm story={entry} />
     </div>
   );
 };
