@@ -1,12 +1,16 @@
 import EditorContextProvider from "@/store/mapEditorContext";
 import StoryEditorModule from "../maps/StoryEditorModule";
 
-import { Story } from "@prisma/client";
+import { Entry } from "@prisma/client";
 
-function StoryEditor(story: Story) {
+interface EntryProps {
+  entry: Entry;
+}
+
+function StoryEditor({ entry }: EntryProps) {
   return (
     <EditorContextProvider>
-      <StoryEditorModule story={story} />
+      <StoryEditorModule entry={entry} />
     </EditorContextProvider>
   );
 }

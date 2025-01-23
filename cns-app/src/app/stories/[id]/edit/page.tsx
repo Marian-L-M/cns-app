@@ -6,16 +6,16 @@ interface Props {
 }
 
 const EditStory = async ({ params }: Props) => {
-  const story = await prisma?.entry.findUnique({
+  const entry = await prisma?.entry.findUnique({
     where: { id: parseInt(params.id) },
   });
 
-  if (!story) {
-    return <p className="text-destructive">Story not found</p>;
+  if (!entry) {
+    return <p className="text-destructive">Entry not found</p>;
   }
   return (
     <div className="w-full" id="story-editor-module">
-      <StoryEditor story={story} />
+      <StoryEditor entry={entry} />
     </div>
   );
 };

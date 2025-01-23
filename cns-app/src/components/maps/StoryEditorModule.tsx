@@ -7,10 +7,14 @@ import { fetchStoryData } from "@/lib/fetchStoryData";
 // const StoryForm = dynamic(() => import("@/components/forms/StoryForm"), {
 //   ssr: false,
 // });
-import { Story } from "@prisma/client";
+import { Entry } from "@prisma/client";
+import { Noto_Sans_Lepcha } from "next/font/google";
 
-// 2025: Story is an object with a story. Why?
-async function StoryEditorModule(story: Story) {
+interface EntryProps {
+  entry: Entry;
+}
+
+async function StoryEditorModule({ entry }: EntryProps) {
   let mapData: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
@@ -36,8 +40,7 @@ async function StoryEditorModule(story: Story) {
   let storyData: story[] = [];
 
   try {
-    // const fetchedStoryData = await fetchStoryData(story.id);
-    const fetchedStoryData = await fetchStoryData(1);
+    const fetchedStoryData = await fetchStoryData(entry.id);
 
     if (!fetchedStoryData.story || fetchedStoryData.story.length === 0) {
       throw new Error("No story found");
@@ -46,10 +49,6 @@ async function StoryEditorModule(story: Story) {
     }
   } catch (err) {
     error = (err as Error).message || "Failed to fetch story";
-  }
-
-  if (storyData?.length > 0) {
-    return <div>{error || "An error occurred"}</div>;
   }
 
   return (
