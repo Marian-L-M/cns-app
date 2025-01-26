@@ -13,11 +13,16 @@ const EditStory = async ({ params }: Props) => {
   if (!entry) {
     return <p className="text-destructive">Entry not found</p>;
   }
+
+  const substories = await prisma.story.findMany({
+    where: { entryId: entry.id },
+  });
+
   return (
     <div className="w-full" id="story-editor-module">
       {/* This page should be the form for the overall story/entry */}
       {/* <StoryEditor entry={entry} /> */}
-      <StoryForm story={entry} />
+      <StoryForm story={entry} substories={substories} />
     </div>
   );
 };
