@@ -1,12 +1,25 @@
 import React from "react";
-import StatusContextProvider from "@/store/statusContext";
-import StoryModule from "@/components/maps/StoryModule";
-import { fetchMapData } from "@/lib/fetchMapData";
+import Link from "next/link";
+
 import prisma from "../../../../../prisma/db";
+import { z } from "zod";
+
+import { fetchMapData } from "@/lib/fetchMapData";
+import StoryCanvasModule from "@/components/maps/StoryCanvasModule";
+import { storiesSchema } from "@/ValidationSchemas/stories";
+
+type Story = z.infer<typeof storiesSchema>;
+
+interface SubstoryListProps {
+  substories: Story[];
+  id: string;
+}
 
 interface Props {
   params: { id: string };
 }
+
+// To do 250126 - Switch from story mdoule to story editor module (No infobox)
 
 async function substoryOverviewPage({ params }: Props) {
   let mapData: {
@@ -41,12 +54,31 @@ async function substoryOverviewPage({ params }: Props) {
   }
 
   return (
-    <StatusContextProvider>
-      <div id="substory-overview">
-        {story && <StoryModule data={mapData} story={substories} />}
-      </div>
-    </StatusContextProvider>
+    <div className="grid grid-cols-3 gap-4 mx-auto" id="substory-overview">
+      <StoryCanvasModule data={mapData} story={substories} />
+
+      <SubstoryOverviewList substories={substories} id={params.id} />
+    </div>
   );
 }
 
 export default substoryOverviewPage;
+
+function SubstoryOverviewList({ substories, id }: SubstoryListProps) {
+  return (
+    <div className="col-span-1 flex flex-col gap-4" id="substory-overview-list">
+      <h1 className="text-2xl font-bold">Substory Overview List</h1>
+      <div className="flex flex-col gap-4" id="area-container">
+        {substories.map((substory) => (
+          <Link
+            key={substory.id}
+            href={`/stories/${id}/substories/${substory.id}/edit`}
+            className="flex gap-2 p-4 bg-slate-800 text-white rounded-lg hover:opacity-90"
+          >
+            <h6>{substory.title}</h6>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
