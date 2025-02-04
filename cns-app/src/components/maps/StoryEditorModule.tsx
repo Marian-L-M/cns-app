@@ -3,22 +3,89 @@ import Image from "next/image";
 import { fetchMapData } from "@/lib/fetchMapData";
 import { fetchStoryData } from "@/lib/fetchStoryData";
 import { Entry, Story, Map } from "@prisma/client";
-import { useStoryMaker } from "@/hooks/useStoryMaker";
+import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
+import { useEffect, useState } from "react";
+import { storyObjectsSchema } from "@/ValidationSchemas/stories";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface EditorProps {
   entry: Entry;
-  substory: Story;
+  substory: Story & { nodes: StoryNode[] };
   map: Map;
 }
 
+type StoryNode = {
+  id: number;
+  x: number;
+  y: number;
+  name: string;
+  description: string;
+  timeStart?: number;
+  timeEnd?: number;
+};
+
+export type SubstoryFormData = z.infer<typeof storyObjectsSchema> & {
+  substory: Story & { nodes: StoryNode[] };
+};
+
+// 250203 - Attempting to use state instead of context
 function StoryEditorModule({ entry, substory, map }: EditorProps) {
+  const [editableSubstory, setEditableSubstory] = useState<
+    Story & { nodes: StoryNode[] }
+  >(substory);
+
+  const { canvasRef } = useSubStoryMaker({
+    editableSubstory,
+    setEditableSubstory,
+  });
+
+  const form = useForm<SubstoryFormData>({
+    resolver: zodResolver(storyObjectsSchema),
+    // Most of the story fields should not be editable from this screen
+    //Is the hidden form even necessary?
+    defaultValues: {
+      title: editableSubstory.title,
+      nodes: editableSubstory.nodes as StoryNode[],
+      description: editableSubstory.description,
+      objectTime: editableSubstory.objectTime,
+      entryId: editableSubstory.id,
+    },
+  });
+
+  if (!editableSubstory.nodes && editableSubstory.nodes.length === 0) {
+    return <h1>No nodes found</h1>;
+  }
+
+  const updateNode = (nodeId: number, updates: Partial<StoryNode>) => {
+    setEditableSubstory((prev) => ({
+      ...prev,
+      nodes: prev.nodes.map((node) =>
+        node.id === nodeId ? { ...node, ...updates } : node
+      ),
+    }));
+  };
+
+  // This should be in the useSubStoryMaker hook
+  const handleNodeDrag = (nodeId: number, x: number, y: number) => {
+    updateNode(nodeId, { x, y });
+  };
+
+  const handleNodeRename = (nodeId: number, newName: string) => {
+    updateNode(nodeId, { name: newName });
+  };
+
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
   }
 
+  // console.log(editableSubstory);
+  // console.log(substory);
+
   // 250130 TODO create useSubstoryMaker hook
-  // // const { canvasRef } = useStoryMaker({ map, substory });
+  // 250201* Concept object editor with multiple objects
 
   return (
     <div className="w-full" id="substory-editor-module">
@@ -44,20 +111,17 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
             height={windowSize > 1024 ? 1024 : windowSize}
           />
         </div>
-        <div className="flex flex-col gap-2" id="sidebar">
-          {/* {activeStory && (
-              <div
-                className="border-2 border-sky-500 rounded-md p-1"
-                id="storybox"
-              >
-                <StoryBox
-                  id={activeStory.id}
-                  title={activeStory.title}
-                  type={activeStory.type}
-                  description={activeStory.description}
-                />
-              </div>
-            )} */}
+        <div className="flex flex-col col-span-2 gap-2" id="sidebar">
+          {/* This should be a form with toggle boxes for input */}
+          {editableSubstory.nodes?.map((node) => (
+            <div
+              key={node?.id}
+              className="border-2 border-indigo-500 rounded-md p-1  hover:bg-slate-100 cursor-pointer"
+              id="infobox"
+            >
+              <div className="text-center">{node?.name}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
