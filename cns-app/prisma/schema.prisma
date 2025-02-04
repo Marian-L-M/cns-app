@@ -78,13 +78,15 @@ model Map {
   area        GlobalArea[]
 }
 
+
+// 250131 Blew up database - Nodes needs to be a list of objects though
 model Story {
   id          Int @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(255)
   description String   @db.Text
-  nodes       Json?
+  nodes       Json[]
   objectTime  Int
   entry         Entry      @relation(fields: [entryId], references: [id])
   entryId       Int
