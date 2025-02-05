@@ -25,11 +25,15 @@ interface substoryModuleProps {
   setEditableSubstory: React.Dispatch<
     React.SetStateAction<Story & { nodes: StoryNode[] }>
   >;
+  activeSubstoryID?: number;
+  setActiveSubstoryID: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export const useSubStoryMaker = ({
   editableSubstory,
   setEditableSubstory,
+  activeSubstoryID,
+  setActiveSubstoryID,
 }: substoryModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const statusCtx = useContext(StatusContext);
@@ -49,12 +53,6 @@ export const useSubStoryMaker = ({
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 250130 TODO: Draw Nodes from Context
-    // Add form to right side
-    // Adding node adds a form block to the right side
-    // Click node or form to toggle between nodes
-    // Draw Story Nodes
 
     //250204 This check could be cleaner
     if (
@@ -88,36 +86,33 @@ export const useSubStoryMaker = ({
       const r = canvas.getBoundingClientRect();
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;
+      let nodeClicked = false;
 
-      // 240204: To do hook up info list to state
-      // 240204: To do click check logic
-      // Node check logic -> If point in path, update node/make editable
-      // check if is point in path
-      // updateNode(
-      //   2,
-      //   {
-      //     x: mouseX,
-      //     y: mouseY,
-      //     name: "New node",
-      //     description: "New node description",
-      //     timeStart: 1003,
-      //     timeEnd: 1004,
-      //   },
-      //   setEditableSubstory
-      // );
+      // Check if node clicked
+      editableSubstory.nodes.forEach((node: StoryNode) => {
+        drawMetaNode(ctx, node, cw, ch);
+        if (ctx.isPointInPath(mouseX, mouseY)) {
+          setActiveSubstoryID(node.id);
+          console.log("Node clicked", node.id);
+          nodeClicked = true;
+          return;
+        }
+      });
 
       // If not point in path, add new node
-      const newNode: StoryNode = {
-        id: Date.now(), // Using timestamp as a unique ID
-        x: mouseX,
-        y: mouseY,
-        name: "New node",
-        description: "New node description",
-        timeStart: 1003,
-        timeEnd: 1004,
-      };
+      if (!nodeClicked) {
+        const newNode: StoryNode = {
+          id: Date.now(),
+          x: mouseX,
+          y: mouseY,
+          name: "New node",
+          description: "New node description",
+          timeStart: 1003,
+          timeEnd: 1004,
+        };
 
-      addNode(newNode, setEditableSubstory);
+        addNode(newNode, setEditableSubstory);
+      }
     };
   }, [editableSubstory]);
 
@@ -136,6 +131,25 @@ const drawNode = (
   ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
   ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
   ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.fill();
+};
+
+// Unify with useMapEditor drawmeta node)
+const drawMetaNode = (
+  ctx: CanvasRenderingContext2D,
+  node: StoryNode,
+  cw: number,
+  ch: number
+) => {
+  const offset = 10;
+  ctx.fillStyle = "blue";
+  ctx.beginPath();
+  ctx.moveTo((node.x - offset) * cw, (node.y - offset) * ch);
+  ctx.lineTo((node.x + offset) * cw, (node.y - offset) * ch);
+  ctx.lineTo((node.x + offset) * cw, (node.y + offset) * ch);
+  ctx.lineTo((node.x - offset) * cw, (node.y + offset) * ch);
   ctx.closePath();
   ctx.stroke();
   ctx.fill();

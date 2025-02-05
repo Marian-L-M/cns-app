@@ -35,10 +35,15 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
   const [editableSubstory, setEditableSubstory] = useState<
     Story & { nodes: StoryNode[] }
   >(substory);
+  const [activeSubstoryID, setActiveSubstoryID] = useState<number | undefined>(
+    undefined
+  );
 
   const { canvasRef } = useSubStoryMaker({
     editableSubstory,
     setEditableSubstory,
+    activeSubstoryID,
+    setActiveSubstoryID,
   });
 
   const form = useForm<SubstoryFormData>({
@@ -119,6 +124,7 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
               className="border-2 border-indigo-500 rounded-md p-1  hover:bg-slate-100 cursor-pointer"
               id="infobox"
             >
+              {activeSubstoryID === node.id ? "active" : "not active"}
               <div className="text-center">{node?.name}</div>
             </div>
           ))}
