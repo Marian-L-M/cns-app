@@ -122,7 +122,6 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
   // console.log(editableSubstory);
   // console.log(substory);
 
-  // 250206 Issue: Clicking collapsible doesnt open (Hard wired to state, toggle state in click event)
   // 250206 Todo: Add form fields and submission logic
 
   return (
@@ -160,7 +159,10 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
               className="border-2 border-indigo-500 rounded-md p-1  hover:bg-slate-100 cursor-pointer"
               id="infobox"
             >
-              <Collapsible open={activeSubstoryID === node.id}>
+              <Collapsible
+                open={activeSubstoryID === node.id}
+                onClick={() => setActiveSubstoryID(node.id)}
+              >
                 <CollapsibleTrigger>
                   <div className="text-center">{node?.name}</div>
                 </CollapsibleTrigger>
