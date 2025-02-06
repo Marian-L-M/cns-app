@@ -2,13 +2,20 @@
 import Image from "next/image";
 import { fetchMapData } from "@/lib/fetchMapData";
 import { fetchStoryData } from "@/lib/fetchStoryData";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { Entry, Story, Map } from "@prisma/client";
 import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
 import { useEffect, useState } from "react";
 import { storyObjectsSchema } from "@/ValidationSchemas/stories";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { Form, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface EditorProps {
   entry: Entry;
@@ -32,6 +39,10 @@ export type SubstoryFormData = z.infer<typeof storyObjectsSchema> & {
 
 // 250203 - Attempting to use state instead of context
 function StoryEditorModule({ entry, substory, map }: EditorProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
   const [editableSubstory, setEditableSubstory] = useState<
     Story & { nodes: StoryNode[] }
   >(substory);
@@ -48,8 +59,7 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
 
   const form = useForm<SubstoryFormData>({
     resolver: zodResolver(storyObjectsSchema),
-    // Most of the story fields should not be editable from this screen
-    //Is the hidden form even necessary?
+    // Edit only nodes from this form
     defaultValues: {
       title: editableSubstory.title,
       nodes: editableSubstory.nodes as StoryNode[],
@@ -58,6 +68,29 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
       entryId: editableSubstory.id,
     },
   });
+
+  async function onSubmit(values: SubstoryFormData) {
+    try {
+      setIsSubmitting(true);
+      setError("");
+      if (editableSubstory) {
+        await axios.patch(`/api/substories/${editableSubstory.id}`, values);
+        router.push(`/stories/${editableSubstory.entryId}/substories`);
+        router.refresh();
+      } else {
+        const response = await axios.post(`/api/substories`, values);
+        const newSubstory = response.data;
+        router.push(
+          `/stories/${newSubstory.entryId}/substories/${newSubstory.id}/edit`
+        );
+        router.refresh();
+      }
+      setIsSubmitting(false);
+    } catch (error) {
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
+    }
+  }
 
   if (!editableSubstory.nodes && editableSubstory.nodes.length === 0) {
     return <h1>No nodes found</h1>;
@@ -89,8 +122,8 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
   // console.log(editableSubstory);
   // console.log(substory);
 
-  // 250130 TODO create useSubstoryMaker hook
-  // 250201* Concept object editor with multiple objects
+  // 250206 Issue: Clicking collapsible doesnt open (Hard wired to state, toggle state in click event)
+  // 250206 Todo: Add form fields and submission logic
 
   return (
     <div className="w-full" id="substory-editor-module">
@@ -116,19 +149,31 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
             height={windowSize > 1024 ? 1024 : windowSize}
           />
         </div>
-        <div className="flex flex-col col-span-2 gap-2" id="sidebar">
-          {/* This should be a form with toggle boxes for input */}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col col-span-2 gap-2"
+          id="sidebar"
+        >
           {editableSubstory.nodes?.map((node) => (
             <div
               key={node?.id}
               className="border-2 border-indigo-500 rounded-md p-1  hover:bg-slate-100 cursor-pointer"
               id="infobox"
             >
-              {activeSubstoryID === node.id ? "active" : "not active"}
-              <div className="text-center">{node?.name}</div>
+              <Collapsible open={activeSubstoryID === node.id}>
+                <CollapsibleTrigger>
+                  <div className="text-center">{node?.name}</div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <input
+                    className="w-full bg-slate-100"
+                    {...form.register(`nodes.${node.id}.description`)}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           ))}
-        </div>
+        </form>
       </div>
     </div>
   );
