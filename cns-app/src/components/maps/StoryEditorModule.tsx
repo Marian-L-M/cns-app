@@ -1,21 +1,22 @@
 "use client";
 import Image from "next/image";
-import { fetchMapData } from "@/lib/fetchMapData";
-import { fetchStoryData } from "@/lib/fetchStoryData";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Entry, Story, Map } from "@prisma/client";
 import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { Input } from "../ui/input";
 import { storyObjectsSchema } from "@/ValidationSchemas/stories";
 import { z } from "zod";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Textarea } from "../ui/textarea";
 
 interface EditorProps {
   entry: Entry;
@@ -35,6 +36,7 @@ type StoryNode = {
 
 export type SubstoryFormData = z.infer<typeof storyObjectsSchema> & {
   substory: Story & { nodes: StoryNode[] };
+  nodes: StoryNode[];
 };
 
 // 250203 - Attempting to use state instead of context
@@ -148,34 +150,128 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
             height={windowSize > 1024 ? 1024 : windowSize}
           />
         </div>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col col-span-2 gap-2"
-          id="sidebar"
-        >
-          {editableSubstory.nodes?.map((node) => (
-            <div
-              key={node?.id}
-              className="border-2 border-indigo-500 rounded-md p-1  hover:bg-slate-100 cursor-pointer"
-              id="infobox"
-            >
-              <Collapsible
-                open={activeSubstoryID === node.id}
-                onClick={() => setActiveSubstoryID(node.id)}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col col-span-2 gap-2"
+            id="sidebar"
+          >
+            {editableSubstory.nodes?.map((node, number) => (
+              <div
+                key={node?.id}
+                className="border-2 border-indigo-500 rounded-md  hover:bg-slate-100 cursor-pointer p-2"
+                id="infobox"
               >
-                <CollapsibleTrigger>
-                  <div className="text-center">{node?.name}</div>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <input
-                    className="w-full bg-slate-100"
-                    {...form.register(`nodes.${node.id}.description`)}
-                  />
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          ))}
-        </form>
+                <Collapsible
+                  open={activeSubstoryID === (node as StoryNode).id}
+                  onClick={() => setActiveSubstoryID((node as StoryNode).id)}
+                >
+                  <CollapsibleTrigger>
+                    <h4 className="text-center text-2l">
+                      {(node as StoryNode).name}
+                    </h4>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="flex flex-col gap-2" id="form-content">
+                      <FormField
+                        control={form.control}
+                        name={`nodes.${number}.name`}
+                        defaultValue={(node as StoryNode).name}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Name..." {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <div
+                        className="flex flex-row gap-2 justify-between"
+                        id="coordinates"
+                      >
+                        <FormField
+                          control={form.control}
+                          name={`nodes.${number}.x`}
+                          defaultValue={(node as StoryNode).x}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>X: </FormLabel>
+                              <FormControl>
+                                <Input placeholder="x" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`nodes.${number}.y`}
+                          defaultValue={(node as StoryNode).y}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Y: </FormLabel>
+                              <FormControl>
+                                <Input placeholder="y" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div
+                        className="flex flex-row gap-2 justify-between"
+                        id="timeSpan"
+                      >
+                        <FormField
+                          control={form.control}
+                          name={`nodes.${number}.timeStart`}
+                          defaultValue={(node as StoryNode)?.timeStart}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Time start: </FormLabel>
+                              <FormControl>
+                                <Input placeholder="Time start" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`nodes.${number}.timeEnd`}
+                          defaultValue={(node as StoryNode)?.timeEnd}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Time end: </FormLabel>
+                              <FormControl>
+                                <Input placeholder="Time end" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name={`nodes.${number}.description`}
+                        defaultValue={(node as StoryNode).description}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                className="h-32 bg-white"
+                                placeholder="Description..."
+                                {...field}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            ))}
+          </form>
+        </Form>
       </div>
     </div>
   );
