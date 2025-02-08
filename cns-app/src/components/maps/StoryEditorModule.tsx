@@ -4,7 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Entry, Story, Map } from "@prisma/client";
 import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
 import { storyObjectsSchema } from "@/ValidationSchemas/stories";
@@ -17,6 +17,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
 
 interface EditorProps {
   entry: Entry;
@@ -63,38 +64,56 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
     resolver: zodResolver(storyObjectsSchema),
     // Edit only nodes from this form
     defaultValues: {
+      id: editableSubstory.id,
       title: editableSubstory.title,
-      nodes: editableSubstory.nodes as StoryNode[],
       description: editableSubstory.description,
+      nodes: editableSubstory.nodes as StoryNode[],
       objectTime: editableSubstory.objectTime,
-      entryId: editableSubstory.id,
+      entryId: editableSubstory.entryId,
     },
   });
+
+  useEffect(() => {
+    const values = {
+      id: editableSubstory.id,
+      title: editableSubstory.title,
+      description: editableSubstory.description,
+      nodes: editableSubstory.nodes,
+      objectTime: editableSubstory.objectTime,
+      entryId: editableSubstory.entryId,
+    };
+    form.reset(values);
+  }, [editableSubstory, form]);
 
   async function onSubmit(values: SubstoryFormData) {
     try {
       setIsSubmitting(true);
       setError("");
-      if (editableSubstory) {
-        await axios.patch(`/api/substories/${editableSubstory.id}`, values);
-        router.push(`/stories/${editableSubstory.entryId}/substories`);
-        router.refresh();
-      } else {
-        const response = await axios.post(`/api/substories`, values);
-        const newSubstory = response.data;
-        router.push(
-          `/stories/${newSubstory.entryId}/substories/${newSubstory.id}/edit`
-        );
-        router.refresh();
-      }
-      setIsSubmitting(false);
-    } catch (error) {
-      setError("Unknown error occurred");
+      console.log("Submitting data:", values); // Add this for debugging
+
+      const submissionValues = {
+        ...values,
+        id: editableSubstory.id,
+      };
+
+      const response = await axios.patch(
+        `/api/substories/${editableSubstory.id}`,
+        submissionValues
+      );
+
+      console.log("Response:", response.data); // Add this for debugging
+
+      router.push(`/stories/${editableSubstory.entryId}/substories`);
+      router.refresh();
+    } catch (error: any) {
+      console.error("Submission error:", error); // Add this for debugging
+      setError(error.response?.data?.message || "Unknown error occurred");
+    } finally {
       setIsSubmitting(false);
     }
   }
 
-  if (!editableSubstory.nodes && editableSubstory.nodes.length === 0) {
+  if (!editableSubstory.nodes) {
     return <h1>No nodes found</h1>;
   }
 
@@ -120,9 +139,6 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
   }
-
-  // console.log(editableSubstory);
-  // console.log(substory);
 
   // 250206 Todo: Add form fields and submission logic
 
@@ -270,6 +286,10 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
                 </Collapsible>
               </div>
             ))}
+            {error && <div className="text-red-500 mt-2">{error}</div>}
+            <Button type="submit" disabled={isSubmitting}>
+              {editableSubstory ? "Update substory" : "Submit Substory"}
+            </Button>
           </form>
         </Form>
       </div>
