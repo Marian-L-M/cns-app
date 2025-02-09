@@ -7,6 +7,7 @@ import { z } from "zod";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StoryCanvasModule from "@/components/maps/StoryCanvasModule";
 import { storiesSchema } from "@/ValidationSchemas/stories";
+import { Plus } from "lucide-react";
 
 type Story = z.infer<typeof storiesSchema>;
 
@@ -56,8 +57,13 @@ async function substoryOverviewPage({ params }: Props) {
   return (
     <div className="grid grid-cols-3 gap-4 mx-auto" id="substory-overview">
       <StoryCanvasModule data={mapData} story={substories} />
-
       <SubstoryOverviewList substories={substories} id={params.id} />
+      <Link
+        href={`/stories/${params.id}/substories/new`}
+        className="fixed right-16 bottom-8 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
+      >
+        <Plus width={48} height={48} />
+      </Link>
     </div>
   );
 }

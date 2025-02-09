@@ -5,7 +5,7 @@ import { Entry, Map, Story } from "@prisma/client";
 
 interface EditorProps {
   entry: Entry;
-  substory: Story;
+  substory?: Story;
   map: Map;
 }
 

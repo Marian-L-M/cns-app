@@ -21,7 +21,7 @@ import { Button } from "../ui/button";
 
 interface EditorProps {
   entry: Entry;
-  substory: Story & { nodes: StoryNode[] };
+  substory?: Story & { nodes: StoryNode[] };
   map: Map;
 }
 
@@ -41,6 +41,20 @@ export type SubstoryFormData = z.infer<typeof storyObjectsSchema> & {
 };
 
 // 250203 - Attempting to use state instead of context
+
+// Default values for a new substory
+// 250209 - Todo: find a way to get rid of temporary id for new substories
+const defaultSubstory: Story & { nodes: StoryNode[] } = {
+  id: 0,
+  title: "",
+  description: "",
+  objectTime: 0,
+  entryId: 0,
+  nodes: [],
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
 function StoryEditorModule({ entry, substory, map }: EditorProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -48,7 +62,7 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
 
   const [editableSubstory, setEditableSubstory] = useState<
     Story & { nodes: StoryNode[] }
-  >(substory);
+  >(substory || { ...defaultSubstory, entryId: entry.id });
   const [activeSubstoryID, setActiveSubstoryID] = useState<number | undefined>(
     undefined
   );
@@ -62,7 +76,6 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
 
   const form = useForm<SubstoryFormData>({
     resolver: zodResolver(storyObjectsSchema),
-    // Edit only nodes from this form
     defaultValues: {
       id: editableSubstory.id,
       title: editableSubstory.title,
@@ -75,12 +88,13 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
 
   useEffect(() => {
     const values = {
-      id: editableSubstory.id,
-      title: editableSubstory.title,
-      description: editableSubstory.description,
+      id: editableSubstory.id || form.getValues("id"),
+      title: editableSubstory.title || form.getValues("title"),
+      description:
+        editableSubstory.description || form.getValues("description"),
       nodes: editableSubstory.nodes,
-      objectTime: editableSubstory.objectTime,
-      entryId: editableSubstory.entryId,
+      objectTime: editableSubstory.objectTime || form.getValues("objectTime"),
+      entryId: editableSubstory.entryId || form.getValues("entryId"),
     };
     form.reset(values);
   }, [editableSubstory, form]);
@@ -91,18 +105,19 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
       setError("");
       console.log("Submitting data:", values); // Add this for debugging
 
-      const submissionValues = {
-        ...values,
-        id: editableSubstory.id,
-      };
+      if (substory) {
+        await axios.patch(`/api/substories/${editableSubstory.id}`, values);
+      } else {
+        // Remove temporary id for new substories before submission
+        const { id, nodes, ...submitData } = values;
+        const cleanedNodes = nodes.map(({ id: nodeId, ...node }) => node);
 
-      const response = await axios.patch(
-        `/api/substories/${editableSubstory.id}`,
-        submissionValues
-      );
-
-      console.log("Response:", response.data); // Add this for debugging
-
+        await axios.post(`/api/substories`, {
+          ...submitData,
+          nodes: cleanedNodes,
+        });
+      }
+      setIsSubmitting(false);
       router.push(`/stories/${editableSubstory.entryId}/substories`);
       router.refresh();
     } catch (error: any) {
@@ -111,10 +126,6 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (!editableSubstory.nodes) {
-    return <h1>No nodes found</h1>;
   }
 
   const updateNode = (nodeId: number, updates: Partial<StoryNode>) => {
@@ -210,7 +221,12 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
                   <FormItem>
                     <FormLabel>Time</FormLabel>
                     <FormControl>
-                      <Input placeholder="Object Time..." {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Object Time..."
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -218,124 +234,134 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
             </div>
             <div className="flex flex-col col-span-2 gap-2" id="nodes-editor">
               <h3 className="text-15xl">Story Nodes</h3>
-              {editableSubstory.nodes?.map((node, number) => (
-                <div
-                  key={node?.id}
-                  className="border-2 border-indigo-500 rounded-md  hover:bg-slate-100 cursor-pointer p-2"
-                  id="infobox"
-                >
-                  <Collapsible
-                    open={activeSubstoryID === (node as StoryNode).id}
-                    onClick={() => setActiveSubstoryID((node as StoryNode).id)}
+              {editableSubstory &&
+                editableSubstory.nodes?.map((node, number) => (
+                  <div
+                    key={node?.id}
+                    className="border-2 border-indigo-500 rounded-md  hover:bg-slate-100 cursor-pointer p-2"
+                    id="infobox"
                   >
-                    <CollapsibleTrigger>
-                      <h4 className="text-center text-2l">
-                        {(node as StoryNode).name}
-                      </h4>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <div className="flex flex-col gap-2" id="form-content">
-                        <FormField
-                          control={form.control}
-                          name={`nodes.${number}.name`}
-                          defaultValue={(node as StoryNode).name}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Name</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Name..." {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        <div
-                          className="flex flex-row gap-2 justify-between"
-                          id="coordinates"
-                        >
+                    <Collapsible
+                      open={activeSubstoryID === (node as StoryNode).id}
+                      onClick={() =>
+                        setActiveSubstoryID((node as StoryNode).id)
+                      }
+                    >
+                      <CollapsibleTrigger>
+                        <h4 className="text-center text-2l">
+                          {(node as StoryNode).name}
+                        </h4>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="flex flex-col gap-2" id="form-content">
                           <FormField
                             control={form.control}
-                            name={`nodes.${number}.x`}
-                            defaultValue={(node as StoryNode).x}
+                            name={`nodes.${number}.name`}
+                            defaultValue={(node as StoryNode).name}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>X: </FormLabel>
+                                <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="x" {...field} />
+                                  <Input placeholder="Name..." {...field} />
                                 </FormControl>
                               </FormItem>
                             )}
                           />
+                          <div
+                            className="flex flex-row gap-2 justify-between"
+                            id="coordinates"
+                          >
+                            <FormField
+                              control={form.control}
+                              name={`nodes.${number}.x`}
+                              defaultValue={(node as StoryNode).x}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>X: </FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="x" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`nodes.${number}.y`}
+                              defaultValue={(node as StoryNode).y}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Y: </FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="y" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <div
+                            className="flex flex-row gap-2 justify-between"
+                            id="timeSpan"
+                          >
+                            <FormField
+                              control={form.control}
+                              name={`nodes.${number}.timeStart`}
+                              defaultValue={(node as StoryNode)?.timeStart}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Time start: </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Time start"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`nodes.${number}.timeEnd`}
+                              defaultValue={(node as StoryNode)?.timeEnd}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Time end: </FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Time end" {...field} />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                           <FormField
                             control={form.control}
-                            name={`nodes.${number}.y`}
-                            defaultValue={(node as StoryNode).y}
+                            name={`nodes.${number}.description`}
+                            defaultValue={(node as StoryNode).description}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Y: </FormLabel>
+                                <FormLabel>Description</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="y" {...field} />
+                                  <Textarea
+                                    className="h-32 bg-white"
+                                    placeholder="Description..."
+                                    {...field}
+                                  />
                                 </FormControl>
                               </FormItem>
                             )}
                           />
                         </div>
-                        <div
-                          className="flex flex-row gap-2 justify-between"
-                          id="timeSpan"
-                        >
-                          <FormField
-                            control={form.control}
-                            name={`nodes.${number}.timeStart`}
-                            defaultValue={(node as StoryNode)?.timeStart}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Time start: </FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Time start" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name={`nodes.${number}.timeEnd`}
-                            defaultValue={(node as StoryNode)?.timeEnd}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Time end: </FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Time end" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <FormField
-                          control={form.control}
-                          name={`nodes.${number}.description`}
-                          defaultValue={(node as StoryNode).description}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Description</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  className="h-32 bg-white"
-                                  placeholder="Description..."
-                                  {...field}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-              ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </div>
+                ))}
             </div>
             {error && <div className="text-red-500 mt-2">{error}</div>}
             <Button type="submit" disabled={isSubmitting}>
-              {editableSubstory ? "Update substory" : "Submit Substory"}
+              {isSubmitting
+                ? "Saving..."
+                : editableSubstory.id === 0
+                ? "Create Substory"
+                : "Update Substory"}
             </Button>
           </form>
         </Form>
