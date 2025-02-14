@@ -349,6 +349,19 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
                               </FormItem>
                             )}
                           />
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              removeNodeFromStory(
+                                editableSubstory,
+                                setEditableSubstory,
+                                node?.id
+                              );
+                            }}
+                            variant="destructive"
+                          >
+                            <span>Delete Node</span>
+                          </Button>
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
@@ -371,3 +384,18 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
 }
 
 export default StoryEditorModule;
+
+export function removeNodeFromStory(
+  editableSubstory: Story & { nodes: StoryNode[] },
+  setEditableSubstory: React.Dispatch<
+    React.SetStateAction<Story & { nodes: StoryNode[] }>
+  >,
+  nodeId: number
+) {
+  const updatedSubstory = {
+    ...editableSubstory,
+    nodes: editableSubstory.nodes.filter((node) => node.id !== nodeId),
+  };
+  setEditableSubstory(updatedSubstory);
+  return;
+}
