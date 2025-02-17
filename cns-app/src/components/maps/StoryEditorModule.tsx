@@ -399,3 +399,5 @@ export function removeNodeFromStory(
   setEditableSubstory(updatedSubstory);
   return;
 }
+
+// 250214 - Todo: Add active node highlighting

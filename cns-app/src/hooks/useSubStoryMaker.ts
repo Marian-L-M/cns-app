@@ -59,25 +59,7 @@ export const useSubStoryMaker = ({
       Array.isArray(editableSubstory.nodes) &&
       editableSubstory.nodes.length > 0
     ) {
-      let previousNode: Point | undefined;
-      editableSubstory.nodes.forEach((node: StoryNode) => {
-        // Draw Story Line
-        if (previousNode) {
-          ctx.beginPath();
-          ctx.strokeStyle = "black";
-          ctx.lineWidth = 2;
-          ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
-          ctx.lineTo(node.x * cw, node.y * ch);
-          ctx.closePath;
-          ctx.stroke();
-        }
-        previousNode = { x: node.x, y: node.y };
-      });
-
-      // Draw Story Nodes in separate loop for layering
-      editableSubstory.nodes.forEach((node: StoryNode) => {
-        drawNode(ctx, node, cw, ch);
-      });
+      redrawCanvas(canvas, editableSubstory, ctx, cw, ch, activeSubstoryID);
     }
 
     // Update canvas on click
@@ -113,27 +95,87 @@ export const useSubStoryMaker = ({
 
         addNode(newNode, setEditableSubstory);
       }
+
+      // Update canvas
+      redrawCanvas(canvas, editableSubstory, ctx, cw, ch, activeSubstoryID);
     };
-  }, [editableSubstory]);
+  }, [editableSubstory, activeSubstoryID]);
 
   return { canvasRef };
+};
+
+const redrawCanvas = (
+  canvas: HTMLCanvasElement,
+  editableSubstory: Story & { nodes: StoryNode[] },
+  ctx: CanvasRenderingContext2D,
+  cw: number,
+  ch: number,
+  activeSubstoryID?: number
+) => {
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw Lines
+  let previousNode: Point | undefined;
+  editableSubstory.nodes.forEach((node: StoryNode) => {
+    // Draw Story Line
+    if (previousNode) {
+      ctx.beginPath();
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 2;
+      ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
+      ctx.lineTo(node.x * cw, node.y * ch);
+      ctx.closePath;
+      ctx.stroke();
+    }
+    previousNode = { x: node.x, y: node.y };
+  });
+
+  // Draw Nodes
+  editableSubstory.nodes.forEach((node: StoryNode) => {
+    drawNode(ctx, node, cw, ch, activeSubstoryID);
+  });
 };
 
 const drawNode = (
   ctx: CanvasRenderingContext2D,
   node: StoryNode,
   cw: number,
-  ch: number
+  ch: number,
+  activeSubstoryID?: number
 ) => {
-  ctx.fillStyle = "red";
-  ctx.beginPath();
-  ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
-  ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
-  ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
-  ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
-  ctx.closePath();
-  ctx.stroke();
-  ctx.fill();
+  console.log("active:" + activeSubstoryID);
+  console.log("current:" + node.id);
+  if (activeSubstoryID === node.id) {
+    ctx.beginPath();
+    ctx.fillStyle = "yellow";
+    ctx.moveTo((node.x - 10) * cw, (node.y - 10) * ch);
+    ctx.lineTo((node.x + 10) * cw, (node.y - 10) * ch);
+    ctx.lineTo((node.x + 10) * cw, (node.y + 10) * ch);
+    ctx.lineTo((node.x - 10) * cw, (node.y + 10) * ch);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.fillStyle = "blue";
+    ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
+    ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
+    ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
+    ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.fillStyle = "red";
+    ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
+    ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
+    ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
+    ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+  }
 };
 
 // Unify with useMapEditor drawmeta node)
@@ -144,15 +186,12 @@ const drawMetaNode = (
   ch: number
 ) => {
   const offset = 10;
-  ctx.fillStyle = "blue";
   ctx.beginPath();
   ctx.moveTo((node.x - offset) * cw, (node.y - offset) * ch);
   ctx.lineTo((node.x + offset) * cw, (node.y - offset) * ch);
   ctx.lineTo((node.x + offset) * cw, (node.y + offset) * ch);
   ctx.lineTo((node.x - offset) * cw, (node.y + offset) * ch);
   ctx.closePath();
-  ctx.stroke();
-  ctx.fill();
 };
 
 const addNode = (
