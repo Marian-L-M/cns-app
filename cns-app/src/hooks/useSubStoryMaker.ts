@@ -9,6 +9,7 @@ import {
 } from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
 import { Story } from "@prisma/client";
+import { draw } from "@/lib/mapEditorUtils";
 
 type StoryNode = {
   id: number;
@@ -75,7 +76,6 @@ export const useSubStoryMaker = ({
         drawMetaNode(ctx, node, cw, ch);
         if (ctx.isPointInPath(mouseX, mouseY)) {
           setActiveSubstoryID(node.id);
-          console.log("Node clicked", node.id);
           nodeClicked = true;
           return;
         }
@@ -137,6 +137,7 @@ const redrawCanvas = (
   });
 };
 
+// 250217 Todo: make code less dry
 const drawNode = (
   ctx: CanvasRenderingContext2D,
   node: StoryNode,
@@ -144,37 +145,11 @@ const drawNode = (
   ch: number,
   activeSubstoryID?: number
 ) => {
-  console.log("active:" + activeSubstoryID);
-  console.log("current:" + node.id);
   if (activeSubstoryID === node.id) {
-    ctx.beginPath();
-    ctx.fillStyle = "yellow";
-    ctx.moveTo((node.x - 10) * cw, (node.y - 10) * ch);
-    ctx.lineTo((node.x + 10) * cw, (node.y - 10) * ch);
-    ctx.lineTo((node.x + 10) * cw, (node.y + 10) * ch);
-    ctx.lineTo((node.x - 10) * cw, (node.y + 10) * ch);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.fillStyle = "blue";
-    ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
-    ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
-    ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
-    ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
+    drawNodeSquare(ctx, node.x, node.y, cw, ch, 10, "yellow", "black");
+    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "blue", "none");
   } else {
-    ctx.beginPath();
-    ctx.fillStyle = "red";
-    ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
-    ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
-    ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
-    ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
+    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "red", "black");
   }
 };
 
@@ -185,13 +160,32 @@ const drawMetaNode = (
   cw: number,
   ch: number
 ) => {
-  const offset = 10;
+  drawNodeSquare(ctx, node.x, node.y, cw, ch, 10, "unset", "unset");
+};
+
+const drawNodeSquare = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  cw: number,
+  ch: number,
+  offset: number,
+  fillStyle?: string,
+  strokeStyle?: string
+) => {
   ctx.beginPath();
-  ctx.moveTo((node.x - offset) * cw, (node.y - offset) * ch);
-  ctx.lineTo((node.x + offset) * cw, (node.y - offset) * ch);
-  ctx.lineTo((node.x + offset) * cw, (node.y + offset) * ch);
-  ctx.lineTo((node.x - offset) * cw, (node.y + offset) * ch);
+  ctx.lineWidth = 1;
+  fillStyle ? (ctx.fillStyle = fillStyle) : (ctx.fillStyle = "none");
+  strokeStyle ? (ctx.strokeStyle = strokeStyle) : (ctx.strokeStyle = "none");
+  ctx.moveTo((x - offset) * cw, (y - offset) * ch);
+  ctx.lineTo((x + offset) * cw, (y - offset) * ch);
+  ctx.lineTo((x + offset) * cw, (y + offset) * ch);
+  ctx.lineTo((x - offset) * cw, (y + offset) * ch);
   ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "none";
+  ctx.strokeStyle = "none";
 };
 
 const addNode = (
