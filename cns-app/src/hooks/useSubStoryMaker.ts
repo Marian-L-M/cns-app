@@ -1,15 +1,6 @@
 // Temporary hook - to be unified with useStoryMaker
-import { useEffect, useRef, useContext } from "react";
-import { drawAreas } from "@/lib/map/drawMap";
-import {
-  checkClick,
-  checkHover,
-  checkObjectClick,
-  checkStoryNodeClick,
-} from "@/lib/map/mouseActions";
-import { StatusContext } from "@/store/statusContext";
+import { useEffect, useRef } from "react";
 import { Story } from "@prisma/client";
-import { draw } from "@/lib/mapEditorUtils";
 
 type StoryNode = {
   id: number;
@@ -37,7 +28,6 @@ export const useSubStoryMaker = ({
   setActiveSubstoryID,
 }: substoryModuleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const statusCtx = useContext(StatusContext);
 
   useEffect(() => {
     // Initialize canvas
@@ -54,6 +44,14 @@ export const useSubStoryMaker = ({
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Keyboard shortcuts
+    const keyboardHandler = (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === "e") {
+        setActiveSubstoryID(undefined);
+        return;
+      }
+    };
 
     //250204 This check could be cleaner
     if (
@@ -75,14 +73,25 @@ export const useSubStoryMaker = ({
       editableSubstory.nodes.forEach((node: StoryNode) => {
         drawMetaNode(ctx, node, cw, ch);
         if (ctx.isPointInPath(mouseX, mouseY)) {
-          setActiveSubstoryID(node.id);
+          if (activeSubstoryID === node.id) {
+            setActiveSubstoryID(undefined);
+          } else {
+            setActiveSubstoryID(node.id);
+          }
           nodeClicked = true;
           return;
         }
       });
 
-      // If not point in path, add new node
-      if (!nodeClicked) {
+      // If not point in path and edit mode update active node position
+      if (!nodeClicked && activeSubstoryID) {
+        updateNode(
+          activeSubstoryID,
+          { x: mouseX, y: mouseY },
+          setEditableSubstory
+        );
+      } else if (!nodeClicked) {
+        // If not point in path and not edit mode, add new node
         const newNode: StoryNode = {
           id: Date.now(),
           x: mouseX,
@@ -94,10 +103,19 @@ export const useSubStoryMaker = ({
         };
 
         addNode(newNode, setEditableSubstory);
+      } else {
+        return;
       }
+      // Keyboard actions
+      window.addEventListener("keydown", keyboardHandler);
 
       // Update canvas
       redrawCanvas(canvas, editableSubstory, ctx, cw, ch, activeSubstoryID);
+
+      // Cleanup
+      return () => {
+        canvas.onmousedown = null;
+      };
     };
   }, [editableSubstory, activeSubstoryID]);
 
@@ -214,12 +232,3 @@ const updateNode = (
     ),
   }));
 };
-
-// // This should be in the useSubStoryMaker hook
-// const handleNodeDrag = (nodeId: number, x: number, y: number) => {
-//   updateNode(nodeId, { x, y });
-// };
-
-// const handleNodeRename = (nodeId: number, newName: string) => {
-//   updateNode(nodeId, { name: newName });
-// };
