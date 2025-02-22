@@ -29,7 +29,22 @@ function SearchBlock() {
     <div className="flex flex-col gap-10 items-center p-6">
       <SearchInput />
       <h1 className="text-3xl font-bold">Search Results</h1>
-      <div className="flex flex-col items-center w-full"></div>
+      <DataList data={data} />
+    </div>
+  );
+}
+
+function DataList({ data }) {
+  if (!data?.wikis) {
+    return null;
+  }
+  return (
+    <div className="flex flex-col items-center w-full">
+      {data.wikis.map((wiki) => (
+        <div className="flex flex-row" key={wiki.id}>
+          {wiki.title}
+        </div>
+      ))}
     </div>
   );
 }
