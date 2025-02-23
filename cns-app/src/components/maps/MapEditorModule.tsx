@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import LineWidthPicker from "../ui/lineWidthPicker/LineWidthPicker";
 import LineColorPicker from "../ui/colorPicker/LineColorPicker";
+
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +32,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import IconPicker from "../ui/iconPicker/IconPicker";
+import WikiDialog from "../ui/dialog/wikidialog";
 
 interface Props {
   mapId: number;
@@ -477,6 +479,28 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
                   <FormLabel>Thumbnail</FormLabel>
                   <FormControl>
                     <Input placeholder="Object Thumbnail" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="wiki-container">
+            <FormField
+              control={form.control}
+              name="wikiId"
+              defaultValue={globalObject?.wikiId}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wiki</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-row gap-2">
+                      <div className="w-1/3">
+                        <Input placeholder="WikiId" {...field} />
+                      </div>
+                      <div className="w-2/3">
+                        <WikiDialog />
+                      </div>
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
