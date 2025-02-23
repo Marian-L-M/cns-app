@@ -1,8 +1,18 @@
 "use client";
 import SearchInput from "@/components/inputs/SearchInput";
+import { Wiki } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import useSWR from "swr";
+
+interface WikiDataProps {
+  data:
+    | {
+        message: string;
+        wikis: Wiki[];
+      }
+    | undefined;
+}
 
 const fetchPosts = async (url: string) => {
   const response = await fetch(url);
@@ -19,7 +29,7 @@ function SearchBlock() {
   const searchQuery = search ? search?.get("q") : null;
 
   const encodedSearchQuery = encodeURI(searchQuery || "");
-  const { data, isLoading } = useSWR(
+  const { data, isLoading } = useSWR<{ message: string; wikis: Array<Wiki> }>(
     `/api/search?q=${encodedSearchQuery}`,
     fetchPosts
   );
@@ -34,7 +44,7 @@ function SearchBlock() {
   );
 }
 
-function DataList({ data }) {
+function DataList({ data }: WikiDataProps) {
   if (!data?.wikis) {
     return null;
   }
