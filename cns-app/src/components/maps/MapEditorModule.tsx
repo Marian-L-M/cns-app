@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import IconPicker from "../ui/iconPicker/IconPicker";
-import WikiDialog from "../ui/dialog/wikidialog";
+import WikiSearchDialog from "../ui/dialog/wikiSearchDialog";
 
 interface Props {
   mapId: number;
@@ -350,6 +350,9 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
+    globalObject?.wikiId
+  );
   const [error, setError] = useState("");
 
   const form = useForm<GlobalObjectFormData>({
@@ -419,6 +422,12 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
     }
     setIsSubmitting(false);
   };
+
+  useEffect(() => {
+    if (selectedWikiId) {
+      form.setValue("wikiId", selectedWikiId);
+    }
+  }, [selectedWikiId, form]);
 
   return (
     <Form {...form}>
@@ -498,7 +507,9 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
                         <Input placeholder="WikiId" {...field} />
                       </div>
                       <div className="w-2/3">
-                        <WikiDialog />
+                        <WikiSearchDialog
+                          setSelectedWikiId={setSelectedWikiId}
+                        />
                       </div>
                     </div>
                   </FormControl>

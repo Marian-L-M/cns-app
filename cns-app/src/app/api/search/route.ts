@@ -4,7 +4,8 @@ import prisma from "../../../../prisma/db";
 export async function GET(request: NextRequest) {
   try {
     const query = request.nextUrl.searchParams.get("q");
-    console.log("Search query", query);
+    const limit = parseInt(request.nextUrl.searchParams.get("limit") || "10");
+    console.log("Search query", query, "with limit", limit);
 
     if (typeof query !== "string") {
       throw new Error("Invalid request");
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
           },
         ],
       },
+      take: limit,
     });
 
     if (wikis.length <= 0) {
