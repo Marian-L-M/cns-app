@@ -27,9 +27,10 @@ export const drawEditNodes = (
   area: areaNode[],
   cw: number,
   ch: number,
-  activeNode?: number | null
+  activeNode?: number | null,
+  diameter?: number
 ) => {
-  const offset = 10;
+  const offset = diameter ? diameter : 10;
   area.forEach((node, index) => {
     ctx.beginPath();
     if (index === activeNode) {

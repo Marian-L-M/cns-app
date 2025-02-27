@@ -90,7 +90,7 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
 
       if (editorCtx.nodeList.length > 0) {
         draw(ctx, editorCtx.nodeList, cw, ch);
-        drawEditNodes(ctx, editorCtx.nodeList, cw, ch, activeNode);
+        drawEditNodes(ctx, editorCtx.nodeList, cw, ch, activeNode, 5);
       }
     };
 
