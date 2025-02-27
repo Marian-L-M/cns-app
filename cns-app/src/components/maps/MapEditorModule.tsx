@@ -251,7 +251,7 @@ function AreaForm({ mapId, globalArea }: Props) {
             />
           </div>
           <div className="w-full" id="description-container">
-            <h4 className="font-bold">Description</h4>
+            <h5 className="">Description</h5>
             <Controller
               name="description"
               defaultValue={globalArea?.description}
@@ -353,6 +353,7 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
   const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
     globalObject?.wikiId
   );
+  const [wikiName, setWikiName] = useState<string>("");
   const [error, setError] = useState("");
 
   const form = useForm<GlobalObjectFormData>({
@@ -363,7 +364,7 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
       imageUrl: globalObject?.imageUrl || "",
       thumbUrl: globalObject?.thumbUrl || "",
       mapId: mapId,
-      wikiId: globalObject?.wikiId || 2, // temporary fixed wiki id
+      wikiId: globalObject?.wikiId || 0,
       x: globalObject?.x || 100,
       y: globalObject?.y || 100,
     },
@@ -375,6 +376,28 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
     form.setValue("x", editorCtx.globalObjectSettings.x);
     form.setValue("y", editorCtx.globalObjectSettings.y);
   }, [editorCtx.globalObjectSettings]);
+
+  // Fetch wiki name when wikiId changes
+  useEffect(() => {
+    const fetchWikiName = async () => {
+      if (!selectedWikiId) {
+        setWikiName("");
+        return;
+      }
+
+      try {
+        const response = await axios.get(`/api/wiki/${selectedWikiId}`);
+        if (response.data && response.data.title) {
+          setWikiName(response.data.title);
+        }
+      } catch (error) {
+        console.error("Error fetching wiki data:", error);
+        setWikiName("");
+      }
+    };
+
+    fetchWikiName();
+  }, [selectedWikiId]);
 
   async function onSubmit(values: GlobalObjectFormData) {
     console.log("click");
@@ -453,13 +476,42 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
             />
           </div>
           <div className="w-full" id="description-container">
-            <h4 className="font-bold">Description</h4>
+            <h5 className="">Description</h5>
             <Controller
               name="description"
               defaultValue={globalObject?.description}
               control={form.control}
               render={({ field }) => (
                 <SimpleMDE placeholder="Object description" {...field} />
+              )}
+            />
+          </div>
+          <div className="w-full" id="wiki-container">
+            <FormField
+              control={form.control}
+              name="wikiId"
+              defaultValue={globalObject?.wikiId}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wiki</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-row gap-2">
+                      <div className="w-2/3">
+                        <Input type="hidden" placeholder="WikiId" {...field} />
+                        {wikiName && (
+                          <div className="p-2 border rounded-md h-10 flex items-center">
+                            <p className="truncate text-sm">{wikiName}</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="w-1/3">
+                        <WikiSearchDialog
+                          setSelectedWikiId={setSelectedWikiId}
+                        />
+                      </div>
+                    </div>
+                  </FormControl>
+                </FormItem>
               )}
             />
           </div>
@@ -493,31 +545,9 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
               )}
             />
           </div>
-          <div className="w-full" id="wiki-container">
-            <FormField
-              control={form.control}
-              name="wikiId"
-              defaultValue={globalObject?.wikiId}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wiki</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-row gap-2">
-                      <div className="w-1/3">
-                        <Input placeholder="WikiId" {...field} />
-                      </div>
-                      <div className="w-2/3">
-                        <WikiSearchDialog
-                          setSelectedWikiId={setSelectedWikiId}
-                        />
-                      </div>
-                    </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
+
           <div className="w-full" id="icon-container">
+            <h5 className="">Map Icon</h5>
             <IconPicker />
           </div>
         </div>

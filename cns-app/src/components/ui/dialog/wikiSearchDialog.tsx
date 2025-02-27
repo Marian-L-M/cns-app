@@ -150,7 +150,7 @@ function SearchBlock({
         </>
       ) : (
         <div className="text-center text-gray-500 mt-8">
-          Enter a search term and click Search to find wikis
+          Enter a search term
         </div>
       )}
     </div>
@@ -162,10 +162,10 @@ function DataList({ data, setSelectedWikiId, onSelect }: WikiDataProps) {
     return null;
   }
   return (
-    <div className="flex flex-col items-center w-full gap-1">
+    <div className="flex flex-col items-center w-full gap-2">
       {data.wikis.map((wiki) => (
         <button
-          className="p-1 flex flex-row w-full hover:bg-slate-100 cursor-pointer"
+          className="py-1 px-2 flex flex-row w-full border border-slate-200 rounded-sm hover:bg-slate-100 hover:text-slate-500 cursor-pointer"
           key={wiki.id}
           onClick={() => {
             setSelectedWikiId(wiki.id);
