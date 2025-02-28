@@ -57,6 +57,11 @@ interface Props {
   editorMode?: string;
 }
 
+interface WikiFetchProps {
+  selectedWikiId: number | undefined;
+  setWikiName: React.Dispatch<React.SetStateAction<string>>;
+}
+
 export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
   globalArea: GlobalArea;
 };
@@ -132,6 +137,11 @@ function AreaForm({ mapId, globalArea }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
+    globalArea?.wikiId
+  );
+  const [wikiName, setWikiName] = useState<string>("");
+
   // Intialize styles (250112 - Structure inefficient)
   const styles = {
     fillStyle: editorCtx.objectColor,
@@ -147,7 +157,7 @@ function AreaForm({ mapId, globalArea }: Props) {
       description: globalArea?.description || "",
       imageUrl: globalArea?.imageUrl || "",
       mapId: mapId,
-      wikiId: globalArea?.wikiId || 2, // temporary fixed wiki id
+      wikiId: globalArea?.wikiId || 0,
       type:
         (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
         "GEOGRAPHY",
@@ -172,6 +182,17 @@ function AreaForm({ mapId, globalArea }: Props) {
     });
   }, [editorCtx.nodeList, form, styles]);
 
+  // Fetch wiki name when wikiId changes
+  useEffect(() => {
+    // Update Wiki Name
+    fetchWikiName({ selectedWikiId, setWikiName });
+
+    // Update form
+    if (selectedWikiId) {
+      form.setValue("wikiId", selectedWikiId);
+    }
+  }, [selectedWikiId]);
+
   async function onSubmit(values: GlobalAreaFormData) {
     if (editorCtx.nodeList.length < 1) {
       alert("Please draw nodes on the map before submitting");
@@ -188,6 +209,7 @@ function AreaForm({ mapId, globalArea }: Props) {
           typeof editorCtx.objectLineWidth === "number" ? styles?.lineWidth : 5,
       },
       nodes: editorCtx.nodeList,
+      // wikiId: selectedWikiId,
     };
 
     try {
@@ -258,6 +280,35 @@ function AreaForm({ mapId, globalArea }: Props) {
               control={form.control}
               render={({ field }) => (
                 <SimpleMDE placeholder="Area description" {...field} />
+              )}
+            />
+          </div>
+          <div className="w-full" id="wiki-container">
+            <FormField
+              control={form.control}
+              name="wikiId"
+              defaultValue={globalArea?.wikiId}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wiki</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-row gap-2">
+                      <div className="w-2/3">
+                        <Input type="hidden" placeholder="WikiId" {...field} />
+                        {wikiName && (
+                          <div className="p-2 border rounded-md h-10 flex items-center">
+                            <p className="truncate text-sm">{wikiName}</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="w-1/3">
+                        <WikiSearchDialog
+                          setSelectedWikiId={setSelectedWikiId}
+                        />
+                      </div>
+                    </div>
+                  </FormControl>
+                </FormItem>
               )}
             />
           </div>
@@ -350,11 +401,12 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
   const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
     globalObject?.wikiId
   );
   const [wikiName, setWikiName] = useState<string>("");
-  const [error, setError] = useState("");
 
   const form = useForm<GlobalObjectFormData>({
     resolver: zodResolver(GlobalObjectsSchema),
@@ -379,28 +431,16 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
 
   // Fetch wiki name when wikiId changes
   useEffect(() => {
-    const fetchWikiName = async () => {
-      if (!selectedWikiId) {
-        setWikiName("");
-        return;
-      }
+    // Update Wiki Name
+    fetchWikiName({ selectedWikiId, setWikiName });
 
-      try {
-        const response = await axios.get(`/api/wiki/${selectedWikiId}`);
-        if (response.data && response.data.title) {
-          setWikiName(response.data.title);
-        }
-      } catch (error) {
-        console.error("Error fetching wiki data:", error);
-        setWikiName("");
-      }
-    };
-
-    fetchWikiName();
+    // Update form
+    if (selectedWikiId) {
+      form.setValue("wikiId", selectedWikiId);
+    }
   }, [selectedWikiId]);
 
   async function onSubmit(values: GlobalObjectFormData) {
-    console.log("click");
     const submissionValues = {
       ...values,
       mapId: mapId,
@@ -445,12 +485,6 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
     }
     setIsSubmitting(false);
   };
-
-  useEffect(() => {
-    if (selectedWikiId) {
-      form.setValue("wikiId", selectedWikiId);
-    }
-  }, [selectedWikiId, form]);
 
   return (
     <Form {...form}>
@@ -579,3 +613,21 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
 // 20241217 Solution to editor module not showing the other icons
 // Grey out normal map in the back with the edior only rendering the current object (Two canvas elements)
 // Would reduce rerendering stress
+
+// Fetch wiki name with wiki id and set the name in wiki
+async function fetchWikiName({ selectedWikiId, setWikiName }: WikiFetchProps) {
+  if (!selectedWikiId) {
+    setWikiName("");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`/api/wiki/${selectedWikiId}`);
+    if (response.data && response.data.title) {
+      setWikiName(response.data.title);
+    }
+  } catch (error) {
+    console.error("Error fetching wiki data:", error);
+    setWikiName("");
+  }
+}

@@ -34,6 +34,7 @@ const MapModule: FC<MapModuleProps> = ({ id, data }) => {
               />
             )}
           </div>
+          {/* TO DO: Transform canvas into a separate element */}
           <canvas
             // onMouseDown={onMouseDown}
             // handlerFunction
