@@ -88,7 +88,7 @@ function SearchBlock({
 
   // const encodedSearchQuery = encodeURI(searchQuery || "");
   const { data, isLoading } = useSWR<{ message: string; wikis: Array<Wiki> }>(
-    `/api/search?q=${encodedSearchQuery}`,
+    `/api/search/wiki?q=${encodedSearchQuery}`,
     fetchPosts
   );
 
