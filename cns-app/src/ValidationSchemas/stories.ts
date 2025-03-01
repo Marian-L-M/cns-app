@@ -9,6 +9,7 @@ export const storiesSchema = z.object({
   rating: z.number().min(0, "Rating").max(5).optional(),
   storyTime: z.number().min(0, "Story time").max(9999).optional(),
   status: z.string().min(1, "Status").max(10).optional(),
+  assignedToMapID: z.number().int().optional(),
 });
 
 export const NodeItemSchema = z.object({
