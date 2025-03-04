@@ -12,15 +12,19 @@ export interface SearchParams {
   orderBy: keyof Entry;
 }
 
-const Stories = async ({ searchParams }: { searchParams: SearchParams }) => {
+const Stories = async ({
+  searchParams: rawSearchParams,
+}: {
+  searchParams: SearchParams;
+}) => {
+  // Create a fully resolved object rather than the promise that contains it.
+  const searchParams = await Promise.resolve(rawSearchParams);
+
   const pageSize = 2;
-  const page = parseInt(searchParams.page) || 1;
-
+  const page = searchParams.page ? parseInt(searchParams.page) : 1;
   const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
-
   const statuses = Object.values(Status);
 
-  // Check statuses and set to searchParams.status if it is valid
   const status = statuses.includes(searchParams.status)
     ? searchParams.status
     : undefined;
