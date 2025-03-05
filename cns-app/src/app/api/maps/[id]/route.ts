@@ -7,7 +7,8 @@ interface Props {
 }
 
 export async function GET(request: NextRequest, { params }: Props) {
-  const id = parseInt(params.id);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
@@ -40,8 +41,11 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
   const map = await prisma.map.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!map) {
@@ -59,8 +63,11 @@ export async function PATCH(request: NextRequest, { params }: Props) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Props) {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
   const map = await prisma.map.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!map) {
