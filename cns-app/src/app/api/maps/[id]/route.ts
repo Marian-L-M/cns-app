@@ -36,13 +36,12 @@ export async function GET(request: NextRequest, { params }: Props) {
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = mapSchema.safeParse(body);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   if (!validation.success) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
-
-  const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id);
 
   const map = await prisma.map.findUnique({
     where: { id: id },

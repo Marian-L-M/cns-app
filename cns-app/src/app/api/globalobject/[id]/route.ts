@@ -9,13 +9,15 @@ interface Props {
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = GlobalObjectsSchema.safeParse(body);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   if (!validation.success) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
   const globalObject = await prisma.globalObject.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!globalObject) {

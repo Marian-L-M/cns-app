@@ -1,32 +1,3 @@
-// import { GlobalAreasSchema } from "@/ValidationSchemas/global";
-// import { NextRequest, NextResponse } from "next/server";
-// import prisma from "../../../../prisma/db";
-
-// export async function POST(request: NextRequest) {
-//   try {
-//     const body = await request.json();
-//     console.log("API received:", body);
-//     const validation = GlobalAreasSchema.safeParse(body);
-
-//     if (!validation.success) {
-//       return NextResponse.json(validation.error.format(), { status: 400 });
-//     }
-
-//     const newGlobalArea = await prisma.globalArea.create({
-//       data: { ...body },
-//     });
-
-//     return NextResponse.json(newGlobalArea, { status: 201 });
-//   } catch (error) {
-//     console.error("API error:", error);
-//     return NextResponse.json(
-//       { error: "Internal server error" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-// app/api/globalarea/route.ts
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../prisma/db";

@@ -9,13 +9,15 @@ interface Props {
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = storiesSchema.safeParse(body);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   if (!validation.success) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
   const entry = await prisma.entry.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!entry) {
@@ -33,8 +35,11 @@ export async function PATCH(request: NextRequest, { params }: Props) {
 }
 
 export async function DELETE(request: NextRequest, { params }: Props) {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
   const entry = await prisma.entry.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!entry) {
