@@ -12,7 +12,7 @@ type GlobalStoryType = z.infer<typeof storyObjectsSchema>;
 
 // For passing Map data to MapModule
 interface MapModuleProps {
-  id: string;
+  // id: string;
   data: {
     map: Map;
     mapObjects: GlobalObjectType[];
