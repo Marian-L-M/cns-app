@@ -9,7 +9,8 @@ interface Props {
 }
 
 const EditMapAreas = async ({ params }: Props) => {
-  const { id } = params;
+  const awaitedParams = await params;
+  const { id } = awaitedParams;
   let data: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
@@ -34,7 +35,7 @@ const EditMapAreas = async ({ params }: Props) => {
     <StatusContextProvider>
       <MapModule data={data} />;
       <Link
-        href={`/maps/${params.id}/edit/areas/add`}
+        href={`/maps/${id}/edit/areas/add`}
         className="fixed right-16 bottom-8 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
       >
         <Plus width={48} height={48} />

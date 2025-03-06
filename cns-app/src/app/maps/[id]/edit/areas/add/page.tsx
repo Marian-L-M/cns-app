@@ -8,7 +8,8 @@ interface MapAreaEditorProps {
 }
 
 const NewMapAreaEditor = async ({ params }: MapAreaEditorProps) => {
-  const id = parseInt(params.id);
+  const awaitedParams = await params;
+  const id = parseInt(awaitedParams.id);
 
   if (isNaN(id)) {
     return <div>Invalid map ID</div>;
