@@ -7,7 +7,8 @@ interface MapPageProps {
 }
 
 const MapPage = async ({ params }: MapPageProps) => {
-  const { id } = params;
+  const awaitedParams = await params;
+  const { id } = awaitedParams;
   let data: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];

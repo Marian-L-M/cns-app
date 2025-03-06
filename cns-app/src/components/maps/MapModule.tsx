@@ -6,8 +6,8 @@ import { StatusContext } from "@/store/statusContext";
 import StatusBar from "../ui/maps/statusBar";
 import InfoBox from "../ui/maps/infoBox";
 
-const MapModule: FC<MapModuleProps> = ({ id, data }) => {
-  const { canvasRef } = useMapMaker({ id, data });
+const MapModule: FC<MapModuleProps> = ({ data }) => {
+  const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
 
