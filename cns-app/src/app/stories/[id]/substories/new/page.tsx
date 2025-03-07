@@ -9,8 +9,8 @@ interface substoryProps {
 }
 
 async function substoryDetailPage({ params }: substoryProps) {
-  const id = parseInt(params.id);
-  const sid = parseInt(params.sid);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   const entry = await prisma.entry.findUnique({
     where: { id: id },

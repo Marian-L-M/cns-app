@@ -13,7 +13,7 @@ type Story = z.infer<typeof storiesSchema>;
 
 interface SubstoryListProps {
   substories: Story[];
-  id: string;
+  id: number;
 }
 
 interface Props {
@@ -23,6 +23,9 @@ interface Props {
 // To do 250126 - Switch from story mdoule to story editor module (No infobox)
 
 async function substoryOverviewPage({ params }: Props) {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
   let mapData: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
@@ -31,10 +34,10 @@ async function substoryOverviewPage({ params }: Props) {
   let error: string | null = null;
 
   const story = await prisma.entry.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
   const substories = await prisma.story.findMany({
-    where: { entryId: parseInt(params.id) },
+    where: { entryId: id },
   });
 
   if (!story) {
@@ -57,9 +60,9 @@ async function substoryOverviewPage({ params }: Props) {
   return (
     <div className="grid grid-cols-3 gap-4 mx-auto" id="substory-overview">
       <StoryCanvasModule data={mapData} story={substories} />
-      <SubstoryOverviewList substories={substories} id={params.id} />
+      <SubstoryOverviewList substories={substories} id={id} />
       <Link
-        href={`/stories/${params.id}/substories/new`}
+        href={`/stories/${id}/substories/new`}
         className="fixed right-16 bottom-8 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
       >
         <Plus width={48} height={48} />

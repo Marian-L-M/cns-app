@@ -10,7 +10,9 @@ interface Props {
 
 // Repetitive code, consider refactoring -> areas & objects
 const EditMapObjects = async ({ params }: Props) => {
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+
   let data: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
@@ -36,7 +38,7 @@ const EditMapObjects = async ({ params }: Props) => {
     <StatusContextProvider>
       <MapModule data={data} />
       <Link
-        href={`/maps/${params.id}/edit/objects/add`}
+        href={`/maps/${id}/edit/objects/add`}
         className="fixed right-16 bottom-8 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
       >
         <Plus width={48} height={48} />

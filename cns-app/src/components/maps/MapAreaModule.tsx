@@ -4,7 +4,6 @@ import Image from "next/image";
 import { FC, useContext } from "react";
 import { StatusContext } from "@/store/statusContext";
 import StatusBar from "../ui/maps/statusBar";
-import InfoBox from "../ui/maps/infoBox";
 import Link from "next/link";
 
 const MapModule: FC<MapModuleProps> = ({ data }) => {

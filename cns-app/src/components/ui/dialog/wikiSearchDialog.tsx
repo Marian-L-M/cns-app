@@ -1,7 +1,5 @@
 "use client";
-import SearchInput from "@/components/inputs/SearchInput";
 import { Wiki } from "@prisma/client";
-import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import useSWR from "swr";
 import {
@@ -11,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "./dialog";
 import { Button } from "../button";
 
@@ -80,8 +77,6 @@ function SearchBlock({
   setSelectedWikiId,
   onClose,
 }: WikiSearchDialogProps & { onClose: () => void }) {
-  // const search = useSearchParams();
-  // const searchQuery = search ? search?.get("q") : null;
   const [searchTerm, setSearchTerm] = useState("");
   const [encodedSearchQuery, setEncodedSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
@@ -95,7 +90,6 @@ function SearchBlock({
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // setEncodedSearchQuery(encodeURI(searchTerm));
     if (searchTerm.trim()) {
       setEncodedSearchQuery(encodeURI(searchTerm.trim()));
       setHasSearched(true);
@@ -104,7 +98,6 @@ function SearchBlock({
 
   return (
     <div className="flex flex-col gap-10 items-center p-6">
-      {/* <SearchInput /> */}
       <form
         onSubmit={handleSearch}
         className="w-full"

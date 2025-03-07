@@ -1,8 +1,6 @@
 // To do - unify mapSearchDialog and wikisearchDialog
 "use client";
-import SearchInput from "@/components/inputs/SearchInput";
 import { Map } from "@prisma/client";
-import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import useSWR from "swr";
 import {

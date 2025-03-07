@@ -10,8 +10,11 @@ const WikiForm = dynamic(() => import("@/components/forms/WikiForm"), {
 });
 
 const EditWikiPage = async ({ params }: Props) => {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
   const wiki = await prisma.wiki.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!wiki) {

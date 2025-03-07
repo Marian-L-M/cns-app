@@ -7,7 +7,8 @@ interface Props {
 }
 
 const AddMapObject = async ({ params }: Props) => {
-  const id = parseInt(params.id);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   // Imperfect validation, will return false even if letters are mixed with numbers
   if (isNaN(id)) {
