@@ -1,30 +1,25 @@
-import dynamic from "next/dynamic";
 import prisma from "../../../../../prisma/db";
+import { notFound } from "next/navigation";
+import EditMapClient from "./client";
 
 interface Props {
   params: { id: string };
 }
 
-const MapForm = dynamic(() => import("@/components/forms/MapForm"), {
-  ssr: false,
-});
+const EditMapPage = async ({ params }: Props) => {
+  const id = parseInt(params.id);
 
-const EditMap = async ({ params }: Props) => {
-  const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id);
-
-  const map = await prisma?.map.findUnique({
+  const map = await prisma.map.findUnique({
     where: { id: id },
   });
 
   if (!map) {
-    return <p className="text-destructive">Map not found</p>;
+    return notFound();
   }
-  return (
-    <>
-      <MapForm map={map} />
-    </>
-  );
+
+  const serializedMap = JSON.parse(JSON.stringify(map));
+
+  return <EditMapClient map={serializedMap} />;
 };
 
-export default EditMap;
+export default EditMapPage;
