@@ -40,8 +40,6 @@ export type SubstoryFormData = z.infer<typeof storyObjectsSchema> & {
   nodes: StoryNode[];
 };
 
-// 250203 - Attempting to use state instead of context
-
 // Default values for a new substory
 // 250209 - Todo: find a way to get rid of temporary id for new substories
 const defaultSubstory: Story & { nodes: StoryNode[] } = {
@@ -127,24 +125,6 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
       setIsSubmitting(false);
     }
   }
-
-  const updateNode = (nodeId: number, updates: Partial<StoryNode>) => {
-    setEditableSubstory((prev) => ({
-      ...prev,
-      nodes: prev.nodes.map((node) =>
-        node.id === nodeId ? { ...node, ...updates } : node
-      ),
-    }));
-  };
-
-  // This should be in the useSubStoryMaker hook
-  const handleNodeDrag = (nodeId: number, x: number, y: number) => {
-    updateNode(nodeId, { x, y });
-  };
-
-  const handleNodeRename = (nodeId: number, newName: string) => {
-    updateNode(nodeId, { name: newName });
-  };
 
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
@@ -386,15 +366,14 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
 export default StoryEditorModule;
 
 export function removeNodeFromStory(
-  editableSubstory: Story & { nodes: StoryNode[] },
-  setEditableSubstory: React.Dispatch<
-    React.SetStateAction<Story & { nodes: StoryNode[] }>
-  >,
+  editableSubstory: Story,
+  setEditableSubstory: React.Dispatch<React.SetStateAction<Story>>,
   nodeId: number
 ) {
+  //To do 250310 Fix type issue
   const updatedSubstory = {
     ...editableSubstory,
-    nodes: editableSubstory.nodes.filter((node) => node.id !== nodeId),
+    nodes: editableSubstory.nodes.filter((node) => node?.id !== nodeId),
   };
   setEditableSubstory(updatedSubstory);
   return;
