@@ -15,15 +15,19 @@ interface WikiPageProps {
 // Recheck get static props and static paths (Redo max schwarzmueller)
 // Add regex check -> change dashes to whitespaces
 const WikiPage = async ({ params }: WikiPageProps) => {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+
+  // Check: Does contains work with an integer when comparing to a string?
   let wiki;
-  if (!/[a-z]/i.test(params.id)) {
+  if (!/[a-z]/i.test(id)) {
     wiki = await prisma?.wiki.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
     });
   } else {
     wiki = await prisma?.wiki.findFirst({
       where: {
-        title: { contains: params.id, mode: "insensitive" },
+        title: { contains: id, mode: "insensitive" },
       },
     });
   }

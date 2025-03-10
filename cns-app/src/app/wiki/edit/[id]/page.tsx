@@ -1,24 +1,26 @@
-import dynamic from "next/dynamic";
 import prisma from "../../../../../prisma/db";
+import { notFound } from "next/navigation";
+import EditWikiClient from "./client";
 
 interface Props {
   params: { id: string };
 }
 
-const WikiForm = dynamic(() => import("@/components/forms/WikiForm"), {
-  ssr: false,
-});
-
 const EditWikiPage = async ({ params }: Props) => {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
   const wiki = await prisma.wiki.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!wiki) {
-    return <p className="text-destructive">Wiki not found</p>;
+    return notFound();
   }
 
-  return <WikiForm wiki={wiki} />;
+  const serializedWiki = JSON.parse(JSON.stringify(wiki));
+
+  return <EditWikiClient wiki={serializedWiki} />;
 };
 
 export default EditWikiPage;

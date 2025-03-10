@@ -1,13 +1,19 @@
 import prisma from "../../../../prisma/db";
 import StoryDetail from "./StoryDetail";
 
-interface Props {
-  params: { id: string };
-}
+const ViewStory = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const resolvedParams = await params;
+  const idString = resolvedParams.id;
 
-const ViewStory = async ({ params }: Props) => {
+  // Parse the ID and verify it's a valid number
+  const idNum = parseInt(idString, 10);
+
+  if (!idString || isNaN(idNum)) {
+    return <div className="text-destructive">Invalid story ID</div>;
+  }
+
   const story = await prisma.entry.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: idNum },
   });
 
   if (!story) {

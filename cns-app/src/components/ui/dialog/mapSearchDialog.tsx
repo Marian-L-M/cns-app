@@ -1,5 +1,6 @@
+// To do - unify mapSearchDialog and wikisearchDialog
 "use client";
-import { Wiki } from "@prisma/client";
+import { Map } from "@prisma/client";
 import { Suspense, useState } from "react";
 import useSWR from "swr";
 import {
@@ -9,21 +10,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "./dialog";
 import { Button } from "../button";
 
-interface WikiSearchDialogProps {
-  setSelectedWikiId: React.Dispatch<React.SetStateAction<number | undefined>>;
+interface MapSearchDialogProps {
+  setSelectedMapId: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-interface WikiDataProps {
+interface MapDataProps {
   data:
     | {
         message: string;
-        wikis: Wiki[];
+        maps: Map[];
       }
     | undefined;
-  setSelectedWikiId: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setSelectedMapId: React.Dispatch<React.SetStateAction<number | undefined>>;
   onSelect: () => void;
 }
 
@@ -37,7 +39,7 @@ const fetchPosts = async (url: string) => {
   return response.json();
 };
 
-function WikiSearchDialog({ setSelectedWikiId }: WikiSearchDialogProps) {
+function MapSearchDialog({ setSelectedMapId }: MapSearchDialogProps) {
   const [open, setOpen] = useState(false);
 
   const closeDialog = () => {
@@ -48,18 +50,18 @@ function WikiSearchDialog({ setSelectedWikiId }: WikiSearchDialogProps) {
     <div className="flex-2">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="secondary">Search Wikis...</Button>
+          <Button variant="secondary">Search Maps...</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Search Wikis</DialogTitle>
+            <DialogTitle>Search Maps</DialogTitle>
             <DialogDescription>
-              Search for wiki title or keywords
+              Search for map title or keywords
             </DialogDescription>
           </DialogHeader>
           <Suspense fallback={<div>Loading...</div>}>
             <SearchBlock
-              setSelectedWikiId={setSelectedWikiId}
+              setSelectedMapId={setSelectedMapId}
               onClose={closeDialog}
             />
           </Suspense>
@@ -69,21 +71,20 @@ function WikiSearchDialog({ setSelectedWikiId }: WikiSearchDialogProps) {
   );
 }
 
-export default WikiSearchDialog;
+export default MapSearchDialog;
 
 // Components
 // 250226 To do type declaration is dirty
 function SearchBlock({
-  setSelectedWikiId,
+  setSelectedMapId,
   onClose,
-}: WikiSearchDialogProps & { onClose: () => void }) {
+}: MapSearchDialogProps & { onClose: () => void }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [encodedSearchQuery, setEncodedSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
 
-  // const encodedSearchQuery = encodeURI(searchQuery || "");
-  const { data, isLoading } = useSWR<{ message: string; wikis: Array<Wiki> }>(
-    `/api/search/wiki?q=${encodedSearchQuery}`,
+  const { data, isLoading } = useSWR<{ message: string; maps: Array<Map> }>(
+    `/api/search/map?q=${encodedSearchQuery}`,
     fetchPosts
   );
 
@@ -108,7 +109,7 @@ function SearchBlock({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search wikis..."
+            placeholder="Search maps..."
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
           <Button
@@ -135,7 +136,7 @@ function SearchBlock({
             ) : (
               <DataList
                 data={data}
-                setSelectedWikiId={setSelectedWikiId}
+                setSelectedMapId={setSelectedMapId}
                 onSelect={onClose}
               />
             )}
@@ -150,29 +151,24 @@ function SearchBlock({
   );
 }
 
-function DataList({ data, setSelectedWikiId, onSelect }: WikiDataProps) {
-  if (!data?.wikis) {
+function DataList({ data, setSelectedMapId, onSelect }: MapDataProps) {
+  if (!data?.maps) {
     return null;
   }
   return (
     <div className="flex flex-col items-center w-full gap-2">
-      {data.wikis.map((wiki) => (
+      {data.maps.map((map) => (
         <button
           className="py-1 px-2 flex flex-row w-full border border-slate-200 rounded-sm hover:bg-slate-100 hover:text-slate-500 cursor-pointer"
-          key={wiki.id}
+          key={map.id}
           onClick={() => {
-            setSelectedWikiId(wiki.id);
+            setSelectedMapId(map.id);
             onSelect();
           }}
         >
-          {wiki.title}
+          {map.title}
         </button>
       ))}
     </div>
   );
 }
-
-// 250225 TO DO
-// 1. Wiki search trigger submits form and sends back to overview page
-// 2. Limit initial search to ~10 most recent wikis
-// 3. Make items clickable instead of a save button

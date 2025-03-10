@@ -10,8 +10,9 @@ interface MapAreaEditorProps {
 }
 
 const MapAreaEditor = async ({ params }: MapAreaEditorProps) => {
-  const id = parseInt(params.id);
-  const areaId = parseInt(params.areaId);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+  const areaId = parseInt(resolvedParams.areaId);
 
   // Imperfect validation, will return false even if letters are mixed with numbers
   if (isNaN(id)) {

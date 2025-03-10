@@ -6,8 +6,11 @@ interface Props {
 }
 
 const EditStory = async ({ params }: Props) => {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
   const entry = await prisma?.entry.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id },
   });
 
   if (!entry) {
@@ -20,8 +23,6 @@ const EditStory = async ({ params }: Props) => {
 
   return (
     <div className="w-full" id="story-editor-module">
-      {/* This page should be the form for the overall story/entry */}
-      {/* <StoryEditor entry={entry} /> */}
       <StoryForm story={entry} substories={substories} />
     </div>
   );

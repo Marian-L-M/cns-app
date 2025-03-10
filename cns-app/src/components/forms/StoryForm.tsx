@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
-import SimpleMDE from "react-simplemde-editor";
+// import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import {
   Select,
@@ -15,14 +15,20 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Entry, Story } from "@prisma/client";
 import Link from "next/link";
-import prisma from "../../../prisma/db";
+import MapSearchDialog from "../ui/dialog/mapSearchDialog";
 // Rendering issue with Simplemde, need to fix
 // Needs to be created dynamically
+
+// Dynamic import for SimpleMDE to avoid SSR issues
+import dynamic from "next/dynamic";
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 type StoryFormData = z.infer<typeof storiesSchema>;
 
@@ -31,14 +37,34 @@ interface Props {
   substories?: Story[];
 }
 
+interface MapFetchProps {
+  selectedMapId: number | undefined;
+  setMapName: React.Dispatch<React.SetStateAction<string>>;
+}
+
 const StoryForm = ({ story, substories }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const [selectedMapId, setSelectedMapId] = useState<number | undefined>(
+    story?.assignedToMapID ?? undefined
+  );
+  const [mapName, setMapName] = useState<string>("");
 
   const form = useForm<StoryFormData>({
     resolver: zodResolver(storiesSchema),
   });
+
+  // Fetch wiki name when wikiId changes
+  useEffect(() => {
+    // Update Wiki Name
+    fetchMapName({ selectedMapId, setMapName });
+
+    // Update form
+    if (selectedMapId) {
+      form.setValue("assignedToMapID", selectedMapId);
+    }
+  }, [selectedMapId]);
 
   async function onSubmit(values: z.infer<typeof storiesSchema>) {
     try {
@@ -198,6 +224,35 @@ const StoryForm = ({ story, substories }: Props) => {
                 </FormItem>
               )}
             />
+            <div className="w-1/3" id="map-container">
+              <FormField
+                control={form.control}
+                name="assignedToMapID"
+                defaultValue={story?.assignedToMapID ?? undefined}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Map</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-row gap-2">
+                        <div className="w-2/3">
+                          <Input type="hidden" placeholder="MapId" {...field} />
+                          {mapName && (
+                            <div className="p-2 border rounded-md h-10 flex items-center">
+                              <p className="truncate text-sm">{mapName}</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="w-1/3">
+                          <MapSearchDialog
+                            setSelectedMapId={setSelectedMapId}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
             <Button type="submit" disabled={isSubmitting}>
               {story ? "Update Story" : "Submit Story"}
             </Button>
@@ -209,6 +264,7 @@ const StoryForm = ({ story, substories }: Props) => {
           className="rounded-md border w-full p-4 flex flex-col gap-4"
           id="substories"
         >
+          <h5 className="font-bold">Substories</h5>
           {substories && (
             <ol>
               {substories.map((subStory) => (
@@ -238,3 +294,23 @@ const StoryForm = ({ story, substories }: Props) => {
 };
 
 export default StoryForm;
+
+// Fetch map name
+// To do - consider a separate api endpoint for fetching names or something more efficient
+// Refactor toget thumbnail as well
+async function fetchMapName({ selectedMapId, setMapName }: MapFetchProps) {
+  if (!selectedMapId) {
+    setMapName("");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`/api/maps/${selectedMapId}`);
+    if (response.data && response.data.title) {
+      setMapName(response.data.title);
+    }
+  } catch (error) {
+    console.error("Error fetching map data:", error);
+    setMapName("");
+  }
+}

@@ -6,7 +6,8 @@ interface Props {
   params: { id: string };
 }
 export async function GET(request: NextRequest, { params }: Props) {
-  const id = parseInt(params.id);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
@@ -35,13 +36,15 @@ export async function GET(request: NextRequest, { params }: Props) {
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = wikiSchema.safeParse(body);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   if (!validation.success) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
   const wiki = await prisma.wiki.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: id },
   });
 
   if (!wiki) {

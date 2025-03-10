@@ -21,6 +21,13 @@ interface Props {
 }
 
 const DataTable = ({ entries, searchParams }: Props) => {
+  // Create simple query objects to avoid serialization errors
+  const createQueryObject = (orderBy: string) => ({
+    orderBy,
+    ...(searchParams.status && { status: searchParams.status }),
+    ...(searchParams.page && { page: searchParams.page }),
+  });
+
   return (
     <div className="w-full mt-5">
       <div className="rounded-md sm:border">
@@ -28,10 +35,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
           <TableHeader>
             <TableRow>
               <TableHead>
-                {/* Spreadoperator in query ensures that previous search params are being maintained */}
-                <Link href={{ query: { ...searchParams, orderBy: "title" } }}>
-                  Title
-                </Link>
+                <Link href={{ query: createQueryObject("title") }}>Title</Link>
                 {"title" === searchParams.orderBy && (
                   <ArrowDown className="inline p-1" />
                 )}
@@ -40,9 +44,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
               <TableHead>Category</TableHead>
               <TableHead>
                 <div className="flex justify-center">
-                  <Link
-                    href={{ query: { ...searchParams, orderBy: "status" } }}
-                  >
+                  <Link href={{ query: createQueryObject("status") }}>
                     Status
                   </Link>
                   {"status" === searchParams.orderBy && (
@@ -52,9 +54,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
               </TableHead>
               <TableHead>
                 <div className="flex justify-center">
-                  <Link
-                    href={{ query: { ...searchParams, orderBy: "rating" } }}
-                  >
+                  <Link href={{ query: createQueryObject("rating") }}>
                     Rating
                   </Link>
                   {"rating" === searchParams.orderBy && (
@@ -63,9 +63,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
                 </div>
               </TableHead>
               <TableHead>
-                <Link
-                  href={{ query: { ...searchParams, orderBy: "createdAt" } }}
-                >
+                <Link href={{ query: createQueryObject("createdAt") }}>
                   Created At
                 </Link>
                 {"createdAt" === searchParams.orderBy && (
@@ -74,9 +72,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
               </TableHead>
               <TableHead>
                 {" "}
-                <Link
-                  href={{ query: { ...searchParams, orderBy: "updatedAt" } }}
-                >
+                <Link href={{ query: createQueryObject("updatedAt") }}>
                   Updated At
                 </Link>
                 {"updatedAt" === searchParams.orderBy && (

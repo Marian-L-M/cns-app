@@ -4,12 +4,10 @@ import Image from "next/image";
 import { FC, useContext } from "react";
 import { StatusContext } from "@/store/statusContext";
 import StatusBar from "../ui/maps/statusBar";
-import InfoBox from "../ui/maps/infoBox";
 import Link from "next/link";
 
-const MapModule: FC<MapModuleProps> = ({ id, data }) => {
-  console.log(data);
-  const { canvasRef } = useMapMaker({ id, data });
+const MapModule: FC<MapModuleProps> = ({ data }) => {
+  const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
 
@@ -59,7 +57,7 @@ const MapModule: FC<MapModuleProps> = ({ id, data }) => {
             {mapAreas.map((area) => (
               <Link
                 key={area.id}
-                href={`/maps/${id}/edit/areas/${area.id}`}
+                href={`/maps/${data.map.id}/edit/areas/${area.id}`}
                 className="flex gap-2 p-4 bg-slate-800 text-white rounded-lg hover:opacity-90"
               >
                 <h6>{area.title}</h6>

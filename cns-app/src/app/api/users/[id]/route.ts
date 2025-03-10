@@ -10,13 +10,14 @@ interface Props {
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = userSchema.safeParse(body);
+  const resolvedParams = await params;
 
   if (!validation.success) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: params.id },
+    where: { id: resolvedParams.id },
   });
 
   if (!user) {

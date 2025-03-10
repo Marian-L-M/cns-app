@@ -7,7 +7,8 @@ interface MapPageProps {
 }
 
 const MapPage = async ({ params }: MapPageProps) => {
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   let data: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
@@ -30,7 +31,7 @@ const MapPage = async ({ params }: MapPageProps) => {
   }
   return (
     <StatusContextProvider>
-      <MapModule data={data} />;
+      <MapModule data={data} />
     </StatusContextProvider>
   );
 };

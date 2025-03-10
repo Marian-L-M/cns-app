@@ -6,17 +6,10 @@ interface Props {
 }
 
 const EditUser = async ({ params }: Props) => {
+  const resolvedParams = await params;
+
   const user = await prisma?.user.findUnique({
-    where: { id: params.id },
-    // select: {
-    //   id: true,
-    //   name: true,
-    //   username: true,
-    //   email: true,
-    //   image: true,
-    //   role: true,
-    //   password: true,
-    // },
+    where: { id: resolvedParams.id },
   });
 
   if (!user) {

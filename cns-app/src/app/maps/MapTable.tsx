@@ -27,7 +27,7 @@ const MapTable = ({ maps }: Props) => {
             <CardContent>
               <Link href={`/maps/${mapObject.id}`} key={mapObject.id}>
                 <Image
-                  src={`/maps/sample-map.jpg`}
+                  src={`/${mapObject.imageUrl}`}
                   alt={`${mapObject.title}-thumbnail`}
                   width="480"
                   height="375"
