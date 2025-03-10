@@ -1,19 +1,15 @@
-# 241105 To Do
+# 250310 To Do
 
 ## General
 
-1. General code cleanup
-2. Refactor and unify typings (Its a mess)
-3. Unify hooks
-4. unify map and story modules
-5. Move all class components to functional components
-6. Add API endpoint for map editor
-7. Refactor to functional components
-
-## Next steps
-
-1. Polish maps info box
-2. Start wit map editor tool
+1. Private routes
+2. General code cleanup
+3. Refactor and unify typings (Its a mess)
+4. Unify hooks
+5. unify map and story modules
+6. Move all class components to functional components
+7. Unify naming story entry (same thing different names)
+   -> entries are stories in the ui, and stories in the db are substories of the entry -> rename Story/Substory
 
 ### Users
 
@@ -40,15 +36,16 @@
       -- [x] Add information to map (Submit like an object)
       -- Join with existing maps
 - Unify thumbnail and image name
-- Enable S3 for images
+- Enable upload for images
 - Dynamic wiki integration
 - [] Area editor
-  -- Reposition nodes
-  -- Explicit delete
-  -- Tooltips
-  -- Ui fix
+  -- [x] Reposition nodes
+  -- [x] Explicit delete
+  -- [] Tooltips
+  -- [] Ui fix
+  -- [] Transparent colors
 - [] Object editor
-  -- Change icon size
+  -- Change icon size (Has a lot of implecations for e.g. hover states)
   -- Fix object hover effects
   -- Default icon menu (Structure & search)
 
@@ -56,13 +53,8 @@
 
 - [x] Wiki edit screen
 - Create Wiki Dashboard and Dashboard editing too
-- Make Wiki fields generative
 
 ## Timelines & History
 
 - Create a timeline tool
 - Integrate with Wiki
-
-## Far fetched features
-
-- Make icon svg color editable
