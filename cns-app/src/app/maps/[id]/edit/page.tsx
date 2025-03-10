@@ -7,7 +7,8 @@ interface Props {
 }
 
 const EditMapPage = async ({ params }: Props) => {
-  const id = parseInt(params.id);
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
 
   const map = await prisma.map.findUnique({
     where: { id: id },

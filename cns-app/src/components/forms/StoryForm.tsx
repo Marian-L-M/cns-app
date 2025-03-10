@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
-import SimpleMDE from "react-simplemde-editor";
+// import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import {
   Select,
@@ -20,10 +20,15 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Entry, Story } from "@prisma/client";
 import Link from "next/link";
-import prisma from "../../../prisma/db";
 import MapSearchDialog from "../ui/dialog/mapSearchDialog";
 // Rendering issue with Simplemde, need to fix
 // Needs to be created dynamically
+
+// Dynamic import for SimpleMDE to avoid SSR issues
+import dynamic from "next/dynamic";
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 type StoryFormData = z.infer<typeof storiesSchema>;
 

@@ -31,7 +31,7 @@ const MapPage = async ({ params }: MapPageProps) => {
   }
   return (
     <StatusContextProvider>
-      <MapModule data={data} />;
+      <MapModule data={data} />
     </StatusContextProvider>
   );
 };

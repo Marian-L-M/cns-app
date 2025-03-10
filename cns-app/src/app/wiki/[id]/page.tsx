@@ -20,7 +20,7 @@ const WikiPage = async ({ params }: WikiPageProps) => {
 
   // Check: Does contains work with an integer when comparing to a string?
   let wiki;
-  if (!/[a-z]/i.test(params.id)) {
+  if (!/[a-z]/i.test(id)) {
     wiki = await prisma?.wiki.findUnique({
       where: { id: parseInt(id) },
     });
