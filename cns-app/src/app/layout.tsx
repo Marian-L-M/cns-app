@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import MainNav from "@/components/navigation/MainNav";
-import { ThemeProvider } from "@/components/theme-provider";
+
+import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants";
 import Sidebar from "@/components/navigation/Sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
 import TopNav from "@/components/navigation/TopNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Clouds and Spaceships",
-  description: "Dynamic Map Storytelling",
+  title: {
+    template: `%s | CNS`,
+    default: APP_NAME,
+  },
+  description: `${APP_DESCRIPTION}`,
+  metadataBase: new URL(SERVER_URL),
 };
 
 // Remove extra attribute error

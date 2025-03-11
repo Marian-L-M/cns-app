@@ -1,3 +1,4 @@
+// Move to utils folder and polish concept
 import prisma from "../../prisma/db";
 
 /**

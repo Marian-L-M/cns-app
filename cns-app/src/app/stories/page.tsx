@@ -6,6 +6,10 @@ import Pagination from "@/components/Pagination";
 import StatusFilter from "@/components/filters/StatusFilter";
 import { Entry, Status } from "@prisma/client";
 
+export const metadata = {
+  title: `Stories`,
+};
+
 export interface SearchParams {
   status: Status;
   page: string;

@@ -1,3 +1,5 @@
+// Move to utils folder and polish concept
+// Draw functions are double
 interface areaNode {
   id: number;
   x: number;
