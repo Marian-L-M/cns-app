@@ -3,9 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants";
-import Sidebar from "@/components/navigation/Sidebar";
+import Sidebar from "@/components/shared/sidebar/Sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
-import TopNav from "@/components/navigation/TopNav";
+import TopNav from "@/components/shared/header/TopNav";
+import Header from "@/components/shared/header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,8 +40,11 @@ export default function RootLayout({
             id="layout-wrapper"
           >
             <Sidebar />
-            <div className="main-column w-full h-screen overflow-scroll ">
-              <TopNav />
+            <div
+              className="flex-3 w-full h-screen overflow-scroll "
+              id="column-main"
+            >
+              <Header />
               <main className="flex flex-col items-center pr-8 h-full">
                 <div
                   className=" w-full pl-6 py-6 pr-12 bg-white rounded relative"
