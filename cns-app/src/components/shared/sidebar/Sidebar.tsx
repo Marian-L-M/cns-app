@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import MainNav from "../header/MainNav";
+import { APP_NAME } from "@/lib/constants";
 
 function Sidebar() {
   return (
@@ -10,7 +11,13 @@ function Sidebar() {
     >
       <Link href="/" className="">
         <figure className="flex flex-col items-center gap-4">
-          <Image width={64} height={64} src="/ui/logo.png" alt="logo" />
+          <Image
+            src="/ui/logo.png"
+            alt={`${APP_NAME} logo`}
+            height={64}
+            width={64}
+            priority
+          />
         </figure>
       </Link>
       <MainNav />

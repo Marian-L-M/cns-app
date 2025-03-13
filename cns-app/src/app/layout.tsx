@@ -5,8 +5,8 @@ import "./globals.css";
 import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants";
 import Sidebar from "@/components/shared/sidebar/Sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
-import TopNav from "@/components/shared/header/TopNav";
 import Header from "@/components/shared/header";
+import Footer from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +19,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(SERVER_URL),
 };
 
-// Remove extra attribute error
-// https://stackoverflow.com/questions/78456897/how-to-remove-extra-attributes-error-in-nextjs-andclerk
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,7 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
@@ -45,7 +43,7 @@ export default function RootLayout({
               id="column-main"
             >
               <Header />
-              <main className="flex flex-col items-center pr-8 h-full">
+              <main className="flex flex-col items-center pl-4 pr-8 h-full">
                 <div
                   className=" w-full pl-6 py-6 pr-12 bg-white rounded relative"
                   id="contents"
@@ -55,6 +53,7 @@ export default function RootLayout({
               </main>
             </div>
           </div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
