@@ -59,6 +59,9 @@
   .navbar-link {
     @apply font-medium text-muted-foreground transition-colors hover:text-primary;
   }
+  .dropdown-label {
+    @apply !font-normal  cursor-pointer hover:bg-slate-50;
+  }
 }
 
 @layer utilities {

@@ -3,14 +3,13 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "../../ui/button";
 import { Search } from "lucide-react";
-import ModeToggle from "./ModeToggle";
+import UserToggle from "./UserToggle";
 
 let login: boolean = true;
 
 const TopNav = () => {
   return (
     <div className="w-full flex justify-end items-center gap-4 p-4 pr-8 ">
-      <ModeToggle />
       <div className="meta-container flex flex-col gap-2">
         <div className="meta-links flex text-xs gap-24" id="meta-container">
           <div className="link-container flex gap-2 text-gray-500">
@@ -53,6 +52,7 @@ const TopNav = () => {
           </div>
         </div>
       </div>
+      <UserToggle />
     </div>
   );
 };
