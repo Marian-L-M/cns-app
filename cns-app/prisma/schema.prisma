@@ -74,8 +74,22 @@ model Map {
   mapTime     Int
   mapUrl      String
   assignedEntries       Entry[]
+  masterAsParent MasterMap[] @relation("ParentMap")
+  masterAsChild MasterMap[] @relation("ChildMap")
   objects     GlobalObject[]
   area        GlobalArea[]
+}
+
+model MasterMap {
+  id          Int @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  parentMapID Int
+  mapParent Map @relation("ParentMap",fields:[parentMapID], references: [id]) 
+  mapChildren Map[] @relation("ChildMap") // Implicit many to many
+  
+  @@index([parentMapID])
 }
 
 
