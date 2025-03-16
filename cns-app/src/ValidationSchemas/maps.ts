@@ -12,3 +12,8 @@ export const mapSchema = z.object({
   mapScale: z.number().min(0, "Map Zoom Level").max(10).optional(),
   mapTime: z.number().min(0, "Story time on Map").max(9999).optional(),
 });
+
+export const masterMapSchema = z.object({
+  title: z.string().min(1, "Title is required").max(255),
+  parentMapId: z.number().int().positive("Parent map is required"),
+});

@@ -58,6 +58,12 @@ type StoryClickStatus = {
   id: number;
 };
 
+type TooltipStatus = {
+  id: number;
+  title: string;
+  imageUrl: string;
+};
+
 // Node for drawing map area
 type Point = { x: number; y: number };
 

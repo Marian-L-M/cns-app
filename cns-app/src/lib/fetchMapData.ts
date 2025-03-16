@@ -14,3 +14,15 @@ export const fetchMapData = async (mapId: string) => {
 
   return { map, mapAreas, mapObjects };
 };
+
+export const fetchMasterMap = async (masterMapId: string) => {
+  const masterMap = await prisma.masterMap.findUnique({
+    where: { id: parseInt(masterMapId) },
+    include: {
+      mapChildren: true,
+      mapParent: true,
+    },
+  });
+
+  return masterMap;
+};

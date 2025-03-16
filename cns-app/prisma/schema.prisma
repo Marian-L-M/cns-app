@@ -86,6 +86,7 @@ model MasterMap {
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(255)
   parentMapID Int
+  childMapIDs   Int[]
   mapParent Map @relation("ParentMap",fields:[parentMapID], references: [id]) 
   mapChildren Map[] @relation("ChildMap") // Implicit many to many
   

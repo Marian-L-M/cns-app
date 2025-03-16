@@ -63,7 +63,7 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
     canvas.onmousemove = (e) => {
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
-      checkHover(e, canvas, mapAreas, ctx, cw, ch);
+      checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
       const { title, id, type } = hoverArea[0];
       statusCtx.showStatusBar({
         title: title,
