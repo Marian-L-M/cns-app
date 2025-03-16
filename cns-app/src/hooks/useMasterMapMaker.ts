@@ -33,7 +33,7 @@ export const useMasterMapMaker = ({ mapChildren }) => {
         // const styles = area.styles;
         ctx.lineWidth = 4;
         ctx.fillStyle = "rgba(256, 256, 256, 0.2)";
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = "white";
         ctx.beginPath();
         ctx.moveTo(map.x * cw, map.y * ch);
         ctx.lineTo((map.x + map.wx) * cw, map.y * ch);
@@ -41,8 +41,11 @@ export const useMasterMapMaker = ({ mapChildren }) => {
         ctx.lineTo(map.x * cw, (map.y + map.wy) * ch);
         ctx.lineTo(map.x * cw, map.y * ch);
         ctx.closePath();
+        ctx.font = "16px mono";
         ctx.stroke();
         ctx.fill();
+        ctx.fillStyle = "white";
+        ctx.fillText(map.title, map.x * cw + 4, (map.y + map.wy) * ch - 4);
       });
     }
 
