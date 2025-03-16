@@ -31,6 +31,7 @@ const MainNavLinks = () => {
       subLinks: [
         { label: "Create Map", href: "/maps/new" },
         { label: "Featured Map", href: "/maps/featured" },
+        { label: "Master Maps", href: "/maps/mastermaps" },
         { label: "Search", href: "/maps/search" },
         { label: "Categories", href: "/maps/categories" },
         { label: "Random Map", href: "" },

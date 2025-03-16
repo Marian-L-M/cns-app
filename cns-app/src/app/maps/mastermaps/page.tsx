@@ -33,7 +33,7 @@ async function MasterMapPage() {
             {masterMaps.map((map) => (
               <TableRow key={map.id} data-href="/">
                 <TableCell>
-                  <Link href={`/`}>{map.title}</Link>
+                  <Link href={`/maps/mastermaps/${map.id}`}>{map.title}</Link>
                 </TableCell>
                 <TableCell>
                   <Link href={`/maps/${map.parentMapID}`}>
