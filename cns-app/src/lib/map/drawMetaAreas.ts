@@ -14,6 +14,23 @@ export function drawMetaAreas(
   ctx.closePath();
 }
 
+// Draw a map that uses x,y,wx,wy
+export function drawRectangularMetaArea(
+  ctx: CanvasRenderingContext2D,
+  area: PointRectangularArea,
+  cw: number,
+  ch: number
+) {
+  ctx.beginPath();
+  ctx.moveTo(area.x * cw, area.y * ch);
+  ctx.lineTo((area.x + area.wx) * cw, area.y * ch);
+  ctx.lineTo((area.x + area.wx) * cw, (area.y + area.wy) * ch);
+  ctx.lineTo(area.x * cw, (area.y + area.wy) * ch);
+  ctx.lineTo(area.x * cw, area.y * ch);
+  ctx.closePath();
+}
+
+// Object should be rectangular meta areas
 export function drawMetaObjects(
   ctx: CanvasRenderingContext2D,
   object: DrawMapObject,

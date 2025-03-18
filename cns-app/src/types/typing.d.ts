@@ -12,7 +12,6 @@ type GlobalStoryType = z.infer<typeof storyObjectsSchema>;
 
 // For passing Map data to MapModule
 interface MapModuleProps {
-  // id: string;
   data: {
     map: Map;
     mapObjects: GlobalObjectType[];
@@ -35,6 +34,13 @@ type DrawMapArea = {
   nodes: Point[];
   fillStyle: string;
   strokeStyle: string;
+};
+
+type PointRectangularArea = {
+  x: number;
+  y: number;
+  wx: number;
+  wy: number;
 };
 
 type DrawMapObject = {

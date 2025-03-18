@@ -4,10 +4,24 @@ import Image from "next/image";
 import { FC, useEffect, useState, useContext } from "react";
 import { createPortal } from "react-dom";
 import { CursorContext } from "@/store/cursorContext";
+import { Map, MapHierarchyMaster } from "@prisma/client";
 
-const MasterMapModule: FC<MapModuleProps> = ({ masterMap }) => {
-  const { mapChildren, mapParent } = masterMap;
-  const { canvasRef } = useMasterMapMaker({ mapChildren });
+interface MapWithRectangularArea extends Map, PointRectangularArea {}
+interface ParentMap extends Map, MapHierarchyMaster {}
+
+interface MasterMapProps {
+  mapParent: Map;
+}
+interface MasterMapProps {
+  masterMap: {
+    parentMap: ParentMap;
+    childMaps: MapWithRectangularArea[];
+  };
+}
+
+const MasterMapModule: FC<MasterMapProps> = ({ masterMap }) => {
+  const { parentMap, childMaps } = masterMap;
+  const { canvasRef } = useMasterMapMaker({ childMaps });
   const tooltipCtx = useContext(CursorContext);
 
   let windowSize: number = 1024;
@@ -29,8 +43,8 @@ const MasterMapModule: FC<MapModuleProps> = ({ masterMap }) => {
           <Image
             priority={true}
             className="absolute top-0 left-0 z-1 pointer-events-none"
-            src={`/${mapParent.mapUrl || "maps/placeholder.jpg"}`}
-            alt={`${mapParent.title} - map`}
+            src={`/${parentMap.mapUrl || "maps/placeholder.jpg"}`}
+            alt={`${parentMap.title} - map`}
             width="1024"
             height="1024"
           />
@@ -66,7 +80,7 @@ const MouseToolTip = ({ cursorContext }: any) => {
   );
 };
 
-const MouseTracker = ({ children, offset = { x: 0, y: 0 } }) => {
+const MouseTracker = ({ children, offset = { x: 0, y: 0 } }: any) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -76,7 +90,7 @@ const MouseTracker = ({ children, offset = { x: 0, y: 0 } }) => {
     setIsMounted(true);
 
     // Handler for mouse movement
-    function handleMouseMove(e) {
+    function handleMouseMove(e: MouseEvent) {
       setPosition({
         x: e.clientX + offset.x,
         y: e.clientY + offset.y,
@@ -99,6 +113,7 @@ const MouseTracker = ({ children, offset = { x: 0, y: 0 } }) => {
   }
 
   // Style the tracker div
+  // Todo: 250318 Fix style
   const trackerStyle = {
     transform: `translate(${position.x}px, ${position.y}px)`,
     visibility: isVisible ? "visible" : "hidden",

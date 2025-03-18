@@ -11,10 +11,10 @@ import {
 import Link from "next/link";
 
 async function MasterMapPage() {
-  const masterMaps = await prisma.masterMap.findMany({
+  const masterMaps = await prisma.mapHierarchyMaster.findMany({
     include: {
-      mapChildren: true,
-      mapParent: true,
+      parentMap: true,
+      childMaps: true,
     },
   });
 
@@ -36,13 +36,13 @@ async function MasterMapPage() {
                   <Link href={`/maps/mastermaps/${map.id}`}>{map.title}</Link>
                 </TableCell>
                 <TableCell>
-                  <Link href={`/maps/${map.parentMapID}`}>
-                    {map.mapParent?.title || map.parentMapID}
+                  <Link href={`/maps/${map.parentMapId}`}>
+                    {map.parentMap?.title || map.parentMapId}
                   </Link>
                 </TableCell>
                 <TableCell>
-                  {map.mapChildren.length > 0
-                    ? map.mapChildren.map((child) => child.id).join(", ")
+                  {map.childMaps.length > 0
+                    ? map.childMaps.map((child) => child.id).join(", ")
                     : "No children"}
                 </TableCell>
               </TableRow>

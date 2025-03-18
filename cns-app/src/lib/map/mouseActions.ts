@@ -2,7 +2,15 @@ import {
   drawMetaAreas,
   drawMetaObjects,
   drawMetaStoryNodes,
+  drawRectangularMetaArea,
 } from "./drawMetaAreas";
+import { Map } from "@prisma/client";
+interface MapWithRectangularArea extends Map, PointRectangularArea {}
+
+interface hitArea {
+  id: number;
+  title: string;
+}
 
 export function checkHover(
   event: MouseEvent,
@@ -34,6 +42,36 @@ export function checkHover(
     }
   });
   return hoverArea;
+}
+
+export function checkHitbox(
+  event: MouseEvent,
+  canvas: HTMLCanvasElement,
+  areaList: MapWithRectangularArea[],
+  ctx: CanvasRenderingContext2D | null,
+  cw: number,
+  ch: number
+) {
+  const r = canvas.getBoundingClientRect();
+  const mouseX = event.clientX - r.x;
+  const mouseY = event.clientY - r.y;
+  console.log(areaList);
+
+  const hitArea: hitArea[] = [];
+
+  // Return if no context
+  if (!ctx) return;
+
+  areaList?.forEach((area) => {
+    drawRectangularMetaArea(ctx, area, cw, ch);
+    if (ctx.isPointInPath(mouseX, mouseY)) {
+      hitArea.push({
+        id: area.id,
+        title: area.title,
+      });
+    }
+  });
+  return hitArea;
 }
 
 export function checkClick(

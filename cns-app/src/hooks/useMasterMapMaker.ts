@@ -1,14 +1,19 @@
 import { useEffect, useRef, useContext } from "react";
 import { CursorContext } from "@/store/cursorContext";
+import { checkHitbox } from "@/lib/map/mouseActions";
+import { useRouter } from "next/navigation";
+import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
+import { Map } from "@prisma/client";
+interface MapWithRectangularArea extends Map, PointRectangularArea {}
 
-type childMapHoverable = {
-  id: number;
-  title: string;
-};
+interface MasterMapMakerProps {
+  childMaps: MapWithRectangularArea[];
+}
 
-export const useMasterMapMaker = ({ mapChildren }) => {
+export const useMasterMapMaker = ({ childMaps }: MasterMapMakerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorCtx = useContext(CursorContext);
+  const router = useRouter();
 
   useEffect(() => {
     // Set canvas
@@ -28,19 +33,13 @@ export const useMasterMapMaker = ({ mapChildren }) => {
 
     // Draw Areas
     // 240811 Unify draw functions or keep together for future expansion?
-    if (mapChildren) {
-      mapChildren.forEach((map) => {
-        // const styles = area.styles;
+    // 250318 Unify with map maker check hover, click - should all be one function
+    if (childMaps) {
+      childMaps.forEach((map) => {
         ctx.lineWidth = 4;
         ctx.fillStyle = "rgba(256, 256, 256, 0.2)";
         ctx.strokeStyle = "white";
-        ctx.beginPath();
-        ctx.moveTo(map.x * cw, map.y * ch);
-        ctx.lineTo((map.x + map.wx) * cw, map.y * ch);
-        ctx.lineTo((map.x + map.wx) * cw, (map.y + map.wy) * ch);
-        ctx.lineTo(map.x * cw, (map.y + map.wy) * ch);
-        ctx.lineTo(map.x * cw, map.y * ch);
-        ctx.closePath();
+        drawRectangularMetaArea(ctx, map, cw, ch);
         ctx.font = "16px mono";
         ctx.stroke();
         ctx.fill();
@@ -57,15 +56,8 @@ export const useMasterMapMaker = ({ mapChildren }) => {
 
       let hoveredMap = null;
       // mapChildren.forEach((map) => {
-      for (const map of mapChildren) {
-        // drawMetaChild map
-        ctx.beginPath();
-        ctx.moveTo(map.x * cw, map.y * ch);
-        ctx.lineTo((map.x + map.wx) * cw, map.y * ch);
-        ctx.lineTo((map.x + map.wx) * cw, (map.y + map.wy) * ch);
-        ctx.lineTo(map.x * cw, (map.y + map.wy) * ch);
-        ctx.lineTo(map.x * cw, map.y * ch);
-        ctx.closePath();
+      for (const map of childMaps) {
+        drawRectangularMetaArea(ctx, map, cw, ch);
 
         if (ctx.isPointInPath(mouseX, mouseY)) {
           hoveredMap = map;
@@ -87,12 +79,21 @@ export const useMasterMapMaker = ({ mapChildren }) => {
       };
     };
 
+    canvas.onmousedown = (e) => {
+      // Go to clicked map
+      const hitArea = checkHitbox(e, canvas, childMaps, ctx, cw, ch);
+      if (hitArea && !(hitArea.length == 0)) {
+        const { id } = hitArea[0];
+        router.push(`/maps/${id}`);
+      }
+    };
+
     // Cleanup
     return () => {
       canvas.onmousemove = null;
       canvas.onmouseleave = null;
     };
-  }, [mapChildren, cursorCtx]);
+  }, [childMaps, cursorCtx]);
 
   return { canvasRef };
 };

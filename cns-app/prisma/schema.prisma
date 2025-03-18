@@ -66,33 +66,49 @@ model Map {
   title       String   @db.VarChar(255)
   description String   @db.Text
   imageUrl    String
-  x           Int
-  y           Int
-  wx          Int
-  wy          Int
-  mapScale    Int
+
   mapTime     Int
   mapUrl      String
   assignedEntries       Entry[]
-  masterAsParent MasterMap[] @relation("ParentMap")
-  masterAsChild MasterMap[] @relation("ChildMap")
   objects     GlobalObject[]
   area        GlobalArea[]
+
+  parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
+  childInHierarchies  MapHierarchyChild[] @relation("ChildMap")
 }
 
-model MasterMap {
+model MapHierarchyMaster {
   id          Int @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(255)
-  parentMapID Int
-  childMapIDs   Int[]
-  mapParent Map @relation("ParentMap",fields:[parentMapID], references: [id]) 
-  mapChildren Map[] @relation("ChildMap") // Implicit many to many
+  title       String   @db.VarChar(255) 
   
-  @@index([parentMapID])
+  parentMapId Int
+  parentMap   Map @relation("ParentMap", fields: [parentMapId], references: [id])
+  childMaps    MapHierarchyChild[]
+  
+  @@index([parentMapId])
 }
 
+model MapHierarchyChild {
+  id          Int @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  hierarchyId Int
+  hierarchy   MapHierarchyMaster @relation(fields: [hierarchyId], references: [id])
+  childMapId  Int
+  childMap    Map @relation("ChildMap", fields: [childMapId], references: [id])
+
+  x           Int @default(0)
+  y           Int @default(0)
+  wx          Int @default(0)
+  wy          Int @default(0)
+  
+  @@unique([hierarchyId, childMapId])
+  @@index([hierarchyId])
+  @@index([childMapId])
+}
 
 // 250131 Blew up database - Nodes needs to be a list of objects though
 model Story {
