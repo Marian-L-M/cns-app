@@ -4,6 +4,7 @@ import { checkHitbox } from "@/lib/map/mouseActions";
 import { useRouter } from "next/navigation";
 import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
 import { Map } from "@prisma/client";
+
 interface MapWithRectangularArea extends Map, PointRectangularArea {}
 
 interface MasterMapMakerProps {

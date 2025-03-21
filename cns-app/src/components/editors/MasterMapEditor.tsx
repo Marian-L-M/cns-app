@@ -1,27 +1,44 @@
 "use client";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import Image from "next/image";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
+import axios from "axios";
 import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
-import { MapHierarchyMaster, MapHierarchyChild } from "@prisma/client";
+import { Map, MapHierarchyMaster, MapHierarchyChild } from "@prisma/client";
+import MapSearchDialog from "../ui/dialog/mapSearchDialog";
+import { fetchMapName } from "@/lib/fetchMapData";
 
-export type MasterMapFormData = z.infer<typeof masterMapSchema> & {
+export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
 };
 
+interface MapWithRectangularArea extends Map, PointRectangularArea {}
+
+interface MasterMapWithChildren {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  parentMapId: number;
+  parentMap: Map;
+  childMaps: MapWithRectangularArea[];
+}
+
 interface MasterMapProps {
-  MasterMap?: MapHierarchyMaster;
+  MasterMap?: MasterMapWithChildren;
 }
 
 function MasterMapEditor({ MasterMap }: MasterMapProps) {
-  const childMaps: any = [];
+  const childMaps = MasterMap?.childMaps || [];
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -36,9 +53,51 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
   // Set Form
   const form = useForm<MasterMapFormData>({
     resolver: zodResolver(MasterMapSchema),
+    defaultValues: {
+      title: MasterMap?.title || "",
+      parentMapId: MasterMap?.parentMapId || 0,
+      childMaps: MasterMap?.childMaps || [],
+    },
   });
 
-  async function onSubmit(values: MasterMapFormData) {}
+  async function onSubmit(values: MasterMapFormData) {
+    try {
+      setIsSubmitting(true);
+      setError("");
+      if (MasterMap) {
+        await axios.patch(`/api/mastermaps/${MasterMap.id}`, values);
+        router.push(`/mastermaps/${MasterMap?.id}`);
+        router.refresh();
+      } else {
+        const response = await axios.post(`/api/mastermaps`, values);
+        const newMasterMap = response.data;
+        router.push(`/mastermaps/${newMasterMap?.id}`);
+        router.refresh();
+      }
+    } catch (error) {
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
+    }
+  }
+
+  // Set Mastermap & display name
+  const [selectedParentMapId, setSelectedParentMapId] = useState<
+    number | undefined
+  >(MasterMap?.parentMapId);
+  const [parentMapName, setParentMapName] = useState<string>("");
+
+  useEffect(() => {
+    // Update Wiki Name
+    fetchMapName({
+      selectedMapId: selectedParentMapId,
+      setMapName: setParentMapName,
+    });
+
+    // Update form
+    if (selectedParentMapId) {
+      form.setValue("parentMapId", selectedParentMapId);
+    }
+  }, [selectedParentMapId]);
 
   return (
     <div className="w-full" id="map-editor-module">
@@ -68,7 +127,61 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
             className="relative z-20 col-span-2 flex flex-col gap-4"
             id="sidebar"
           >
-            <div className="w-full flex flex-col gap-4" id="form-top"></div>
+            <div className="w-full flex flex-col gap-4" id="form-top">
+              <div className="w-9/12 pr-8" id="title-container">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  defaultValue={MasterMap?.title}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Wiki Title..." {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            <div className="w-full" id="wiki-container">
+              <FormField
+                control={form.control}
+                name="parentMapId"
+                defaultValue={MasterMap?.parentMapId}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Parent Map</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-row gap-2">
+                        <div className="w-2/3">
+                          <Input
+                            type="hidden"
+                            placeholder="parentMapId"
+                            {...field}
+                          />
+                          {parentMapName && (
+                            <div className="p-2 border rounded-md h-10 flex items-center">
+                              <p className="truncate text-sm">
+                                {parentMapName}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="w-1/3">
+                          <MapSearchDialog
+                            setSelectedMapId={setSelectedParentMapId}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <Button type="submit" disabled={isSubmitting}>
+              {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
+            </Button>
           </form>
         </Form>
       </div>

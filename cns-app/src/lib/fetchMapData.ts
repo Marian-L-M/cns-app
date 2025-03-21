@@ -1,4 +1,5 @@
 // Move to utils folder and polish concept
+import axios from "axios";
 import prisma from "../../prisma/db";
 
 export const fetchMapData = async (mapId: string) => {
@@ -41,3 +42,28 @@ export const fetchMasterMap = async (masterMapId: string) => {
     })),
   };
 };
+
+interface MapFetchProps {
+  selectedMapId: number | undefined;
+  setMapName: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export async function fetchMapName({
+  selectedMapId,
+  setMapName,
+}: MapFetchProps) {
+  if (!selectedMapId) {
+    setMapName("");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`/api/maps/${selectedMapId}`);
+    if (response.data && response.data.title) {
+      setMapName(response.data.title);
+    }
+  } catch (error) {
+    console.error("Error fetching map data:", error);
+    setMapName("");
+  }
+}

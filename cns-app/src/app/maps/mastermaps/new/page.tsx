@@ -1,10 +1,13 @@
 import MasterMapEditor from "@/components/editors/MasterMapEditor";
 import CursorContextProvider from "@/store/cursorContext";
+import { fetchMasterMap } from "@/lib/fetchMapData";
 
-function MasterMapEditorPage() {
+async function MasterMapEditorPage() {
+  const MasterMap = await fetchMasterMap("1");
+
   return (
     <CursorContextProvider>
-      <MasterMapEditor />
+      <MasterMapEditor MasterMap={MasterMap} />
     </CursorContextProvider>
   );
 }

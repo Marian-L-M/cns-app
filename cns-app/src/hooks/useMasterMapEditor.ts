@@ -1,6 +1,15 @@
 import { useEffect, useRef } from "react";
+import { Map } from "@prisma/client";
 
-export const useMasterMapEditor = ({ childMaps }: any) => {
+import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
+
+interface MapWithRectangularArea extends Map, PointRectangularArea {}
+
+interface MasterMapMakerProps {
+  childMaps: MapWithRectangularArea[];
+}
+
+export const useMasterMapEditor = ({ childMaps }: MasterMapMakerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -15,10 +24,22 @@ export const useMasterMapEditor = ({ childMaps }: any) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Click events
-    const r = canvas.getBoundingClientRect();
-
-    console.log(childMaps);
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw areas
+    if (childMaps) {
+      childMaps.forEach((map) => {
+        ctx.lineWidth = 4;
+        ctx.fillStyle = "rgba(256, 256, 256, 0.2)";
+        ctx.strokeStyle = "white";
+        drawRectangularMetaArea(ctx, map, cw, ch);
+        ctx.font = "16px mono";
+        ctx.stroke();
+        ctx.fill();
+        ctx.fillStyle = "white";
+        ctx.fillText(map.title, map.x * cw + 4, (map.y + map.wy) * ch - 4);
+      });
+    }
   });
   return { canvasRef };
 };
