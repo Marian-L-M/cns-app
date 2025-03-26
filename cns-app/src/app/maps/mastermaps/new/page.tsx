@@ -3,11 +3,9 @@ import CursorContextProvider from "@/store/cursorContext";
 import { fetchMasterMap } from "@/lib/fetchMapData";
 
 async function MasterMapEditorPage() {
-  const MasterMap = await fetchMasterMap("1");
-
   return (
     <CursorContextProvider>
-      <MasterMapEditor MasterMap={MasterMap} />
+      <MasterMapEditor />
     </CursorContextProvider>
   );
 }

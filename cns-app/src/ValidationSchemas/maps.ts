@@ -10,6 +10,7 @@ export const mapSchema = z.object({
 });
 
 export const ChildMapSchema = z.object({
+  hierarchyId: z.number().int().positive("Parent hierarchy is required"),
   childMapId: z.number().int().positive("Child map ID is required"),
   x: z.number().min(0, "Global X").max(1000).optional(),
   y: z.number().min(0, "Global Y").max(1000).optional(),

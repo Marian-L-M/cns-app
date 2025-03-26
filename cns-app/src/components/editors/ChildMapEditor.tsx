@@ -1,5 +1,6 @@
-// To do: Is the MasterMapEditor even needed when we handle editing via childmapeditor
 "use client";
+import MapEditorModule from "@/components/maps/MapEditorModule";
+import EditorContextProvider from "@/store/mapEditorContext";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -13,15 +14,15 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { MasterMapSchema } from "@/ValidationSchemas/maps";
+import { ChildMapSchema } from "@/ValidationSchemas/maps";
 import { Map, MapHierarchyMaster, MapHierarchyChild } from "@prisma/client";
 import MapSearchDialog from "../ui/dialog/mapSearchDialog";
 import { fetchMapName } from "@/lib/fetchMapData";
 import { Edit, Plus, Trash } from "lucide-react";
 import Link from "next/link";
 
-export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
-  MasterMap: MapHierarchyMaster;
+export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
+  ChildMap: MapHierarchyChild;
 };
 
 interface MapWithRectangularArea extends Map, PointRectangularArea {}
@@ -36,46 +37,49 @@ interface MasterMapWithChildren {
   childMaps: MapWithRectangularArea[];
 }
 
-interface MasterMapProps {
-  MasterMap?: MasterMapWithChildren;
+interface ChildMapEditorProps {
+  MasterMap: MasterMapWithChildren;
+  ChildMap?: MapHierarchyChild;
 }
 
-function MasterMapEditor({ MasterMap }: MasterMapProps) {
-  const childMaps = MasterMap?.childMaps || [];
+function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  console.log(childMaps);
-
   // Set canvas
-  const { canvasRef } = useMasterMapEditor({ childMaps });
+  //   const { canvasRef } = useMasterMapEditor({ childMaps });
+  // To do write a hook for handling map size
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
     windowSize = window.innerWidth;
   }
 
   // Set Form
-  const form = useForm<MasterMapFormData>({
-    resolver: zodResolver(MasterMapSchema),
+  const form = useForm<ChildMapFormData>({
+    resolver: zodResolver(ChildMapSchema),
     defaultValues: {
-      title: MasterMap?.title || "",
-      parentMapId: MasterMap?.parentMapId || 0,
+      hierarchyId: MasterMap.id,
+      childMapId: ChildMap?.childMapId || undefined, // Naming is very confusing childmapid is not the id of the childmap but the related map object
+      x: ChildMap?.x || 0,
+      y: ChildMap?.y || 0,
+      wx: ChildMap?.wx || 0,
+      wy: ChildMap?.wy || 0,
     },
   });
 
-  async function onSubmit(values: MasterMapFormData) {
+  async function onSubmit(values: ChildMapFormData) {
     try {
       setIsSubmitting(true);
       setError("");
-      if (MasterMap) {
-        await axios.patch(`/api/mastermaps/${MasterMap.id}`, values);
-        router.push(`/maps/mastermaps/${MasterMap?.id}`);
+      if (ChildMap) {
+        await axios.patch(`/api/childmaps/${ChildMap.id}`, values);
+        router.push(`/maps/childmaps/${ChildMap.id}`);
         router.refresh();
       } else {
-        const response = await axios.post(`/api/mastermaps`, values);
-        const newMasterMap = response.data;
-        router.push(`/maps/mastermaps/${newMasterMap?.id}`);
+        const response = await axios.post(`/api/childmaps`, values);
+        const NewChildMap = response.data;
+        router.push(`/maps/mastermaps/${NewChildMap.hierarchyId}`);
         router.refresh();
       }
     } catch (error) {
@@ -84,24 +88,24 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
     }
   }
 
-  // Set Mastermap & display name
-  const [selectedParentMapId, setSelectedParentMapId] = useState<
-    number | undefined
-  >(MasterMap?.parentMapId);
-  const [parentMapName, setParentMapName] = useState<string>("");
+  // Set map & map display name
+  const [selectedMapId, setSelectedMapId] = useState<number | undefined>(
+    ChildMap?.childMapId
+  );
+  const [mapName, setMapName] = useState<string>("");
 
   useEffect(() => {
     // Update Wiki Name
     fetchMapName({
-      selectedMapId: selectedParentMapId,
-      setMapName: setParentMapName,
+      selectedMapId: selectedMapId,
+      setMapName: setMapName,
     });
 
     // Update form
-    if (selectedParentMapId) {
-      form.setValue("parentMapId", selectedParentMapId);
+    if (selectedMapId) {
+      form.setValue("childMapId", selectedMapId);
     }
-  }, [selectedParentMapId]);
+  }, [selectedMapId, form]);
 
   return (
     <div className="w-full" id="map-editor-module">
@@ -111,7 +115,7 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
           id="map-base"
         >
           <canvas
-            ref={canvasRef}
+            // ref={canvasRef}
             width={windowSize > 1024 ? 1024 : windowSize}
             height={windowSize > 1024 ? 1024 : windowSize}
             className="border border-grey relative z-10 w-full"
@@ -131,50 +135,31 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
             className="relative z-20 col-span-2 flex flex-col gap-4"
             id="sidebar"
           >
-            <div className="w-full flex flex-col gap-4" id="form-top">
-              <div className="w-9/12 pr-8" id="title-container">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  defaultValue={MasterMap?.title}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Wiki Title..." {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
             <div className="w-full" id="parentmap-container">
               <FormField
                 control={form.control}
-                name="parentMapId"
-                defaultValue={MasterMap?.parentMapId}
+                name="childMapId"
+                defaultValue={ChildMap?.childMapId}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Parent Map</FormLabel>
+                    <FormLabel>Map as child map</FormLabel>
                     <FormControl>
                       <div className="flex flex-row gap-2">
                         <div className="w-2/3">
                           <Input
                             type="hidden"
-                            placeholder="parentMapId"
+                            placeholder="childMapId"
                             {...field}
                           />
-                          {parentMapName && (
+                          {mapName && (
                             <div className="p-2 border rounded-md h-10 flex items-center">
-                              <p className="truncate text-sm">
-                                {parentMapName}
-                              </p>
+                              <p className="truncate text-sm">{mapName}</p>
                             </div>
                           )}
                         </div>
                         <div className="w-1/3">
                           <MapSearchDialog
-                            setSelectedMapId={setSelectedParentMapId}
+                            setSelectedMapId={setSelectedMapId}
                           />
                         </div>
                       </div>
@@ -185,37 +170,28 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
             </div>
             <div
               className="flex flex-col gap-4 w-full mt-8"
-              id="childmap-container"
+              id="childmap-fields-container"
             >
-              <h3 className="font-semibold text-sm">Child maps</h3>
-              {childMaps.map((map) => (
-                <div
-                  key={`chilmdpa-${map.id}`}
-                  className="w-full flex flex-col items-center gap-2 border border-slate-200 rounded-sm p-2"
-                >
-                  <div className="w-full flex justify-between items-center gap-2 ">
-                    <h5>{map.title}</h5>
-                    <div className="btn-row flex justify-evenly gap-2 text-xs">
-                      <Button variant={"secondary"} asChild>
-                        <Link href="">
-                          <Edit />
-                        </Link>
-                      </Button>
-                      <Button variant={"destructive"}>
-                        <Trash />
-                      </Button>
-                    </div>
-                  </div>
-                  <Button variant={"secondary"} asChild>
-                    <Link href="">
-                      <Plus />
-                    </Link>
-                  </Button>
-                </div>
-              ))}
+              <FormField
+                control={form.control}
+                name="x"
+                defaultValue={ChildMap?.x}
+                render={({ field }) => (
+                //   <FormItem>
+                //     <FormLabel>Child Map X</FormLabel>
+                //     <FormControl>
+                //       <div className="flex flex-row gap-2">
+                //         <div className="w-2/3">
+                //           <Input placeholder="X" {...field} />
+                //         </div>
+                //       </div>
+                //     </FormControl>
+                //   </FormItem>
+                )}
+              />
             </div>
             <Button type="submit" disabled={isSubmitting}>
-              {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
+              {ChildMap ? "Update Childmap" : "Submit Childmap"}
             </Button>
           </form>
         </Form>
@@ -224,4 +200,4 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
   );
 }
 
-export default MasterMapEditor;
+export default ChildMapEditor;

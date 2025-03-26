@@ -1,26 +1,27 @@
-import MasterMapModule from "@/components/maps/MasterMapModule";
-import { fetchMasterMap } from "@/lib/fetchMapData";
+import MasterMapEditor from "@/components/editors/MasterMapEditor";
 import CursorContextProvider from "@/store/cursorContext";
+import { fetchMasterMap } from "@/lib/fetchMapData";
+import ChildMapEditor from "@/components/editors/ChildMapEditor";
 
 interface MapPageProps {
   params: { id: string };
 }
 
-const MasterMapPage = async ({ params }: MapPageProps) => {
+async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
   const masterMap = await fetchMasterMap(id);
-  console.log(masterMap);
+
   if (!masterMap) {
     return <div className="text-destructive">No maps found</div>;
   }
 
   return (
     <CursorContextProvider>
-      <MasterMapModule masterMap={masterMap} />
+      <ChildMapEditor MasterMap={masterMap} />
     </CursorContextProvider>
   );
-};
+}
 
-export default MasterMapPage;
+export default MasterMapEditorPage;
