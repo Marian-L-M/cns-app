@@ -65,15 +65,22 @@ export const fetchMasterMapChildren = async (masterMapId: string) => {
   };
 };
 
-export const fetchChildMap = async (childMapId: string) => {
-  const childMap = await prisma.mapHierarchyChild.findUnique({
+export const fetchHierarchyChild = async (childMapId: string) => {
+  const hierarchyChild = await prisma.mapHierarchyChild.findUnique({
     where: { id: parseInt(childMapId) },
+    include: {
+      childMap: true,
+    },
   });
 
-  if (!childMap) return null;
+  if (!hierarchyChild) return null;
 
   return {
-    childMap,
+    ...hierarchyChild,
+    mapTitle: hierarchyChild.childMap.title,
+    mapDescriptopn: hierarchyChild.childMap.description,
+    mapImage: hierarchyChild.childMap.mapUrl,
+    mapThumb: hierarchyChild.childMap.imageUrl,
   };
 };
 
