@@ -20,7 +20,10 @@ export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
   ChildMap: MapHierarchyChild;
 };
 
-interface MapWithRectangularArea extends Map, PointRectangularArea {}
+interface MapWithRectangularArea
+  extends HierarchyConnection,
+    Map,
+    PointRectangularArea {}
 
 interface MasterMapWithChildren {
   id: number;
@@ -69,12 +72,12 @@ function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
       setError("");
       if (ChildMap) {
         await axios.patch(`/api/childmaps/${ChildMap.id}`, values);
-        router.push(`/maps/childmaps/${ChildMap.id}`);
+        router.push(`/maps/mastermaps/${ChildMap.hierarchyId}/edit`);
         router.refresh();
       } else {
         const response = await axios.post(`/api/childmaps`, values);
         const NewChildMap = response.data;
-        router.push(`/maps/mastermaps/${NewChildMap.hierarchyId}`);
+        router.push(`/maps/mastermaps/${NewChildMap.hierarchyId}/edit`);
         router.refresh();
       }
     } catch (error) {

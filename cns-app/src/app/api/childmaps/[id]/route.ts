@@ -1,4 +1,4 @@
-import { MasterMapSchema } from "@/ValidationSchemas/maps";
+import { ChildMapSchema } from "@/ValidationSchemas/maps";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../../prisma/db";
 
@@ -8,7 +8,7 @@ interface Props {
 
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
-  const validation = MasterMapSchema.safeParse(body);
+  const validation = ChildMapSchema.safeParse(body);
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
@@ -16,16 +16,16 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
-  const masterMap = await prisma.mapHierarchyMaster.findUnique({
+  const childMap = await prisma.mapHierarchyChild.findUnique({
     where: { id: id },
   });
 
-  if (!masterMap) {
+  if (!childMap) {
     return NextResponse.json({ error: "Map not found" }, { status: 404 });
   }
 
-  const updateMap = await prisma.mapHierarchyMaster.update({
-    where: { id: masterMap.id },
+  const updateMap = await prisma.mapHierarchyChild.update({
+    where: { id: childMap.id },
     data: {
       ...body,
     },
@@ -38,20 +38,17 @@ export async function DELETE(request: NextRequest, { params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
-  const mapHierarchyMaster = await prisma.mapHierarchyMaster.findUnique({
+  const mapHierarchyChild = await prisma.mapHierarchyChild.findUnique({
     where: { id: id },
   });
 
-  if (!mapHierarchyMaster) {
-    return NextResponse.json(
-      { error: "Map Master not found" },
-      { status: 404 }
-    );
+  if (!mapHierarchyChild) {
+    return NextResponse.json({ error: "Map not found" }, { status: 404 });
   }
 
-  await prisma.mapHierarchyMaster.delete({
-    where: { id: mapHierarchyMaster.id },
+  await prisma.mapHierarchyChild.delete({
+    where: { id: mapHierarchyChild.id },
   });
 
-  return NextResponse.json({ message: "Map Master deleted" }, { status: 200 });
+  return NextResponse.json({ message: "Map deleted" }, { status: 200 });
 }

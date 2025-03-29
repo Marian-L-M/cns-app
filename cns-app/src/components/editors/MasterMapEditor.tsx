@@ -47,6 +47,7 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
   const childMaps = MasterMap?.childMaps || [];
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
 
   // Set canvas
@@ -71,7 +72,7 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
       setError("");
       if (MasterMap) {
         await axios.patch(`/api/mastermaps/${MasterMap.id}`, values);
-        router.push(`/maps/mastermaps/${MasterMap?.id}`);
+        router.push(`/maps/mastermaps/${MasterMap?.id}/edit`);
         router.refresh();
       } else {
         const response = await axios.post(`/api/mastermaps`, values);
@@ -81,6 +82,22 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
       }
     } catch (error) {
       setError("Unknown error occurred");
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleDeleteChildMap(id: number) {
+    setIsDeleting(true);
+    setError("");
+
+    try {
+      await axios.delete(`/api/childmaps/${id}`);
+      router.push(`/maps/mastermaps/${MasterMap?.id}/edit`);
+      router.refresh();
+    } catch (error) {
+      setError("An error occured while deleteing");
+    } finally {
+      setIsDeleting(false);
       setIsSubmitting(false);
     }
   }
@@ -205,7 +222,12 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
                             <Edit />
                           </Link>
                         </Button>
-                        <Button variant={"destructive"}>
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => {
+                            handleDeleteChildMap(map.hierarchyChildId);
+                          }}
+                        >
                           <Trash />
                         </Button>
                       </div>
