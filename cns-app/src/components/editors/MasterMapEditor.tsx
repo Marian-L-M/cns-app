@@ -9,12 +9,12 @@ import axios from "axios";
 import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
-import { Map, MapHierarchyMaster, MapHierarchyChild } from "@prisma/client";
+import { Map, MapHierarchyMaster } from "@prisma/client";
 import MapSearchDialog from "../ui/dialog/mapSearchDialog";
 import { fetchMapName } from "@/lib/fetchMapData";
 import { Edit, Plus, Trash } from "lucide-react";
@@ -24,7 +24,10 @@ export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
 };
 
-interface MapWithRectangularArea extends Map, PointRectangularArea {}
+interface MapWithRectangularArea
+  extends HierarchyConnection,
+    Map,
+    PointRectangularArea {}
 
 interface MasterMapWithChildren {
   id: number;
@@ -45,8 +48,6 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  console.log(childMaps);
 
   // Set canvas
   const { canvasRef } = useMasterMapEditor({ childMaps });
@@ -183,40 +184,46 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
                 )}
               />
             </div>
-            <div
-              className="flex flex-col gap-4 w-full mt-8"
-              id="childmap-container"
-            >
-              <h3 className="font-semibold text-sm">Child maps</h3>
-              {childMaps.map((map) => (
-                <div
-                  key={`chilmdpa-${map.id}`}
-                  className="w-full flex flex-col items-center gap-2 border border-slate-200 rounded-sm p-2"
-                >
-                  <div className="w-full flex justify-between items-center gap-2 ">
-                    <h5>{map.title}</h5>
-                    <div className="btn-row flex justify-evenly gap-2 text-xs">
-                      <Button variant={"secondary"} asChild>
-                        <Link href="">
-                          <Edit />
-                        </Link>
-                      </Button>
-                      <Button variant={"destructive"}>
-                        <Trash />
-                      </Button>
+            {MasterMap && (
+              <div
+                className="flex flex-col gap-4 w-full mt-8"
+                id="childmap-container"
+              >
+                <h3 className="font-semibold text-sm">Child maps</h3>
+                <div className="w-full flex flex-col items-center gap-2 border border-slate-200 rounded-sm p-2">
+                  {childMaps.map((map) => (
+                    <div
+                      key={`chilmdap-${map.id}`}
+                      className="w-full flex justify-between items-center gap-2 "
+                    >
+                      <h5>{map.title}</h5>
+                      <div className="btn-row flex justify-evenly gap-2 text-xs">
+                        <Button variant={"secondary"} asChild>
+                          <Link
+                            href={`/maps/mastermaps/${map.hierarchyParentId}/childmaps/${map.hierarchyChildId}/edit`}
+                          >
+                            <Edit />
+                          </Link>
+                        </Button>
+                        <Button variant={"destructive"}>
+                          <Trash />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                   <Button variant={"secondary"} asChild>
-                    <Link href="">
+                    <Link
+                      href={`/maps/mastermaps/${MasterMap.id}/childmaps/new`}
+                    >
                       <Plus />
                     </Link>
                   </Button>
                 </div>
-              ))}
-            </div>
-            <Button type="submit" disabled={isSubmitting}>
-              {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
-            </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
+                </Button>
+              </div>
+            )}
           </form>
         </Form>
       </div>

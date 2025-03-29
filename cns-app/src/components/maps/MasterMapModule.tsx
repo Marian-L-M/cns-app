@@ -15,7 +15,7 @@ interface MasterMapProps {
 interface MasterMapProps {
   masterMap: {
     parentMap: ParentMap;
-    childMaps: MapWithRectangularArea[];
+    childMaps: MapWithRectangularArea[]; // To do: Remove MapWithRectangularArea logic -> now handled by maphierarchy child
   };
 }
 

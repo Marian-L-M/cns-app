@@ -36,6 +36,11 @@ type DrawMapArea = {
   strokeStyle: string;
 };
 
+type HierarchyConnection = {
+  hierarchyChildId: number;
+  hierarchyParentId: number;
+};
+
 type PointRectangularArea = {
   x: number;
   y: number;

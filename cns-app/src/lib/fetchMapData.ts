@@ -2,6 +2,11 @@
 import axios from "axios";
 import prisma from "../../prisma/db";
 
+interface MapFetchProps {
+  selectedMapId: number | undefined;
+  setMapName: React.Dispatch<React.SetStateAction<string>>;
+}
+
 export const fetchMapData = async (mapId: string) => {
   const map = await prisma.map.findUnique({
     where: { id: parseInt(mapId) },
@@ -35,6 +40,8 @@ export const fetchMasterMap = async (masterMapId: string) => {
     ...masterMap,
     childMaps: masterMap.childMaps.map((child) => ({
       ...child.childMap,
+      hierarchyChildId: child.id,
+      hierarchyParentId: child.hierarchyId,
       x: child.x,
       y: child.y,
       wx: child.wx,
@@ -43,10 +50,32 @@ export const fetchMasterMap = async (masterMapId: string) => {
   };
 };
 
-interface MapFetchProps {
-  selectedMapId: number | undefined;
-  setMapName: React.Dispatch<React.SetStateAction<string>>;
-}
+export const fetchMasterMapChildren = async (masterMapId: string) => {
+  const childMaps = await prisma.mapHierarchyChild.findMany({
+    where: { hierarchyId: parseInt(masterMapId) },
+    include: {
+      childMap: true,
+    },
+  });
+
+  if (!childMaps) return null;
+
+  return {
+    childMaps,
+  };
+};
+
+export const fetchChildMap = async (childMapId: string) => {
+  const childMap = await prisma.mapHierarchyChild.findUnique({
+    where: { id: parseInt(childMapId) },
+  });
+
+  if (!childMap) return null;
+
+  return {
+    childMap,
+  };
+};
 
 export async function fetchMapName({
   selectedMapId,

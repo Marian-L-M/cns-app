@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
 import { Map } from "@prisma/client";
 
-interface MapWithRectangularArea extends Map, PointRectangularArea {}
+interface MapWithRectangularArea
+  extends HierarchyConnection,
+    Map,
+    PointRectangularArea {}
 
 interface MasterMapMakerProps {
   childMaps: MapWithRectangularArea[];

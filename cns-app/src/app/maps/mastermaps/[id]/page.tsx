@@ -11,7 +11,7 @@ const MasterMapPage = async ({ params }: MapPageProps) => {
   const { id } = resolvedParams;
 
   const masterMap = await fetchMasterMap(id);
-  console.log(masterMap);
+
   if (!masterMap) {
     return <div className="text-destructive">No maps found</div>;
   }

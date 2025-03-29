@@ -1,25 +1,20 @@
 "use client";
-import MapEditorModule from "@/components/maps/MapEditorModule";
-import EditorContextProvider from "@/store/mapEditorContext";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 import axios from "axios";
-import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ChildMapSchema } from "@/ValidationSchemas/maps";
-import { Map, MapHierarchyMaster, MapHierarchyChild } from "@prisma/client";
+import { Map, MapHierarchyChild } from "@prisma/client";
 import MapSearchDialog from "../ui/dialog/mapSearchDialog";
 import { fetchMapName } from "@/lib/fetchMapData";
-import { Edit, Plus, Trash } from "lucide-react";
-import Link from "next/link";
 
 export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
   ChildMap: MapHierarchyChild;
@@ -60,7 +55,7 @@ function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
     resolver: zodResolver(ChildMapSchema),
     defaultValues: {
       hierarchyId: MasterMap.id,
-      childMapId: ChildMap?.childMapId || undefined, // Naming is very confusing childmapid is not the id of the childmap but the related map object
+      childMapId: ChildMap?.childMapId || 0, // Naming is very confusing childmapid is not the id of the childmap but the related map object
       x: ChildMap?.x || 0,
       y: ChildMap?.y || 0,
       wx: ChildMap?.wx || 0,
@@ -177,16 +172,99 @@ function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
                 name="x"
                 defaultValue={ChildMap?.x}
                 render={({ field }) => (
-                //   <FormItem>
-                //     <FormLabel>Child Map X</FormLabel>
-                //     <FormControl>
-                //       <div className="flex flex-row gap-2">
-                //         <div className="w-2/3">
-                //           <Input placeholder="X" {...field} />
-                //         </div>
-                //       </div>
-                //     </FormControl>
-                //   </FormItem>
+                  <FormItem>
+                    <FormLabel>Child Map X</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-row gap-2">
+                        <div className="w-2/3">
+                          <Input
+                            type="number"
+                            placeholder="X"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.valueAsNumber;
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="y"
+                defaultValue={ChildMap?.y}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Child Map Y</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-row gap-2">
+                        <div className="w-2/3">
+                          <Input
+                            type="number"
+                            placeholder="Y"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.valueAsNumber;
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="wx"
+                defaultValue={ChildMap?.wx}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Child Map Width</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-row gap-2">
+                        <div className="w-2/3">
+                          <Input
+                            type="number"
+                            placeholder="wx"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.valueAsNumber;
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="wy"
+                defaultValue={ChildMap?.wy}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Child Map Height</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-row gap-2">
+                        <div className="w-2/3">
+                          <Input
+                            type="number"
+                            placeholder="WY"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.valueAsNumber;
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                  </FormItem>
                 )}
               />
             </div>
