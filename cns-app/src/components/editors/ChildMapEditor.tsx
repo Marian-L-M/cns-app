@@ -15,6 +15,7 @@ import { ChildMapSchema } from "@/ValidationSchemas/maps";
 import { Map, MapHierarchyChild } from "@prisma/client";
 import MapSearchDialog from "../ui/dialog/mapSearchDialog";
 import { fetchMapName } from "@/lib/fetchMapData";
+import { useChildMapMaker } from "@/hooks/useChildMapMaker";
 
 export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
   ChildMap: MapHierarchyChild;
@@ -40,13 +41,29 @@ interface ChildMapEditorProps {
   ChildMap?: MapHierarchyChild;
 }
 
+interface ChildMapEditable extends PointRectangularArea {
+  mapTitle: string;
+}
+
+// 250329 To do: Connect childmap details to state
 function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [childMapCoordinates, setChildMapCoordinates] =
+    useState<ChildMapEditable>({
+      x: ChildMap?.x || 0,
+      y: ChildMap?.y || 0,
+      wx: ChildMap?.wx || 0,
+      wy: ChildMap?.wy || 0,
+      mapTitle: ChildMap?.mapTitle || "",
+    });
 
   // Set canvas
-  //   const { canvasRef } = useMasterMapEditor({ childMaps });
+  const { canvasRef } = useChildMapMaker({
+    childMapCoordinates,
+    setChildMapCoordinates,
+  });
   // To do write a hook for handling map size
   let windowSize: number = 1024;
   if (typeof window !== "undefined") {
@@ -65,6 +82,19 @@ function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
       wy: ChildMap?.wy || 0,
     },
   });
+
+  useEffect(() => {
+    if (childMapCoordinates) {
+      const values = {
+        x: childMapCoordinates.x || form.getValues("x"),
+        y: childMapCoordinates.y || form.getValues("y"),
+        wx: childMapCoordinates.wx || form.getValues("wx"),
+        wy: childMapCoordinates.wy || form.getValues("wy"),
+      };
+      form.reset(values);
+    }
+    console.log(childMapCoordinates);
+  }, [childMapCoordinates, form]);
 
   async function onSubmit(values: ChildMapFormData) {
     try {
@@ -113,7 +143,7 @@ function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
           id="map-base"
         >
           <canvas
-            // ref={canvasRef}
+            ref={canvasRef}
             width={windowSize > 1024 ? 1024 : windowSize}
             height={windowSize > 1024 ? 1024 : windowSize}
             className="border border-grey relative z-10 w-full"

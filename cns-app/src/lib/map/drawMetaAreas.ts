@@ -30,6 +30,23 @@ export function drawRectangularMetaArea(
   ctx.closePath();
 }
 
+export function drawPointFixedMetaSquare(
+  ctx: CanvasRenderingContext2D,
+  hitPoint: { x: number; y: number; size: number; name: string },
+  cw: number,
+  ch: number
+) {
+  const offset = hitPoint.size / 2;
+
+  ctx.beginPath();
+  ctx.moveTo((hitPoint.x - offset) * cw, (hitPoint.y - offset) * ch);
+  ctx.lineTo((hitPoint.x + offset) * cw, (hitPoint.y - offset) * ch);
+  ctx.lineTo((hitPoint.x + offset) * cw, (hitPoint.y + offset) * ch);
+  ctx.lineTo((hitPoint.x - offset) * cw, (hitPoint.y + offset) * ch);
+  ctx.lineTo((hitPoint.x - offset) * cw, (hitPoint.y - offset) * ch);
+  ctx.closePath();
+}
+
 // Object should be rectangular meta areas
 export function drawMetaObjects(
   ctx: CanvasRenderingContext2D,

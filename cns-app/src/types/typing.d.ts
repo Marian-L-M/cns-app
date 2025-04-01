@@ -39,6 +39,7 @@ type DrawMapArea = {
 type HierarchyConnection = {
   hierarchyChildId: number;
   hierarchyParentId: number;
+  mapTitle: string;
 };
 
 type PointRectangularArea = {
