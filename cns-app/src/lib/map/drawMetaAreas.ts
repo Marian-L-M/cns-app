@@ -47,6 +47,41 @@ export function drawPointFixedMetaSquare(
   ctx.closePath();
 }
 
+export function drawPositionMarker(
+  ctx: CanvasRenderingContext2D,
+  hitPoint: { x: number; y: number; size: number; name: string },
+  cw: number,
+  ch: number
+) {
+  const offset = hitPoint.size / 2;
+  const padding = 1;
+
+  ctx.beginPath();
+  // TL-BR bar
+  ctx.moveTo(
+    (hitPoint.x - offset + padding) * cw,
+    (hitPoint.y - offset + padding) * ch
+  );
+  ctx.lineTo(
+    (hitPoint.x + offset - padding) * cw,
+    (hitPoint.y + offset - padding) * ch
+  );
+  // TR-BL bar
+  ctx.moveTo(
+    (hitPoint.x + offset - padding) * cw,
+    (hitPoint.y - offset + padding) * ch
+  );
+  ctx.lineTo(
+    (hitPoint.x - offset + padding) * cw,
+    (hitPoint.y + offset - padding) * ch
+  );
+  // 250402 To do -> Add serifs to position marker
+  // ctx.lineTo((hitPoint.x + offset) * cw, (hitPoint.y + offset) * ch);
+  // ctx.lineTo((hitPoint.x - offset) * cw, (hitPoint.y + offset) * ch);
+  // ctx.lineTo((hitPoint.x - offset) * cw, (hitPoint.y - offset) * ch);
+  ctx.closePath();
+}
+
 // Object should be rectangular meta areas
 export function drawMetaObjects(
   ctx: CanvasRenderingContext2D,

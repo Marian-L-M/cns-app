@@ -10,6 +10,14 @@
 6. Move all class components to functional components
 7. Unify naming story entry (same thing different names)
    -> entries are stories in the ui, and stories in the db are substories of the entry -> rename Story/Substory
+8. Add meta data to all pages.
+9. Create prerendered pages
+10. Rework UI state
+11. CW,ch, ctx should really be an object
+12. Submission via canvas coordinates should be divided by cw/ch, drawing values should be multiplied by cw/ch, numbers submitted in form as is
+
+- System message banner (floating not blocked)
+- Map hover banner (floating not blocked)
 
 ### Users
 
@@ -18,6 +26,7 @@
 
 ## Dashboard
 
+- Rethink page structure
 - Create Dashboard display concept
 - Create admin dashboard to control what is displayed on dashboard
 - Create analytics
@@ -30,6 +39,7 @@
 
 ## Map Editor
 
+- [ ] Add mastermap flag and master array to maps
 - [x] Add Map editor tool (adding areas by clicking on map)
       -- [x] Draw area tool
       -- Add image selector +alpha -> ai integration

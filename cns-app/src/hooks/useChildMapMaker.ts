@@ -3,6 +3,7 @@ import { Map } from "@prisma/client";
 
 import {
   drawPointFixedMetaSquare,
+  drawPositionMarker,
   drawRectangularMetaArea,
 } from "@/lib/map/drawMetaAreas";
 
@@ -63,40 +64,63 @@ export const useChildMapMaker = ({
 
     canvas.onmousedown = (e) => {
       // Click events
+      checkToggleHit(e, canvas, ctx, positionToggle, setEditorState, cw, ch);
+      checkToggleHit(e, canvas, ctx, sizeToggle, setEditorState, cw, ch);
+
+      // Cleanup
+      return () => {
+        canvas.onmousedown = null;
+      };
+    };
+
+    // Mouse move events
+    canvas.onmousemove = (e) => {
       const r = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - r.x;
-      const mouseY = e.clientY - r.y;
+      const mouseX = e.x - r.x;
+      const mouseY = e.y - r.y;
+      const diffXNormalized = mouseX / cw - childMapCoordinates.x;
+      const diffYNormalized = mouseY / ch - childMapCoordinates.y;
+
+      // Limit rectangle size to canvas bounds
+      const boundedWxFromPosition = checkUpperBounds(
+        mouseX,
+        childMapCoordinates.wx
+      );
+      const boundedWyFromPosition = checkUpperBounds(
+        mouseY,
+        childMapCoordinates.wy
+      );
+      const boundedWxFromSize = checkUpperBounds(
+        childMapCoordinates.x,
+        diffXNormalized
+      );
+      const boundedWyFromSize = checkUpperBounds(
+        childMapCoordinates.y,
+        diffYNormalized
+      );
 
       switch (editorState) {
         case "POSITION":
           setChildMapCoordinates({
             x: mouseX,
             y: mouseY,
-            wx: childMapCoordinates.wx,
-            wy: childMapCoordinates.wy,
+            wx: boundedWxFromPosition,
+            wy: boundedWyFromPosition,
             mapTitle: childMapCoordinates.mapTitle,
           });
           break;
         case "SIZE":
-          console.log("Resize mode go!");
+          setChildMapCoordinates({
+            x: childMapCoordinates.x,
+            y: childMapCoordinates.y,
+            wx: boundedWxFromSize,
+            wy: boundedWyFromSize,
+            mapTitle: childMapCoordinates.mapTitle,
+          });
           break;
         default:
-          checkToggleHit(
-            e,
-            canvas,
-            ctx,
-            positionToggle,
-            setEditorState,
-            cw,
-            ch
-          );
-          checkToggleHit(e, canvas, ctx, sizeToggle, setEditorState, cw, ch);
+          return;
       }
-
-      // Cleanup
-      return () => {
-        canvas.onmousedown = null;
-      };
     };
   }, [childMapCoordinates, editorState]);
 
@@ -140,12 +164,18 @@ function redrawCanvas(
     size: 20,
     name: "POSITION",
   };
+  // Draw Box
   ctx.beginPath();
   ctx.lineWidth = 1;
   ctx.fillStyle = editorState == "POSITION" ? "red" : "white";
   drawPointFixedMetaSquare(ctx, positionToggle, cw, ch);
   ctx.closePath();
   ctx.fill();
+  ctx.stroke();
+
+  // Draw Symbol
+  ctx.strokeStyle = "black";
+  drawPositionMarker(ctx, positionToggle, cw, ch);
   ctx.stroke();
   ctx.fillStyle = "none";
   ctx.strokeStyle = "none";
@@ -192,13 +222,12 @@ function checkToggleHit(
   }
 }
 
-function keyboardHandler(
-  e: KeyboardEvent,
-  setEditorState: React.Dispatch<React.SetStateAction<string>>
-) {
-  if (e.key === "Enter" || e.key === "e") {
-    // setActiveSubstoryID(undefined);
-    setEditorState("");
-    return;
+// Check sum of point and extension vs fixed coordinate width of 1000
+function checkUpperBounds(point: number, extension: number) {
+  let NewExtension = extension;
+
+  if (point + extension >= 1000) {
+    NewExtension = 1000 - point;
   }
+  return NewExtension <= 0 ? 0 : NewExtension;
 }
