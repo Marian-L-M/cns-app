@@ -89,11 +89,11 @@ export function drawSizeMarker(
   const direction = isFallingLine ? -1 : 1;
 
   const point1 = {
-    x: hitPoint.x + offset * direction - padding * direction,
+    x: hitPoint.x - offset + padding,
     y: hitPoint.y + offset * direction - padding * direction,
   };
   const point2 = {
-    x: hitPoint.x - offset * direction + padding * direction,
+    x: hitPoint.x + offset - padding,
     y: hitPoint.y - offset * direction + padding * direction,
   };
 

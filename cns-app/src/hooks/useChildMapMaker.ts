@@ -166,15 +166,13 @@ function redrawCanvas(
     name: "POSITION",
   };
   // Draw Box
-  ctx.beginPath();
   ctx.lineWidth = 1;
   ctx.fillStyle = editorState == "POSITION" ? "yellow" : "white";
   drawPointFixedMetaSquare(positionToggle, ctx, cw, ch);
-  ctx.closePath();
   ctx.fill();
   ctx.stroke();
   ctx.fillStyle = "none";
-  ctx.strokeStyle = "none";
+  ctx.strokeStyle = "white";
 
   // Draw Symbol
   drawPositionMarker(positionToggle, ctx, cw, ch);
@@ -188,18 +186,16 @@ function redrawCanvas(
     size: 20,
     name: "SIZE",
   };
-  ctx.beginPath();
   ctx.lineWidth = 1;
   ctx.fillStyle = editorState == "SIZE" ? "yellow" : "white";
   drawPointFixedMetaSquare(sizeToggle, ctx, cw, ch);
-  ctx.closePath();
+  ctx.fillStyle = "none";
+  ctx.strokeStyle = "white";
   ctx.fill();
   ctx.stroke();
-  ctx.fillStyle = "none";
-  ctx.strokeStyle = "none";
 
   // Draw Symbol
-  drawSizeMarker(sizeToggle, false, ctx, cw, ch);
+  drawSizeMarker(sizeToggle, true, ctx, cw, ch);
 
   return { positionToggle, sizeToggle };
 }
@@ -219,7 +215,7 @@ function checkToggleHit(
 
   // Return if no context
   if (!ctx) return;
-  drawPointFixedMetaSquare(ctx, hitPoint, cw, ch);
+  drawPointFixedMetaSquare(hitPoint, ctx, cw, ch);
 
   if (ctx.isPointInPath(mouseX, mouseY)) {
     console.log(`hit ${hitPoint.name}`);
