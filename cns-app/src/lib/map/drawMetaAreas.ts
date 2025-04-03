@@ -31,8 +31,8 @@ export function drawRectangularMetaArea(
 }
 
 export function drawPointFixedMetaSquare(
-  ctx: CanvasRenderingContext2D,
   hitPoint: { x: number; y: number; size: number; name: string },
+  ctx: CanvasRenderingContext2D,
   cw: number,
   ch: number
 ) {
@@ -48,38 +48,114 @@ export function drawPointFixedMetaSquare(
 }
 
 export function drawPositionMarker(
-  ctx: CanvasRenderingContext2D,
   hitPoint: { x: number; y: number; size: number; name: string },
+  ctx: CanvasRenderingContext2D,
   cw: number,
   ch: number
 ) {
   const offset = hitPoint.size / 2;
   const padding = 1;
+  const serif = 5;
+  const pointTl = {
+    x: hitPoint.x - offset + padding,
+    y: hitPoint.y - offset + padding,
+  };
+  const pointTr = {
+    x: hitPoint.x + offset - padding,
+    y: hitPoint.y - offset + padding,
+  };
+  const pointBl = {
+    x: hitPoint.x - offset + padding,
+    y: hitPoint.y + offset - padding,
+  };
+  const pointBr = {
+    x: hitPoint.x + offset - padding,
+    y: hitPoint.y + offset - padding,
+  };
+  drawSerifLine(pointTl, pointBr, serif, ctx, cw, ch);
+  drawSerifLine(pointBl, pointTr, serif, ctx, cw, ch);
+}
 
-  ctx.beginPath();
-  // TL-BR bar
-  ctx.moveTo(
-    (hitPoint.x - offset + padding) * cw,
-    (hitPoint.y - offset + padding) * ch
-  );
-  ctx.lineTo(
-    (hitPoint.x + offset - padding) * cw,
-    (hitPoint.y + offset - padding) * ch
-  );
-  // TR-BL bar
-  ctx.moveTo(
-    (hitPoint.x + offset - padding) * cw,
-    (hitPoint.y - offset + padding) * ch
-  );
-  ctx.lineTo(
-    (hitPoint.x - offset + padding) * cw,
-    (hitPoint.y + offset - padding) * ch
-  );
-  // 250402 To do -> Add serifs to position marker
-  // ctx.lineTo((hitPoint.x + offset) * cw, (hitPoint.y + offset) * ch);
-  // ctx.lineTo((hitPoint.x - offset) * cw, (hitPoint.y + offset) * ch);
-  // ctx.lineTo((hitPoint.x - offset) * cw, (hitPoint.y - offset) * ch);
-  ctx.closePath();
+export function drawSizeMarker(
+  hitPoint: { x: number; y: number; size: number; name: string },
+  isFallingLine: boolean,
+  ctx: CanvasRenderingContext2D,
+  cw: number,
+  ch: number
+) {
+  const offset = hitPoint.size / 2;
+  const padding = 1;
+  const serif = 5;
+  const direction = isFallingLine ? -1 : 1;
+
+  const point1 = {
+    x: hitPoint.x + offset * direction - padding * direction,
+    y: hitPoint.y + offset * direction - padding * direction,
+  };
+  const point2 = {
+    x: hitPoint.x - offset * direction + padding * direction,
+    y: hitPoint.y - offset * direction + padding * direction,
+  };
+
+  drawSerifLine(point1, point2, serif, ctx, cw, ch);
+}
+
+interface coordinate {
+  x: number;
+  y: number;
+}
+
+// Enter coordinate points from left to right
+export function drawSerifLine(
+  point1: coordinate,
+  point2: coordinate,
+  serif: number,
+  ctx: CanvasRenderingContext2D,
+  cw: number,
+  ch: number
+) {
+  ctx.strokeStyle = "black";
+  // Line going from high to low
+  if (point1.y < point2.y) {
+    // Tl serif
+    ctx.beginPath();
+    ctx.moveTo(point1.x * cw, (point1.y + serif) * ch);
+    ctx.lineTo(point1.x * cw, point1.y * ch);
+    ctx.lineTo((point1.x + serif) * cw, point1.y * ch);
+    ctx.stroke();
+    // TL-BR bar
+    ctx.beginPath();
+    ctx.moveTo(point1.x * cw, point1.y * ch);
+    ctx.lineTo(point2.x * cw, point2.y * ch);
+    ctx.stroke();
+    // BR serif
+    ctx.beginPath();
+    ctx.moveTo((point2.x - serif) * cw, point2.y * ch);
+    ctx.lineTo(point2.x * cw, point2.y * ch);
+    ctx.lineTo(point2.x * cw, (point2.y - serif) * ch);
+    ctx.stroke();
+  }
+  if (point1.y > point2.y) {
+    // TR serif
+    ctx.beginPath();
+    ctx.moveTo((point2.x - serif) * cw, point2.y * ch);
+    ctx.lineTo(point2.x * cw, point2.y * ch);
+    ctx.lineTo(point2.x * cw, (point2.y + serif) * ch);
+    ctx.stroke();
+    // TR-BL bar
+    ctx.beginPath();
+    ctx.moveTo(point2.x * cw, point2.y * ch);
+    ctx.lineTo(point1.x * cw, point1.y * ch);
+    ctx.stroke();
+    // Bl serif
+    ctx.beginPath();
+    ctx.moveTo(point1.x * cw, (point1.y - serif) * ch);
+    ctx.lineTo(point1.x * cw, point1.y * ch);
+    ctx.lineTo((point1.x + serif) * cw, point1.y * ch);
+    ctx.stroke();
+  }
+  ctx.fillStyle = "none";
+  ctx.strokeStyle = "none";
 }
 
 // Object should be rectangular meta areas

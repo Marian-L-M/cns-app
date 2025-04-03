@@ -5,6 +5,7 @@ import {
   drawPointFixedMetaSquare,
   drawPositionMarker,
   drawRectangularMetaArea,
+  drawSizeMarker,
 } from "@/lib/map/drawMetaAreas";
 
 interface MapWithRectangularArea
@@ -167,18 +168,18 @@ function redrawCanvas(
   // Draw Box
   ctx.beginPath();
   ctx.lineWidth = 1;
-  ctx.fillStyle = editorState == "POSITION" ? "red" : "white";
-  drawPointFixedMetaSquare(ctx, positionToggle, cw, ch);
+  ctx.fillStyle = editorState == "POSITION" ? "yellow" : "white";
+  drawPointFixedMetaSquare(positionToggle, ctx, cw, ch);
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
-
-  // Draw Symbol
-  ctx.strokeStyle = "black";
-  drawPositionMarker(ctx, positionToggle, cw, ch);
-  ctx.stroke();
   ctx.fillStyle = "none";
   ctx.strokeStyle = "none";
+
+  // Draw Symbol
+  drawPositionMarker(positionToggle, ctx, cw, ch);
+
+  // 250403 To do: Border stroke is leaking through
 
   // Draw size indicator
   const sizeToggle = {
@@ -187,14 +188,18 @@ function redrawCanvas(
     size: 20,
     name: "SIZE",
   };
-  // ctx.beginPath();
+  ctx.beginPath();
   ctx.lineWidth = 1;
-  ctx.fillStyle = editorState == "SIZE" ? "red" : "black";
-  drawPointFixedMetaSquare(ctx, sizeToggle, cw, ch);
+  ctx.fillStyle = editorState == "SIZE" ? "yellow" : "white";
+  drawPointFixedMetaSquare(sizeToggle, ctx, cw, ch);
+  ctx.closePath();
   ctx.fill();
   ctx.stroke();
   ctx.fillStyle = "none";
   ctx.strokeStyle = "none";
+
+  // Draw Symbol
+  drawSizeMarker(sizeToggle, false, ctx, cw, ch);
 
   return { positionToggle, sizeToggle };
 }
