@@ -46,16 +46,17 @@ interface ChildMapEditable extends PointRectangularArea {
 }
 
 // 250329 To do: Connect childmap details to state
+// 250404 To do: Two areas cannot be submitted for the same map (which is good), but an alarm text is needed
 function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [childMapCoordinates, setChildMapCoordinates] =
     useState<ChildMapEditable>({
-      x: ChildMap?.x || 0,
-      y: ChildMap?.y || 0,
-      wx: ChildMap?.wx || 0,
-      wy: ChildMap?.wy || 0,
+      x: ChildMap?.x || 100,
+      y: ChildMap?.y || 100,
+      wx: ChildMap?.wx || 100,
+      wy: ChildMap?.wy || 100,
       mapTitle: ChildMap?.mapTitle || "",
     });
 
@@ -85,15 +86,11 @@ function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
 
   useEffect(() => {
     if (childMapCoordinates) {
-      const values = {
-        x: childMapCoordinates.x || form.getValues("x"),
-        y: childMapCoordinates.y || form.getValues("y"),
-        wx: childMapCoordinates.wx || form.getValues("wx"),
-        wy: childMapCoordinates.wy || form.getValues("wy"),
-      };
-      form.reset(values);
+      form.setValue("x", childMapCoordinates.x || form.getValues("x"));
+      form.setValue("y", childMapCoordinates.y || form.getValues("y"));
+      form.setValue("wx", childMapCoordinates.wx || form.getValues("wx"));
+      form.setValue("wy", childMapCoordinates.wy || form.getValues("wy"));
     }
-    console.log(childMapCoordinates);
   }, [childMapCoordinates, form]);
 
   async function onSubmit(values: ChildMapFormData) {

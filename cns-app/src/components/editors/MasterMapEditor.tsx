@@ -74,11 +74,13 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
         await axios.patch(`/api/mastermaps/${MasterMap.id}`, values);
         router.push(`/maps/mastermaps/${MasterMap?.id}/edit`);
         router.refresh();
+        setIsSubmitting(false);
       } else {
         const response = await axios.post(`/api/mastermaps`, values);
         const newMasterMap = response.data;
         router.push(`/maps/mastermaps/${newMasterMap?.id}`);
         router.refresh();
+        setIsSubmitting(false);
       }
     } catch (error) {
       setError("Unknown error occurred");
