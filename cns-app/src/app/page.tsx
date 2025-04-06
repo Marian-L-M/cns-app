@@ -1,46 +1,53 @@
-import Image from "next/image";
+import MasterMapModule from "@/components/maps/MasterMapModule";
+import { fetchMasterMap } from "@/lib/fetchMapData";
+import CursorContextProvider from "@/store/cursorContext";
 
-export default function Home() {
+export default async function Home() {
+  const masterMap = await fetchMasterMap("2");
+
+  if (!masterMap) {
+    return <div className="text-destructive">No maps found</div>;
+  }
+
   return (
-    <div id="top-content">
-      <div id="title-element">
-        <h1 className="text-2xl">Explore Kamolin</h1>
-      </div>
-      <div className="flex flex-wrap " id="content-group-1">
-        <div className="w-3/4" id="world-map-element">
-          {/* set width to container width */}
-          <Image
-            src={"/dashboard-map.png"}
-            alt="world map"
-            width={1000}
-            height={1000}
-            className="w-full"
-          />
-        </div>
-        <div className="w-1/4" id="text-element">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
-          officiis assumenda nobis placeat corporis aut quaerat quae provident
-          possimus amet asperiores nisi inventore neque unde distinctio officia
-          ea ex tenetur, architecto rerum omnis, esse iste? Neque, vel. Aliquid
-          consequuntur, porro totam soluta commodi nemo quaerat nulla obcaecati
-          alias expedita nihil doloremque unde magni excepturi possimus, quas
-          molestias culpa distinctio! Non libero, minima rerum quod est quis
-          eaque dolor architecto a nulla, voluptatem nobis molestias magni
-          eligendi repellendus. Magnam explicabo consequatur quasi optio,
-          repellendus quam eveniet ipsa saepe nemo quidem rerum alias, similique
-          temporibus recusandae! Numquam error consectetur, cum, ullam nobis
-          inventore nam similique eius odio iure aspernatur quod vero,
-          distinctio consequatur sint sequi veniam eos debitis nulla architecto!
-          Quaerat officiis dolore fuga laboriosam ut architecto facere, rem
-          tempore ipsum beatae consequuntur ullam omnis quod cupiditate at et
-          laborum sint temporibus perspiciatis molestias illo, dolorem, in amet
-          sapiente! Cumque aspernatur sint error sed nostrum, tenetur iusto
-          deleniti quae veritatis fugit iste sapiente nobis, voluptate corporis
-          repudiandae esse asperiores reiciendis optio! Ducimus impedit quos rem
-          enim totam aut ullam, voluptatem nam excepturi? Debitis ex ipsum
-          deserunt fuga et inventore at eum aliquam culpa aliquid voluptatum
-          placeat harum consectetur, recusandae magnam iusto repudiandae.
-        </div>
+    <div
+      id="top-content"
+      className="w-ful grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
+    >
+      <h1 className="text-2xl col-span-4 ">Discover Kamolin!</h1>
+      <CursorContextProvider>
+        <MasterMapModule masterMap={masterMap} />
+      </CursorContextProvider>
+      <div
+        id="info-container"
+        className="col-span-2 row-span-2 flex flex-col gap-1"
+      >
+        <h2 className="text-xl">This is the intro text!</h2>
+        <p>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vitae ab
+          molestias excepturi quae possimus soluta consequatur labore unde?
+          Repudiandae magni itaque non, delectus sapiente perferendis minus
+          reprehenderit aut, optio nemo obcaecati voluptas aliquam eos ea nobis
+          consectetur maiores in ullam natus blanditiis, placeat repellat atque
+          odit iure. Odit blanditiis ratione dolore suscipit veritatis
+          perspiciatis delectus qui debitis tempore, deleniti unde repellat
+          amet, dolorem minus, nulla non earum error! Qui laboriosam voluptates
+          minima dignissimos, officia debitis consequatur vitae possimus quod
+          eius! Inventore odit, dignissimos odio omnis tempora fuga, nisi esse
+          doloribus alias similique molestias obcaecati modi. Architecto itaque
+          cum unde sapiente dolorem ad magni provident necessitatibus corporis,
+          ducimus ipsam repellat expedita, autem, alias odit mollitia tempora
+          perferendis incidunt quis! Deleniti, commodi! Voluptatum magnam maxime
+          ipsa eius unde eos alias ad odio mollitia numquam, quasi ipsam
+          necessitatibus. Aperiam dolorem incidunt nesciunt expedita repellendus
+          tempore tenetur voluptate quisquam dicta nemo. Dignissimos dolore
+          mollitia velit aspernatur. Nihil, suscipit? Nisi, nostrum incidunt,
+          ipsa facilis vitae ducimus veritatis autem, odit voluptatem expedita
+          repellat! Repellendus tenetur accusantium commodi aliquam deleniti
+          enim, doloribus libero voluptatum tempora ea saepe ipsam optio quam
+          laboriosam expedita quisquam hic ratione facere similique possimus
+          odio. Harum, modi! Natus sequi tempore sit nulla itaque?
+        </p>
       </div>
     </div>
   );
