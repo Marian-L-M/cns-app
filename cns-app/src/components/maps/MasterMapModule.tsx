@@ -31,25 +31,23 @@ const MasterMapModule: FC<MasterMapProps> = ({ masterMap }) => {
 
   // 240925 Make map resizable
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
-        <div className="relative max-w-screen-lg col-span-4 " id="map-base">
-          <canvas
-            ref={canvasRef}
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize}
-            className="border border-grey relative z-10 w-full"
-          />
-          <Image
-            priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none"
-            src={`/${parentMap.mapUrl || "maps/placeholder.jpg"}`}
-            alt={`${parentMap.title} - map`}
-            width="1024"
-            height="1024"
-          />
-          <MouseToolTip cursorContext={tooltipCtx} />
-        </div>
+    <div className="w-full col-span-4 relative">
+      <div className="relative max-w-screen-lg" id="map-base">
+        <canvas
+          ref={canvasRef}
+          width={windowSize > 1024 ? 1024 : windowSize}
+          height={windowSize > 1024 ? 1024 : windowSize}
+          className="border border-grey relative z-10 w-full"
+        />
+        <Image
+          priority={true}
+          className="absolute top-0 left-0 z-1 pointer-events-none"
+          src={`/${parentMap.mapUrl || "maps/placeholder.jpg"}`}
+          alt={`${parentMap.title} - map`}
+          width="1024"
+          height="1024"
+        />
+        <MouseToolTip cursorContext={tooltipCtx} />
       </div>
     </div>
   );

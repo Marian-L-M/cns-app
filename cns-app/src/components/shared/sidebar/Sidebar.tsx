@@ -3,6 +3,8 @@ import Link from "next/link";
 import MainNav from "../header/MainNav";
 import { APP_NAME } from "@/lib/constants";
 
+// Prepare for deletion
+
 function Sidebar() {
   return (
     <div
