@@ -3,10 +3,22 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants";
-import Sidebar from "@/components/shared/sidebar/Sidebar";
+// import Sidebar from "@/components/shared/sidebar/Sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/shared/header";
 import Footer from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { CustomTrigger } from "@/components/ui/sidebar/custom-trigger";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,33 +39,23 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className}>
+        {/* Consider removing theme provider or committing to it */}
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <div
-            className="flex w-screen h-screen bg-slate-100"
-            id="layout-wrapper"
-          >
-            <Sidebar />
-            <div
-              className="flex-3 w-full h-screen overflow-scroll "
-              id="column-main"
-            >
-              <Header />
-              <main className="flex flex-col items-center pl-4 pr-8 h-full">
-                <div
-                  className=" w-full pl-6 py-6 pr-12 bg-white rounded relative"
-                  id="contents"
-                >
-                  {children}
-                </div>
-              </main>
-            </div>
-          </div>
-          <Footer />
+          <SidebarProvider>
+            <AppSidebar />
+            {/* <Header /> */}
+            <main>
+              {/* <SidebarTrigger /> */}
+              <CustomTrigger />
+              {children}
+            </main>
+            {/* <Footer /> */}
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
