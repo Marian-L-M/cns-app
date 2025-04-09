@@ -17,7 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
 import { CustomTrigger } from "@/components/ui/sidebar/custom-trigger";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -51,7 +51,7 @@ export default function RootLayout({
             {/* <Header /> */}
             <main>
               {/* <SidebarTrigger /> */}
-              <CustomTrigger />
+              {/* <CustomTrigger /> */}
               {children}
             </main>
             {/* <Footer /> */}
