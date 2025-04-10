@@ -1,12 +1,8 @@
 import {
   ChevronUp,
   Home,
-  Search,
-  Settings,
   User2,
-  LoaderPinwheelIcon,
   MoreHorizontal,
-  ChevronDown,
   Map,
   ScrollText,
   BookMarked,
@@ -17,27 +13,18 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuAction,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@radix-ui/react-dropdown-menu";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -45,13 +32,7 @@ import {
   DropdownMenuItem,
 } from "../dropdown-menu";
 import Link from "next/link";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../collapsible";
 import { CustomTrigger } from "./custom-trigger";
-import { BarChart } from "lucide-react";
 
 const items = [
   {
@@ -105,16 +86,6 @@ const items = [
       { title: "Manage", url: "/maps/" },
     ],
   },
-  {
-    title: "Users",
-    url: "/users",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
 ];
 
 export function AppSidebar() {
@@ -132,7 +103,7 @@ export function AppSidebar() {
                 // Main Link
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <span className="flex justify-between p-2 gap-2">
+                    <span className="flex justify-between p-2 gap-2 hover:bg-slate-100">
                       <Link href={item.url} className="flex gap-2">
                         <item.icon size={18} />
                         <span>{item.title}</span>
@@ -165,7 +136,7 @@ export function AppSidebar() {
                         <SidebarMenuSubItem key={sublink.title}>
                           <SidebarMenuSubButton asChild>
                             <Link href={sublink.url}>
-                              <span>{sublink.title}</span>
+                              <span className="">{sublink.title}</span>
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -174,116 +145,33 @@ export function AppSidebar() {
                   )}
                 </SidebarMenuItem>
               ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive>
-                  <a href="/">
-                    <LoaderPinwheelIcon />
-                    <span>Active Sample</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="/">
-                    <LoaderPinwheelIcon />
-                    <span>Badge Sample</span>
-                  </a>
-                </SidebarMenuButton>
-                <SidebarMenuBadge>24</SidebarMenuBadge>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
-                    <Home />
-                    <span>Dropdown</span>
-                  </a>
-                </SidebarMenuButton>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuAction>
-                      <MoreHorizontal />
-                    </SidebarMenuAction>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right" align="start">
-                    <DropdownMenuItem>
-                      <span>Edit Project</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <span>Delete Project</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <SidebarMenuSub>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild>
-                      <Link href={"/sub-1"}>
-                        <span>Sub 1</span>
-                      </Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild>
-                      <Link href={"/sub-2"}>
-                        <span>Sub 2</span>
-                      </Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                </SidebarMenuSub>
-              </SidebarMenuItem>
-              <Collapsible defaultOpen className="group/collapsible">
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                      <a href="#">
-                        <span>Dropdown</span>
-                      </a>
-                      <ChevronDown className="ml-auto" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={"/sub-1"}>
-                            <span>Sub 1</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Personal</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu></SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Admin content */}
         <SidebarGroup>
           <SidebarGroupLabel>Admin</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  {/* <a href="/Dashboard"> */}
-                  {/* <ChartBar /> */}
-                  <span>Dashboard</span>
-                  {/* </a> */}
+                  <span className="flex justify-between p-2 gap-2 hover:bg-slate-100">
+                    <Link href={`#`}>Dashboard</Link>
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <span className="flex justify-between p-2 gap-2 hover:bg-slate-100">
+                    <Link href={`/users`}>Users</Link>
+                  </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu></SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
+      {/* Footer */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -299,13 +187,32 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem>
-                  <span>Account</span>
+                  <SidebarMenuButton asChild>
+                    <Link href={`/account`} className="flex gap-2">
+                      <span>Account</span>
+                    </Link>
+                  </SidebarMenuButton>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <span>Billing</span>
+                  <SidebarMenuButton asChild>
+                    <Link href={`/profile`} className="flex gap-2">
+                      <span>Profile</span>
+                    </Link>
+                  </SidebarMenuButton>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <span>Sign out</span>
+                  <SidebarMenuButton asChild>
+                    <Link href={`/settings`} className="flex gap-2">
+                      <span>Settings</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link href={`/sign-out`} className="flex gap-2">
+                      <span>Sign out</span>
+                    </Link>
+                  </SidebarMenuButton>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
