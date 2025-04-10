@@ -1,17 +1,15 @@
 import {
-  Calendar,
   ChevronUp,
   Home,
-  Inbox,
-  Plus,
   Search,
   Settings,
   User2,
-  LoaderPinwheel,
   LoaderPinwheelIcon,
   MoreHorizontal,
   ChevronDown,
-  Text,
+  Map,
+  ScrollText,
+  BookMarked,
 } from "lucide-react";
 
 import {
@@ -34,12 +32,18 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@radix-ui/react-dropdown-menu";
 import {
   DropdownMenu,
+  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+} from "../dropdown-menu";
 import Link from "next/link";
 import {
   Collapsible,
@@ -47,6 +51,7 @@ import {
   CollapsibleTrigger,
 } from "../collapsible";
 import { CustomTrigger } from "./custom-trigger";
+import { BarChart } from "lucide-react";
 
 const items = [
   {
@@ -57,24 +62,48 @@ const items = [
   {
     title: "Wiki",
     url: "/wiki",
-    icon: Inbox,
+    icon: BookMarked,
+    subLinks: [
+      { title: "Featured", url: "/wiki/featured" },
+      { title: "Search", url: "/wiki/search" },
+      { title: "Categories", url: "/wiki/categories" },
+      { title: "Random", url: "" },
+    ],
+    options: [
+      { title: "Add", url: "/wiki/new" },
+      { title: "Manage", url: "/wiki/" },
+    ],
   },
   {
     title: "Stories",
     url: "/stories",
-    icon: Inbox,
+    icon: ScrollText,
     subLinks: [
-      { title: "Create Story", url: "/stories/new" },
-      { title: "Featured Story", url: "/stories/featured" },
+      { title: "Featured", url: "/stories/featured" },
       { title: "Search", url: "/stories/search" },
       { title: "Categories", url: "/stories/categories" },
-      { title: "Random Story", url: "" },
+      { title: "Random", url: "" },
+    ],
+    options: [
+      { title: "Add", url: "/stories/new" },
+      { title: "Manage", url: "/stories/" },
     ],
   },
   {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Calendar,
+    title: "Maps",
+    url: "/maps",
+    icon: Map,
+    subLinks: [
+      { title: "Featured", url: "/maps/featured" },
+      { title: "Search", url: "/maps/search" },
+      { title: "Categories", url: "/maps/categories" },
+      { title: "Random", url: "" },
+    ],
+    options: [
+      { title: "Add", url: "/maps/new" },
+      { title: "MasterMaps", url: "/maps/mastermaps" },
+      { title: "Manage", url: "/maps/" },
+    ],
   },
   {
     title: "Users",
@@ -96,52 +125,55 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Discover</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) =>
-                item.subLinks ? (
-                  <Collapsible
-                    defaultOpen
-                    className="group/collapsible"
-                    key={item.title}
-                  >
-                    <SidebarMenuItem>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton asChild>
-                          <span className="flex justify-between p-2 gap-2">
-                            <a href={item.url} className="flex gap-2">
-                              <item.icon className="text-sm" />
-                              <span>{item.title}</span>
-                            </a>
-                            <ChevronDown className="ml-auto" />
-                          </span>
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          <SidebarMenuSubItem>
-                            <SidebarMenuSubButton asChild>
-                              <Link href={"/sub-1"}>
-                                <span>Sub 1</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </SidebarMenuItem>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>
-                        <item.icon />
+              {items.map((item) => (
+                // Main Link
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <span className="flex justify-between p-2 gap-2">
+                      <Link href={item.url} className="flex gap-2">
+                        <item.icon size={18} />
                         <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              )}
+                      </Link>
+                    </span>
+                  </SidebarMenuButton>
+                  {/* Admin actions */}
+                  {item.options && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuAction>
+                          <MoreHorizontal />
+                        </SidebarMenuAction>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent side="right" align="start">
+                        {item.options.map((option) => (
+                          <DropdownMenuItem key={option.title}>
+                            <Link href={option.url}>
+                              <span>{option.title}</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                  {/* Sublinks */}
+                  {item.subLinks && (
+                    <SidebarMenuSub>
+                      {item.subLinks.map((sublink) => (
+                        <SidebarMenuSubItem key={sublink.title}>
+                          <SidebarMenuSubButton asChild>
+                            <Link href={sublink.url}>
+                              <span>{sublink.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  )}
+                </SidebarMenuItem>
+              ))}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive>
                   <a href="/">
@@ -225,30 +257,30 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
+          <SidebarGroupLabel>Personal</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
-            <SidebarGroupAction title="Add Project">
-              <Plus /> <span className="sr-only">Add Project</span>
-            </SidebarGroupAction>
+            <SidebarMenu></SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-      </SidebarContent>
-      <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Admin</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
-            <SidebarGroupAction title="Add Project">
-              <Plus /> <span className="sr-only">Add Project</span>
-            </SidebarGroupAction>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  {/* <a href="/Dashboard"> */}
+                  {/* <ChartBar /> */}
+                  <span>Dashboard</span>
+                  {/* </a> */}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarSeparator />
         <SidebarGroup>
+          <SidebarGroupLabel>Settings</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
-            <SidebarGroupAction title="Add Project">
-              <Plus /> <span className="sr-only">Add Project</span>
-            </SidebarGroupAction>
+            <SidebarMenu></SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
