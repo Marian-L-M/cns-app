@@ -1,19 +1,37 @@
 "use client";
 import Image from "next/image";
-import { useSidebar } from "@/components/ui/sidebar";
+import {
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { SquareChevronRight, SquareChevronLeft } from "lucide-react";
 import { Button } from "../button";
 import { APP_NAME } from "@/lib/constants";
+
+// import { useSidebar } from "@/components/ui/sidebar";
+
+// export function AppSidebar() {
+//   const {
+//     state,
+//     open,
+//     setOpen,
+//     openMobile,
+//     setOpenMobile,
+//     isMobile,
+//     toggleSidebar,
+//   } = useSidebar();
+// }
 
 export function CustomTrigger() {
   const { toggleSidebar, open } = useSidebar();
 
   return (
-    <div
-      className={`flex gap-2 p-2 items-center ${
-        open ? "flex-row justify-between" : "flex-col"
-      }`}
-    >
+    <div className={`flex gap-2 p-2 items-center flex-col`}>
       <div className="flex gap-2 items-center" id="logo-wrapper">
         <Image
           id="logo"
@@ -23,7 +41,8 @@ export function CustomTrigger() {
           width={32}
           priority
         />
-        {open && <span className="text-sm/3">{APP_NAME}</span>}
+
+        <span className="text-sm whitespace-nowrap">{APP_NAME}</span>
       </div>
       <Button variant={"ghost"} onClick={toggleSidebar} className="p-0">
         {open ? <SquareChevronLeft /> : <SquareChevronRight />}

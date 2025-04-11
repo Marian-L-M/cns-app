@@ -1,10 +1,11 @@
+import Image from "next/image";
+
+import { APP_NAME } from "@/lib/constants";
 import Menu from "./menu";
-import TopNav from "./TopNav";
 
 function Header() {
   return (
-    <header className="w-full flex flex-row justify-between items-center">
-      {/* <TopNav /> */}
+    <header className="md:pl-20 w-full flex flex-row justify-between items-center border-b bg-slate-100">
       <Menu />
     </header>
   );
