@@ -51,7 +51,9 @@ export default async function RootLayout({
                   <CustomTrigger />
                 </div>
                 <AppSidebar />
-                <main className="w-full h-full p-4">{children}</main>
+                <main className="w-full h-full p-4 overflow-y-scroll">
+                  {children}
+                </main>
               </div>
               <Footer />
             </div>

@@ -1,11 +1,18 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_NAME, PROJECT_NAME, PROJECT_URL } from "@/lib/constants";
+import Link from "next/link";
 
 function Footer() {
   const currentYear = new Date().getFullYear();
   return (
     <footer className="border-t">
       <div className="px-5 py-1 text-xs border-slate-800 border-t-1 font-light flex-center">
-        {currentYear} {APP_NAME}. All Rights Reserved
+        <h6>
+          Powered by {PROJECT_NAME} -
+          <Link href={PROJECT_URL} className="text-indigo-950 hover:opacity-80">
+            {" "}
+            Learn more here
+          </Link>
+        </h6>
       </div>
     </footer>
   );
