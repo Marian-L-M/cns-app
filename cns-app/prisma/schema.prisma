@@ -35,19 +35,25 @@ enum Role {
 
 model Entry {
   id          Int @id @default(autoincrement())
+  slug        String @unique(map: "entry_slug_idx")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String @db.VarChar(255)
   description String @db.Text
   imageUrl    String
   category    String
-  rating      Int @default(0)
+  tags        String[]
   storyTime   Int @default(0)
+
   status      Status @default(UPCOMING)
   users       User[]
   stories      Story[]
   assignedToMapID Int?
   assignedToMap Map? @relation(fields:[assignedToMapID], references: [id])
+
+  rating      Int @default(0)
+
+  isFeatured Boolean
 
   @@index([assignedToMapID])
 }
@@ -61,17 +67,22 @@ enum Status {
 // In the long term maps need to have parent-child maps to accommodate zoom levels and global maps
 model Map {
   id          Int @id @default(autoincrement())
+  slug        String @unique(map: "map_slug_idx")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(255)
   description String   @db.Text
   imageUrl    String
+  category    String
+  tags        String[]
 
   mapTime     Int
   mapUrl      String
   assignedEntries       Entry[]
   objects     GlobalObject[]
   area        GlobalArea[]
+
+  isFeatured Boolean
 
   parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
   childInHierarchies  MapHierarchyChild[] @relation("ChildMap")
@@ -170,14 +181,21 @@ model GlobalArea {
 
 model Wiki {
   id          Int @id @default(autoincrement())
+  slug        String @unique(map: "wiki_slug_idx")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   featured    Boolean    @default(false)
   thumbUrl    String @default("")
+  category    String
+  tags        String[]
+
   title       String   @db.VarChar(255)
   description String @db.Text
   wikiText    String @db.Text @default("")
   infobox     Json?
+
+  isFeatured Boolean
+
   objects     GlobalObject[]
   area        GlobalArea[]
   type        WikiType @default(GENERAL)
