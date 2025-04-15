@@ -22,9 +22,28 @@ model User {
   role      Role     @default(USER)
   name      String?  @db.VarChar(255)
   username  String?  @unique @db.VarChar(255)
-  image     String?  
   password  String
   likes     Entry[]
+
+  RelatedUser UserProfile? @relation("RelatedUser")
+}
+
+model UserProfile {
+  id          Int @id @default(autoincrement())
+  slug        String? @unique(map: "profile_slug_idx")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  displayName  String  @unique @db.VarChar(255)
+  profileCatch String @db.Text
+  profileDescription String @db.Text
+
+  thumbnail     String?  
+
+  UserId String @unique
+  RelatedUser   User @relation("RelatedUser", fields: [UserId], references: [id])
+
+  @@index([UserId])
 }
 
 enum Role {
@@ -35,15 +54,17 @@ enum Role {
 
 model Entry {
   id          Int @id @default(autoincrement())
-  slug        String @unique(map: "entry_slug_idx")
+  slug        String? @unique(map: "entry_slug_idx")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String @db.VarChar(255)
   description String @db.Text
   imageUrl    String
-  category    String
-  tags        String[]
   storyTime   Int @default(0)
+
+  category    String?
+  tags        String[]
+  featured    Boolean @default(false)
 
   status      Status @default(UPCOMING)
   users       User[]
@@ -53,7 +74,6 @@ model Entry {
 
   rating      Int @default(0)
 
-  isFeatured Boolean
 
   @@index([assignedToMapID])
 }
@@ -67,22 +87,23 @@ enum Status {
 // In the long term maps need to have parent-child maps to accommodate zoom levels and global maps
 model Map {
   id          Int @id @default(autoincrement())
-  slug        String @unique(map: "map_slug_idx")
+  slug        String? @unique(map: "map_slug_idx")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(255)
   description String   @db.Text
   imageUrl    String
-  category    String
-  tags        String[]
-
   mapTime     Int
   mapUrl      String
+
+  category    String?
+  tags        String[]
+  featured Boolean @default(false)
+
   assignedEntries       Entry[]
   objects     GlobalObject[]
   area        GlobalArea[]
 
-  isFeatured Boolean
 
   parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
   childInHierarchies  MapHierarchyChild[] @relation("ChildMap")
@@ -181,20 +202,20 @@ model GlobalArea {
 
 model Wiki {
   id          Int @id @default(autoincrement())
-  slug        String @unique(map: "wiki_slug_idx")
+  slug        String? @unique(map: "wiki_slug_idx")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  featured    Boolean    @default(false)
   thumbUrl    String @default("")
-  category    String
-  tags        String[]
-
   title       String   @db.VarChar(255)
   description String @db.Text
   wikiText    String @db.Text @default("")
   infobox     Json?
+  
+  category    String?
+  tags        String[]
+  featured    Boolean @default(false)
 
-  isFeatured Boolean
+
 
   objects     GlobalObject[]
   area        GlobalArea[]
@@ -225,3 +246,6 @@ enum MapAreaType {
   ABSTRACT
   INTERACTIVE
 }
+
+// To do
+// User settings, user profile,  user interaction, admin settings,
