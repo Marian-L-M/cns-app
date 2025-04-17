@@ -1,4 +1,4 @@
-import { storyObjectsSchema } from "../../../ValidationSchemas/stories";
+import { storyObjectsSchema } from "@/ValidationSchemas/stories";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../prisma/db";
 
