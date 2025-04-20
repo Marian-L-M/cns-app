@@ -31,17 +31,17 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     delete body.password;
   }
 
-  if (user.username !== body.username) {
-    const duplicateUsername = await prisma.user.findUnique({
-      where: { username: body.username },
-    });
-    if (duplicateUsername) {
-      return NextResponse.json(
-        { message: "Duplicate Username" },
-        { status: 409 }
-      );
-    }
-  }
+  // if (user.username !== body.username) {
+  //   const duplicateUsername = await prisma.user.findUnique({
+  //     where: { username: body.username },
+  //   });
+  //   if (duplicateUsername) {
+  //     return NextResponse.json(
+  //       { message: "Duplicate Username" },
+  //       { status: 409 }
+  //     );
+  //   }
+  // }
 
   const updateUser = await prisma.user.update({
     where: { id: user.id },

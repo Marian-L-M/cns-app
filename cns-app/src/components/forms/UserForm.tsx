@@ -73,19 +73,6 @@ const UserForm = ({ user }: Props) => {
           />
           <FormField
             control={form.control}
-            name="username"
-            defaultValue={user?.username || ""}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="Username" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="email"
             defaultValue={user?.email || ""}
             render={({ field }) => (

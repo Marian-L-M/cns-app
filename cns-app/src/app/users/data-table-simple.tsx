@@ -22,7 +22,6 @@ const DataTableSimple = ({ users }: Props) => {
           <TableHeader>
             <TableRow className="bg-secondary hover:bg-secondary">
               <TableHead className="font-medium">Name</TableHead>
-              <TableHead className="font-medium">Username</TableHead>
               <TableHead className="font-medium">email</TableHead>
               <TableHead className="font-medium">image</TableHead>
               <TableHead className="font-medium">Role</TableHead>
@@ -34,9 +33,6 @@ const DataTableSimple = ({ users }: Props) => {
                   <TableRow key={user.id} data-href="/">
                     <TableCell>
                       <Link href={`/users/${user.id}`}>{user.name}</Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/users/${user.id}`}>{user.username}</Link>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.image}</TableCell>

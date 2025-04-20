@@ -3,15 +3,38 @@
 import { PrismaClient } from "@prisma/client";
 import { convertToPlainObject } from "../utils";
 
-export async function getLatestMaps(amount: number) {
+// Action only in name. Consider moving directory
+export async function getLatestMaps(limit: number) {
   const prisma = new PrismaClient();
 
   const data = await prisma.map.findMany({
-    take: amount,
+    take: limit,
     orderBy: { createdAt: `desc` },
   });
 
   return convertToPlainObject(data);
 }
 
-// To do: Create a paginatable getMaps function with take, skip etc
+export async function getAllMaps({
+  query,
+  //   limit = PAGE_SIZE,
+  limit,
+  page,
+  category,
+}: {
+  query: string;
+  limit: number;
+  page: number;
+  category: string;
+}) {
+  const prisma = new PrismaClient();
+
+  const data = await prisma.map.findMany({
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+
+  const dataCount = await prisma.map.count();
+
+  return { data, totalPages: Math.ceil(dataCount / limit) };
+}
