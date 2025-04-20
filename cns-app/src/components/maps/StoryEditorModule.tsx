@@ -95,9 +95,12 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
       entryId: editableSubstory.entryId || form.getValues("entryId"),
     };
     form.reset(values);
+    console.log("values");
+    console.log(values);
   }, [editableSubstory, form]);
 
   async function onSubmit(values: SubstoryFormData) {
+    // 250416 Suspect an issue with how nodes are being cleaned
     try {
       setIsSubmitting(true);
       setError("");
@@ -106,10 +109,9 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
       if (substory) {
         await axios.patch(`/api/substories/${editableSubstory.id}`, values);
       } else {
-        // Remove temporary id for new substories before submission
         const { id, nodes, ...submitData } = values;
-        const cleanedNodes = nodes.map(({ id: nodeId, ...node }) => node);
-
+        const cleanedNodes = nodes.map(({ ...node }) => node);
+        console.log(cleanedNodes);
         await axios.post(`/api/substories`, {
           ...submitData,
           nodes: cleanedNodes,
@@ -119,7 +121,7 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
       router.push(`/stories/${editableSubstory.entryId}/substories`);
       router.refresh();
     } catch (error: any) {
-      console.error("Submission error:", error); // Add this for debugging
+      console.error("Submission error:", error);
       setError(error.response?.data?.message || "Unknown error occurred");
     } finally {
       setIsSubmitting(false);

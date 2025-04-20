@@ -14,6 +14,9 @@ function Menu() {
     <div className="flex justify-end gap-3 w-full">
       <nav className="hidden md:flex py-4 px-8 w-full max-w-xs gap-1 items-center justify-end">
         <Button asChild variant={`ghost`}>
+          <Link href={`/support`}>Support</Link>
+        </Button>
+        <Button asChild variant={`ghost`}>
           <Link href={`/discussions`}>Discuss</Link>
         </Button>
         <Button asChild>
@@ -34,7 +37,7 @@ function Menu() {
               <Link href={`/discussions`}>Discuss</Link>
             </Button>
             <Button asChild variant={`ghost`}>
-              <Link href="/contribute">Contributions</Link>
+              <Link href={`/support`}>Support</Link>
             </Button>
             <SheetDescription></SheetDescription>
           </SheetContent>

@@ -283,8 +283,8 @@ const StoryForm = ({ story, substories }: Props) => {
             <Link href={`/stories/${story.id}/substories/`}>
               <Button variant={"secondary"}>Overview</Button>
             </Link>
-            <Link href={`/stories/${story.id}/substories/add`}>
-              <Button variant={"default"}>Add</Button>
+            <Link href={`/stories/${story.id}/substories/new`}>
+              <Button variant={"default"}>New</Button>
             </Link>
           </div>
         </section>

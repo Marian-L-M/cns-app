@@ -1,3 +1,5 @@
+import { APP_NAME } from "@/lib/constants";
+
 import {
   ChevronUp,
   Home,
@@ -6,6 +8,10 @@ import {
   Map,
   ScrollText,
   BookMarked,
+  UserCircle,
+  User2Icon,
+  BarChart,
+  BarChartHorizontal,
 } from "lucide-react";
 
 import {
@@ -25,6 +31,8 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -35,11 +43,6 @@ import Link from "next/link";
 import { CustomTrigger } from "./custom-trigger";
 
 const items = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
   {
     title: "Wiki",
     url: "/wiki",
@@ -92,19 +95,35 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
-        <CustomTrigger />
+        <Link
+          href={"/#"}
+          className="gap-2 py-2 w-full flex items-center"
+          id="logo-wrapper"
+        >
+          <Image
+            id="logo"
+            src="/ui/logo.png"
+            alt={`${APP_NAME} logo`}
+            height={32}
+            width={32}
+            priority
+          />
+          <span className="text-xs">{APP_NAME}</span>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Discover</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <CustomTrigger />
+              </SidebarMenuItem>
               {items.map((item) => (
                 // Main Link
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <span className="flex justify-between p-2 gap-2 hover:bg-slate-100">
-                      <Link href={item.url} className="flex gap-2">
+                      <Link href={item.url} className="flex gap-2 flex-1">
                         <item.icon size={18} />
                         <span>{item.title}</span>
                       </Link>
@@ -121,7 +140,7 @@ export function AppSidebar() {
                       <DropdownMenuContent side="right" align="start">
                         {item.options.map((option) => (
                           <DropdownMenuItem key={option.title}>
-                            <Link href={option.url}>
+                            <Link href={option.url} className="w-full">
                               <span>{option.title}</span>
                             </Link>
                           </DropdownMenuItem>
@@ -135,7 +154,7 @@ export function AppSidebar() {
                       {item.subLinks.map((sublink) => (
                         <SidebarMenuSubItem key={sublink.title}>
                           <SidebarMenuSubButton asChild>
-                            <Link href={sublink.url}>
+                            <Link href={sublink.url} className="w-full">
                               <span className="">{sublink.title}</span>
                             </Link>
                           </SidebarMenuSubButton>
@@ -156,14 +175,20 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <span className="flex justify-between p-2 gap-2 hover:bg-slate-100">
-                    <Link href={`#`}>Dashboard</Link>
+                    <Link href={`/dashboard`} className="flex gap-2 flex-1">
+                      <BarChartHorizontal size={18} />
+                      <span>Dashboard</span>
+                    </Link>
                   </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <span className="flex justify-between p-2 gap-2 hover:bg-slate-100">
-                    <Link href={`/users`}>Users</Link>
+                    <Link href={`/users`} className="flex gap-2 flex-1">
+                      <User2Icon size={18} />
+                      <span>Users</span>
+                    </Link>
                   </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -178,7 +203,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> Username
+                  <UserCircle /> Username
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
