@@ -1,3 +1,4 @@
+// To do: The add folder makes no sense
 import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../../prisma/db";

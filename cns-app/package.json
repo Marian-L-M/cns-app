@@ -10,6 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.9.0",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.16.1",
     "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -32,6 +33,7 @@
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.401.0",
     "next": "^15.2.0",
+    "next-auth": "^5.0.0-beta.26",
     "next-themes": "^0.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
