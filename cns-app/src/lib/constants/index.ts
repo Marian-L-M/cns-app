@@ -6,3 +6,8 @@ export const SERVER_URL =
   process.env.NEXT_PUBLIC_SERVER_URL || `http://localhost:3000`;
 export const PROJECT_URL = `https://cloudsandspaceships.com`;
 export const PROJECT_NAME = `Clouds and Spaceships`;
+
+export const signInDefaultValues = {
+  email: "",
+  password: "",
+};
