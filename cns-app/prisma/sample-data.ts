@@ -5,14 +5,14 @@ const sampleData = {
   users: [
     {
       name: `Schmohn`,
-      email: `sample@askdjgsdh.com`,
-      password: bcrypt.hashSync("12345", 10),
+      email: `admin@test.com`,
+      password: bcrypt.hashSync("bockwurst123", 10),
       role: Role.ADMIN,
     },
     {
       name: `Tonibert`,
-      email: `normale@bronale.com`,
-      password: bcrypt.hashSync("12345", 10),
+      email: `normale@test.com`,
+      password: bcrypt.hashSync("bockwurst123", 10),
       role: Role.USER,
     },
   ],
