@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sheet";
 import { EllipsisVertical } from "lucide-react";
 import Link from "next/link";
+import UserButton from "./user-button";
 
 function Menu() {
   return (
@@ -19,9 +20,7 @@ function Menu() {
         <Button asChild variant={`ghost`}>
           <Link href={`/discussions`}>Discuss</Link>
         </Button>
-        <Button asChild>
-          <Link href={`/sign-in`}>Sign In</Link>
-        </Button>
+        <UserButton />
       </nav>
       <nav className="md:hidden">
         <Sheet>
