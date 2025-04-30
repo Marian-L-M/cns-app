@@ -1,3 +1,5 @@
+// User management for admins, not to confuse with /user for profile
+
 import DataTableSimple from "./data-table-simple";
 import prisma from "../../../prisma/db";
 

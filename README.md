@@ -1,5 +1,13 @@
 # 250310 To Do
 
+## Major bugs
+
+1. Rwork edit mode in editors - e & enter listener block substory (eventually other editors as well from ) writing
+2. Substory submission is broken - Post endpoint (not update)
+   -> narrowed down issue: it is only broken on initial post WHEN nodes are added. No nodes initial post works. Updating with nodes later also works
+3. Map search box creates uncontrolled element issue
+4. Add error formatting to all submissions
+
 ## General
 
 1. Private routes
@@ -15,6 +23,11 @@
 10. Rework UI state
 11. CW,ch, ctx should really be an object
 12. Submission via canvas coordinates should be divided by cw/ch, drawing values should be multiplied by cw/ch, numbers submitted in form as is
+13. Initialization?
+14. Version management
+15. Unify route naming patterns
+16. Set dynamic metadata
+17. Progressive web app
 
 - System message banner (floating not blocked)
 - Map hover banner (floating not blocked)
@@ -39,10 +52,10 @@
 
 ## Map Editor
 
-- [ ] Add mastermap flag and master array to maps
+- [x] Add mastermap flag and master array to maps
 - [x] Add Map editor tool (adding areas by clicking on map)
       -- [x] Draw area tool
-      -- Add image selector +alpha -> ai integration
+      -- Add image selector +alpha -> ai integration?
       -- [x] Add information to map (Submit like an object)
       -- Join with existing maps
 - Unify thumbnail and image name
@@ -68,3 +81,7 @@
 
 - Create a timeline tool
 - Integrate with Wiki
+
+## DB
+
+- Production docker compose Neon/Vercel -> adjust docker compose (additional production files + vercel environment variables)
