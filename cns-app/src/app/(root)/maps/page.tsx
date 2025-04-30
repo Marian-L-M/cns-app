@@ -6,6 +6,7 @@ const Maps = async () => {
 
   return (
     <div>
+      <h1>Maps</h1>
       <MapTable maps={maps} />
     </div>
   );

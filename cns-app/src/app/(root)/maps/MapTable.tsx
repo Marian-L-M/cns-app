@@ -15,6 +15,8 @@ interface Props {
   maps: Map[];
 }
 
+// To do make Image size dynamic
+// To do db naming is confusing imageUrl = Thumbnail url, mapUrl is the main map image
 const MapTable = ({ maps }: Props) => {
   return (
     <div className="grid w-full items-center gap-4 grid-cols-3">
