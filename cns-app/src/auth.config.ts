@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextAuthConfig } from "next-auth";
 // import { NextResponse } from "next/server";
 
@@ -8,7 +7,7 @@ export const authConfig = {
     authorized({ request, auth }: any) {
       const protectedPaths = [
         /\/maps\/edit/,
-        /\/mastermaps\/edit/,
+        /\/mastermaps/,
         /\/stories\/edit/,
         /\/wiki\/edit/,
         /\/user\/(.*)/,

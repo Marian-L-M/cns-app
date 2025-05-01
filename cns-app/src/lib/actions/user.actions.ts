@@ -1,7 +1,7 @@
 "use server";
 
 import { signInFormSchema, signUpFormSchema } from "@/ValidationSchemas/users";
-import { signIn, signOut } from "../../../auth";
+import { signIn, signOut } from "../../auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { hashSync } from "bcryptjs";
 import prisma from "@/../prisma/db";
