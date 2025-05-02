@@ -62,8 +62,17 @@ model User {
 
   role        Role         @default(USER)
   RelatedUser UserProfile? @relation("RelatedUser")
-  Entry       Entry?       @relation(fields: [entryId], references: [id])
-  entryId     Int?
+
+  Entry          Entry?              @relation(fields: [entryId], references: [id])
+  entryId        Int?
+  Map            Map?                @relation(fields: [mapId], references: [id])
+  mapId          Int?
+  MapHierarchy   MapHierarchyMaster? @relation(fields: [mapHierarchyId], references: [id])
+  mapHierarchyId Int?
+  Story          Story?              @relation(fields: [storyId], references: [id])
+  storyId        Int?
+  Wiki           Wiki?               @relation(fields: [wikiId], references: [id])
+  wikiId         Int?
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt
@@ -73,7 +82,7 @@ model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
@@ -111,7 +120,7 @@ model Entry {
   featured Boolean  @default(false)
 
   status          Status  @default(UPCOMING)
-  users           User[]
+  authors         User[]
   stories         Story[]
   assignedToMapID Int?
   assignedToMap   Map?    @relation(fields: [assignedToMapID], references: [id])
@@ -146,6 +155,7 @@ model Map {
   assignedEntries Entry[]
   objects         GlobalObject[]
   area            GlobalArea[]
+  authors         User[]
 
   parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
   childInHierarchies  MapHierarchyChild[]  @relation("ChildMap")
@@ -160,6 +170,7 @@ model MapHierarchyMaster {
   parentMapId Int
   parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id])
   childMaps   MapHierarchyChild[]
+  authors     User[]
 
   @@index([parentMapId])
 }
@@ -195,6 +206,7 @@ model Story {
   objectTime  Int
   entry       Entry    @relation(fields: [entryId], references: [id])
   entryId     Int
+  authors     User[]
 
   @@index([entryId])
 }
@@ -260,6 +272,7 @@ model Wiki {
   objects GlobalObject[]
   area    GlobalArea[]
   type    WikiType       @default(GENERAL)
+  authors User[]
 }
 
 enum WikiType {
