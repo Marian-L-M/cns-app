@@ -5,6 +5,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
 import { CustomTrigger } from "@/components/ui/sidebar/custom-trigger";
 
+import { Map, ScrollText, BookMarked } from "lucide-react";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -12,6 +14,55 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+
+  const mainMenuItems = [
+    {
+      title: "Wiki",
+      url: "/wiki",
+      icon: BookMarked,
+      subLinks: [
+        { title: "Featured", url: "/wiki/featured" },
+        { title: "Search", url: "/wiki/search" },
+        { title: "Categories", url: "/wiki/categories" },
+        { title: "Random", url: "" },
+      ],
+      options: [
+        { title: "Add", url: "/wiki/new" },
+        { title: "Manage", url: "/wiki/" },
+      ],
+    },
+    {
+      title: "Stories",
+      url: "/stories",
+      icon: ScrollText,
+      subLinks: [
+        { title: "Featured", url: "/stories/featured" },
+        { title: "Search", url: "/stories/search" },
+        { title: "Categories", url: "/stories/categories" },
+        { title: "Random", url: "" },
+      ],
+      options: [
+        { title: "Add", url: "/stories/new" },
+        { title: "Manage", url: "/stories/" },
+      ],
+    },
+    {
+      title: "Maps",
+      url: "/maps",
+      icon: Map,
+      subLinks: [
+        { title: "Featured", url: "/maps/featured" },
+        { title: "Search", url: "/maps/search" },
+        { title: "Categories", url: "/maps/categories" },
+        { title: "Random", url: "" },
+      ],
+      options: [
+        { title: "Add", url: "/maps/new" },
+        { title: "MasterMaps", url: "/maps/mastermaps" },
+        { title: "Manage", url: "/maps/" },
+      ],
+    },
+  ];
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
@@ -25,7 +76,7 @@ export default async function RootLayout({
           <div className="md:hidden" id="mobile-sidebar">
             <CustomTrigger />
           </div>
-          <AppSidebar />
+          <AppSidebar menuItems={mainMenuItems} />
           <main className="w-full h-full p-4 overflow-y-scroll">
             {children}
           </main>
