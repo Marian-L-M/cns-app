@@ -1,16 +1,11 @@
 import { APP_NAME } from "@/lib/constants";
+import { LucideIcon } from "lucide-react";
 
 import {
   ChevronUp,
-  Home,
-  User2,
   MoreHorizontal,
-  Map,
-  ScrollText,
-  BookMarked,
   UserCircle,
   User2Icon,
-  BarChart,
   BarChartHorizontal,
 } from "lucide-react";
 
@@ -42,56 +37,24 @@ import {
 import Link from "next/link";
 import { CustomTrigger } from "./custom-trigger";
 
-const items = [
-  {
-    title: "Wiki",
-    url: "/wiki",
-    icon: BookMarked,
-    subLinks: [
-      { title: "Featured", url: "/wiki/featured" },
-      { title: "Search", url: "/wiki/search" },
-      { title: "Categories", url: "/wiki/categories" },
-      { title: "Random", url: "" },
-    ],
-    options: [
-      { title: "Add", url: "/wiki/new" },
-      { title: "Manage", url: "/wiki/" },
-    ],
-  },
-  {
-    title: "Stories",
-    url: "/stories",
-    icon: ScrollText,
-    subLinks: [
-      { title: "Featured", url: "/stories/featured" },
-      { title: "Search", url: "/stories/search" },
-      { title: "Categories", url: "/stories/categories" },
-      { title: "Random", url: "" },
-    ],
-    options: [
-      { title: "Add", url: "/stories/new" },
-      { title: "Manage", url: "/stories/" },
-    ],
-  },
-  {
-    title: "Maps",
-    url: "/maps",
-    icon: Map,
-    subLinks: [
-      { title: "Featured", url: "/maps/featured" },
-      { title: "Search", url: "/maps/search" },
-      { title: "Categories", url: "/maps/categories" },
-      { title: "Random", url: "" },
-    ],
-    options: [
-      { title: "Add", url: "/maps/new" },
-      { title: "MasterMaps", url: "/maps/mastermaps" },
-      { title: "Manage", url: "/maps/" },
-    ],
-  },
-];
+interface menuItemSublink {
+  title: string;
+  url: string;
+}
 
-export function AppSidebar() {
+interface menuItem extends menuItemSublink {
+  icon: LucideIcon;
+  subLinks?: menuItemSublink[];
+  options?: menuItemSublink[];
+}
+
+interface sidebarDataProps {
+  menuItems: menuItem[];
+}
+
+// interface menuItemList :
+
+export function AppSidebar({ menuItems = [] }: sidebarDataProps) {
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
@@ -118,7 +81,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <CustomTrigger />
               </SidebarMenuItem>
-              {items.map((item) => (
+              {menuItems.map((item) => (
                 // Main Link
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
@@ -138,7 +101,7 @@ export function AppSidebar() {
                         </SidebarMenuAction>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent side="right" align="start">
-                        {item.options.map((option) => (
+                        {item.options.map((option: menuItemSublink) => (
                           <DropdownMenuItem key={option.title}>
                             <Link href={option.url} className="w-full">
                               <span>{option.title}</span>
@@ -151,7 +114,7 @@ export function AppSidebar() {
                   {/* Sublinks */}
                   {item.subLinks && (
                     <SidebarMenuSub>
-                      {item.subLinks.map((sublink) => (
+                      {item.subLinks.map((sublink: menuItemSublink) => (
                         <SidebarMenuSubItem key={sublink.title}>
                           <SidebarMenuSubButton asChild>
                             <Link href={sublink.url} className="w-full">
