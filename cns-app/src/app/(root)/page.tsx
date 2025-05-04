@@ -15,9 +15,9 @@ export default async function Home() {
       className="w-ful grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
     >
       <h1 className="text-2xl col-span-4 ">Discover Kamolin!</h1>
-      <CursorContextProvider>
+      {/* <CursorContextProvider>
         <MasterMapModule masterMap={masterMap} />
-      </CursorContextProvider>
+      </CursorContextProvider> */}
       <div
         id="info-container"
         className="col-span-2 row-span-2 flex flex-col gap-1"

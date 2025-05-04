@@ -1,11 +1,12 @@
 "use server";
 
-import { signInFormSchema, signUpFormSchema } from "@/ValidationSchemas/users";
-import { signIn, signOut } from "../../auth";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { hashSync } from "bcryptjs";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+
+import { signIn, signOut, auth } from "@/auth";
+import { formatError } from "@/lib/utils";
 import prisma from "@/../prisma/db";
-import { formatError } from "../utils";
+import { signInFormSchema, signUpFormSchema } from "@/ValidationSchemas/users";
 
 // Sign in the user with credential
 export async function signInWithCredentials(
@@ -71,6 +72,40 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
       throw error;
     }
 
+    return { success: false, message: formatError(error) };
+  }
+}
+
+// Update user settings
+export async function updateUserSettings(user: {
+  name: string;
+  email: string;
+}) {
+  try {
+    const session = await auth();
+
+    const currentUser = await prisma.user.findFirst({
+      where: {
+        id: session?.user?.id,
+      },
+    });
+
+    if (!currentUser) throw new Error("User not found");
+
+    await prisma.user.update({
+      where: {
+        id: currentUser.id,
+      },
+      data: {
+        name: user.name,
+      },
+    });
+
+    return {
+      success: true,
+      message: "User updated successfully",
+    };
+  } catch (error) {
     return { success: false, message: formatError(error) };
   }
 }

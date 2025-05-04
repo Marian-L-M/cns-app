@@ -11,6 +11,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserIcon } from "lucide-react";
 
+const usernMenuItems = [
+  {
+    title: "Profile",
+    url: "/user/profile",
+  },
+  {
+    title: "Works",
+    url: "/user/works",
+  },
+  {
+    title: "Settings",
+    url: "/user/settings",
+  },
+];
+
 async function UserButton() {
   const session = await auth();
 
@@ -49,6 +64,17 @@ async function UserButton() {
               </div>
             </div>
           </DropdownMenuLabel>
+          {usernMenuItems.map((item) => (
+            <DropdownMenuItem className="p-0 mb-1" key={`${item.title}-link`}>
+              <Button
+                className="w-full py-4 px-2 h-4 justify-start"
+                variant={"ghost"}
+                asChild
+              >
+                <Link href={item.url}>{item.title}</Link>
+              </Button>
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuItem className="p-0 mb-1">
             <form action={signOutUser} className="w-full">
               <Button

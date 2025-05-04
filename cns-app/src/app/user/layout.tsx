@@ -4,8 +4,9 @@ import Footer from "@/components/footer";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
 import { CustomTrigger } from "@/components/ui/sidebar/custom-trigger";
+import { Toaster } from "@/components/ui/sonner";
 
-import { Map, ScrollText, BookMarked } from "lucide-react";
+import { ScrollText, BookMarked, Settings } from "lucide-react";
 
 export default async function RootLayout({
   children,
@@ -26,6 +27,11 @@ export default async function RootLayout({
       url: "/user/works",
       icon: ScrollText,
     },
+    {
+      title: "Settings",
+      url: "/user/settings",
+      icon: Settings,
+    },
   ];
 
   return (
@@ -44,6 +50,7 @@ export default async function RootLayout({
           <main className="w-full h-full p-4 overflow-y-scroll">
             {children}
           </main>
+          <Toaster />
         </div>
         <Footer />
       </div>

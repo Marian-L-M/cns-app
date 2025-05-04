@@ -159,55 +159,6 @@ export function AppSidebar({ menuItems = [] }: sidebarDataProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      {/* Footer */}
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <UserCircle /> Username
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <DropdownMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link href={`/account`} className="flex gap-2">
-                      <span>Account</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link href={`/profile`} className="flex gap-2">
-                      <span>Profile</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link href={`/settings`} className="flex gap-2">
-                      <span>Settings</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link href={`/sign-out`} className="flex gap-2">
-                      <span>Sign out</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }
