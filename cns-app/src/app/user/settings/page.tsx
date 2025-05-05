@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "User Settings",
 };
 
-async function userSettingsPage() {
+async function UserSettingsPage() {
   const session = await auth();
 
   return (
@@ -20,4 +20,4 @@ async function userSettingsPage() {
   );
 }
 
-export default userSettingsPage;
+export default UserSettingsPage;

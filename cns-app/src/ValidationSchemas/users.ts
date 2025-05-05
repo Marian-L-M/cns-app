@@ -13,12 +13,19 @@ export const userSchema = z.object({
     .or(z.literal("")),
 });
 
-export const updateProfileSchema = z.object({
+export const userProfileSchema = z.object({
+  displayName: z.string().min(3, "Name must be at least 3 characters"),
+  profileCatch: z.string().max(511).optional(),
+  profileDescription: z.string().max(65535).optional(),
+  thumbnail: z.string().optional(),
+});
+
+export const updateUserSettingsSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   email: z.string().min(3, "Email must be at least 3 characters"),
 });
 
-export const updateUserSchema = updateProfileSchema.extend({
+export const updateUserSchema = updateUserSettingsSchema.extend({
   id: z.string().min(1, "ID is required"),
   role: z.string().min(1, "Role is required"),
 });

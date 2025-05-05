@@ -1,12 +1,11 @@
 "use client";
-
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { updateProfileSchema } from "@/ValidationSchemas/users";
+import { updateUserSettingsSchema } from "@/ValidationSchemas/users";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserSettings } from "@/lib/actions/user.actions";
 import {
@@ -14,6 +13,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -21,15 +21,15 @@ import { Input } from "@/components/ui/input";
 function UserSettingsForm() {
   const { data: session, update } = useSession();
 
-  const form = useForm<z.infer<typeof updateProfileSchema>>({
-    resolver: zodResolver(updateProfileSchema),
+  const form = useForm<z.infer<typeof updateUserSettingsSchema>>({
+    resolver: zodResolver(updateUserSettingsSchema),
     defaultValues: {
       name: session?.user?.name ?? "",
       email: session?.user?.email ?? "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof updateProfileSchema>) => {
+  const onSubmit = async (values: z.infer<typeof updateUserSettingsSchema>) => {
     const res = await updateUserSettings(values);
 
     if (!res.success) {
@@ -68,6 +68,7 @@ function UserSettingsForm() {
               name="email"
               render={({ field }) => (
                 <FormItem className="w-full">
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       disabled
@@ -85,6 +86,7 @@ function UserSettingsForm() {
               name="name"
               render={({ field }) => (
                 <FormItem className="w-full">
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Name"

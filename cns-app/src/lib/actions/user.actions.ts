@@ -109,3 +109,54 @@ export async function updateUserSettings(user: {
     return { success: false, message: formatError(error) };
   }
 }
+
+// Update user settings
+export async function updateOrCreateUserProfile(userProfile: {
+  displayName: string;
+  profileCatch?: string;
+  profileDescription?: string;
+  thumbnail?: string;
+}) {
+  try {
+    const session = await auth();
+
+    const currentUser = await prisma.user.findFirst({
+      where: {
+        id: session?.user?.id,
+      },
+    });
+
+    if (!currentUser) throw new Error("User not found");
+
+    const currentProfile = await prisma.userProfile.findFirst({
+      where: {
+        UserId: session?.user?.id,
+      },
+    });
+
+    if (!currentProfile) {
+      await prisma.userProfile.create({
+        data: {
+          UserId: currentUser.id,
+          ...userProfile,
+        },
+      });
+    } else if (currentProfile) {
+      await prisma.userProfile.update({
+        where: {
+          UserId: currentUser.id,
+        },
+        data: {
+          ...userProfile,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      message: "User profile updated successfully",
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}

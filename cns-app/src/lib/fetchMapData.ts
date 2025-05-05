@@ -1,6 +1,6 @@
 // Move to utils folder and polish concept
 import axios from "axios";
-import prisma from "../../prisma/db";
+import prisma from "@/../prisma/db";
 
 interface MapFetchProps {
   selectedMapId: number | undefined;
