@@ -69,7 +69,7 @@ model User {
   mapId          Int?
   MapHierarchy   MapHierarchyMaster? @relation(fields: [mapHierarchyId], references: [id])
   mapHierarchyId Int?
-  Story          Story?              @relation(fields: [storyId], references: [id])
+  Story          SubStory?              @relation(fields: [storyId], references: [id])
   storyId        Int?
   Wiki           Wiki?               @relation(fields: [wikiId], references: [id])
   wikiId         Int?
@@ -93,9 +93,9 @@ model UserProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  displayName        String @unique @db.VarChar(255)
-  profileCatch       String @db.Text
-  profileDescription String @db.Text
+  displayName        String  @unique @db.VarChar(255)
+  profileCatch       String? @db.Text
+  profileDescription String? @db.Text
 
   thumbnail String?
 
@@ -121,7 +121,7 @@ model Entry {
 
   status          Status  @default(UPCOMING)
   authors         User[]
-  stories         Story[]
+  stories         SubStory[]
   assignedToMapID Int?
   assignedToMap   Map?    @relation(fields: [assignedToMapID], references: [id])
 
@@ -195,8 +195,7 @@ model MapHierarchyChild {
   @@index([childMapId])
 }
 
-// 250131 Blew up database - Nodes needs to be a list of objects though
-model Story {
+model SubStory {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

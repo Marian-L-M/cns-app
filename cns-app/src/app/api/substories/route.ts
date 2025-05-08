@@ -1,6 +1,6 @@
 import { storyObjectsSchema } from "@/ValidationSchemas/stories";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
 
-    const newSubstory = await prisma.story.create({
+    const newSubstory = await prisma.subStory.create({
       data: { ...body },
     });
     return NextResponse.json(newSubstory, { status: 201 });

@@ -36,7 +36,7 @@ async function substoryOverviewPage({ params }: Props) {
   const story = await prisma.entry.findUnique({
     where: { id: id },
   });
-  const substories = await prisma.story.findMany({
+  const substories = await prisma.subStory.findMany({
     where: { entryId: id },
   });
 

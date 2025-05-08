@@ -1,6 +1,6 @@
 import { Entry } from "@prisma/client";
 import { fetchMapData } from "@/lib/fetchMapData";
-import { fetchStoryData } from "@/lib/fetchStoryData";
+import { fetchSubStoryData } from "@/lib/fetchStoryData";
 import StatusContextProvider from "@/store/statusContext";
 import StoryModule from "@/components/maps/StoryModule";
 
@@ -32,12 +32,12 @@ const StoryDetail = async ({ story }: Props) => {
   let storyData: story[] = [];
 
   try {
-    const fetchedStoryData = await fetchStoryData(story.id);
+    const fetchedStoryData = await fetchSubStoryData(story.id);
 
-    if (!fetchedStoryData.story || fetchedStoryData.story.length === 0) {
+    if (!fetchedStoryData.subStory || fetchedStoryData.subStory.length === 0) {
       throw new Error("No story found");
     } else {
-      storyData = fetchedStoryData.story;
+      storyData = fetchedStoryData.subStory;
     }
   } catch (err) {
     error = (err as Error).message || "Failed to fetch story";

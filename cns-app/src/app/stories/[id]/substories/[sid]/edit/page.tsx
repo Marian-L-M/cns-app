@@ -17,7 +17,7 @@ async function substoryDetailPage({ params }: substoryProps) {
     where: { id: id },
   });
 
-  const substory = await prisma.story.findUnique({
+  const substory = await prisma.subStory.findUnique({
     where: { id: sid },
   });
 

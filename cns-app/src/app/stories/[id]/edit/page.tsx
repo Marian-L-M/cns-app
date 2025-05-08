@@ -17,7 +17,7 @@ const EditStory = async ({ params }: Props) => {
     return <p className="text-destructive">Entry not found</p>;
   }
 
-  const substories = await prisma.story.findMany({
+  const substories = await prisma.subStory.findMany({
     where: { entryId: entry.id },
   });
 
