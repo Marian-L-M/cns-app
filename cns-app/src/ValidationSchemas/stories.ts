@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const storiesSchema = z.object({
+export const StoriesSchema = z.object({
   id: z.number().int().optional(),
   title: z.string().min(1, "Title is required").max(255),
   description: z.string().min(1, "Description is required").max(65535),
@@ -26,11 +26,11 @@ export const NodeItemSchema = z.object({
   timeEnd: z.number().min(0, "time end in object time").max(9999).optional(),
 });
 
-export const storyObjectsSchema = z.object({
+export const SubStorySchema = z.object({
   id: z.number().int().optional(),
   title: z.string().min(1, "Title is required").max(255),
   nodes: z.array(NodeItemSchema),
   description: z.string().min(1, "Description is required").max(65535),
   objectTime: z.number().min(0, "Object time").max(9999).optional(),
-  entryId: z.number().int().positive("Story (Entry) ID is required"),
+  storyId: z.number().int().positive("Story ID is required"),
 });

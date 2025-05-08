@@ -1,5 +1,5 @@
 import StoryForm from "@/components/forms/StoryForm";
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 interface Props {
   params: { id: string };
@@ -9,21 +9,21 @@ const EditStory = async ({ params }: Props) => {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
-  const entry = await prisma?.entry.findUnique({
+  const story = await prisma?.story.findUnique({
     where: { id },
   });
 
-  if (!entry) {
-    return <p className="text-destructive">Entry not found</p>;
+  if (!story) {
+    return <p className="text-destructive">Story not found</p>;
   }
 
   const substories = await prisma.subStory.findMany({
-    where: { entryId: entry.id },
+    where: { storyId: story.id },
   });
 
   return (
     <div className="w-full" id="story-editor-module">
-      <StoryForm story={entry} substories={substories} />
+      <StoryForm story={story} substories={substories} />
     </div>
   );
 };

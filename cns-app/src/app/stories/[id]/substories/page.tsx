@@ -1,15 +1,15 @@
 import React from "react";
 import Link from "next/link";
 
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 import { z } from "zod";
 
 import { fetchMapData } from "@/lib/fetchMapData";
 import StoryCanvasModule from "@/components/maps/StoryCanvasModule";
-import { storiesSchema } from "@/ValidationSchemas/stories";
+import { StoriesSchema } from "@/ValidationSchemas/stories";
 import { Plus } from "lucide-react";
 
-type Story = z.infer<typeof storiesSchema>;
+type Story = z.infer<typeof StoriesSchema>;
 
 interface SubstoryListProps {
   substories: Story[];
@@ -33,11 +33,11 @@ async function substoryOverviewPage({ params }: Props) {
   } = { map: null, mapAreas: [], mapObjects: [] };
   let error: string | null = null;
 
-  const story = await prisma.entry.findUnique({
+  const story = await prisma.story.findUnique({
     where: { id: id },
   });
   const substories = await prisma.subStory.findMany({
-    where: { entryId: id },
+    where: { storyId: id },
   });
 
   if (!story) {

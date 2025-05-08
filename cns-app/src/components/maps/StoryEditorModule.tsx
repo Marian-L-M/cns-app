@@ -2,12 +2,12 @@
 import Image from "next/image";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Entry, Story, Map } from "@prisma/client";
+import { Story, SubStory, Map } from "@prisma/client";
 import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
 import { useEffect, useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
-import { storyObjectsSchema } from "@/ValidationSchemas/stories";
+import { SubStorySchema } from "@/ValidationSchemas/stories";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,8 +20,8 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 
 interface EditorProps {
-  entry: Entry;
-  substory?: Story & { nodes: StoryNode[] };
+  story: Story;
+  substory?: SubStory & { nodes: StoryNode[] };
   map: Map;
 }
 
@@ -35,32 +35,32 @@ type StoryNode = {
   timeEnd?: number;
 };
 
-export type SubstoryFormData = z.infer<typeof storyObjectsSchema> & {
-  substory: Story & { nodes: StoryNode[] };
+export type SubstoryFormData = z.infer<typeof SubStorySchema> & {
+  substory: SubStory & { nodes: StoryNode[] };
   nodes: StoryNode[];
 };
 
 // Default values for a new substory
 // 250209 - Todo: find a way to get rid of temporary id for new substories
-const defaultSubstory: Story & { nodes: StoryNode[] } = {
+const defaultSubstory: SubStory & { nodes: StoryNode[] } = {
   id: 0,
   title: "",
   description: "",
   objectTime: 0,
-  entryId: 0,
+  storyId: 0,
   nodes: [],
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
-function StoryEditorModule({ entry, substory, map }: EditorProps) {
+function StoryEditorModule({ story, substory, map }: EditorProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
   const [editableSubstory, setEditableSubstory] = useState<
-    Story & { nodes: StoryNode[] }
-  >(substory || { ...defaultSubstory, entryId: entry.id });
+    SubStory & { nodes: StoryNode[] }
+  >(substory || { ...defaultSubstory, storyId: story.id });
   const [activeSubstoryID, setActiveSubstoryID] = useState<number | undefined>(
     undefined
   );
@@ -73,14 +73,14 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
   });
 
   const form = useForm<SubstoryFormData>({
-    resolver: zodResolver(storyObjectsSchema),
+    resolver: zodResolver(SubStorySchema),
     defaultValues: {
       id: editableSubstory.id,
       title: editableSubstory.title,
       description: editableSubstory.description,
       nodes: editableSubstory.nodes as StoryNode[],
       objectTime: editableSubstory.objectTime,
-      entryId: editableSubstory.entryId,
+      storyId: editableSubstory.storyId,
     },
   });
 
@@ -92,7 +92,7 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
         editableSubstory.description || form.getValues("description"),
       nodes: editableSubstory.nodes,
       objectTime: editableSubstory.objectTime || form.getValues("objectTime"),
-      entryId: editableSubstory.entryId || form.getValues("entryId"),
+      storyId: editableSubstory.storyId || form.getValues("storyId"),
     };
     form.reset(values);
     console.log("values");
@@ -118,7 +118,7 @@ function StoryEditorModule({ entry, substory, map }: EditorProps) {
         });
       }
       setIsSubmitting(false);
-      router.push(`/stories/${editableSubstory.entryId}/substories`);
+      router.push(`/stories/${editableSubstory.storyId}/substories`);
       router.refresh();
     } catch (error: any) {
       console.error("Submission error:", error);

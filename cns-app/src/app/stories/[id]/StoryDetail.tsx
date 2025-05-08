@@ -1,11 +1,11 @@
-import { Entry } from "@prisma/client";
+import { Story } from "@prisma/client";
 import { fetchMapData } from "@/lib/fetchMapData";
 import { fetchSubStoryData } from "@/lib/fetchStoryData";
 import StatusContextProvider from "@/store/statusContext";
 import StoryModule from "@/components/maps/StoryModule";
 
 interface Props {
-  story: Entry;
+  story: Story;
 }
 
 const StoryDetail = async ({ story }: Props) => {

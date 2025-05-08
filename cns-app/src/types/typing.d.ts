@@ -87,7 +87,7 @@ interface story {
   description: string;
   nodes: JsonValue;
   objectTime: number;
-  entryId: number;
+  storyId: number;
 }
 
 interface storyNode {

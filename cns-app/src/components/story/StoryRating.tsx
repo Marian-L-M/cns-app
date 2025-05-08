@@ -2,7 +2,7 @@ import { Heart } from "lucide-react";
 interface Props {
   rating: number; //
 }
-const EntryRating = ({ rating }: Props) => {
+const StoryRating = ({ rating }: Props) => {
   return (
     <div className="flex justify-between">
       <Heart className={`${rating >= 1 ? "text-red-500" : "text-muted"}`} />
@@ -12,4 +12,4 @@ const EntryRating = ({ rating }: Props) => {
   );
 };
 
-export default EntryRating;
+export default StoryRating;

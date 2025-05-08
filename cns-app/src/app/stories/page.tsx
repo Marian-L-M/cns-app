@@ -4,7 +4,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import Pagination from "@/components/Pagination";
 import StatusFilter from "@/components/filters/StatusFilter";
-import { Entry, Status } from "@prisma/client";
+import { Story, Status } from "@prisma/client";
 
 export const metadata = {
   title: `Stories`,
@@ -13,7 +13,7 @@ export const metadata = {
 export interface SearchParams {
   status: Status;
   page: string;
-  orderBy: keyof Entry;
+  orderBy: keyof Story;
 }
 
 const Stories = async ({
@@ -44,8 +44,8 @@ const Stories = async ({
       NOT: [{ status: "COMPLETED" as Status }],
     };
   }
-  const itemCount = await prisma.entry.count({ where });
-  const stories = await prisma.entry.findMany({
+  const itemCount = await prisma.story.count({ where });
+  const stories = await prisma.story.findMany({
     where,
     orderBy: {
       [orderBy]: "desc",
@@ -61,11 +61,11 @@ const Stories = async ({
           href="/stories/new"
           className={buttonVariants({ variant: "default" })}
         >
-          New Story Entry
+          New Story
         </Link>
         <StatusFilter />
       </div>
-      <DataTable entries={stories} searchParams={searchParams} />
+      <DataTable stories={stories} searchParams={searchParams} />
       <Pagination
         itemCount={itemCount}
         pageSize={pageSize}

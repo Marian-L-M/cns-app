@@ -1,4 +1,4 @@
-import prisma from "../../../../prisma/db";
+import prisma from "@/../prisma/db";
 import StoryDetail from "./StoryDetail";
 
 const ViewStory = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -12,7 +12,7 @@ const ViewStory = async ({ params }: { params: Promise<{ id: string }> }) => {
     return <div className="text-destructive">Invalid story ID</div>;
   }
 
-  const story = await prisma.entry.findUnique({
+  const story = await prisma.story.findUnique({
     where: { id: idNum },
   });
 

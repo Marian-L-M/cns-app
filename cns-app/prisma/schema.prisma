@@ -63,14 +63,14 @@ model User {
   role        Role         @default(USER)
   RelatedUser UserProfile? @relation("RelatedUser")
 
-  Entry          Entry?              @relation(fields: [entryId], references: [id])
-  entryId        Int?
+  Story          Story?              @relation(fields: [storyId], references: [id])
+  storyId        Int?
   Map            Map?                @relation(fields: [mapId], references: [id])
   mapId          Int?
   MapHierarchy   MapHierarchyMaster? @relation(fields: [mapHierarchyId], references: [id])
   mapHierarchyId Int?
-  Story          SubStory?              @relation(fields: [storyId], references: [id])
-  storyId        Int?
+  SubStory       SubStory?           @relation(fields: [subStoryId], references: [id])
+  subStoryId     Int?
   Wiki           Wiki?               @relation(fields: [wikiId], references: [id])
   wikiId         Int?
 
@@ -105,7 +105,7 @@ model UserProfile {
   @@index([UserId])
 }
 
-model Entry {
+model Story {
   id          Int      @id @default(autoincrement())
   slug        String?  @unique(map: "entry_slug_idx")
   createdAt   DateTime @default(now())
@@ -119,11 +119,11 @@ model Entry {
   tags     String[]
   featured Boolean  @default(false)
 
-  status          Status  @default(UPCOMING)
+  status          Status     @default(UPCOMING)
   authors         User[]
-  stories         SubStory[]
+  subStories      SubStory[]
   assignedToMapID Int?
-  assignedToMap   Map?    @relation(fields: [assignedToMapID], references: [id])
+  assignedToMap   Map?       @relation(fields: [assignedToMapID], references: [id])
 
   rating Int @default(0)
 
@@ -152,7 +152,7 @@ model Map {
   tags     String[]
   featured Boolean  @default(false)
 
-  assignedEntries Entry[]
+  assignedStories Story[]
   objects         GlobalObject[]
   area            GlobalArea[]
   authors         User[]
@@ -203,11 +203,11 @@ model SubStory {
   description String   @db.Text
   nodes       Json[]
   objectTime  Int
-  entry       Entry    @relation(fields: [entryId], references: [id])
-  entryId     Int
+  story       Story    @relation(fields: [storyId], references: [id])
+  storyId     Int
   authors     User[]
 
-  @@index([entryId])
+  @@index([storyId])
 }
 
 model GlobalObject {

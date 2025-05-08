@@ -1,12 +1,10 @@
 "use client";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { storiesSchema } from "@/ValidationSchemas/stories";
+import { StoriesSchema } from "@/ValidationSchemas/stories";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
-// import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
 import {
   Select,
   SelectContent,
@@ -18,22 +16,20 @@ import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Entry, Story } from "@prisma/client";
+import { Story } from "@prisma/client";
 import Link from "next/link";
 import MapSearchDialog from "../ui/dialog/mapSearchDialog";
-// Rendering issue with Simplemde, need to fix
-// Needs to be created dynamically
 
-// Dynamic import for SimpleMDE to avoid SSR issues
 import dynamic from "next/dynamic";
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
+import "easymde/dist/easymde.min.css";
 
-type StoryFormData = z.infer<typeof storiesSchema>;
+type StoryFormData = z.infer<typeof StoriesSchema>;
 
 interface Props {
-  story?: Entry;
+  story?: Story;
   substories?: Story[];
 }
 
@@ -52,7 +48,7 @@ const StoryForm = ({ story, substories }: Props) => {
   const [mapName, setMapName] = useState<string>("");
 
   const form = useForm<StoryFormData>({
-    resolver: zodResolver(storiesSchema),
+    resolver: zodResolver(StoriesSchema),
   });
 
   // Fetch wiki name when wikiId changes
@@ -66,14 +62,14 @@ const StoryForm = ({ story, substories }: Props) => {
     }
   }, [selectedMapId]);
 
-  async function onSubmit(values: z.infer<typeof storiesSchema>) {
+  async function onSubmit(values: z.infer<typeof StoriesSchema>) {
     try {
       setIsSubmitting(true);
       setError("");
       if (story) {
-        await axios.patch(`/api/entry/${story.id}`, values);
+        await axios.patch(`/api/story/${story.id}`, values);
       } else {
-        await axios.post("/api/entry", values);
+        await axios.post("/api/story", values);
       }
       setIsSubmitting(false);
       router.push("/stories");

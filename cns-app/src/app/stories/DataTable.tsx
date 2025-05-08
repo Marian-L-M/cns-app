@@ -1,5 +1,5 @@
-import EntryRating from "@/components/EntryRating";
-import EntryStatusBadge from "@/components/EntryStatusBadge";
+import StoryRating from "@/components/story/StoryRating";
+import StoryStatusBadge from "@/components/story/StoryStatusBadge";
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Entry } from "@prisma/client";
+import { Story } from "@prisma/client";
 import Link from "next/link";
 import React from "react";
 import { ArrowDown } from "lucide-react";
@@ -16,11 +16,11 @@ import { SearchParams } from "./page";
 import { buttonVariants } from "@/components/ui/button";
 
 interface Props {
-  entries: Entry[];
+  stories: Story[];
   searchParams: SearchParams;
 }
 
-const DataTable = ({ entries, searchParams }: Props) => {
+const DataTable = ({ stories, searchParams }: Props) => {
   // Create simple query objects to avoid serialization errors
   const createQueryObject = (orderBy: string) => ({
     orderBy,
@@ -83,26 +83,26 @@ const DataTable = ({ entries, searchParams }: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {entries
-              ? entries.map((entry) => (
-                  <TableRow key={entry.id} data-href="/">
+            {stories
+              ? stories.map((story) => (
+                  <TableRow key={story.id} data-href="/">
                     <TableCell>
-                      <Link href={`/stories/${entry.id}`}>{entry.title}</Link>
+                      <Link href={`/stories/${story.id}`}>{story.title}</Link>
                     </TableCell>
-                    <TableCell>{entry.description}</TableCell>
-                    <TableCell>{entry.category}</TableCell>
+                    <TableCell>{story.description}</TableCell>
+                    <TableCell>{story.category}</TableCell>
                     <TableCell>
                       <div className="flex justify-center">
-                        <EntryStatusBadge status={entry.status} />
+                        <StoryStatusBadge status={story.status} />
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-center">
-                        <EntryRating rating={entry.rating} />
+                        <StoryRating rating={story.rating} />
                       </div>
                     </TableCell>
                     <TableCell>
-                      {entry.createdAt.toLocaleDateString("ja-JP", {
+                      {story.createdAt.toLocaleDateString("ja-JP", {
                         year: "2-digit",
                         month: "2-digit",
                         day: "2-digit",
@@ -111,7 +111,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
                       })}
                     </TableCell>
                     <TableCell>
-                      {entry.updatedAt.toLocaleDateString("ja-JP", {
+                      {story.updatedAt.toLocaleDateString("ja-JP", {
                         year: "2-digit",
                         month: "2-digit",
                         day: "2-digit",
@@ -121,7 +121,7 @@ const DataTable = ({ entries, searchParams }: Props) => {
                     </TableCell>
                     <TableCell>
                       <Link
-                        href={`/stories/${entry.id}/edit`}
+                        href={`/stories/${story.id}/edit`}
                         className={buttonVariants({ variant: "outline" })}
                       >
                         Edit

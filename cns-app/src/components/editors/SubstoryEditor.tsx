@@ -1,20 +1,20 @@
 import EditorContextProvider from "@/store/mapEditorContext";
 import StoryEditorModule from "../maps/StoryEditorModule";
 
-import { Entry, Map, Story } from "@prisma/client";
+import { Map, Story, SubStory } from "@prisma/client";
 
 interface EditorProps {
-  entry: Entry;
-  substory?: Story;
+  story: Story;
+  substory?: SubStory;
   map: Map;
 }
 
-async function SubstoryEditor({ entry, substory, map }: EditorProps) {
+async function SubStoryEditor({ story, substory, map }: EditorProps) {
   return (
     <EditorContextProvider>
-      <StoryEditorModule entry={entry} substory={substory} map={map} />
+      <StoryEditorModule story={story} substory={substory} map={map} />
     </EditorContextProvider>
   );
 }
 
-export default SubstoryEditor;
+export default SubStoryEditor;

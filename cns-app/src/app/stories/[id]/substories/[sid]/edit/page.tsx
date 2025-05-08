@@ -1,5 +1,5 @@
-import SubstoryEditor from "@/components/editors/SubstoryEditor";
-import prisma from "../../../../../../../prisma/db";
+import SubStoryEditor from "@/components/editors/SubStoryEditor";
+import prisma from "@/../prisma/db";
 
 interface substoryProps {
   params: {
@@ -13,7 +13,7 @@ async function substoryDetailPage({ params }: substoryProps) {
   const id = parseInt(resolvedParams.id);
   const sid = parseInt(resolvedParams.sid);
 
-  const entry = await prisma.entry.findUnique({
+  const story = await prisma.story.findUnique({
     where: { id: id },
   });
 
@@ -21,10 +21,10 @@ async function substoryDetailPage({ params }: substoryProps) {
     where: { id: sid },
   });
 
-  if (!entry) {
+  if (!story) {
     return <div>Story not found</div>;
   }
-  if (!entry.assignedToMapID) {
+  if (!story.assignedToMapID) {
     return <div>No associated map</div>;
   }
   if (!substory) {
@@ -33,7 +33,7 @@ async function substoryDetailPage({ params }: substoryProps) {
 
   // fetch map
   const map = await prisma.map.findUnique({
-    where: { id: entry.assignedToMapID },
+    where: { id: story.assignedToMapID },
   });
 
   if (!map) {
@@ -42,7 +42,7 @@ async function substoryDetailPage({ params }: substoryProps) {
 
   return (
     <div className="w-full" id="substory-detail-page">
-      <SubstoryEditor entry={entry} substory={substory} map={map} />
+      <SubstoryEditor story={story} substory={substory} map={map} />
     </div>
   );
 }
