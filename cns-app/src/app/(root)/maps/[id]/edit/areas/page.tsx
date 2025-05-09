@@ -8,7 +8,7 @@ interface Props {
   params: { id: string };
 }
 
-const EditMapAreas = async ({ params }: Props) => {
+export default async function EditMapAreas({ params }: Props) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
   let data: {
@@ -42,6 +42,4 @@ const EditMapAreas = async ({ params }: Props) => {
       </Link>
     </StatusContextProvider>
   );
-};
-
-export default EditMapAreas;
+}

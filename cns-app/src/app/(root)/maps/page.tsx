@@ -1,7 +1,7 @@
 import { getLatestMaps } from "@/lib/actions/map.actions";
 import MapTable from "./MapTable";
 
-const Maps = async () => {
+export default async function Maps() {
   const maps = await getLatestMaps(9);
 
   return (
@@ -10,6 +10,4 @@ const Maps = async () => {
       <MapTable maps={maps} />
     </div>
   );
-};
-
-export default Maps;
+}

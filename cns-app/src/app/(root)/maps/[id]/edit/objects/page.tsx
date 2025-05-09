@@ -1,15 +1,16 @@
+import { Plus } from "lucide-react";
+import Link from "next/link";
+
 import MapModule from "@/components/maps/MapObjectModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 
 interface Props {
   params: { id: string };
 }
 
 // Repetitive code, consider refactoring -> areas & objects
-const EditMapObjects = async ({ params }: Props) => {
+export default async function EditMapObjects({ params }: Props) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
@@ -45,6 +46,4 @@ const EditMapObjects = async ({ params }: Props) => {
       </Link>
     </StatusContextProvider>
   );
-};
-
-export default EditMapObjects;
+}

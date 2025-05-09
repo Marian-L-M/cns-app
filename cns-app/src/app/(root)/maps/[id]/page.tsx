@@ -6,7 +6,7 @@ interface MapPageProps {
   params: { id: string };
 }
 
-const MapPage = async ({ params }: MapPageProps) => {
+export default async function MapPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
   let data: {
@@ -34,6 +34,4 @@ const MapPage = async ({ params }: MapPageProps) => {
       <MapModule data={data} />
     </StatusContextProvider>
   );
-};
-
-export default MapPage;
+}

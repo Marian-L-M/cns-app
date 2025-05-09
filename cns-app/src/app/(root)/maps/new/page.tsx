@@ -5,8 +5,6 @@ const MapForm = dynamic(() => import("@/components/forms/MapForm"), {
   ssr: false,
 });
 
-const NewMap = () => {
+export default function NewMap() {
   return <MapForm />;
-};
-
-export default NewMap;
+}

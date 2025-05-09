@@ -1,11 +1,11 @@
+import { Map, ScrollText, BookMarked } from "lucide-react";
 import { cookies } from "next/headers";
-import Header from "@/components/shared/header";
+
 import Footer from "@/components/footer";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import Header from "@/components/shared/header";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
 import { CustomTrigger } from "@/components/ui/sidebar/custom-trigger";
-
-import { Map, ScrollText, BookMarked } from "lucide-react";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default async function RootLayout({
   children,

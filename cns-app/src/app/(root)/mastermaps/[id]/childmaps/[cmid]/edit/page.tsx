@@ -1,12 +1,13 @@
-import CursorContextProvider from "@/store/cursorContext";
-import { fetchHierarchyChild, fetchMasterMap } from "@/lib/fetchMapData";
 import ChildMapEditor from "@/components/editors/ChildMapEditor";
+import { fetchHierarchyChild, fetchMasterMap } from "@/lib/fetchMapData";
+import CursorContextProvider from "@/store/cursorContext";
 
+// Todo: Fetiching with both ids seems innefficent
 interface MapPageProps {
   params: { id: string; cmid: string };
 }
 
-async function MasterMapEditorPage({ params }: MapPageProps) {
+export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id, cmid } = resolvedParams;
 
@@ -23,5 +24,3 @@ async function MasterMapEditorPage({ params }: MapPageProps) {
     </CursorContextProvider>
   );
 }
-
-export default MasterMapEditorPage;

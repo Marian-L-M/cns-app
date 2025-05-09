@@ -1,3 +1,6 @@
+import Image from "next/image";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,9 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 import { Map } from "@prisma/client";
-import Link from "next/link";
 
 interface Props {
   maps: Map[];
@@ -17,7 +18,7 @@ interface Props {
 
 // To do make Image size dynamic
 // To do db naming is confusing imageUrl = Thumbnail url, mapUrl is the main map image
-const MapTable = ({ maps }: Props) => {
+export default function MapTable({ maps }: Props) {
   return (
     <div className="grid w-full items-center gap-4 grid-cols-3">
       {maps ? (
@@ -54,6 +55,4 @@ const MapTable = ({ maps }: Props) => {
       )}
     </div>
   );
-};
-
-export default MapTable;
+}

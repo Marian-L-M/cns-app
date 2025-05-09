@@ -1,5 +1,5 @@
 import MapEditor from "@/components/editors/MapEditor";
-import prisma from "../../../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 interface MapAreaEditorProps {
   params: {
@@ -9,7 +9,7 @@ interface MapAreaEditorProps {
   searchParams: {};
 }
 
-const MapAreaEditor = async ({ params }: MapAreaEditorProps) => {
+export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
   const areaId = parseInt(resolvedParams.areaId);
@@ -36,6 +36,4 @@ const MapAreaEditor = async ({ params }: MapAreaEditorProps) => {
       <MapEditor id={id} area={area} />
     </div>
   );
-};
-
-export default MapAreaEditor;
+}

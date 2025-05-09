@@ -1,6 +1,6 @@
 // Temporary hook - to be unified with useStoryMaker
 import { useEffect, useRef } from "react";
-import { Story } from "@prisma/client";
+import { SubStory } from "@prisma/client";
 
 type StoryNode = {
   id: number;
@@ -13,17 +13,17 @@ type StoryNode = {
 };
 
 interface substoryModuleProps {
-  editableSubstory: Story & { nodes: StoryNode[] }; // Add the new prop
-  setEditableSubstory: React.Dispatch<
-    React.SetStateAction<Story & { nodes: StoryNode[] }>
+  editableSubStory: SubStory & { nodes: StoryNode[] }; // Add the new prop
+  setEditableSubStory: React.Dispatch<
+    React.SetStateAction<SubStory & { nodes: StoryNode[] }>
   >;
   activeSubstoryID?: number;
   setActiveSubstoryID: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export const useSubStoryMaker = ({
-  editableSubstory,
-  setEditableSubstory,
+  editableSubStory,
+  setEditableSubStory,
   activeSubstoryID,
   setActiveSubstoryID,
 }: substoryModuleProps) => {
@@ -31,7 +31,7 @@ export const useSubStoryMaker = ({
 
   useEffect(() => {
     // Initialize canvas
-    if (!canvasRef.current || !editableSubstory) return;
+    if (!canvasRef.current || !editableSubStory) return;
     const canvas = canvasRef.current;
 
     // Canvas values
@@ -55,10 +55,10 @@ export const useSubStoryMaker = ({
 
     //250204 This check could be cleaner
     if (
-      Array.isArray(editableSubstory.nodes) &&
-      editableSubstory.nodes.length > 0
+      Array.isArray(editableSubStory.nodes) &&
+      editableSubStory.nodes.length > 0
     ) {
-      redrawCanvas(canvas, editableSubstory, ctx, cw, ch, activeSubstoryID);
+      redrawCanvas(canvas, editableSubStory, ctx, cw, ch, activeSubstoryID);
     }
 
     // Update canvas on click
@@ -70,7 +70,7 @@ export const useSubStoryMaker = ({
       let nodeClicked = false;
 
       // Check if node clicked
-      editableSubstory.nodes.forEach((node: StoryNode) => {
+      editableSubStory.nodes.forEach((node: StoryNode) => {
         drawMetaNode(ctx, node, cw, ch);
         if (ctx.isPointInPath(mouseX, mouseY)) {
           if (activeSubstoryID === node.id) {
@@ -88,7 +88,7 @@ export const useSubStoryMaker = ({
         updateNode(
           activeSubstoryID,
           { x: mouseX, y: mouseY },
-          setEditableSubstory
+          setEditableSubStory
         );
       } else if (!nodeClicked) {
         // If not point in path and not edit mode, add new node
@@ -102,7 +102,7 @@ export const useSubStoryMaker = ({
           timeEnd: 1004,
         };
 
-        addNode(newNode, setEditableSubstory);
+        addNode(newNode, setEditableSubStory);
       } else {
         return;
       }
@@ -110,21 +110,21 @@ export const useSubStoryMaker = ({
       window.addEventListener("keydown", keyboardHandler);
 
       // Update canvas
-      redrawCanvas(canvas, editableSubstory, ctx, cw, ch, activeSubstoryID);
+      redrawCanvas(canvas, editableSubStory, ctx, cw, ch, activeSubstoryID);
 
       // Cleanup
       return () => {
         canvas.onmousedown = null;
       };
     };
-  }, [editableSubstory, activeSubstoryID]);
+  }, [editableSubStory, activeSubstoryID]);
 
   return { canvasRef };
 };
 
 const redrawCanvas = (
   canvas: HTMLCanvasElement,
-  editableSubstory: Story & { nodes: StoryNode[] },
+  editableSubStory: SubStory & { nodes: StoryNode[] },
   ctx: CanvasRenderingContext2D,
   cw: number,
   ch: number,
@@ -135,7 +135,7 @@ const redrawCanvas = (
 
   // Draw Lines
   let previousNode: Point | undefined;
-  editableSubstory.nodes.forEach((node: StoryNode) => {
+  editableSubStory.nodes.forEach((node: StoryNode) => {
     // Draw Story Line
     if (previousNode) {
       ctx.beginPath();
@@ -150,7 +150,7 @@ const redrawCanvas = (
   });
 
   // Draw Nodes
-  editableSubstory.nodes.forEach((node: StoryNode) => {
+  editableSubStory.nodes.forEach((node: StoryNode) => {
     drawNode(ctx, node, cw, ch, activeSubstoryID);
   });
 };
@@ -208,11 +208,11 @@ const drawNodeSquare = (
 
 const addNode = (
   newNode: StoryNode,
-  setEditableSubstory: React.Dispatch<
-    React.SetStateAction<Story & { nodes: StoryNode[] }>
+  setEditableSubStory: React.Dispatch<
+    React.SetStateAction<SubStory & { nodes: StoryNode[] }>
   >
 ) => {
-  setEditableSubstory((prev) => ({
+  setEditableSubStory((prev) => ({
     ...prev,
     nodes: [...prev.nodes, newNode],
   }));
@@ -221,11 +221,11 @@ const addNode = (
 const updateNode = (
   nodeId: number,
   updates: Partial<StoryNode>,
-  setEditableSubstory: React.Dispatch<
-    React.SetStateAction<Story & { nodes: StoryNode[] }>
+  setEditableSubStory: React.Dispatch<
+    React.SetStateAction<SubStory & { nodes: StoryNode[] }>
   >
 ) => {
-  setEditableSubstory((prev) => ({
+  setEditableSubStory((prev) => ({
     ...prev,
     nodes: prev.nodes.map((node) =>
       node.id === nodeId ? { ...node, ...updates } : node

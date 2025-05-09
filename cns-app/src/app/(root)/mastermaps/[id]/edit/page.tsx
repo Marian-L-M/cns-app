@@ -1,12 +1,12 @@
 import MasterMapEditor from "@/components/editors/MasterMapEditor";
-import CursorContextProvider from "@/store/cursorContext";
 import { fetchMasterMap } from "@/lib/fetchMapData";
+import CursorContextProvider from "@/store/cursorContext";
 
 interface MapPageProps {
   params: { id: string };
 }
 
-async function MasterMapEditorPage({ params }: MapPageProps) {
+export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
   console.log(params);
@@ -23,5 +23,3 @@ async function MasterMapEditorPage({ params }: MapPageProps) {
     </CursorContextProvider>
   );
 }
-
-export default MasterMapEditorPage;

@@ -1,5 +1,5 @@
-import { SessionProvider } from "next-auth/react";
 import Link from "next/link";
+import { SessionProvider } from "next-auth/react";
 
 import { auth } from "@/auth";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import prisma from "@/../prisma/db";
 
-async function MasterMapPage() {
+export default async function MasterMapPage() {
   const masterMaps = await prisma.mapHierarchyMaster.findMany({
     include: {
       parentMap: true,
@@ -59,5 +59,3 @@ async function MasterMapPage() {
     </SessionProvider>
   );
 }
-
-export default MasterMapPage;

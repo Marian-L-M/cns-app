@@ -58,7 +58,7 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const [editableSubstory, setEditableSubstory] = useState<
+  const [editableSubStory, setEditableSubStory] = useState<
     SubStory & { nodes: StoryNode[] }
   >(substory || { ...defaultSubstory, storyId: story.id });
   const [activeSubstoryID, setActiveSubstoryID] = useState<number | undefined>(
@@ -66,8 +66,8 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
   );
 
   const { canvasRef } = useSubStoryMaker({
-    editableSubstory,
-    setEditableSubstory,
+    editableSubStory,
+    setEditableSubStory,
     activeSubstoryID,
     setActiveSubstoryID,
   });
@@ -75,29 +75,29 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
   const form = useForm<SubstoryFormData>({
     resolver: zodResolver(SubStorySchema),
     defaultValues: {
-      id: editableSubstory.id,
-      title: editableSubstory.title,
-      description: editableSubstory.description,
-      nodes: editableSubstory.nodes as StoryNode[],
-      objectTime: editableSubstory.objectTime,
-      storyId: editableSubstory.storyId,
+      id: editableSubStory.id,
+      title: editableSubStory.title,
+      description: editableSubStory.description,
+      nodes: editableSubStory.nodes as StoryNode[],
+      objectTime: editableSubStory.objectTime,
+      storyId: editableSubStory.storyId,
     },
   });
 
   useEffect(() => {
     const values = {
-      id: editableSubstory.id || form.getValues("id"),
-      title: editableSubstory.title || form.getValues("title"),
+      id: editableSubStory.id || form.getValues("id"),
+      title: editableSubStory.title || form.getValues("title"),
       description:
-        editableSubstory.description || form.getValues("description"),
-      nodes: editableSubstory.nodes,
-      objectTime: editableSubstory.objectTime || form.getValues("objectTime"),
-      storyId: editableSubstory.storyId || form.getValues("storyId"),
+        editableSubStory.description || form.getValues("description"),
+      nodes: editableSubStory.nodes,
+      objectTime: editableSubStory.objectTime || form.getValues("objectTime"),
+      storyId: editableSubStory.storyId || form.getValues("storyId"),
     };
     form.reset(values);
     console.log("values");
     console.log(values);
-  }, [editableSubstory, form]);
+  }, [editableSubStory, form]);
 
   async function onSubmit(values: SubstoryFormData) {
     // 250416 Suspect an issue with how nodes are being cleaned
@@ -107,7 +107,7 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
       console.log("Submitting data:", values); // Add this for debugging
 
       if (substory) {
-        await axios.patch(`/api/substories/${editableSubstory.id}`, values);
+        await axios.patch(`/api/substories/${editableSubStory.id}`, values);
       } else {
         const { id, nodes, ...submitData } = values;
         const cleanedNodes = nodes.map(({ ...node }) => node);
@@ -118,7 +118,7 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
         });
       }
       setIsSubmitting(false);
-      router.push(`/stories/${editableSubstory.storyId}/substories`);
+      router.push(`/stories/${editableSubStory.storyId}/substories`);
       router.refresh();
     } catch (error: any) {
       console.error("Submission error:", error);
@@ -172,7 +172,7 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
               <FormField
                 control={form.control}
                 name={`title`}
-                defaultValue={editableSubstory.title}
+                defaultValue={editableSubStory.title}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Title</FormLabel>
@@ -185,7 +185,7 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
               <FormField
                 control={form.control}
                 name={`description`}
-                defaultValue={editableSubstory.description}
+                defaultValue={editableSubStory.description}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
@@ -198,7 +198,7 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
               <FormField
                 control={form.control}
                 name={`objectTime`}
-                defaultValue={editableSubstory.objectTime}
+                defaultValue={editableSubStory.objectTime}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Time</FormLabel>
@@ -216,8 +216,8 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
             </div>
             <div className="flex flex-col col-span-2 gap-2" id="nodes-editor">
               <h3 className="text-15xl">Story Nodes</h3>
-              {editableSubstory &&
-                editableSubstory.nodes?.map((node, number) => (
+              {editableSubStory &&
+                editableSubStory.nodes?.map((node, number) => (
                   <div
                     key={node?.id}
                     className="border-2 border-indigo-500 rounded-md  hover:bg-slate-100 cursor-pointer p-2"
@@ -334,9 +334,9 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
                           <Button
                             type="button"
                             onClick={() => {
-                              removeNodeFromStory(
-                                editableSubstory,
-                                setEditableSubstory,
+                              removeNodeFromSubStory(
+                                editableSubStory,
+                                setEditableSubStory,
                                 node?.id
                               );
                             }}
@@ -354,7 +354,7 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
                 ? "Saving..."
-                : editableSubstory.id === 0
+                : editableSubStory.id === 0
                 ? "Create Substory"
                 : "Update Substory"}
             </Button>
@@ -367,17 +367,17 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
 
 export default StoryEditorModule;
 
-export function removeNodeFromStory(
-  editableSubstory: Story,
-  setEditableSubstory: React.Dispatch<React.SetStateAction<Story>>,
+export function removeNodeFromSubStory(
+  editableSubStory: SubStory,
+  setEditableSubStory: React.Dispatch<React.SetStateAction<SubStory>>,
   nodeId: number
 ) {
   //To do 250310 Fix type issue
   const updatedSubstory = {
-    ...editableSubstory,
-    nodes: editableSubstory.nodes.filter((node) => node?.id !== nodeId),
+    ...editableSubStory,
+    nodes: editableSubStory.nodes.filter((node) => node?.id !== nodeId),
   };
-  setEditableSubstory(updatedSubstory);
+  setEditableSubStory(updatedSubstory);
   return;
 }
 

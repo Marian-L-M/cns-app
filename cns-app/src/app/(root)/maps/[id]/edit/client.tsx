@@ -10,12 +10,10 @@ const MapForm = dynamic(() => import("@/components/forms/MapForm"), {
   ssr: false,
 });
 
-const EditMapClient = ({ map }: Props) => {
+export default function EditMapClient({ map }: Props) {
   return (
     <>
       <MapForm map={map} />
     </>
   );
-};
-
-export default EditMapClient;
+}

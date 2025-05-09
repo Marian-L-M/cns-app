@@ -1,12 +1,12 @@
-import prisma from "../../../../../prisma/db";
 import { notFound } from "next/navigation";
+import prisma from "@/../prisma/db";
 import EditMapClient from "./client";
 
 interface Props {
   params: { id: string };
 }
 
-const EditMapPage = async ({ params }: Props) => {
+export default async function EditMapPage({ params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
@@ -21,6 +21,4 @@ const EditMapPage = async ({ params }: Props) => {
   const serializedMap = JSON.parse(JSON.stringify(map));
 
   return <EditMapClient map={serializedMap} />;
-};
-
-export default EditMapPage;
+}

@@ -6,7 +6,7 @@ interface Props {
   };
 }
 
-const AddMapObject = async ({ params }: Props) => {
+export default async function AddMapObject({ params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
@@ -20,8 +20,6 @@ const AddMapObject = async ({ params }: Props) => {
       <MapEditor id={id} editorMode={"object"} />
     </div>
   );
-};
-
-export default AddMapObject;
+}
 
 // 250109 Issue: Icon is not rendered on initial selection of thumbnail

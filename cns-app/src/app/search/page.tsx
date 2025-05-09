@@ -34,7 +34,6 @@ function SearchBlock() {
     fetchPosts
   );
 
-  console.log("Data", data);
   return (
     <div className="flex flex-col gap-10 items-center p-6">
       <SearchInput />

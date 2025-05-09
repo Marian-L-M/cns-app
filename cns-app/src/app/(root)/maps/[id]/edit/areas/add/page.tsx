@@ -7,7 +7,7 @@ interface MapAreaEditorProps {
   searchParams: {};
 }
 
-const NewMapAreaEditor = async ({ params }: MapAreaEditorProps) => {
+export default async function NewMapAreaEditor({ params }: MapAreaEditorProps) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
@@ -20,8 +20,6 @@ const NewMapAreaEditor = async ({ params }: MapAreaEditorProps) => {
       <MapEditor id={id} editorMode={"area"} />
     </div>
   );
-};
-
-export default NewMapAreaEditor;
+}
 
 // 250109 Issue: Cannot draw area markers on a new area object.

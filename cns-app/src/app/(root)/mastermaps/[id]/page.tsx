@@ -6,7 +6,7 @@ interface MapPageProps {
   params: { id: string };
 }
 
-const MasterMapPage = async ({ params }: MapPageProps) => {
+export default async function MasterMapPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
@@ -21,6 +21,4 @@ const MasterMapPage = async ({ params }: MapPageProps) => {
       <MasterMapModule masterMap={masterMap} />
     </CursorContextProvider>
   );
-};
-
-export default MasterMapPage;
+}
