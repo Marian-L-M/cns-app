@@ -10,7 +10,7 @@ const editoMenuItems = [
   { title: "Wiki", url: "/editor/wikis" },
 ];
 
-function EditorHeaderMenu() {
+export default function EditorHeaderMenu() {
   const pathname = usePathname();
 
   const isActive = (path: string) => {
@@ -41,5 +41,3 @@ function EditorHeaderMenu() {
     </nav>
   );
 }
-
-export default EditorHeaderMenu;

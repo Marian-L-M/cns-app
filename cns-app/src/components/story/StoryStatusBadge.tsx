@@ -1,5 +1,5 @@
 import { Status } from "@prisma/client";
-import { Badge } from "../ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   status: Status;
@@ -14,7 +14,7 @@ const statusMap: Record<
   UPCOMING: { label: "Upcoming", color: "bg-red-400" },
 };
 
-const StoryStatusBadge = ({ status }: Props) => {
+export default function StoryStatusBadge({ status }: Props) {
   return (
     <Badge
       className={`${statusMap[status].color} text-background hover:${statusMap[status].color}`}
@@ -22,6 +22,4 @@ const StoryStatusBadge = ({ status }: Props) => {
       {statusMap[status].label}
     </Badge>
   );
-};
-
-export default StoryStatusBadge;
+}

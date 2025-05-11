@@ -1,14 +1,14 @@
 "use client";
-import { useMasterMapMaker } from "@/hooks/useMasterMapMaker";
 import Image from "next/image";
-import { FC, useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { createPortal } from "react-dom";
-import { CursorContext } from "@/store/cursorContext";
+
+import { useMasterMapMaker } from "@/hooks/useMasterMapMaker";
 import { Map, MapHierarchyMaster } from "@prisma/client";
+import { CursorContext } from "@/store/cursorContext";
 
 interface MapWithRectangularArea extends Map, PointRectangularArea {}
 interface ParentMap extends Map, MapHierarchyMaster {}
-
 interface MasterMapProps {
   mapParent: Map;
 }
@@ -19,7 +19,7 @@ interface MasterMapProps {
   };
 }
 
-const MasterMapModule: FC<MasterMapProps> = ({ masterMap }) => {
+export default function MasterMapModule({ masterMap }: MasterMapProps) {
   const { parentMap, childMaps } = masterMap;
   const { canvasRef } = useMasterMapMaker({ childMaps });
   const tooltipCtx = useContext(CursorContext);
@@ -51,9 +51,7 @@ const MasterMapModule: FC<MasterMapProps> = ({ masterMap }) => {
       </div>
     </div>
   );
-};
-
-export default MasterMapModule;
+}
 
 // Mouse tracker
 // https://yoavik.com/snippets/mouse-tracker

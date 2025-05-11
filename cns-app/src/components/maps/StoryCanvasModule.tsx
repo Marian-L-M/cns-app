@@ -1,9 +1,10 @@
 "use client";
-import React from "react";
 import Image from "next/image";
+import React from "react";
+
 import { useStoryMaker } from "@/hooks/useStoryMaker";
 
-function StoryCanvasModule({ data, story }: StoryModuleProps) {
+export default function StoryCanvasModule({ data, story }: StoryModuleProps) {
   const { canvasRef } = useStoryMaker({ data, story });
   const { map } = data;
 
@@ -36,5 +37,3 @@ function StoryCanvasModule({ data, story }: StoryModuleProps) {
     </div>
   );
 }
-
-export default StoryCanvasModule;

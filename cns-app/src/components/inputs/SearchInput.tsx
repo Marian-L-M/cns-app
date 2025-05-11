@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-function SearchInput() {
+export default function SearchInput() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
@@ -25,5 +25,3 @@ function SearchInput() {
     </form>
   );
 }
-
-export default SearchInput;

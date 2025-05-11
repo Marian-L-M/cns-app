@@ -2,14 +2,14 @@
 import prisma from "@/../prisma/db";
 
 /**
- * Accepts an entry id to return all related stories
- * @param {number} entryId - The ID of the entry to fetch related stories for.
- * @returns {Promise<{ story: Array<any> }>} A promise resolving to an object containing an array of stories.
+ * Accepts a story id to return all related substories
+ * @param {number} storyId - The ID of the story(former entry) to fetch related stories for.
+ * @returns {Promise<{ story: Array<any> }>} A promise resolving to an object containing an array of substories.
  */
-export const fetchSubStoryData = async (entryId: number) => {
+export async function fetchSubStoryData(storyId: number) {
   const subStory = await prisma.subStory.findMany({
-    where: { entryId: entryId },
+    where: { storyId: storyId },
   });
 
   return { subStory };
-};
+}

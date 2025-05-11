@@ -1,38 +1,47 @@
 "use client";
-import { useMapEditor } from "@/hooks/useMapEditor";
-import { Button } from "../ui/button";
-import ColorPicker from "../ui/colorPicker/ColorPicker";
-import { Menu, Palette } from "lucide-react";
-import Image from "next/image";
-
-import { useContext, useEffect, useState } from "react";
-import { EditorContext } from "@/store/mapEditorContext";
-import { z } from "zod";
-import { GlobalArea, GlobalObject } from "@prisma/client";
 import axios from "axios";
-import {
-  GlobalAreasSchema,
-  GlobalObjectsSchema,
-} from "@/ValidationSchemas/global";
-import { useRouter } from "next/navigation";
-import LineWidthPicker from "../ui/lineWidthPicker/LineWidthPicker";
-import LineColorPicker from "../ui/colorPicker/LineColorPicker";
-
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../ui/input";
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
+import { Menu, Palette } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import ColorPicker from "@/components/ui/colorPicker/ColorPicker";
+import LineColorPicker from "@/components/ui/colorPicker/LineColorPicker";
+import LineWidthPicker from "@/components/ui/lineWidthPicker/LineWidthPicker";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import IconPicker from "@/components/ui/iconPicker/IconPicker";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import IconPicker from "../ui/iconPicker/IconPicker";
-import WikiSearchDialog from "../ui/dialog/wikiSearchDialog";
+} from "@/components/ui/select";
+import WikiSearchDialog from "@/components/ui/dialog/wikiSearchDialog";
+import { useMapEditor } from "@/hooks/useMapEditor";
+import { fetchWikiName } from "@/lib/fetchWikiData";
+import { GlobalArea, GlobalObject } from "@prisma/client";
+import { EditorContext } from "@/store/mapEditorContext";
+import {
+  GlobalAreasSchema,
+  GlobalObjectsSchema,
+} from "@/ValidationSchemas/global";
+
+// To do: Might need to switch to dynamic?
+// To do: Split off area and object form. Component is too big
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 
 interface Props {
   mapId: number;
@@ -57,11 +66,6 @@ interface Props {
   editorMode?: string;
 }
 
-interface WikiFetchProps {
-  selectedWikiId: number | undefined;
-  setWikiName: React.Dispatch<React.SetStateAction<string>>;
-}
-
 export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
   globalArea: GlobalArea;
 };
@@ -76,13 +80,13 @@ export type GlobalObjectFormData = z.infer<typeof GlobalObjectsSchema> & {
   globalObject: GlobalObject;
 };
 
-function MapEditorModule({
+export default function MapEditorModule({
   mapId,
   globalArea,
   globalObject,
   editorMode,
 }: Props) {
-  //250111 TODO - Editormode should be state
+  //250111 TODO - Editormode should be state or context?
   const { canvasRef } = useMapEditor({ globalArea, globalObject, editorMode });
 
   let windowSize: number = 1024;
@@ -122,8 +126,6 @@ function MapEditorModule({
     </div>
   );
 }
-
-export default MapEditorModule;
 
 // 241127 To do:
 // Split form into area and object form
@@ -615,19 +617,19 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
 // Would reduce rerendering stress
 
 // Fetch wiki name with wiki id and set the name in wiki
-async function fetchWikiName({ selectedWikiId, setWikiName }: WikiFetchProps) {
-  if (!selectedWikiId) {
-    setWikiName("");
-    return;
-  }
+// async function fetchWikiName({ selectedWikiId, setWikiName }: WikiFetchProps) {
+//   if (!selectedWikiId) {
+//     setWikiName("");
+//     return;
+//   }
 
-  try {
-    const response = await axios.get(`/api/wiki/${selectedWikiId}`);
-    if (response.data && response.data.title) {
-      setWikiName(response.data.title);
-    }
-  } catch (error) {
-    console.error("Error fetching wiki data:", error);
-    setWikiName("");
-  }
-}
+//   try {
+//     const response = await axios.get(`/api/wiki/${selectedWikiId}`);
+//     if (response.data && response.data.title) {
+//       setWikiName(response.data.title);
+//     }
+//   } catch (error) {
+//     console.error("Error fetching wiki data:", error);
+//     setWikiName("");
+//   }
+// }

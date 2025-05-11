@@ -1,5 +1,7 @@
-import Link from "next/link";
 import { auth } from "@/auth";
+import { UserIcon } from "lucide-react";
+import Link from "next/link";
+
 import { signOutUser } from "@/lib/actions/user.actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +11,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserIcon } from "lucide-react";
 
 const usernMenuItems = [
   {
@@ -26,7 +27,7 @@ const usernMenuItems = [
   },
 ];
 
-async function UserButton() {
+export default async function UserButton() {
   const session = await auth();
 
   if (!session) {
@@ -90,5 +91,3 @@ async function UserButton() {
     </div>
   );
 }
-
-export default UserButton;

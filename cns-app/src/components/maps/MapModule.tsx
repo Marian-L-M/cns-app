@@ -1,12 +1,13 @@
 "use client";
-import { useMapMaker } from "@/hooks/useMapMaker";
 import Image from "next/image";
-import { FC, useContext } from "react";
-import { StatusContext } from "@/store/statusContext";
-import StatusBar from "../ui/maps/statusBar";
-import InfoBox from "../ui/maps/infoBox";
+import { useContext } from "react";
 
-const MapModule: FC<MapModuleProps> = ({ data }) => {
+import StatusBar from "@/components/ui/maps/statusBar";
+import InfoBox from "@/components/ui/maps/infoBox";
+import { useMapMaker } from "@/hooks/useMapMaker";
+import { StatusContext } from "@/store/statusContext";
+
+export default function MapModule({ data }: MapModuleProps) {
   const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
@@ -71,6 +72,4 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
       </div>
     </div>
   );
-};
-
-export default MapModule;
+}

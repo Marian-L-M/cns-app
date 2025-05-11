@@ -1,3 +1,6 @@
+import { EllipsisVertical } from "lucide-react";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -6,11 +9,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { EllipsisVertical } from "lucide-react";
-import Link from "next/link";
+
 import UserButton from "./user-button";
 
-function Menu() {
+export default function Menu() {
   return (
     <div className="flex justify-end gap-3 w-full">
       <nav className="hidden md:flex py-4 px-8 w-full max-w-xs gap-1 items-center justify-end">
@@ -45,5 +47,3 @@ function Menu() {
     </div>
   );
 }
-
-export default Menu;

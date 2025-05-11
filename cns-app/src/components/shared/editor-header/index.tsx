@@ -4,7 +4,7 @@ import Link from "next/link";
 import UserButton from "../header/user-button";
 import EditorHeaderMenu from "./menu";
 
-function EditorHeader() {
+export default function EditorHeader() {
   return (
     <header className="border-b w-full flex items-center justify-between px-6">
       <div className="nav-wrapper flex gap-16">
@@ -17,5 +17,3 @@ function EditorHeader() {
     </header>
   );
 }
-
-export default EditorHeader;

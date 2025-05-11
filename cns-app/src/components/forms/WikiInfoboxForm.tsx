@@ -10,10 +10,10 @@ interface InfoboxFormFieldProps {
   register: UseFormRegister<WikiFormData>;
 }
 
-const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
+export default function WikiInfoboxFormField({
   control,
   register,
-}) => {
+}: InfoboxFormFieldProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "infobox",
@@ -94,6 +94,4 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
       </div>
     </div>
   );
-};
-
-export default WikiInfoboxFormField;
+}

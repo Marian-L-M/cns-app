@@ -1,14 +1,14 @@
 "use client";
-import { useMapMaker } from "@/hooks/useMapMaker";
 import Image from "next/image";
-import { FC, useContext } from "react";
-import { StatusContext } from "@/store/statusContext";
-import StatusBar from "../ui/maps/statusBar";
-import InfoBox from "../ui/maps/infoBox";
 import Link from "next/link";
+import { useContext } from "react";
+
+import StatusBar from "@/components/ui/maps/statusBar";
+import { useMapMaker } from "@/hooks/useMapMaker";
+import { StatusContext } from "@/store/statusContext";
 
 // 241107: To do - unify MapObjectModule and MapAreaModule
-const MapModule: FC<MapModuleProps> = ({ id, data }) => {
+export default function MapModule({ id, data }: MapModuleProps) {
   const { canvasRef } = useMapMaker({ id, data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
@@ -69,6 +69,4 @@ const MapModule: FC<MapModuleProps> = ({ id, data }) => {
       </div>
     </div>
   );
-};
-
-export default MapModule;
+}

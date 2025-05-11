@@ -1,14 +1,15 @@
 "use client";
-import { useStoryMaker } from "@/hooks/useStoryMaker";
 import Image from "next/image";
-import { FC, useContext } from "react";
+import { useContext } from "react";
+
+import StatusBar from "@/components/ui/maps/statusBar";
+import InfoBox from "@/components/ui/maps/infoBox";
+import StoryBox from "@/components/ui/maps/storyBox";
+import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { StatusContext } from "@/store/statusContext";
-import StatusBar from "../ui/maps/statusBar";
-import InfoBox from "../ui/maps/infoBox";
-import StoryBox from "../ui/maps/storyBox";
 
 //240822 Unify story module with map module
-const StoryModule: FC<StoryModuleProps> = ({ data, story }) => {
+export default function StoryModule({ data, story }: StoryModuleProps) {
   const { canvasRef } = useStoryMaker({ data, story });
   const statusCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
@@ -92,6 +93,4 @@ const StoryModule: FC<StoryModuleProps> = ({ data, story }) => {
       </div>
     </div>
   );
-};
-
-export default StoryModule;
+}
