@@ -1,19 +1,17 @@
 // Delete me if not needed
+import { Story } from "@prisma/client";
 import EditorContextProvider from "@/store/mapEditorContext";
-import StoryEditorModule from "../maps/StoryEditorModule";
 
-import { Entry } from "@prisma/client";
+import StoryEditorModule from "@/components/maps/StoryEditorModule";
 
-interface EntryProps {
-  entry: Entry;
+interface StoryProps {
+  story: Story;
 }
 
-function StoryEditor({ entry }: EntryProps) {
+export default function StoryEditor({ story }: StoryProps) {
   return (
     <EditorContextProvider>
-      <StoryEditorModule entry={entry} />
+      <StoryEditorModule story={story} />
     </EditorContextProvider>
   );
 }
-
-export default StoryEditor;

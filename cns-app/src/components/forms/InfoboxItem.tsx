@@ -1,8 +1,10 @@
-import { Control, useFieldArray, UseFormRegister } from "react-hook-form";
-import { WikiFormData } from "./WikiForm";
-import { Button, buttonVariants } from "../ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { Input } from "../ui/input";
+import { Control, useFieldArray, UseFormRegister } from "react-hook-form";
+
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+import { WikiFormData } from "./WikiForm";
 
 interface InfoboxItem {
   id: string;
@@ -14,13 +16,21 @@ interface InfoboxItem {
   bars?: { id: string; key: string; value: string }[];
 }
 
-const InfoboxItem: React.FC<{
+interface InfoboxItemProps {
   field: InfoboxItem;
   index: number;
   register: UseFormRegister<WikiFormData>;
   control: Control<WikiFormData>;
   remove: (index: number) => void;
-}> = ({ field, index, register, control, remove }) => {
+}
+
+export default function InfoboxItem({
+  field,
+  index,
+  register,
+  control,
+  remove,
+}: InfoboxItemProps) {
   const {
     fields: bars,
     append: appendBar,
@@ -124,6 +134,4 @@ const InfoboxItem: React.FC<{
       </div>
     </div>
   );
-};
-
-export default InfoboxItem;
+}

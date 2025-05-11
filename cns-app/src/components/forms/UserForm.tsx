@@ -1,22 +1,30 @@
 "use client";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { userSchema } from "@/ValidationSchemas/users";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../ui/input";
+import { User } from "@prisma/client";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { userSchema } from "@/ValidationSchemas/users";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Button } from "../ui/button";
-import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { User } from "@prisma/client";
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 type UserFormData = z.infer<typeof userSchema>;
 
@@ -24,7 +32,7 @@ interface Props {
   user?: User;
 }
 
-const UserForm = ({ user }: Props) => {
+export default function UserForm({ user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -156,6 +164,4 @@ const UserForm = ({ user }: Props) => {
       <p className="text-destructive">{error}</p>
     </div>
   );
-};
-
-export default UserForm;
+}

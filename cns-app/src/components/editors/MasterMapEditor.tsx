@@ -1,24 +1,30 @@
 // To do: Is the MasterMapEditor even needed when we handle editing via childmapeditor
 "use client";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import Image from "next/image";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-
 import axios from "axios";
-import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
+import { Edit, Plus, Trash } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-import { MasterMapSchema } from "@/ValidationSchemas/maps";
+import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Map, MapHierarchyMaster } from "@prisma/client";
-import MapSearchDialog from "../ui/dialog/mapSearchDialog";
+import { MasterMapSchema } from "@/ValidationSchemas/maps";
+
+import { Button } from "@/components/ui/button";
+import MapSearchDialog from "@/components/ui/dialog/mapSearchDialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { fetchMapName } from "@/lib/fetchMapData";
-import { Edit, Plus, Trash } from "lucide-react";
-import Link from "next/link";
 
 export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
@@ -43,7 +49,7 @@ interface MasterMapProps {
   MasterMap?: MasterMapWithChildren;
 }
 
-function MasterMapEditor({ MasterMap }: MasterMapProps) {
+export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
   const childMaps = MasterMap?.childMaps || [];
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -254,5 +260,3 @@ function MasterMapEditor({ MasterMap }: MasterMapProps) {
     </div>
   );
 }
-
-export default MasterMapEditor;

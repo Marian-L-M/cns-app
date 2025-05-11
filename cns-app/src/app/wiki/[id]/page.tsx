@@ -1,10 +1,12 @@
-import prisma from "../../../../prisma/db";
-import ReactMarkDown from "react-markdown";
-import InfoBox from "@/components/wiki/InfoBox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { ThumbsUp } from "lucide-react";
+import ReactMarkDown from "react-markdown";
 import Link from "next/link";
+
+import prisma from "@/../prisma/db";
+
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import InfoBox from "@/components/wiki/InfoBox";
 
 interface WikiPageProps {
   params: { id: string };
@@ -14,7 +16,7 @@ interface WikiPageProps {
 // See if there is a better way to handle this
 // Recheck get static props and static paths (Redo max schwarzmueller)
 // Add regex check -> change dashes to whitespaces
-const WikiPage = async ({ params }: WikiPageProps) => {
+export default async function WikiPage({ params }: WikiPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
@@ -122,8 +124,6 @@ const WikiPage = async ({ params }: WikiPageProps) => {
       </Tabs>
     </div>
   );
-};
-
-export default WikiPage;
+}
 
 // Todo 240823 rework database schema to allow name as slug + add content section json fields -> Think about good breakdown

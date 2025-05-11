@@ -1,28 +1,36 @@
 "use client";
-import Image from "next/image";
 import axios from "axios";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Story, SubStory, Map } from "@prisma/client";
-import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
 import { useEffect, useState } from "react";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { Input } from "../ui/input";
-import { SubStorySchema } from "@/ValidationSchemas/stories";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Story, SubStory, Map } from "@prisma/client";
+import { SubStorySchema } from "@/ValidationSchemas/stories";
+
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface EditorProps {
   story: Story;
   substory?: SubStory & { nodes: StoryNode[] };
-  map: Map;
+  map?: Map; // To do is map still optional?
 }
 
 type StoryNode = {
@@ -35,6 +43,7 @@ type StoryNode = {
   timeEnd?: number;
 };
 
+// Make local or move to types
 export type SubstoryFormData = z.infer<typeof SubStorySchema> & {
   substory: SubStory & { nodes: StoryNode[] };
   nodes: StoryNode[];
@@ -53,7 +62,11 @@ const defaultSubstory: SubStory & { nodes: StoryNode[] } = {
   updatedAt: new Date(),
 };
 
-function StoryEditorModule({ story, substory, map }: EditorProps) {
+export default function StoryEditorModule({
+  story,
+  substory,
+  map,
+}: EditorProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -364,8 +377,6 @@ function StoryEditorModule({ story, substory, map }: EditorProps) {
     </div>
   );
 }
-
-export default StoryEditorModule;
 
 export function removeNodeFromSubStory(
   editableSubStory: SubStory,

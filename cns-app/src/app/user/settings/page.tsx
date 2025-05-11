@@ -1,13 +1,15 @@
 import { Metadata } from "next";
-import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
+
+import { auth } from "@/auth";
+
 import UserSettingsForm from "./settings-form";
 
 export const metadata: Metadata = {
   title: "User Settings",
 };
 
-async function UserSettingsPage() {
+export default async function UserSettingsPage() {
   const session = await auth();
 
   return (
@@ -19,5 +21,3 @@ async function UserSettingsPage() {
     </SessionProvider>
   );
 }
-
-export default UserSettingsPage;

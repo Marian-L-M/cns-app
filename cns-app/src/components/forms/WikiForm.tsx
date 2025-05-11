@@ -1,22 +1,31 @@
 "use client";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import SimpleMDE from "react-simplemde-editor";
 import { z } from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Wiki } from "@prisma/client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import {
   barItemSchema,
   infoBoxItemSchema,
   wikiSchema,
 } from "@/ValidationSchemas/wiki";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Wiki } from "@prisma/client";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Input } from "../ui/input";
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
-import { Button } from "../ui/button";
+
 import WikiInfoboxFormField from "./WikiInfoboxForm";
+import "easymde/dist/easymde.min.css";
 
 type bar = z.infer<typeof barItemSchema>;
 type InfoboxItem = z.infer<typeof infoBoxItemSchema>;
@@ -28,7 +37,7 @@ interface Props {
   wiki?: Wiki;
 }
 
-const WikiForm = ({ wiki }: Props) => {
+export default function WikiForm({ wiki }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -172,6 +181,4 @@ const WikiForm = ({ wiki }: Props) => {
       </Form>
     </div>
   );
-};
-
-export default WikiForm;
+}

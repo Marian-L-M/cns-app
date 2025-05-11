@@ -1,12 +1,14 @@
-import { buttonVariants } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { TabsList } from "@radix-ui/react-tabs";
 import { SquareChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import prisma from "../../../prisma/db";
 
-const Wiki = async () => {
+import prisma from "@/../prisma/db";
+import { TabsList } from "@radix-ui/react-tabs";
+
+import { buttonVariants } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+
+export default async function Wiki() {
   const newArticles = await prisma?.wiki.findMany({
     orderBy: [{ createdAt: "desc" }],
     take: 5,
@@ -175,9 +177,7 @@ const Wiki = async () => {
       </Tabs>
     </div>
   );
-};
-
-export default Wiki;
+}
 
 // Inspiration
 // https://dribbble.com/shots/8659974-Wikipedia-redesign

@@ -1,4 +1,4 @@
-import SubstoryEditor from "@/components/editors/SubStoryEditor";
+import SubStoryEditor from "@/components/editors/SubstoryEditor";
 import prisma from "@/../prisma/db";
 
 interface SubstoryProps {
@@ -34,7 +34,7 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
 
   return (
     <div className="w-full" id="substory-detail-page">
-      <SubstoryEditor story={story} map={map} />
+      <SubStoryEditor story={story} map={map} />
     </div>
   );
 }

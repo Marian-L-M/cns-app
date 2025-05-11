@@ -1,7 +1,7 @@
 import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
 
-interface areaNode {
+interface AreaNode {
   id: number;
   x: number;
   y: number;
@@ -18,7 +18,7 @@ interface Props {
         description: string;
         imageUrl: string;
         infobox: {};
-        nodes?: areaNode[];
+        nodes?: AreaNode[];
         styles: {};
         objectTime: number;
         mapId: number;
@@ -30,7 +30,7 @@ interface Props {
   editorMode?: string;
 }
 
-const MapEditor = ({ id, area, object, editorMode }: Props) => {
+export default function MapEditor({ id, area, object, editorMode }: Props) {
   return (
     <EditorContextProvider>
       <MapEditorModule
@@ -41,9 +41,7 @@ const MapEditor = ({ id, area, object, editorMode }: Props) => {
       />
     </EditorContextProvider>
   );
-};
-
-export default MapEditor;
+}
 
 // 241024 To do
 // Split MapEditor into two:

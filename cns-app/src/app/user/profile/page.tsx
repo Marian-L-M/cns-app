@@ -2,14 +2,15 @@ import { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 
 import { auth } from "@/auth";
-import UserProfileSettingsForm from "./profile-form";
 import { fetchUserProfile } from "@/lib/fetchUserData";
+
+import UserProfileSettingsForm from "./profile-form";
 
 export const metadata: Metadata = {
   title: "User Profile",
 };
 
-async function UserProfileSettingsPage() {
+export default async function UserProfileSettingsPage() {
   const session = await auth();
   const profile = await fetchUserProfile(session?.user?.id);
 
@@ -22,5 +23,3 @@ async function UserProfileSettingsPage() {
     </SessionProvider>
   );
 }
-
-export default UserProfileSettingsPage;

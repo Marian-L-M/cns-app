@@ -1,25 +1,34 @@
 "use client";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { StoriesSchema } from "@/ValidationSchemas/stories";
+import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../ui/input";
+import { Story } from "@prisma/client";
+import { StoriesSchema } from "@/ValidationSchemas/stories";
+
+import { Button } from "@/components/ui/button";
+import MapSearchDialog from "@/components/ui/dialog/mapSearchDialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { Story } from "@prisma/client";
-import Link from "next/link";
-import MapSearchDialog from "../ui/dialog/mapSearchDialog";
+} from "@/components/ui/select";
 
+// Dynamic import of SimpleMDE to avoid uncontrolled changes error
 import dynamic from "next/dynamic";
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
@@ -38,7 +47,7 @@ interface MapFetchProps {
   setMapName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const StoryForm = ({ story, substories }: Props) => {
+export default function StoryForm({ story, substories }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -53,10 +62,8 @@ const StoryForm = ({ story, substories }: Props) => {
 
   // Fetch wiki name when wikiId changes
   useEffect(() => {
-    // Update Wiki Name
     fetchMapName({ selectedMapId, setMapName });
 
-    // Update form
     if (selectedMapId) {
       form.setValue("assignedToMapID", selectedMapId);
     }
@@ -287,9 +294,7 @@ const StoryForm = ({ story, substories }: Props) => {
       )}
     </div>
   );
-};
-
-export default StoryForm;
+}
 
 // Fetch map name
 // To do - consider a separate api endpoint for fetching names or something more efficient

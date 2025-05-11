@@ -19,6 +19,7 @@ const WikiInfoboxFormField: React.FC<InfoboxFormFieldProps> = ({
     name: "infobox",
   });
 
+  // Broke during refactoring (Removed React.Fc)
   const addField = (type: InfoboxItem["type"]) => {
     const newItem: InfoboxItem = {
       id: Date.now().toString(),

@@ -1,5 +1,9 @@
-import StoryRating from "@/components/story/StoryRating";
-import StoryStatusBadge from "@/components/story/StoryStatusBadge";
+import { ArrowDown } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+
+import { Story } from "@prisma/client";
+
 import {
   Table,
   TableBody,
@@ -8,19 +12,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Story } from "@prisma/client";
-import Link from "next/link";
-import React from "react";
-import { ArrowDown } from "lucide-react";
-import { SearchParams } from "./page";
+import StoryRating from "@/components/story/StoryRating";
+import StoryStatusBadge from "@/components/story/StoryStatusBadge";
 import { buttonVariants } from "@/components/ui/button";
+
+import { SearchParams } from "./page";
 
 interface Props {
   stories: Story[];
   searchParams: SearchParams;
 }
 
-const DataTable = ({ stories, searchParams }: Props) => {
+export default function DataTable({ stories, searchParams }: Props) {
   // Create simple query objects to avoid serialization errors
   const createQueryObject = (orderBy: string) => ({
     orderBy,
@@ -135,6 +138,4 @@ const DataTable = ({ stories, searchParams }: Props) => {
       </div>
     </div>
   );
-};
-
-export default DataTable;
+}

@@ -6,8 +6,6 @@ const StoryForm = dynamic(() => import("@/components/forms/StoryForm"), {
   ssr: false,
 });
 
-const NewStory = () => {
+export default function NewStory() {
   return <StoryForm />;
-};
-
-export default NewStory;
+}

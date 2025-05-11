@@ -1,14 +1,15 @@
-import { Story } from "@prisma/client";
 import { fetchMapData } from "@/lib/fetchMapData";
 import { fetchSubStoryData } from "@/lib/fetchStoryData";
+import { Story } from "@prisma/client";
 import StatusContextProvider from "@/store/statusContext";
+
 import StoryModule from "@/components/maps/StoryModule";
 
 interface Props {
   story: Story;
 }
 
-const StoryDetail = async ({ story }: Props) => {
+export default async function StoryDetail({ story }: Props) {
   let mapData: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
@@ -56,6 +57,4 @@ const StoryDetail = async ({ story }: Props) => {
       </StatusContextProvider>
     </div>
   );
-};
-
-export default StoryDetail;
+}

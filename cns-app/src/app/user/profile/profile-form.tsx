@@ -1,13 +1,12 @@
 "use client";
+import dynamic from "next/dynamic";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import dynamic from "next/dynamic";
-import "easymde/dist/easymde.min.css";
 
-import { userProfileSchema } from "@/ValidationSchemas/users";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateOrCreateUserProfile } from "@/lib/actions/user.actions";
+import { userProfileSchema } from "@/ValidationSchemas/users";
+
 import {
   Form,
   FormControl,
@@ -18,12 +17,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { updateOrCreateUserProfile } from "@/lib/actions/user.actions";
 
+import "easymde/dist/easymde.min.css";
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
 
-function UserProfileSettingsForm({ profile }: any) {
+export default function UserProfileSettingsForm({ profile }: any) {
   const userProfile = profile?.userProfile || {};
 
   const form = useForm<z.infer<typeof userProfileSchema>>({
@@ -130,5 +131,3 @@ function UserProfileSettingsForm({ profile }: any) {
     </Form>
   );
 }
-
-export default UserProfileSettingsForm;

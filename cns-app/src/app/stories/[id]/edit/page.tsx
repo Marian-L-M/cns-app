@@ -5,7 +5,7 @@ interface Props {
   params: { id: string };
 }
 
-const EditStory = async ({ params }: Props) => {
+export default async function EditStory({ params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
@@ -26,6 +26,4 @@ const EditStory = async ({ params }: Props) => {
       <StoryForm story={story} substories={substories} />
     </div>
   );
-};
-
-export default EditStory;
+}

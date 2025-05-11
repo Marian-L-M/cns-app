@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
-import Header from "@/components/shared/header";
+
 import Footer from "@/components/footer";
+import Header from "@/components/shared/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
 import { CustomTrigger } from "@/components/ui/sidebar/custom-trigger";

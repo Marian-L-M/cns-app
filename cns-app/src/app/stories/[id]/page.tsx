@@ -1,7 +1,11 @@
 import prisma from "@/../prisma/db";
 import StoryDetail from "./StoryDetail";
 
-const ViewStory = async ({ params }: { params: Promise<{ id: string }> }) => {
+export default async function ViewStory({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const resolvedParams = await params;
   const idString = resolvedParams.id;
 
@@ -21,6 +25,4 @@ const ViewStory = async ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   return <StoryDetail story={story} />;
-};
-
-export default ViewStory;
+}

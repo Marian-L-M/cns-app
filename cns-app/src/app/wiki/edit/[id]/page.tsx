@@ -1,12 +1,14 @@
-import prisma from "../../../../../prisma/db";
 import { notFound } from "next/navigation";
+
+import prisma from "@/../prisma/db";
+
 import EditWikiClient from "./client";
 
 interface Props {
   params: { id: string };
 }
 
-const EditWikiPage = async ({ params }: Props) => {
+export default async function EditWikiPage({ params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
@@ -21,9 +23,7 @@ const EditWikiPage = async ({ params }: Props) => {
   const serializedWiki = JSON.parse(JSON.stringify(wiki));
 
   return <EditWikiClient wiki={serializedWiki} />;
-};
-
-export default EditWikiPage;
+}
 
 // 2240907 Next action: Change description to a text field
 // 2240907 Next action: Make Wiki body text fields generative

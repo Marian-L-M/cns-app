@@ -1,13 +1,12 @@
-import React from "react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
-
-import prisma from "@/../prisma/db";
+import React from "react";
 import { z } from "zod";
 
 import { fetchMapData } from "@/lib/fetchMapData";
-import StoryCanvasModule from "@/components/maps/StoryCanvasModule";
+import prisma from "@/../prisma/db";
 import { StoriesSchema } from "@/ValidationSchemas/stories";
-import { Plus } from "lucide-react";
+import StoryCanvasModule from "@/components/maps/StoryCanvasModule";
 
 type Story = z.infer<typeof StoriesSchema>;
 
@@ -22,7 +21,7 @@ interface Props {
 
 // To do 250126 - Switch from story mdoule to story editor module (No infobox)
 
-async function substoryOverviewPage({ params }: Props) {
+export default async function substoryOverviewPage({ params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
@@ -70,8 +69,6 @@ async function substoryOverviewPage({ params }: Props) {
     </div>
   );
 }
-
-export default substoryOverviewPage;
 
 function SubstoryOverviewList({ substories, id }: SubstoryListProps) {
   return (

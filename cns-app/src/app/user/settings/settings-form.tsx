@@ -4,10 +4,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
-import { updateUserSettingsSchema } from "@/ValidationSchemas/users";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateUserSettings } from "@/lib/actions/user.actions";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,8 +16,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { updateUserSettings } from "@/lib/actions/user.actions";
+import { updateUserSettingsSchema } from "@/ValidationSchemas/users";
 
-function UserSettingsForm() {
+export default function UserSettingsForm() {
   const { data: session, update } = useSession();
 
   const form = useForm<z.infer<typeof updateUserSettingsSchema>>({
@@ -112,5 +113,3 @@ function UserSettingsForm() {
     </div>
   );
 }
-
-export default UserSettingsForm;

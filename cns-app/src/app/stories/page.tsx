@@ -1,10 +1,13 @@
-import prisma from "../../../prisma/db";
-import DataTable from "./DataTable";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import Pagination from "@/components/Pagination";
-import StatusFilter from "@/components/filters/StatusFilter";
+
 import { Story, Status } from "@prisma/client";
+import prisma from "@/../prisma/db";
+
+import StatusFilter from "@/components/filters/StatusFilter";
+import Pagination from "@/components/Pagination";
+import { buttonVariants } from "@/components/ui/button";
+
+import DataTable from "./DataTable";
 
 export const metadata = {
   title: `Stories`,
@@ -16,11 +19,11 @@ export interface SearchParams {
   orderBy: keyof Story;
 }
 
-const Stories = async ({
+export default async function Stories({
   searchParams: rawSearchParams,
 }: {
   searchParams: SearchParams;
-}) => {
+}) {
   // Create a fully resolved object rather than the promise that contains it.
   const searchParams = await Promise.resolve(rawSearchParams);
 
@@ -73,6 +76,4 @@ const Stories = async ({
       />
     </div>
   );
-};
-
-export default Stories;
+}

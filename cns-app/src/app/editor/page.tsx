@@ -1,5 +1,3 @@
-function EditorOverviewPage() {
+export default function EditorOverviewPage() {
   return <>Ello Edita!</>;
 }
-
-export default EditorOverviewPage;

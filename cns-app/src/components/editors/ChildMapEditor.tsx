@@ -47,7 +47,10 @@ interface ChildMapEditable extends PointRectangularArea {
 
 // 250329 To do: Connect childmap details to state
 // 250404 To do: Two areas cannot be submitted for the same map (which is good), but an alarm text is needed
-function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
+export default function ChildMapEditor({
+  MasterMap,
+  ChildMap,
+}: ChildMapEditorProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -307,5 +310,3 @@ function ChildMapEditor({ MasterMap, ChildMap }: ChildMapEditorProps) {
     </div>
   );
 }
-
-export default ChildMapEditor;

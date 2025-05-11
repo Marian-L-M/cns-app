@@ -1,11 +1,12 @@
+import prisma from "@/../prisma/db";
+
 import UserForm from "@/components/forms/UserForm";
-import prisma from "../../../../prisma/db";
 
 interface Props {
   params: { id: string };
 }
 
-const EditUser = async ({ params }: Props) => {
+export default async function EditUser({ params }: Props) {
   const resolvedParams = await params;
 
   const user = await prisma?.user.findUnique({
@@ -20,6 +21,4 @@ const EditUser = async ({ params }: Props) => {
   // Overwrite password with empty string on the server side
   user.password = "";
   return <UserForm user={user} />;
-};
-
-export default EditUser;
+}

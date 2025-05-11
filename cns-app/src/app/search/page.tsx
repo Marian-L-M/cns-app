@@ -14,7 +14,8 @@ interface WikiDataProps {
     | undefined;
 }
 
-const fetchPosts = async (url: string) => {
+// To do: Check, does this fetch actually do something?
+async function fetchPosts(url: string) {
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -22,7 +23,7 @@ const fetchPosts = async (url: string) => {
   }
 
   return response.json();
-};
+}
 
 function SearchBlock() {
   const search = useSearchParams();
@@ -58,7 +59,7 @@ function DataList({ data }: WikiDataProps) {
   );
 }
 
-function SearchPage() {
+export default function SearchPage() {
   return (
     <div className="flex flex-col gap-10 items-center p-6">
       <Suspense fallback={<div>Loading...</div>}>
@@ -67,5 +68,3 @@ function SearchPage() {
     </div>
   );
 }
-
-export default SearchPage;

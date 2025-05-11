@@ -1,19 +1,28 @@
 "use client";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { mapSchema } from "@/ValidationSchemas/maps";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Map } from "@prisma/client";
 import axios from "axios";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
-import { Input } from "../ui/input";
 import SimpleMDE from "react-simplemde-editor";
+import { z } from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Map } from "@prisma/client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { mapSchema } from "@/ValidationSchemas/maps";
+
 import "easymde/dist/easymde.min.css";
-import { Button } from "../ui/button";
-import Image from "next/image";
-import Link from "next/link";
 
 type MapFormData = z.infer<typeof mapSchema>;
 
@@ -21,7 +30,7 @@ interface Props {
   map?: Map;
 }
 
-const MapForm = ({ map }: Props) => {
+export default function MapForm({ map }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -268,6 +277,4 @@ const MapForm = ({ map }: Props) => {
       </Form>
     </div>
   );
-};
-
-export default MapForm;
+}

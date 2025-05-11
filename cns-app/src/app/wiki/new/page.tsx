@@ -5,8 +5,6 @@ const WikiForm = dynamic(() => import("@/components/forms/WikiForm"), {
   ssr: false,
 });
 
-const NewWiki = () => {
+export default function NewWiki() {
   return <WikiForm />;
-};
-
-export default NewWiki;
+}

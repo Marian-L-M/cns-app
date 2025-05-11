@@ -1,4 +1,8 @@
+import Link from "next/link";
 import React from "react";
+
+import { User } from "@prisma/client";
+
 import {
   Table,
   TableBody,
@@ -7,14 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User } from "@prisma/client";
-import Link from "next/link";
 
 interface Props {
   users: User[];
 }
 
-const DataTableSimple = ({ users }: Props) => {
+export default function DataTableSimple({ users }: Props) {
   return (
     <div className="w-full mt-5">
       <div className="rounded-md sm:border">
@@ -45,6 +47,4 @@ const DataTableSimple = ({ users }: Props) => {
       </div>
     </div>
   );
-};
-
-export default DataTableSimple;
+}
