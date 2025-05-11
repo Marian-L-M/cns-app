@@ -14,7 +14,7 @@ interface MasterMapMakerProps {
   childMaps: MapWithRectangularArea[];
 }
 
-export const useMasterMapMaker = ({ childMaps }: MasterMapMakerProps) => {
+export function useMasterMapMaker({ childMaps }: MasterMapMakerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorCtx = useContext(CursorContext);
   const router = useRouter();
@@ -100,4 +100,4 @@ export const useMasterMapMaker = ({ childMaps }: MasterMapMakerProps) => {
   }, [childMaps, cursorCtx]);
 
   return { canvasRef };
-};
+}

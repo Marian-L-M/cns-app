@@ -7,7 +7,7 @@ import {
 } from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
 
-export const useMapMaker = ({ data }: MapModuleProps) => {
+export function useMapMaker({ data }: MapModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { mapAreas, mapObjects } = data;
   const statusCtx = useContext(StatusContext);
@@ -108,4 +108,4 @@ export const useMapMaker = ({ data }: MapModuleProps) => {
   }, []);
 
   return { canvasRef };
-};
+}

@@ -7,7 +7,7 @@ interface ButtonProps {
   setOpenIconPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function IconPickerButton(props: ButtonProps) {
+export default function IconPickerButton(props: ButtonProps) {
   const { openIconPicker, setOpenIconPicker } = props;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -29,5 +29,3 @@ function IconPickerButton(props: ButtonProps) {
     </motion.button>
   );
 }
-
-export default IconPickerButton;

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useContext } from "react";
+
 import { drawAreas } from "@/lib/map/drawMap";
 import {
   checkClick,
@@ -8,7 +9,7 @@ import {
 } from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
 
-export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
+export function useStoryMaker({ data, story }: StoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { mapAreas, mapObjects } = data;
   const statusCtx = useContext(StatusContext);
@@ -163,4 +164,4 @@ export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
   }, []);
 
   return { canvasRef };
-};
+}

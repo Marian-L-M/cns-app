@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
-import Tabs from "./Tabs";
-import PresetView from "./PresetView";
-import CustomView from "./CustomView";
 import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+
+import CustomView from "./CustomView";
+import PresetView from "./PresetView";
+import Tabs from "./Tabs";
 
 const tabs = ["Preset", "Custom"];
 
@@ -12,7 +13,10 @@ interface ViewProps {
   editorContext: string;
 }
 
-const ColorPanel = ({ setOpenColorPicker, editorContext }: ViewProps) => {
+export default function ColorPanel({
+  setOpenColorPicker,
+  editorContext,
+}: ViewProps) {
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
   return (
@@ -51,6 +55,4 @@ const ColorPanel = ({ setOpenColorPicker, editorContext }: ViewProps) => {
       </AnimatePresence>
     </>
   );
-};
-
-export default ColorPanel;
+}

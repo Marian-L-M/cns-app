@@ -1,13 +1,12 @@
 "use client";
-
 import {
   ChevronFirst,
   ChevronLast,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Button } from "./ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   itemCount: number;
@@ -15,7 +14,11 @@ interface Props {
   currentPage: number;
 }
 
-const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
+export default function Pagination({
+  itemCount,
+  pageSize,
+  currentPage,
+}: Props) {
   const pageCount = Math.ceil(itemCount / pageSize);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -67,6 +70,4 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
       </div>
     </div>
   );
-};
-
-export default Pagination;
+}

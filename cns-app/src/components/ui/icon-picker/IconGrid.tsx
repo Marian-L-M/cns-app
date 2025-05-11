@@ -12,7 +12,10 @@ interface IconGridProps {
   setOpenIconPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function IconGrid({ iconList, setOpenIconPicker }: IconGridProps) {
+export default function IconGrid({
+  iconList,
+  setOpenIconPicker,
+}: IconGridProps) {
   const [selectedIcon, setSelectedIcon] = useState({
     name: "",
     url: "",
@@ -34,5 +37,3 @@ function IconGrid({ iconList, setOpenIconPicker }: IconGridProps) {
     </div>
   );
 }
-
-export default IconGrid;

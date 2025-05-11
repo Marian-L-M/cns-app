@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Button } from "../button";
-import { EditorContext } from "@/store/mapEditorContext";
-import { useContext } from "react";
+
+import { Button } from "@/components/ui/button";
+
 interface IconProps {
   name: string;
   url: string;
@@ -12,8 +12,7 @@ interface IconButtonProps {
   setSelectedIcon: React.Dispatch<React.SetStateAction<IconProps>>;
 }
 
-function IconButton({ icon, setSelectedIcon }: IconButtonProps) {
-  const editorCtx = useContext(EditorContext);
+export default function IconButton({ icon, setSelectedIcon }: IconButtonProps) {
   const handleButtonClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setSelectedIcon({
@@ -21,6 +20,7 @@ function IconButton({ icon, setSelectedIcon }: IconButtonProps) {
       url: icon.url,
     });
   };
+
   return (
     <Button onClick={handleButtonClick}>
       <Image
@@ -33,5 +33,3 @@ function IconButton({ icon, setSelectedIcon }: IconButtonProps) {
     </Button>
   );
 }
-
-export default IconButton;

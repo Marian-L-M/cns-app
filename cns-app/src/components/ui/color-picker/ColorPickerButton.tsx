@@ -14,7 +14,7 @@ interface ButtonProps {
   setOpenColorPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ColorPickerButton = (props: ButtonProps) => {
+export default function ColorPickerButton(props: ButtonProps) {
   const { icon, openColorPicker, setOpenColorPicker } = props;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -35,6 +35,4 @@ const ColorPickerButton = (props: ButtonProps) => {
       {icon}
     </motion.button>
   );
-};
-
-export default ColorPickerButton;
+}

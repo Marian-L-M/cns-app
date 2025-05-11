@@ -1,6 +1,6 @@
 import prisma from "@/../prisma/db";
 
-export const fetchUserProfile = async (userId: string | undefined) => {
+export async function fetchUserProfile(userId: string | undefined) {
   if (!userId) return;
 
   const userProfile = await prisma.userProfile.findFirst({
@@ -8,4 +8,4 @@ export const fetchUserProfile = async (userId: string | undefined) => {
   });
 
   return { userProfile };
-};
+}

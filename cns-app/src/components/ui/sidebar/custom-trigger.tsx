@@ -1,30 +1,7 @@
 "use client";
-import Image from "next/image";
-import {
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import { SquareChevronRight, SquareChevronLeft } from "lucide-react";
-import { Button } from "../button";
-
-// import { useSidebar } from "@/components/ui/sidebar";
-
-// export function AppSidebar() {
-//   const {
-//     state,
-//     open,
-//     setOpen,
-//     openMobile,
-//     setOpenMobile,
-//     isMobile,
-//     toggleSidebar,
-//   } = useSidebar();
-// }
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export function CustomTrigger() {
   const { toggleSidebar, open } = useSidebar();

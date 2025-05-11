@@ -24,10 +24,10 @@ interface ChildMapEditorHookProps {
   >;
 }
 
-export const useChildMapMaker = ({
+export function useChildMapMaker({
   childMapCoordinates,
   setChildMapCoordinates,
-}: ChildMapEditorHookProps) => {
+}: ChildMapEditorHookProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [editorState, setEditorState] = useState("");
 
@@ -126,7 +126,7 @@ export const useChildMapMaker = ({
   }, [childMapCoordinates, editorState]);
 
   return { canvasRef };
-};
+}
 
 function redrawCanvas(
   canvas: HTMLCanvasElement,

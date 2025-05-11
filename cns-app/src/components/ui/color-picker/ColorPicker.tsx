@@ -1,9 +1,10 @@
 "use-client";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+
 import ColorBox from "./ColorBox";
 import ColorPanel from "./ColorPanel";
 import ColorPickerButton from "./ColorPickerButton";
-import { AnimatePresence, motion } from "framer-motion";
 
 interface ColorPickerProps {
   icon: React.ReactNode;
@@ -11,7 +12,7 @@ interface ColorPickerProps {
   editorContext: string;
 }
 
-const ColorPicker = (props: ColorPickerProps) => {
+export default function ColorPicker(props: ColorPickerProps) {
   const { icon, label, editorContext } = props;
   const [openFillColorPicker, setOpenFillColorPicker] =
     useState<boolean>(false);
@@ -41,6 +42,4 @@ const ColorPicker = (props: ColorPickerProps) => {
       </AnimatePresence>
     </div>
   );
-};
-
-export default ColorPicker;
+}

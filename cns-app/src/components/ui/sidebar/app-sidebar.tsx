@@ -1,18 +1,21 @@
-import { APP_NAME } from "@/lib/constants";
-import { LucideIcon } from "lucide-react";
-
 import {
-  ChevronUp,
+  LucideIcon,
   MoreHorizontal,
-  UserCircle,
   User2Icon,
   BarChartHorizontal,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -24,17 +27,9 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail,
 } from "@/components/ui/sidebar";
+import { APP_NAME } from "@/lib/constants";
 
-import Image from "next/image";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "../dropdown-menu";
-import Link from "next/link";
 import { CustomTrigger } from "./custom-trigger";
 
 interface menuItemSublink {

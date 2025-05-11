@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
-import { EditorContext } from "@/store/mapEditorContext";
 import { useContext } from "react";
+
+import { EditorContext } from "@/store/mapEditorContext";
 
 interface SaveButtonProps {
   selectedIcon: GlobalObjectType;
@@ -8,7 +9,10 @@ interface SaveButtonProps {
 }
 
 // Context update is not working
-function SaveButton({ selectedIcon, setOpenIconPicker }: SaveButtonProps) {
+export default function SaveButton({
+  selectedIcon,
+  setOpenIconPicker,
+}: SaveButtonProps) {
   const editorCtx = useContext(EditorContext);
   const saveHandler = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,5 +43,3 @@ function SaveButton({ selectedIcon, setOpenIconPicker }: SaveButtonProps) {
     </button>
   );
 }
-
-export default SaveButton;

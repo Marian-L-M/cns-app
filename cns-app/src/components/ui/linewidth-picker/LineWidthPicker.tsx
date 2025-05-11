@@ -1,16 +1,16 @@
 "use-client";
-
-import { useState } from "react";
-import LineWidthPickerButton from "./LineWidthPickerButton";
 import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+
 import LineWidthBox from "./LineWidthBox";
 import LineWidthPanel from "./LineWidthPanel";
+import LineWidthPickerButton from "./LineWidthPickerButton";
 
 interface LineWidthPickerProps {
   icon: React.ReactNode;
 }
 
-function LineWidthPicker(props: LineWidthPickerProps) {
+export default function LineWidthPicker(props: LineWidthPickerProps) {
   const { icon } = props;
   const [openLineWidthPicker, setOpenLineWidthPicker] =
     useState<boolean>(false);
@@ -38,5 +38,3 @@ function LineWidthPicker(props: LineWidthPickerProps) {
     </div>
   );
 }
-
-export default LineWidthPicker;

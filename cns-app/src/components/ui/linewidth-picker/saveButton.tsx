@@ -1,13 +1,17 @@
 import { Check } from "lucide-react";
-import { EditorContext } from "@/store/mapEditorContext";
 import { useContext } from "react";
+
+import { EditorContext } from "@/store/mapEditorContext";
 
 interface SaveButtonProps {
   lineWidth: number;
   setOpenLineWidthPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SaveButton = ({ lineWidth, setOpenLineWidthPicker }: SaveButtonProps) => {
+export default function SaveButton({
+  lineWidth,
+  setOpenLineWidthPicker,
+}: SaveButtonProps) {
   const editorCtx = useContext(EditorContext);
   const saveHandler = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -30,6 +34,4 @@ const SaveButton = ({ lineWidth, setOpenLineWidthPicker }: SaveButtonProps) => {
       </button>
     </div>
   );
-};
-
-export default SaveButton;
+}

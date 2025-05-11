@@ -20,7 +20,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import IconPicker from "@/components/ui/iconPicker/IconPicker";
+import IconPicker from "@/components/ui/icon-picker/IconPicker";
 import {
   Select,
   SelectContent,

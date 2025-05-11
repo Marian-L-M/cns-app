@@ -6,7 +6,7 @@ interface SaveButtonProps {
 }
 
 // 241014 Not connected to the rest of the app -> unify with save button
-const CustomView = ({ setOpenColorPicker }: SaveButtonProps) => {
+export default function CustomView({ setOpenColorPicker }: SaveButtonProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setOpenColorPicker(false);
@@ -33,6 +33,4 @@ const CustomView = ({ setOpenColorPicker }: SaveButtonProps) => {
       </div>
     </div>
   );
-};
-
-export default CustomView;
+}

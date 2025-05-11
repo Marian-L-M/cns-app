@@ -8,11 +8,11 @@ interface SaveButtonProps {
   editorContext: string;
 }
 
-const SaveButton = ({
+export default function SaveButton({
   color,
   setOpenColorPicker,
   editorContext,
-}: SaveButtonProps) => {
+}: SaveButtonProps) {
   const editorCtx = useContext(EditorContext);
   const saveHandler = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,6 +45,4 @@ const SaveButton = ({
       </button>
     </div>
   );
-};
-
-export default SaveButton;
+}

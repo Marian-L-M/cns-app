@@ -4,7 +4,7 @@ interface InfoBoxProps {
   infoBox: InfoBoxItem[];
 }
 
-const InfoBox = ({ infoBox }: InfoBoxProps) => {
+export default function InfoBox({ infoBox }: InfoBoxProps) {
   const images = infoBox.filter(
     (item) => item?.type === "image"
   ) as ImageType[];
@@ -57,6 +57,4 @@ const InfoBox = ({ infoBox }: InfoBoxProps) => {
       </div>
     </div>
   );
-};
-
-export default InfoBox;
+}

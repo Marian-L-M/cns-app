@@ -21,12 +21,12 @@ interface substoryModuleProps {
   setActiveSubstoryID: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-export const useSubStoryMaker = ({
+export function useSubStoryMaker({
   editableSubStory,
   setEditableSubStory,
   activeSubstoryID,
   setActiveSubstoryID,
-}: substoryModuleProps) => {
+}: substoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export const useSubStoryMaker = ({
   }, [editableSubStory, activeSubstoryID]);
 
   return { canvasRef };
-};
+}
 
 const redrawCanvas = (
   canvas: HTMLCanvasElement,

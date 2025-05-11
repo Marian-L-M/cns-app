@@ -6,7 +6,7 @@ interface TabsProps {
   setSelectedTab: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Tabs = (props: TabsProps) => {
+export default function Tabs(props: TabsProps) {
   const { tabs, selectedTab, setSelectedTab } = props;
   const handleClick = (e: React.MouseEvent, tab: string) => {
     e.preventDefault();
@@ -39,6 +39,4 @@ const Tabs = (props: TabsProps) => {
       ))}
     </div>
   );
-};
-
-export default Tabs;
+}

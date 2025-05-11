@@ -3,7 +3,7 @@ interface Props {
   label: string;
 }
 
-const ColorBox = ({ children, label }: Props) => {
+export default function ColorBox({ children, label }: Props) {
   return (
     <div className="rounded-xl w-56 h-68 bg-slate-900 border border-slate-900 absolute mt-2 left-1/2 -translate-x-1/2 p-4 text-white">
       <h4 className="mb-2">{label}</h4>
@@ -11,6 +11,4 @@ const ColorBox = ({ children, label }: Props) => {
       {children}
     </div>
   );
-};
-
-export default ColorBox;
+}

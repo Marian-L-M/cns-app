@@ -8,7 +8,7 @@ interface StatusProps {
   type: string;
 }
 
-function StatusBar(props: StatusProps) {
+export default function StatusBar(props: StatusProps) {
   const statusCtx = useContext(StatusContext);
 
   const { title, id, type } = props;
@@ -24,5 +24,3 @@ function StatusBar(props: StatusProps) {
     </div>
   );
 }
-
-export default StatusBar;

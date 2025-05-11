@@ -9,7 +9,7 @@ interface MasterMapMakerProps {
   childMaps: MapWithRectangularArea[];
 }
 
-export const useMasterMapEditor = ({ childMaps }: MasterMapMakerProps) => {
+export function useMasterMapEditor({ childMaps }: MasterMapMakerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -42,4 +42,4 @@ export const useMasterMapEditor = ({ childMaps }: MasterMapMakerProps) => {
     }
   });
   return { canvasRef };
-};
+}

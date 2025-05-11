@@ -1,5 +1,4 @@
 "use server";
-
 import { hashSync } from "bcryptjs";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 

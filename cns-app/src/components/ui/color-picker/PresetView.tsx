@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+
 import Hex from "./Hex";
-import { Save } from "lucide-react";
-import SaveButton from "./saveButton";
+import SaveButton from "./SaveButton";
 
 const colors = [
   "#FF6969",

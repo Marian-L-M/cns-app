@@ -1,7 +1,7 @@
 // Rewrite map functions with proper take limitation.
 // Transform api calls to server actions -> (T22)
 import { PrismaClient } from "@prisma/client";
-import { convertToPlainObject } from "../utils";
+import { convertToPlainObject } from "@/lib/utils";
 
 // Action only in name. Consider moving directory
 export async function getLatestMaps(limit: number) {

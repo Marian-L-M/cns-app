@@ -7,7 +7,7 @@ interface MapFetchProps {
   setMapName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const fetchMapData = async (mapId: string) => {
+export async function fetchMapData(mapId: string) {
   const map = await prisma.map.findUnique({
     where: { id: parseInt(mapId) },
   });
@@ -19,9 +19,9 @@ export const fetchMapData = async (mapId: string) => {
   });
 
   return { map, mapAreas, mapObjects };
-};
+}
 
-export const fetchMasterMap = async (masterMapId: string) => {
+export async function fetchMasterMap(masterMapId: string) {
   const masterMap = await prisma.mapHierarchyMaster.findUnique({
     where: { id: parseInt(masterMapId) },
     include: {
@@ -48,9 +48,9 @@ export const fetchMasterMap = async (masterMapId: string) => {
       wy: child.wy,
     })),
   };
-};
+}
 
-export const fetchMasterMapChildren = async (masterMapId: string) => {
+export async function fetchMasterMapChildren(masterMapId: string) {
   const childMaps = await prisma.mapHierarchyChild.findMany({
     where: { hierarchyId: parseInt(masterMapId) },
     include: {
@@ -63,9 +63,9 @@ export const fetchMasterMapChildren = async (masterMapId: string) => {
   return {
     childMaps,
   };
-};
+}
 
-export const fetchHierarchyChild = async (childMapId: string) => {
+export async function fetchHierarchyChild(childMapId: string) {
   const hierarchyChild = await prisma.mapHierarchyChild.findUnique({
     where: { id: parseInt(childMapId) },
     include: {
@@ -82,7 +82,7 @@ export const fetchHierarchyChild = async (childMapId: string) => {
     mapImage: hierarchyChild.childMap.mapUrl,
     mapThumb: hierarchyChild.childMap.imageUrl,
   };
-};
+}
 
 export async function fetchMapName({
   selectedMapId,

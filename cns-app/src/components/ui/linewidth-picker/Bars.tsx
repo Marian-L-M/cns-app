@@ -2,11 +2,7 @@ import { useState } from "react";
 
 const options = [1, 2, 4, 8, 16];
 
-interface PresetViewProps {
-  setLineWidthPicker: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const LineWidthView = ({ setLineWidthPicker }: PresetViewProps) => {
+export default function LineWidthView() {
   const [selectedLineWidth, setSelectedLineWidth] = useState<number>(0);
 
   return (
@@ -23,6 +19,4 @@ const LineWidthView = ({ setLineWidthPicker }: PresetViewProps) => {
       </div>
     </>
   );
-};
-
-export default LineWidthView;
+}

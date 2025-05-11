@@ -1,5 +1,4 @@
 "use client";
-import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import SaveButton from "./saveButton";
 
@@ -7,7 +6,7 @@ interface ViewProps {
   setOpenLineWidthPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const LineWidthPanel = ({ setOpenLineWidthPicker }: ViewProps) => {
+export default function LineWidthPanel({ setOpenLineWidthPicker }: ViewProps) {
   const lineDefaults = [1, 2, 4, 8, 16];
   const [selectedLineWidth, setSelectedLineWidth] = useState<number>(0);
 
@@ -37,6 +36,4 @@ const LineWidthPanel = ({ setOpenLineWidthPicker }: ViewProps) => {
       />
     </div>
   );
-};
-
-export default LineWidthPanel;
+}

@@ -1,4 +1,4 @@
-import { ContextType, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
 
@@ -16,11 +16,11 @@ interface IconBounds {
 }
 
 // Rewrite useMapEditor as a relay between useAreaEditor and useObjectEditor
-export const useMapEditor = ({
+export function useMapEditor({
   globalArea,
   globalObject,
   editorMode,
-}: any = {}) => {
+}: any = {}) {
   // 2025011 Todo implement area editormode logic
   // if (globalArea && editorMode == "area") {
   if (globalArea || editorMode == "area") {
@@ -32,7 +32,7 @@ export const useMapEditor = ({
   }
   const canvasRef = useRef(null);
   return { canvasRef };
-};
+}
 
 function useAreaEditor(nodes?: areaNode[], styles?: any) {
   const editorCtx = useContext(EditorContext);

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useDraw = (
+export function useDraw(
   onDraw: ({ ctx, currentPoint, prevPoint }: Draw) => void
-) => {
+) {
   const [mouseDown, setMouseDown] = useState(false); // Draw only when mouse is clicked
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -66,31 +66,4 @@ export const useDraw = (
   }, [onDraw]);
 
   return { canvasRef, onMouseDown, clearCanvas };
-};
-
-// MapModule
-// const [color, setColor] = useState<string>("#abc");
-// const { canvasRef, onMouseDown, clearCanvas } = useMapMaker(drawAreas);
-
-// function drawAreas({ prevPoint, currentPoint, ctx }: Draw) {
-//   const { x: currX, y: currY } = currentPoint;
-//   const lineColor = "#000";
-//   const lineWidth = 5;
-
-//   // setColor not needed for EOM,but hook up to color picker etc.
-
-//   // Line
-//   let startPoint = prevPoint ?? currentPoint;
-//   ctx.beginPath();
-//   ctx.lineWidth = lineWidth;
-//   ctx.strokeStyle = color;
-//   ctx.moveTo(startPoint.x, startPoint.y);
-//   ctx.lineTo(currX, currY);
-//   ctx.stroke();
-
-//   // Line nodes
-//   ctx.fillStyle = lineColor;
-//   ctx.beginPath();
-//   ctx.arc(startPoint.x, startPoint.y, 2, 0, 2 * Math.PI);
-//   ctx.fill();
-// }
+}

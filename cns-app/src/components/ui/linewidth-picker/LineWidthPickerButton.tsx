@@ -7,7 +7,7 @@ interface ButtonProps {
   setOpenLineWidthPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const LineWidthButton = (props: ButtonProps) => {
+export default function LineWidthButton(props: ButtonProps) {
   const { icon, openLineWidthPicker, setOpenLineWidthPicker } = props;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -28,6 +28,4 @@ const LineWidthButton = (props: ButtonProps) => {
       {icon}
     </motion.button>
   );
-};
-
-export default LineWidthButton;
+}
