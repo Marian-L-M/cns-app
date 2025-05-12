@@ -1,3 +1,14 @@
+// For Navigation
+type MenuListItem = {
+  title: string;
+  url: string;
+};
+
+interface MenuListProps {
+  menuList: MenuListItem[];
+}
+
+// For Drawing
 type Draw = {
   ctx: CanvasRenderingContext2D;
   currentPoint: Point;

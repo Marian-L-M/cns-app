@@ -1,9 +1,9 @@
-import { APP_NAME } from "@/lib/constants";
-import Image from "next/image";
-import Link from "next/link";
-import Menu from "@/components/shared/header/menu";
-import MainNav from "./admin-nav";
-// import AdminSearch from "@/components/admin/admin-search";
+import EditorHeader from "@/components/shared/editor-header";
+
+const menuList = [
+  { title: "Overview", url: "/admin" },
+  { title: "Users", url: "/admin/users" },
+];
 
 export default function AdminLayout({
   children,
@@ -12,16 +12,14 @@ export default function AdminLayout({
 }>) {
   return (
     <>
-      <div className="flex flex-col">
-        <div className="border-b container mx-auto">
+      <div className="flex w-full flex-col gap-4">
+        <EditorHeader menuList={menuList} />
+        <div className="container mx-auto">
           <div className="flex items-center h-16 px-4">
-            <Link href="/" className="w-22">
-              <Image src="/ui/logo.png" height={48} width={48} alt={APP_NAME} />
-            </Link>
-            <MainNav className="mx-6" />
+            {/* <MainNav className="mx-6" /> */}
             <div className="ml-auto items-center flex space-x-4">
               {/* <AdminSearch /> */}
-              <Menu />
+              {/* <Menu /> */}
             </div>
           </div>
         </div>

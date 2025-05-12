@@ -1,9 +1,14 @@
 import EditorHeader from "@/components/shared/editor-header";
-import Menu from "@/components/shared/header/menu";
-// import MainNav from "./admin-nav";
-// import AdminSearch from "@/components/admin/admin-search";
 
-export default function AdminLayout({
+const menuList = [
+  { title: "Overview", url: "/editor" },
+  { title: "Stories", url: "/editor/stories" },
+  { title: "Maps", url: "/editor/maps" },
+  { title: "Mastermaps", url: "/editor/mastermaps" },
+  { title: "Wiki", url: "/editor/wikis" },
+];
+
+export default function EditorLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -11,7 +16,7 @@ export default function AdminLayout({
   return (
     <>
       <div className="flex w-full flex-col gap-4">
-        <EditorHeader />
+        <EditorHeader menuList={menuList} />
         <div className="container mx-auto">
           <div className="flex items-center h-16 px-4">
             {/* <MainNav className="mx-6" /> */}

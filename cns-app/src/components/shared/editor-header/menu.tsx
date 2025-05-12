@@ -2,34 +2,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const editoMenuItems = [
-  { title: "Overview", url: "/editor" },
-  { title: "Stories", url: "/editor/stories" },
-  { title: "Maps", url: "/editor/maps" },
-  { title: "Mastermaps", url: "/editor/mastermaps" },
-  { title: "Wiki", url: "/editor/wikis" },
-];
-
-export default function EditorHeaderMenu() {
+export default function EditorHeaderMenu({ menuList }: MenuListProps) {
   const pathname = usePathname();
 
   const isActive = (path: string) => {
-    // Overview active
-    if (path === "/editor") {
-      return pathname === "/editor";
+    // Overview always needs to be first in list for path validation
+    if (path === menuList[0].url) {
+      return pathname === menuList[0].url;
     }
 
     // Sub route active
     return pathname.startsWith(path);
   };
 
+  console.log(menuList);
+
   return (
     <nav className="main-nav self-end flex items-end gap-4" id="main-nav">
-      {editoMenuItems.map((item) => (
+      {menuList?.map((item) => (
         <Link
           key={`${item.title}-link`}
           href={item.url}
-          className={`text-xl font-semibold py-2 px-1 border-b-4 ${
+          className={`text-md font-semibold py-2 px-1 border-b-4 ${
             isActive(item.url)
               ? "border-orange-600"
               : "border-transparent hover:opacity-80"
