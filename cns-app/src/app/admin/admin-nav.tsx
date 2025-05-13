@@ -23,10 +23,10 @@ const links = [
   },
 ];
 
-const MainNav = ({
+export default function MainNav({
   className,
   ...props
-}: React.HTMLAttributes<HTMLElement>) => {
+}: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
   return (
     <nav
@@ -47,6 +47,4 @@ const MainNav = ({
       ))}
     </nav>
   );
-};
-
-export default MainNav;
+}
