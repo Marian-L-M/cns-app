@@ -11,10 +11,10 @@ export async function requireAdmin() {
   return session;
 }
 
-export async function requireEditorOrAdmin() {
+export async function requireAuthorOrAdmin() {
   const session = await auth();
 
-  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "EDITOR") {
+  if (session?.user?.role !== "ADMIN" && session?.user?.role !== "AUTHOR") {
     redirect("/unauthorized");
   }
 

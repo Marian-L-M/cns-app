@@ -76,6 +76,33 @@ export default async function UserButton() {
               </Button>
             </DropdownMenuItem>
           ))}
+          {session?.user?.role === "ADMIN" && (
+            <DropdownMenuItem className="p-0 mb-1">
+              <Button
+                className="w-full py-4 px-2 h-4 justify-start"
+                variant={"ghost"}
+                asChild
+              >
+                <Link href="/admin" className="w-full">
+                  Admin
+                </Link>
+              </Button>
+            </DropdownMenuItem>
+          )}
+          {(session?.user?.role === "AUTHOR" ||
+            session?.user?.role === "ADMIN") && (
+            <DropdownMenuItem className="p-0 mb-1">
+              <Button
+                className="w-full py-4 px-2 h-4 justify-start"
+                variant={"ghost"}
+                asChild
+              >
+                <Link href="/editor" className="w-full">
+                  Editor
+                </Link>
+              </Button>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className="p-0 mb-1">
             <form action={signOutUser} className="w-full">
               <Button

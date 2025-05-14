@@ -1,7 +1,7 @@
-import { requireEditorOrAdmin } from "@/lib/auth-guards";
+import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 
 export default async function EditorOverviewPage() {
-  await requireEditorOrAdmin();
+  await requireAuthorOrAdmin();
 
   return <>Ello Edita!</>;
 }
