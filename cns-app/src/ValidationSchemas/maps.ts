@@ -3,10 +3,12 @@ import { z } from "zod";
 export const mapSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   description: z.string().min(1, "Description is required").max(65535),
-  imageUrl: z.string().min(1, "image url").max(255).optional(),
-  mapUrl: z.string().min(1, "Map image is required").max(255).optional(),
-  mapScale: z.number().min(0, "Map Zoom Level").max(10).optional(),
+  imageUrl: z.string().min(1, "Display image is required"),
+  mapUrl: z.string().min(1, "Map image is required"),
   mapTime: z.number().min(0, "Story time on Map").max(9999).optional(),
+  category: z.string().optional(),
+  tags: z.array(z.string().max(128)).optional(),
+  isFeatured: z.boolean().default(false),
 });
 
 export const ChildMapSchema = z.object({

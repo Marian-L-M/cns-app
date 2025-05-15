@@ -107,7 +107,7 @@ model UserProfile {
 
 model Story {
   id          Int      @id @default(autoincrement())
-  slug        String?  @unique(map: "entry_slug_idx")
+  slug        String?  @unique(map: "stroy_slug_idx")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(255)

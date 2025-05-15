@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import SimpleMDE from "react-simplemde-editor";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,10 +20,13 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { UploadButton } from "@/lib/uploadthing/utils";
 import { mapSchema } from "@/ValidationSchemas/maps";
 
 import "easymde/dist/easymde.min.css";
+import { Card, CardContent } from "../ui/card";
 
 type MapFormData = z.infer<typeof mapSchema>;
 
@@ -57,6 +61,10 @@ export default function MapForm({ map }: Props) {
     }
   }
 
+  // const images = form.watch("images");
+  // const isFeatured = form.watch('isFeatured');
+  const mapImg = form.watch("mapUrl");
+
   return (
     <div className="rounded-md border w-full p-4">
       <Form {...form}>
@@ -87,39 +95,37 @@ export default function MapForm({ map }: Props) {
           />
           <h3>Images</h3>
           <div className="flex gap-8 mb-8">
-            <div className="flex flex-col gap-4">
-              <FormField
-                control={form.control}
-                name="mapUrl"
-                defaultValue={map?.mapUrl}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Base Map</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="This will turn into an upload field eventually"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Image
-                src="/maps/sample-map.jpg"
-                width={300}
-                height={300}
-                alt="Thumbnail"
-              />
-              {map?.id && (
-                <>
-                  <Link href={`/maps/${map.id}/edit/areas`}>
-                    <Button variant={"secondary"}>Edit Areas</Button>
-                  </Link>
-                  <Link href={`/maps/${map.id}/edit/objects`}>
-                    <Button variant={"secondary"}>Edit Objects</Button>
-                  </Link>
-                </>
-              )}
+            <div className="upload-field">
+              {/* isFeatured */}
+              <h4>Map Image</h4>
+              <Card>
+                <CardContent className="space-y-2 mt-2">
+                  {mapImg && (
+                    <Image
+                      src={mapImg}
+                      alt="map image"
+                      className="object-cover object-center"
+                      width={400}
+                      height={400}
+                    />
+                  )}
+
+                  {!mapImg && (
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: { url: string }[]) => {
+                        form.setValue("mapUrl", res[0].url);
+                      }}
+                      onUploadError={(error: Error) => {
+                        toast.error("Image upload failed", {
+                          className: "error",
+                          description: `ERROR! ${error.message}`,
+                        });
+                      }}
+                    />
+                  )}
+                </CardContent>
+              </Card>
             </div>
             <div className="flex-col">
               <FormField
@@ -138,138 +144,81 @@ export default function MapForm({ map }: Props) {
                   </FormItem>
                 )}
               />
-              <Image
-                src="/maps/sample-map.jpg"
-                width={300}
-                height={300}
-                alt="Thumbnail"
-              />
             </div>
           </div>
-          <h3>Map Location & Reference</h3>
-          <Image
-            src="/maps/sample-world-map.png"
-            width={1000}
-            height={1000}
-            className="w-6/12 bg-white mx-auto"
-            alt="Reference World Map"
+          <FormField
+            control={form.control}
+            name="mapTime"
+            defaultValue={map?.mapTime}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Map Global Time</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="0-9999"
+                    {...field}
+                    max={9999}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
           />
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="x"
-              defaultValue={map?.x}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Global X (Top Left)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0-1000"
-                      {...field}
-                      max={1000}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+          <FormField
+            control={form.control}
+            name="category"
+            defaultValue={map?.category || ""}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder=""
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* tags array add form field  here */}
+          <FormField
+            control={form.control}
+            name="featured"
+            defaultValue={map?.featured}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel></FormLabel>
+                <FormControl>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="featured"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="y"
-              defaultValue={map?.y}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Global Y (Top Left)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0-1000"
-                      {...field}
-                      max={1000}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="wx"
-              defaultValue={map?.wx}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Map Width (Bottom Right)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0-1000"
-                      {...field}
-                      max={1000}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="wy"
-              defaultValue={map?.wy}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Map Height (Bottom Right)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0-1000"
-                      {...field}
-                      max={1000}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="mapScale"
-              defaultValue={map?.mapScale}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Map Zoom Scale</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0-10"
-                      {...field}
-                      max={10}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="mapTime"
-              defaultValue={map?.mapTime}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Map Global Time</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0-9999"
-                      {...field}
-                      max={9999}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
+                    <label
+                      htmlFor="featured"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Is featured?
+                    </label>
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {map?.id && (
+            <>
+              <Link href={`/maps/${map.id}/edit/areas`}>
+                <Button variant={"secondary"}>Edit Areas</Button>
+              </Link>
+              <Link href={`/maps/${map.id}/edit/objects`}>
+                <Button variant={"secondary"}>Edit Objects</Button>
+              </Link>
+            </>
+          )}
           <Button type="submit" disabled={isSubmitting}>
             {map ? "Update Map" : "Submit Map"}
           </Button>
