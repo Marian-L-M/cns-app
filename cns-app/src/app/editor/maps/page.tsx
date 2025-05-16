@@ -9,7 +9,7 @@ export default async function Maps() {
   return (
     <div className="w-full">
       <div
-        className="flex border-b-2 pb-4 border-b-slate-700  justify-between items-center"
+        className="flex border-b p-2 border-b-slate-200  justify-between items-center"
         id="title-row"
       >
         <h1>Maps</h1>

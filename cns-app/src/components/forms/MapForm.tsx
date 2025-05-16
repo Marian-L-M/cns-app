@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Map } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -26,7 +27,6 @@ import { UploadButton } from "@/lib/uploadthing/utils";
 import { mapSchema } from "@/ValidationSchemas/maps";
 
 import "easymde/dist/easymde.min.css";
-import { Card, CardContent } from "../ui/card";
 
 type MapFormData = z.infer<typeof mapSchema>;
 
@@ -41,6 +41,16 @@ export default function MapForm({ map }: Props) {
 
   const form = useForm<MapFormData>({
     resolver: zodResolver(mapSchema),
+    defaultValues: {
+      title: map?.title || "",
+      description: map?.description || "",
+      mapUrl: map?.mapUrl || "",
+      imageUrl: map?.imageUrl || "",
+      mapTime: map?.mapTime || 1000,
+      category: map?.category || "",
+      tags: map?.tags || [],
+      featured: map?.featured || false,
+    },
   });
 
   async function onSubmit(values: z.infer<typeof mapSchema>) {
@@ -61,8 +71,7 @@ export default function MapForm({ map }: Props) {
     }
   }
 
-  // const images = form.watch("images");
-  // const isFeatured = form.watch('isFeatured');
+  const thumbImg = form.watch("imageUrl");
   const mapImg = form.watch("mapUrl");
 
   return (
@@ -96,7 +105,6 @@ export default function MapForm({ map }: Props) {
           <h3>Images</h3>
           <div className="flex gap-8 mb-8">
             <div className="upload-field">
-              {/* isFeatured */}
               <h4>Map Image</h4>
               <Card>
                 <CardContent className="space-y-2 mt-2">
@@ -117,33 +125,70 @@ export default function MapForm({ map }: Props) {
                         form.setValue("mapUrl", res[0].url);
                       }}
                       onUploadError={(error: Error) => {
-                        toast.error("Image upload failed", {
+                        toast.error("Map image upload failed", {
                           className: "error",
                           description: `ERROR! ${error.message}`,
                         });
                       }}
                     />
                   )}
+                  <FormField
+                    control={form.control}
+                    name="mapUrl"
+                    defaultValue={map?.mapUrl}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Base Map" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
               </Card>
             </div>
-            <div className="flex-col">
-              <FormField
-                control={form.control}
-                name="imageUrl"
-                defaultValue={map?.imageUrl}
-                render={({ field }) => (
-                  <FormItem className="mb-4">
-                    <FormLabel>Thumbnail</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="This will turn into an upload field eventually"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+            <div className="upload-field">
+              <h4>Thumbnail Image</h4>
+              <Card>
+                <CardContent className="space-y-2 mt-2">
+                  {thumbImg && (
+                    <Image
+                      src={thumbImg}
+                      alt="thumbnail image"
+                      className="object-cover object-center"
+                      width={400}
+                      height={400}
+                    />
+                  )}
+
+                  {!thumbImg && (
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: { url: string }[]) => {
+                        form.setValue("imageUrl", res[0].url);
+                      }}
+                      onUploadError={(error: Error) => {
+                        toast.error("Thumbnail image upload failed", {
+                          className: "error",
+                          description: `ERROR! ${error.message}`,
+                        });
+                      }}
+                    />
+                  )}
+                  <FormField
+                    control={form.control}
+                    name="imageUrl"
+                    defaultValue={map?.imageUrl}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Thumbnail" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
             </div>
           </div>
           <FormField
@@ -168,22 +213,67 @@ export default function MapForm({ map }: Props) {
           <FormField
             control={form.control}
             name="category"
-            defaultValue={map?.category || ""}
+            defaultValue={map?.category}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <FormControl>
-                  <Input
-                    type="text"
-                    placeholder=""
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
+                  <Input type="text" placeholder="" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
-          {/* tags array add form field  here */}
+          {/* Tags array field */}
+          {/* <FormField
+            control={form.control}
+            name="tags"
+            defaultValue={map?.tags || []}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <div>
+                    {field.value?.map((tag, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center space-x-2 mb-2"
+                      >
+                        <Input
+                          value={tag}
+                          onChange={(e) => {
+                            const newTags = [...field.value];
+                            newTags[index] = e.target.value;
+                            field.onChange(newTags);
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newTags = [...field.value];
+                            newTags.splice(index, 1);
+                            field.onChange(newTags);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        field.onChange([...(field.value || []), ""]);
+                      }}
+                    >
+                      Add Tag
+                    </Button>
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
+          /> */}
           <FormField
             control={form.control}
             name="featured"

@@ -148,7 +148,7 @@ model Map {
   mapTime     Int
   mapUrl      String
 
-  category String?
+  category String
   tags     String[]
   featured Boolean  @default(false)
 

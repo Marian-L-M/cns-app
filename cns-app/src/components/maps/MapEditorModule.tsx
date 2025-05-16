@@ -9,9 +9,9 @@ import { useContext, useEffect, useState } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import ColorPicker from "@/components/ui/colorPicker/ColorPicker";
-import LineColorPicker from "@/components/ui/colorPicker/LineColorPicker";
-import LineWidthPicker from "@/components/ui/lineWidthPicker/LineWidthPicker";
+import ColorPicker from "@/components/ui/color-picker/ColorPicker";
+import LineColorPicker from "@/components/ui/color-picker/LineColorPicker";
+import LineWidthPicker from "@/components/ui/linewidth-picker/LineWidthPicker";
 import {
   Form,
   FormControl,

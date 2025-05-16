@@ -6,9 +6,9 @@ export const mapSchema = z.object({
   imageUrl: z.string().min(1, "Display image is required"),
   mapUrl: z.string().min(1, "Map image is required"),
   mapTime: z.number().min(0, "Story time on Map").max(9999).optional(),
-  category: z.string().optional(),
+  category: z.string().min(1, "Cateogry is required").max(255),
   tags: z.array(z.string().max(128)).optional(),
-  isFeatured: z.boolean().default(false),
+  featured: z.boolean().default(false),
 });
 
 export const ChildMapSchema = z.object({
