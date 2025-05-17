@@ -28,6 +28,7 @@ export default function MapModule({ data }: MapModuleProps) {
   }
 
   // 240925 Make map resizable
+  // 250517 - Marked for deletion - replace with MapDisplayModule
   return (
     <div className="w-full">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
@@ -53,7 +54,7 @@ export default function MapModule({ data }: MapModuleProps) {
             // 240808 TODO: get placeholder image if map is not found
             priority={true}
             className="absolute top-0 left-0 z-1 pointer-events-none"
-            src={`/${map?.mapUrl || "maps/placeholder.jpg"}`}
+            src={map?.mapUrl}
             alt="Map of Kamolin"
             width="1024"
             height="1024"

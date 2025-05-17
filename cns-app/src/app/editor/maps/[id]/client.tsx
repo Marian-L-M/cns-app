@@ -6,6 +6,7 @@ interface Props {
   map: Map;
 }
 
+// THis seems stupid, fix
 const MapForm = dynamic(() => import("@/components/forms/MapForm"), {
   ssr: false,
 });

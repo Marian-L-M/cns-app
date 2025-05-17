@@ -113,8 +113,8 @@ export default function MapForm({ map }: Props) {
                       src={mapImg}
                       alt="map image"
                       className="object-cover object-center"
-                      width={400}
-                      height={400}
+                      width={240}
+                      height={240}
                     />
                   )}
 
@@ -156,8 +156,8 @@ export default function MapForm({ map }: Props) {
                       src={thumbImg}
                       alt="thumbnail image"
                       className="object-cover object-center"
-                      width={400}
-                      height={400}
+                      width={240}
+                      height={240}
                     />
                   )}
 
