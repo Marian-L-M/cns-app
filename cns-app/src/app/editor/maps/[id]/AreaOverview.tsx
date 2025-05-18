@@ -1,3 +1,4 @@
+import AreaObjectList from "@/components/lists/AreaObjectList";
 import MapModule from "@/components/maps/MapAreaModule";
 import MapDisplayModule from "@/components/maps/MapDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
@@ -34,9 +35,14 @@ export default async function AreaOverviewModule({ mapId }: Props) {
     <StatusContextProvider>
       <div className="w-full grid grid-cols-9">
         <MapDisplayModule data={data} />
+        <AreaObjectList
+          dataList={data.mapAreas}
+          label={"Areas"}
+          mapId={mapId}
+        />
       </div>
       <Link
-        href={`editor/maps/${mapId}/areas/create`}
+        href={`/editor/maps/${mapId}/areas/create`}
         // Create class or component for hover button
         className="fixed right-16 bottom-8 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
       >

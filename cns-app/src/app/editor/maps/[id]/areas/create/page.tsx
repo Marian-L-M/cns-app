@@ -1,5 +1,6 @@
-import MapEditor from "@/components/editors/MapEditor";
-
+import MapEditorModule from "@/components/maps/MapEditorModule";
+import EditorContextProvider from "@/store/mapEditorContext";
+import { fetchMapData } from "@/lib/fetchMapData";
 interface MapAreaEditorProps {
   params: {
     id: string;
@@ -15,11 +16,11 @@ export default async function NewMapAreaEditor({ params }: MapAreaEditorProps) {
     return <div>Invalid map ID</div>;
   }
 
+  const { map, mapAreas } = await fetchMapData(id);
+
   return (
-    <div>
-      <MapEditor id={id} editorMode={"area"} />
-    </div>
+    <EditorContextProvider>
+      <MapEditorModule map={map} globalArea={mapAreas} editorMode={"area"} />
+    </EditorContextProvider>
   );
 }
-
-// 250109 Issue: Cannot draw area markers on a new area object.

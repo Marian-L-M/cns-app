@@ -7,15 +7,17 @@ interface MapFetchProps {
   setMapName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export async function fetchMapData(mapId: string) {
+export async function fetchMapData(mapId: string | number) {
+  const id = typeof mapId == "string" ? parseInt(mapId) : mapId;
+
   const map = await prisma.map.findUnique({
-    where: { id: parseInt(mapId) },
+    where: { id: id },
   });
   const mapAreas = await prisma.globalArea.findMany({
-    where: { mapId: parseInt(mapId) },
+    where: { mapId: id },
   });
   const mapObjects = await prisma.globalObject.findMany({
-    where: { mapId: parseInt(mapId) },
+    where: { mapId: id },
   });
 
   return { map, mapAreas, mapObjects };

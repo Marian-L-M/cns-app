@@ -1,3 +1,4 @@
+// Marked for deletion -> superflous
 import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
 

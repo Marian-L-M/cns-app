@@ -33,6 +33,7 @@ export default function MapDisplayModule({ data }: MapModuleProps) {
     windowSize = window.innerWidth;
   }
 
+  // Handle map size
   useEffect(() => {
     // Function to update the container size
     const updateSize = () => {

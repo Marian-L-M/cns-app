@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Menu, Palette } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 
 interface Props {
-  mapId: number;
+  map: MapType;
   globalObject?: GlobalObject;
   globalArea?:
     | {
@@ -81,21 +81,50 @@ export type GlobalObjectFormData = z.infer<typeof GlobalObjectsSchema> & {
 };
 
 export default function MapEditorModule({
-  mapId,
+  map,
   globalArea,
   globalObject,
   editorMode,
 }: Props) {
   //250111 TODO - Editormode should be state or context?
   const { canvasRef } = useMapEditor({ globalArea, globalObject, editorMode });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({
+    width: 1024,
+    height: 1024,
+  });
 
-  let windowSize: number = 1024;
-  if (typeof window !== "undefined") {
-    windowSize = window.innerWidth;
-  }
+  // To do -> Turn into custom hook
+  // Handle map size
+  useEffect(() => {
+    // Function to update the container size
+    const updateSize = () => {
+      if (containerRef.current) {
+        const { width } = containerRef.current.getBoundingClientRect();
+        // Set the height equal to width for a square canvas, or adjust as needed
+        setContainerSize({
+          width: Math.min(width, 1024),
+          height: Math.min(width, 1024),
+        });
+      }
+    };
+
+    // Initial size update
+    updateSize();
+
+    // Add resize event listener
+    window.addEventListener("resize", updateSize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   return (
     <div className="w-full" id="map-editor-module">
+      <div>
+        <h1>Width: {containerSize.width}</h1>
+        <h1>Height:{containerSize.height}</h1>
+      </div>
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
         <div
           className="relative z-10 max-w-screen-lg col-span-4 bg-black"
@@ -103,24 +132,24 @@ export default function MapEditorModule({
         >
           <canvas
             ref={canvasRef}
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize}
+            width={containerSize.width}
+            height={containerSize.height}
             className="border border-grey relative z-10 w-full"
           />
           <Image
             priority={true}
             className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-            src={`/maps/kamolin-map.jpg`} // make dynamic
+            src={map?.mapUrl}
             alt="Map of Kamolin"
-            width="1024"
-            height="1024"
+            width={containerSize.width}
+            height={containerSize.height}
           />
         </div>
         {(globalArea || editorMode === "area") && (
-          <AreaForm mapId={mapId} globalArea={globalArea} />
+          <AreaForm map={map} globalArea={globalArea} />
         )}
         {(globalObject || editorMode === "object") && (
-          <ObjectForm mapId={mapId} globalObject={globalObject} />
+          <ObjectForm map={map} globalObject={globalObject} />
         )}
       </div>
     </div>
@@ -132,7 +161,7 @@ export default function MapEditorModule({
 // Rewiring Area
 // Create object form
 
-function AreaForm({ mapId, globalArea }: Props) {
+function AreaForm({ map, globalArea }: Props) {
   // const { styles } = useMapEditor(globalArea);
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
@@ -158,7 +187,7 @@ function AreaForm({ mapId, globalArea }: Props) {
       title: globalArea?.title || "",
       description: globalArea?.description || "",
       imageUrl: globalArea?.imageUrl || "",
-      mapId: mapId,
+      mapId: map.id,
       wikiId: globalArea?.wikiId || 0,
       type:
         (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
@@ -226,7 +255,7 @@ function AreaForm({ mapId, globalArea }: Props) {
       }
 
       setIsSubmitting(false);
-      router.push(`/maps/${mapId}/edit/areas`);
+      router.push(`/editor/maps/${map.id}/areas`);
       router.refresh();
     } catch (error) {
       handleError(error);
@@ -399,7 +428,7 @@ function AreaForm({ mapId, globalArea }: Props) {
   );
 }
 
-function ObjectForm({ mapId, globalObject, editorMode }: Props) {
+function ObjectForm({ map, globalObject, editorMode }: Props) {
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -417,7 +446,7 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
       description: globalObject?.description || "",
       imageUrl: globalObject?.imageUrl || "",
       thumbUrl: globalObject?.thumbUrl || "",
-      mapId: mapId,
+      mapId: map.id,
       wikiId: globalObject?.wikiId || 0,
       x: globalObject?.x || 100,
       y: globalObject?.y || 100,
@@ -445,7 +474,7 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
   async function onSubmit(values: GlobalObjectFormData) {
     const submissionValues = {
       ...values,
-      mapId: mapId,
+      mapId: map.id,
     };
 
     try {
@@ -463,7 +492,7 @@ function ObjectForm({ mapId, globalObject, editorMode }: Props) {
       }
 
       setIsSubmitting(false);
-      router.push(`/maps/${mapId}/edit/objects`);
+      router.push(`/maps/${map.id}/edit/objects`);
       router.refresh();
     } catch (error) {
       handleError(error);
