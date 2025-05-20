@@ -6,11 +6,15 @@ import AreaOverviewModule from "./AreaOverview";
 
 interface Props {
   params: { id: string };
+  searchParams: {
+    modal: string;
+  };
 }
 
-export default async function EditMapPage({ params }: Props) {
+export default async function EditMapPage({ params, searchParams }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
+  const modal = await searchParams?.modal;
 
   const map = await prisma.map.findUnique({
     where: { id: id },
@@ -20,12 +24,13 @@ export default async function EditMapPage({ params }: Props) {
     return notFound();
   }
 
+  // To do Why serialized?
   const serializedMap = JSON.parse(JSON.stringify(map));
 
   return (
     <div className="w-full flex flex-col gap-4">
       <h1 className="text-2xl">Edit Map</h1>
-      <Tabs defaultValue="areas" className="w-full">
+      <Tabs defaultValue={modal ? modal : "setup"} className="w-full">
         <TabsList>
           <TabsTrigger value="setup">Setup</TabsTrigger>
           <TabsTrigger value="areas">Areas</TabsTrigger>

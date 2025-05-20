@@ -33,11 +33,12 @@ export default async function AreaOverviewModule({ mapId }: Props) {
   }
   return (
     <StatusContextProvider>
-      <div className="w-full grid grid-cols-9">
+      <div className="w-full grid grid-cols-9 gap-4">
         <MapDisplayModule data={data} />
         <AreaObjectList
           dataList={data.mapAreas}
           label={"Areas"}
+          type={"areas"}
           mapId={mapId}
         />
       </div>

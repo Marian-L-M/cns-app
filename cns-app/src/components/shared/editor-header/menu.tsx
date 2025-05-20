@@ -15,8 +15,6 @@ export default function EditorHeaderMenu({ menuList }: MenuListProps) {
     return pathname.startsWith(path);
   };
 
-  console.log(menuList);
-
   return (
     <nav className="main-nav self-end flex items-end gap-4" id="main-nav">
       {menuList?.map((item) => (

@@ -1,4 +1,5 @@
-import MapEditor from "@/components/editors/MapEditor";
+import MapEditorModule from "@/components/maps/MapEditorModule";
+import EditorContextProvider from "@/store/mapEditorContext";
 import prisma from "@/../prisma/db";
 
 interface MapAreaEditorProps {
@@ -27,13 +28,21 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
     where: { id: areaId },
   });
 
+  const map = await prisma.map.findUnique({
+    where: { id: id },
+  });
+
+  if (!map) {
+    return <div>Map not found</div>;
+  }
+
   if (!area) {
     return <div>Area not found</div>;
   }
 
   return (
-    <div>
-      <MapEditor id={id} area={area} />
-    </div>
+    <EditorContextProvider>
+      <MapEditorModule map={map} globalArea={area} />
+    </EditorContextProvider>
   );
 }

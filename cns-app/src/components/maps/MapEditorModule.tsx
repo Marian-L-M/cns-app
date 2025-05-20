@@ -3,6 +3,7 @@ import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Menu, Palette } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -40,8 +41,12 @@ import {
 
 // To do: Might need to switch to dynamic?
 // To do: Split off area and object form. Component is too big
-import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
+
+const SimpleMdeEditor = dynamic(
+  () => import("react-simplemde-editor"),
+  { ssr: false } // This is the key - it prevents the component from being rendered on the server
+);
 
 interface Props {
   map: MapType;
@@ -136,14 +141,16 @@ export default function MapEditorModule({
             height={containerSize.height}
             className="border border-grey relative z-10 w-full"
           />
-          <Image
-            priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-            src={map?.mapUrl}
-            alt="Map of Kamolin"
-            width={containerSize.width}
-            height={containerSize.height}
-          />
+          {map?.mapUrl && (
+            <Image
+              priority={true}
+              className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+              src={map.mapUrl}
+              alt="Map of Kamolin"
+              width={containerSize.width}
+              height={containerSize.height}
+            />
+          )}
         </div>
         {(globalArea || editorMode === "area") && (
           <AreaForm map={map} globalArea={globalArea} />
@@ -187,7 +194,7 @@ function AreaForm({ map, globalArea }: Props) {
       title: globalArea?.title || "",
       description: globalArea?.description || "",
       imageUrl: globalArea?.imageUrl || "",
-      mapId: map.id,
+      mapId: globalArea?.mapId,
       wikiId: globalArea?.wikiId || 0,
       type:
         (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
@@ -248,14 +255,14 @@ function AreaForm({ map, globalArea }: Props) {
       setError("");
       console.log("Submitting data:", submissionValues);
 
-      if (globalArea) {
+      if (globalArea?.id) {
         await axios.patch(`/api/globalarea/${globalArea.id}`, submissionValues);
       } else {
         await axios.post("/api/globalarea", submissionValues);
       }
 
       setIsSubmitting(false);
-      router.push(`/editor/maps/${map.id}/areas`);
+      router.push(`/editor/maps/${map.id}?modal=areas`);
       router.refresh();
     } catch (error) {
       handleError(error);
@@ -310,7 +317,7 @@ function AreaForm({ map, globalArea }: Props) {
               defaultValue={globalArea?.description}
               control={form.control}
               render={({ field }) => (
-                <SimpleMDE placeholder="Area description" {...field} />
+                <SimpleMdeEditor placeholder="Area description" {...field} />
               )}
             />
           </div>
@@ -446,7 +453,7 @@ function ObjectForm({ map, globalObject, editorMode }: Props) {
       description: globalObject?.description || "",
       imageUrl: globalObject?.imageUrl || "",
       thumbUrl: globalObject?.thumbUrl || "",
-      mapId: map.id,
+      mapId: globalObject?.mapId,
       wikiId: globalObject?.wikiId || 0,
       x: globalObject?.x || 100,
       y: globalObject?.y || 100,
@@ -492,7 +499,7 @@ function ObjectForm({ map, globalObject, editorMode }: Props) {
       }
 
       setIsSubmitting(false);
-      router.push(`/maps/${map.id}/edit/objects`);
+      router.push(`editor/maps/${map.id}?modal=objects`);
       router.refresh();
     } catch (error) {
       handleError(error);
@@ -547,7 +554,7 @@ function ObjectForm({ map, globalObject, editorMode }: Props) {
               defaultValue={globalObject?.description}
               control={form.control}
               render={({ field }) => (
-                <SimpleMDE placeholder="Object description" {...field} />
+                <SimpleMdeEditor placeholder="Object description" {...field} />
               )}
             />
           </div>
