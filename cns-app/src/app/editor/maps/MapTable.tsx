@@ -41,7 +41,7 @@ export default function MapTable({ maps }: Props) {
               </CardDescription>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Link href={`/editor/maps/${mapObject.id}/edit`}>
+              <Link href={`/editor/maps/${mapObject.id}`}>
                 <Button variant="outline">Edit</Button>
               </Link>
               <Link href={`/maps/${mapObject.id}`}>

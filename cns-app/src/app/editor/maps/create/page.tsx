@@ -1,10 +1,8 @@
-"use client";
-import dynamic from "next/dynamic";
+import MapForm from "@/components/forms/MapForm";
+import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 
-const MapForm = dynamic(() => import("@/components/forms/MapForm"), {
-  ssr: false,
-});
+export default async function NewMap() {
+  const currentSession = await requireAuthorOrAdmin();
 
-export default function NewMap() {
-  return <MapForm />;
+  return <MapForm user={currentSession.user} />;
 }

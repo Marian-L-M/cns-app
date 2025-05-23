@@ -1,5 +1,4 @@
 import AreaObjectList from "@/components/lists/AreaObjectList";
-import MapModule from "@/components/maps/MapAreaModule";
 import MapDisplayModule from "@/components/maps/MapDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";

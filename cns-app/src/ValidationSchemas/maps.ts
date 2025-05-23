@@ -9,6 +9,7 @@ export const mapSchema = z.object({
   category: z.string().min(1, "Cateogry is required").max(255),
   tags: z.array(z.string().max(128)).optional(),
   featured: z.boolean().default(false),
+  authors: z.array(z.string()),
 });
 
 export const ChildMapSchema = z.object({

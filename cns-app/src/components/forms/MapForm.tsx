@@ -1,16 +1,15 @@
 "use client";
 import axios from "axios";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import SimpleMDE from "react-simplemde-editor";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Map } from "@prisma/client";
+import { Map, User } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,14 +26,27 @@ import { UploadButton } from "@/lib/uploadthing/utils";
 import { mapSchema } from "@/ValidationSchemas/maps";
 
 import "easymde/dist/easymde.min.css";
+const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 type MapFormData = z.infer<typeof mapSchema>;
 
+type MapWithAuthors = Map & {
+  authors: User[];
+};
+
 interface Props {
-  map?: Map;
+  map?: MapWithAuthors;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
-export default function MapForm({ map }: Props) {
+export default function MapForm({ map, user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -50,8 +62,12 @@ export default function MapForm({ map }: Props) {
       category: map?.category || "",
       tags: map?.tags || [],
       featured: map?.featured || false,
+      authors: map?.authors?.map((author) => author.id) || [user.id],
     },
   });
+
+  // const session = await auth();
+  // console.log(session);
 
   async function onSubmit(values: z.infer<typeof mapSchema>) {
     try {
@@ -63,7 +79,7 @@ export default function MapForm({ map }: Props) {
         await axios.post(`/api/maps`, values);
       }
       setIsSubmitting(false);
-      router.push("/maps");
+      router.push("/editor/maps");
       router.refresh();
     } catch (error) {
       setError("Unknown error occurred");
@@ -99,7 +115,7 @@ export default function MapForm({ map }: Props) {
             defaultValue={map?.description}
             control={form.control}
             render={({ field }) => (
-              <SimpleMDE placeholder="Description" {...field} />
+              <SimpleMdeEditor placeholder="Description" {...field} />
             )}
           />
           <h3>Images</h3>
@@ -224,7 +240,7 @@ export default function MapForm({ map }: Props) {
             )}
           />
           {/* Tags array field */}
-          {/* <FormField
+          <FormField
             control={form.control}
             name="tags"
             defaultValue={map?.tags || []}
@@ -233,7 +249,7 @@ export default function MapForm({ map }: Props) {
                 <FormLabel>Tags</FormLabel>
                 <FormControl>
                   <div>
-                    {field.value?.map((tag, index) => (
+                    {(field.value || []).map((tag, index) => (
                       <div
                         key={index}
                         className="flex items-center space-x-2 mb-2"
@@ -241,7 +257,7 @@ export default function MapForm({ map }: Props) {
                         <Input
                           value={tag}
                           onChange={(e) => {
-                            const newTags = [...field.value];
+                            const newTags = [...(field.value || [])];
                             newTags[index] = e.target.value;
                             field.onChange(newTags);
                           }}
@@ -251,7 +267,7 @@ export default function MapForm({ map }: Props) {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const newTags = [...field.value];
+                            const newTags = [...(field.value || [])];
                             newTags.splice(index, 1);
                             field.onChange(newTags);
                           }}
@@ -273,14 +289,14 @@ export default function MapForm({ map }: Props) {
                 </FormControl>
               </FormItem>
             )}
-          /> */}
+          />
           <FormField
             control={form.control}
             name="featured"
             defaultValue={map?.featured}
             render={({ field }) => (
               <FormItem>
-                <FormLabel></FormLabel>
+                <FormLabel>Featured</FormLabel>
                 <FormControl>
                   <div className="flex items-center space-x-2">
                     <Checkbox
@@ -299,15 +315,62 @@ export default function MapForm({ map }: Props) {
               </FormItem>
             )}
           />
-          {map?.id && (
-            <>
-              <Link href={`/maps/${map.id}/edit/areas`}>
-                <Button variant={"secondary"}>Edit Areas</Button>
-              </Link>
-              <Link href={`/maps/${map.id}/edit/objects`}>
-                <Button variant={"secondary"}>Edit Objects</Button>
-              </Link>
-            </>
+          {/* Authors array field -- To do: Replace with search input */}
+          {user.role == "ADMIN" && (
+            <FormField
+              control={form.control}
+              name="authors"
+              defaultValue={
+                map?.authors
+                  ? map?.authors?.map((author) => author.id)
+                  : [user.id]
+              }
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Author</FormLabel>
+                  <FormControl>
+                    <div>
+                      {(field.value || []).map((author, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 mb-2"
+                        >
+                          <Input
+                            value={author}
+                            onChange={(e) => {
+                              const newAuthors = [...(field.value || [])];
+                              newAuthors[index] = e.target.value;
+                              field.onChange(newAuthors);
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newAuthors = [...(field.value || [])];
+                              newAuthors.splice(index, 1);
+                              field.onChange(newAuthors);
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          field.onChange([...(field.value || []), ""]);
+                        }}
+                      >
+                        Add Author
+                      </Button>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           )}
           <Button type="submit" disabled={isSubmitting}>
             {map ? "Update Map" : "Submit Map"}
