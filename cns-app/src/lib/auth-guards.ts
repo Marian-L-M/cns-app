@@ -21,9 +21,20 @@ export async function requireAuthorOrAdmin() {
   return session;
 }
 
-// export async function requirSpecificEditorOrAdmin({ item: any }) {
-//   const session = await auth();
+export async function requireOwnerOrAdmin({ authors }: any) {
+  const session = await auth();
 
-//   // if admin or
-//  // if item author = session?.user
-// }
+  const isAdmin = session?.user?.role === "ADMIN";
+  const isEditor = session?.user?.role === "AUTHOR";
+  const isOwner = authors.some(
+    (author: any) => author.id === session?.user?.id
+  );
+
+  if (!isAdmin && !isEditor) {
+    redirect("/unauthorized");
+  } else if (!isAdmin && !isOwner) {
+    redirect("/unauthorized/editor");
+  }
+
+  return session;
+}
