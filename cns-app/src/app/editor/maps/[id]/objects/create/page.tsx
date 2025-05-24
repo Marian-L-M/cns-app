@@ -1,4 +1,6 @@
 import MapEditor from "@/components/editors/MapEditor";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
+import { fetchMapAuthorId } from "@/lib/fetchMapData";
 
 interface Props {
   params: {
@@ -14,6 +16,10 @@ export default async function AddMapObject({ params }: Props) {
   if (isNaN(id)) {
     return <div>Invalid map ID</div>;
   }
+
+  // Check if current user has permission to edit
+  const mapAuthors = await fetchMapAuthorId(id);
+  const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
 
   return (
     <div>

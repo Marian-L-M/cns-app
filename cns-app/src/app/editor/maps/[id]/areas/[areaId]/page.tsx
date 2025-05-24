@@ -1,6 +1,8 @@
 import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
 import prisma from "@/../prisma/db";
+import { fetchMapAuthorId } from "@/lib/fetchMapData";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 
 interface MapAreaEditorProps {
   params: {
@@ -22,6 +24,10 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
   if (isNaN(areaId)) {
     return <div>Invalid map Area</div>;
   }
+
+  // Check if current user has permission to edit
+  const mapAuthors = await fetchMapAuthorId(id);
+  const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
 
   // Get corresponding area
   const area = await prisma.globalArea.findUnique({

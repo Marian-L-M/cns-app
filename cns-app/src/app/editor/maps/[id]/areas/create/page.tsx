@@ -1,6 +1,7 @@
 import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
-import { fetchMapData } from "@/lib/fetchMapData";
+import { fetchMapAuthorId, fetchMapData } from "@/lib/fetchMapData";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 interface MapAreaEditorProps {
   params: {
     id: string;
@@ -15,6 +16,10 @@ export default async function NewMapAreaEditor({ params }: MapAreaEditorProps) {
   if (isNaN(id)) {
     return <div>Invalid map ID</div>;
   }
+
+  // Check if current user has permission to edit
+  const mapAuthors = await fetchMapAuthorId(id);
+  const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
 
   const { map, mapAreas } = await fetchMapData(id);
 
