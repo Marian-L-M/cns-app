@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
+import { mapObjectDefaultIcon } from "@/lib/constants/objectIcons";
 
 interface areaNode {
   id: number;
@@ -330,7 +331,7 @@ export function drawIcon(
     console.error("Error loading icon:", e);
   };
 
-  icon.src = `/${globalObject.url}`;
+  icon.src = globalObject.url || mapObjectDefaultIcon.url;
   icon.onload = () => {
     ctx.drawImage(
       icon,
