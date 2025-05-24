@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import prisma from "@/../prisma/db";
 
-import AreaOverviewModule from "./AreaOverview";
 import MapForm from "@/components/forms/MapForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
+import AreaObjectOverviewModule from "./AreaObjectOverview";
 
 interface Props {
   params: { id: string };
@@ -51,9 +51,15 @@ export default async function EditMapPage({ params, searchParams }: Props) {
           <MapForm map={map} user={session.user} />
         </TabsContent>
         <TabsContent value="areas">
-          <AreaOverviewModule mapId={id} />
+          <AreaObjectOverviewModule
+            settings={{ mapId: id, label: "Areas", type: "areas" }}
+          />
         </TabsContent>
-        <TabsContent value="objects">Object overview here</TabsContent>
+        <TabsContent value="objects">
+          <AreaObjectOverviewModule
+            settings={{ mapId: id, label: "Objects", type: "objects" }}
+          />
+        </TabsContent>
       </Tabs>
     </div>
   );

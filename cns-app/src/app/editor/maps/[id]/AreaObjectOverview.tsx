@@ -6,10 +6,14 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 
 interface Props {
-  mapId: number;
+  settings: {
+    mapId: number;
+    label: string;
+    type: string;
+  };
 }
 
-export default async function AreaOverviewModule({ mapId }: Props) {
+export default async function AreaObjectOverviewModule({ settings }: Props) {
   let data: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
@@ -18,7 +22,7 @@ export default async function AreaOverviewModule({ mapId }: Props) {
   let error: string | null = null;
 
   try {
-    data = await fetchMapData(mapId);
+    data = await fetchMapData(settings.mapId);
 
     if (!data.map) {
       error = "Map not found";
@@ -35,14 +39,14 @@ export default async function AreaOverviewModule({ mapId }: Props) {
       <div className="w-full grid grid-cols-9 gap-4">
         <MapDisplayModule data={data} />
         <AreaObjectList
-          dataList={data.mapAreas}
-          label={"Areas"}
-          type={"areas"}
-          mapId={mapId}
+          dataList={settings.type == "areas" ? data.mapAreas : data.mapObjects}
+          label={settings.label}
+          type={settings.type}
+          mapId={settings.mapId}
         />
       </div>
       <Link
-        href={`/editor/maps/${mapId}/areas/create`}
+        href={`/editor/maps/${settings.mapId}/${settings.type}/create`}
         // Create class or component for hover button
         className="fixed right-16 bottom-8 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
       >
