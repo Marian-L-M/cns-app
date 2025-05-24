@@ -1,6 +1,8 @@
 import MapEditor from "@/components/editors/MapEditor";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
-import { fetchMapAuthorId } from "@/lib/fetchMapData";
+import { fetchMapAuthorId, fetchMapData } from "@/lib/fetchMapData";
+import MapEditorModule from "@/components/maps/MapEditorModule";
+import EditorContextProvider from "@/store/mapEditorContext";
 
 interface Props {
   params: {
@@ -12,7 +14,6 @@ export default async function AddMapObject({ params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
-  // Imperfect validation, will return false even if letters are mixed with numbers
   if (isNaN(id)) {
     return <div>Invalid map ID</div>;
   }
@@ -21,10 +22,16 @@ export default async function AddMapObject({ params }: Props) {
   const mapAuthors = await fetchMapAuthorId(id);
   const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
 
+  const { map, mapObjects } = await fetchMapData(id);
+
   return (
-    <div>
-      <MapEditor id={id} editorMode={"object"} />
-    </div>
+    <EditorContextProvider>
+      <MapEditorModule
+        map={map}
+        globalObject={mapObjects}
+        editorMode={"object"}
+      />
+    </EditorContextProvider>
   );
 }
 

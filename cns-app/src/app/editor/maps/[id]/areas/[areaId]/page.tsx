@@ -29,7 +29,7 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
   const mapAuthors = await fetchMapAuthorId(id);
   const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
 
-  // Get corresponding area
+  // Get corresponding area and map
   const area = await prisma.globalArea.findUnique({
     where: { id: areaId },
   });

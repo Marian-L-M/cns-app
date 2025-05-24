@@ -43,10 +43,9 @@ import {
 // To do: Split off area and object form. Component is too big
 import "easymde/dist/easymde.min.css";
 
-const SimpleMdeEditor = dynamic(
-  () => import("react-simplemde-editor"),
-  { ssr: false } // This is the key - it prevents the component from being rendered on the server
-);
+const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 interface Props {
   map: MapType;
