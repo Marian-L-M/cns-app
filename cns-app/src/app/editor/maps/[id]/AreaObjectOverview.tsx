@@ -13,6 +13,8 @@ interface Props {
   };
 }
 
+// Todo 250526 to do: Area object overview module is not displaying objects -> Map display module bugging, data is passed
+
 export default async function AreaObjectOverviewModule({ settings }: Props) {
   let data: {
     map: MapType | null;
@@ -34,6 +36,7 @@ export default async function AreaObjectOverviewModule({ settings }: Props) {
   if (error) {
     return <div className="text-destructive">{error}</div>;
   }
+  console.log(data);
   return (
     <StatusContextProvider>
       <div className="w-full grid grid-cols-9 gap-4">
