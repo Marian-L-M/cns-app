@@ -1,4 +1,3 @@
-import MapEditor from "@/components/editors/MapEditor";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import { fetchMapAuthorId, fetchMapData } from "@/lib/fetchMapData";
 import MapEditorModule from "@/components/maps/MapEditorModule";

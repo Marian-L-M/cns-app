@@ -49,9 +49,7 @@ export default function GlobalObjectForm({
   );
   const [wikiName, setWikiName] = useState<string>("");
 
-  type GlobalObjectFormData = z.infer<typeof GlobalObjectsSchema> & {
-    globalObject: GlobalObject;
-  };
+  type GlobalObjectFormData = z.infer<typeof GlobalObjectsSchema>;
 
   const form = useForm<GlobalObjectFormData>({
     resolver: zodResolver(GlobalObjectsSchema),
@@ -60,8 +58,8 @@ export default function GlobalObjectForm({
       description: globalObject?.description || "",
       imageUrl: globalObject?.imageUrl || "",
       thumbUrl: globalObject?.thumbUrl || "",
-      mapId: globalObject?.mapId,
-      wikiId: globalObject?.wikiId || 0,
+      mapId: globalObject?.mapId || map.id,
+      wikiId: globalObject?.wikiId || undefined,
       x: globalObject?.x || 100,
       y: globalObject?.y || 100,
     },
@@ -72,7 +70,7 @@ export default function GlobalObjectForm({
     form.setValue("thumbUrl", editorCtx.globalObjectSettings.url);
     form.setValue("x", editorCtx.globalObjectSettings.x);
     form.setValue("y", editorCtx.globalObjectSettings.y);
-  }, [editorCtx.globalObjectSettings]);
+  }, [editorCtx.globalObjectSettings, form]);
 
   // Fetch wiki name when wikiId changes
   useEffect(() => {
@@ -83,20 +81,20 @@ export default function GlobalObjectForm({
     if (selectedWikiId) {
       form.setValue("wikiId", selectedWikiId);
     }
-  }, [selectedWikiId]);
+  }, [selectedWikiId, form]);
 
   async function onSubmit(values: GlobalObjectFormData) {
+    console.log(globalObject);
     const submissionValues = {
       ...values,
       mapId: map.id,
     };
-
+    console.log(submissionValues);
     try {
       setIsSubmitting(true);
       setError("");
       console.log("Submitting data:", submissionValues);
-
-      if (globalObject) {
+      if (globalObject?.id) {
         await axios.patch(
           `/api/globalobject/${globalObject.id}`,
           submissionValues
@@ -104,9 +102,8 @@ export default function GlobalObjectForm({
       } else {
         await axios.post("/api/globalobject", submissionValues);
       }
-
       setIsSubmitting(false);
-      router.push(`editor/maps/${map.id}?modal=objects`);
+      router.push(`/editor/maps/${map.id}?modal=objects`);
       router.refresh();
     } catch (error) {
       handleError(error);

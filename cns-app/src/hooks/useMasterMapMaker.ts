@@ -1,9 +1,10 @@
-import { useEffect, useRef, useContext } from "react";
-import { CursorContext } from "@/store/cursorContext";
-import { checkHitbox } from "@/lib/map/mouseActions";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useContext } from "react";
+
+import { checkHitbox } from "@/lib/map/mouseActions";
 import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
 import { Map } from "@prisma/client";
+import { CursorContext } from "@/store/cursorContext";
 
 interface MapWithRectangularArea
   extends HierarchyConnection,

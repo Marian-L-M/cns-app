@@ -219,13 +219,14 @@ model GlobalObject {
   imageUrl    String
   thumbUrl    String
   infobox     Json?
+  styles      Json?
   x           Int
   y           Int
   objectTime  Int
   map         Map           @relation(fields: [mapId], references: [id])
   mapId       Int
-  wiki        Wiki          @relation(fields: [wikiId], references: [id])
-  wikiId      Int
+  wiki        Wiki?          @relation(fields: [wikiId], references: [id])
+  wikiId      Int?
   type        MapObjectType @default(LOCATION)
 
   @@index([mapId])
@@ -245,8 +246,8 @@ model GlobalArea {
   objectTime  Int
   map         Map         @relation(fields: [mapId], references: [id])
   mapId       Int
-  wiki        Wiki        @relation(fields: [wikiId], references: [id])
-  wikiId      Int
+  wiki        Wiki?        @relation(fields: [wikiId], references: [id])
+  wikiId      Int?
   type        MapAreaType @default(GEOGRAPHY)
 
   @@index([mapId])

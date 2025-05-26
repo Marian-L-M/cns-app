@@ -8,10 +8,11 @@ export const GlobalObjectsSchema = z.object({
   x: z.number().min(0, "Global X").max(1000).optional(),
   y: z.number().min(0, "Global Y").max(1000).optional(),
   objectTime: z.number().min(0, "Object time").max(9999).optional(),
+  styles: z.any().nullable().optional(),
   type: z.string().min(1, "object type").max(255).optional(),
   infobox: z.any().nullable().optional(),
   mapId: z.number().int().positive("Map ID is required"),
-  wikiId: z.number().int().positive("Wiki ID is required"),
+  wikiId: z.number().int().positive().optional(),
 });
 
 // export const GlobalAreasSchema = z.object({
@@ -28,7 +29,7 @@ export const GlobalAreasSchema = z.object({
   description: z.string().min(1, "Description is required"),
   imageUrl: z.string(),
   mapId: z.number().int().positive("Map ID is required"),
-  wikiId: z.number().int().positive("Wiki ID is required"),
+  wikiId: z.number().int().positive().optional(),
   nodes: z.any().nullable().optional(),
   styles: z.any().nullable().optional(),
   objectTime: z.number().int(),

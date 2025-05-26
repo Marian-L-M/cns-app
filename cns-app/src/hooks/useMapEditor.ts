@@ -172,8 +172,10 @@ function useObjectEditor(globalObject: any) {
   const thumbRadius = thumbSize / 2; // this is kind of stupid
 
   // Initialize context
+  // To do 250525 - Implement object styles
+
   useEffect(() => {
-    if (globalObject) {
+    if (globalObject.length > 0) {
       editorCtx.updateGlobalObjectSettings({
         x: globalObject.x,
         y: globalObject.y,
@@ -192,7 +194,7 @@ function useObjectEditor(globalObject: any) {
       const objectInitializer = {
         x: 100,
         y: 100,
-        url: "objects/icons/dummy.svg",
+        url: mapObjectDefaultIcon.url,
         name: "dummy",
       };
       editorCtx.updateGlobalObjectSettings({
