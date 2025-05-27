@@ -1,0 +1,338 @@
+"use client";
+import axios from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+
+import WikiSearchDialog from "@/components/ui/dialog/wikiSearchDialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { fetchWikiName } from "@/lib/fetchWikiData";
+import { GlobalArea } from "@prisma/client";
+import { EditorContext } from "@/store/mapEditorContext";
+import { GlobalAreasSchema } from "@/ValidationSchemas/global";
+
+import "easymde/dist/easymde.min.css";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import ColorPicker from "../ui/color-picker/ColorPicker";
+import { Menu, Palette } from "lucide-react";
+import LineColorPicker from "../ui/color-picker/LineColorPicker";
+import LineWidthPicker from "../ui/linewidth-picker/LineWidthPicker";
+const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
+
+interface areaNode {
+  id: number;
+  x: number;
+  y: number;
+}
+
+interface Props {
+  map: MapType;
+  editorMode?: string;
+  globalArea?:
+    | {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string;
+        imageUrl: string;
+        infobox: {};
+        nodes?: areaNode[];
+        styles: {};
+        objectTime: number;
+        mapId: number;
+        wikiId: number;
+        type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+      }
+    | undefined;
+}
+
+export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
+  globalArea: GlobalArea;
+};
+
+export default function GlobalAreaForm({ map, globalArea }: Props) {
+  // const { styles } = useMapEditor(globalArea);
+  const editorCtx = useContext(EditorContext);
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
+    globalArea?.wikiId
+  );
+  const [wikiName, setWikiName] = useState<string>("");
+
+  // Intialize styles (250112 - Structure inefficient)
+  const styles = {
+    fillStyle: editorCtx.objectColor,
+    lineWidth: editorCtx.objectLineWidth,
+    strokeStyle: editorCtx.objectLineWidth,
+  };
+
+  // Set form data
+  const form = useForm<GlobalAreaFormData>({
+    resolver: zodResolver(GlobalAreasSchema),
+    defaultValues: {
+      title: globalArea?.title || "",
+      description: globalArea?.description || "",
+      imageUrl: globalArea?.imageUrl || "",
+      mapId: globalArea?.mapId || map.id,
+      wikiId: globalArea?.wikiId || undefined,
+      type:
+        (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
+        "GEOGRAPHY",
+      infobox: null,
+      nodes: globalArea?.nodes || [],
+      styles: {
+        fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
+        lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
+        strokeStyle: styles?.strokeStyle || "black",
+      },
+      objectTime: globalArea?.objectTime || 1000,
+    },
+  });
+
+  // Keep form values synchronized with context
+  useEffect(() => {
+    form.setValue("nodes", editorCtx.nodeList);
+    form.setValue("styles", {
+      fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
+      lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
+      strokeStyle: styles?.strokeStyle || "black",
+    });
+  }, [editorCtx.nodeList, form, styles]);
+
+  // Fetch wiki name when wikiId changes
+  useEffect(() => {
+    // Update Wiki Name
+    fetchWikiName({ selectedWikiId, setWikiName });
+
+    // Update form
+    if (selectedWikiId) {
+      form.setValue("wikiId", selectedWikiId);
+    }
+  }, [selectedWikiId, form]);
+
+  async function onSubmit(values: GlobalAreaFormData) {
+    if (editorCtx.nodeList.length < 1) {
+      alert("Please draw nodes on the map before submitting");
+      return;
+    }
+
+    // Set submission values to latest canvas values
+    const submissionValues = {
+      ...values,
+      styles: {
+        fillStyle: editorCtx.objectColor || "rgba(0, 0, 0, 0.5)",
+        strokeStyle: editorCtx.objectLineColor || "black",
+        lineWidth:
+          typeof editorCtx.objectLineWidth === "number" ? styles?.lineWidth : 5,
+      },
+      nodes: editorCtx.nodeList,
+      // wikiId: selectedWikiId,
+    };
+
+    try {
+      setIsSubmitting(true);
+      setError("");
+      console.log("Submitting data:", submissionValues);
+
+      if (globalArea?.id) {
+        await axios.patch(`/api/globalarea/${globalArea.id}`, submissionValues);
+      } else {
+        await axios.post("/api/globalarea", submissionValues);
+      }
+
+      setIsSubmitting(false);
+      router.push(`/editor/maps/${map.id}?modal=areas`);
+      router.refresh();
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  const handleError = (error: unknown) => {
+    if (error instanceof z.ZodError) {
+      setError(
+        "Validation error: " + error.errors.map((e) => e.message).join(", ")
+      );
+      console.error("Validation error:", error.errors);
+    } else if (axios.isAxiosError(error)) {
+      setError(
+        `Server error: ${error.response?.data?.message || error.message}`
+      );
+      console.error("Server response:", error.response?.data);
+    } else {
+      setError("An unexpected error occurred");
+      console.error("Unknown error:", error);
+    }
+    setIsSubmitting(false);
+  };
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="relative z-20 col-span-2 flex flex-col gap-4"
+        id="sidebar"
+      >
+        <div className="w-full flex flex-col gap-4" id="form-top">
+          <div className="w-full" id="title-container">
+            <FormField
+              control={form.control}
+              name="title"
+              defaultValue={globalArea?.title}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Area Title..." {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="description-container">
+            <h5 className="">Description</h5>
+            <Controller
+              name="description"
+              defaultValue={globalArea?.description}
+              control={form.control}
+              render={({ field }) => (
+                <SimpleMdeEditor placeholder="Area description" {...field} />
+              )}
+            />
+          </div>
+          <div className="w-full" id="wiki-container">
+            <FormField
+              control={form.control}
+              name="wikiId"
+              defaultValue={globalArea?.wikiId}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wiki</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-row gap-2">
+                      <div className="w-2/3">
+                        <Input type="hidden" placeholder="WikiId" {...field} />
+                        {wikiName && (
+                          <div className="p-2 border rounded-md h-10 flex items-center">
+                            <p className="truncate text-sm">{wikiName}</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="w-1/3">
+                        <WikiSearchDialog
+                          setSelectedWikiId={setSelectedWikiId}
+                        />
+                      </div>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="thumbnail-container">
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              defaultValue={globalArea?.imageUrl}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thumbnail</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Area Thumbnail" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="timestamp-container">
+            <FormField
+              control={form.control}
+              name="objectTime"
+              defaultValue={globalArea?.objectTime}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Area Timestamp</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Area Timestamp"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="type-container">
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Type..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="GEOGRAPHY">Geography</SelectItem>
+                      <SelectItem value="POLITICAL">Political</SelectItem>
+                      <SelectItem value="OTHER">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        {/* Move pickers into an overlay over the map editor */}
+        <div className="flex justify-between gap-1" id="color-pickers">
+          <ColorPicker
+            label={"Fill Style"}
+            icon={<Palette className="text-slate-300" />}
+            editorContext={"objectColor"}
+          />
+          <LineColorPicker
+            label={"Line Style"}
+            icon={<Palette className="text-slate-300" />}
+            editorContext={"lineColor"}
+          />
+          <LineWidthPicker icon={<Menu className="text-slate-300" />} />
+        </div>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </Button>
+      </form>
+    </Form>
+  );
+}
