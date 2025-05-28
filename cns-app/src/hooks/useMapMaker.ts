@@ -1,4 +1,10 @@
-import { useEffect, useRef, useContext } from "react";
+import {
+  useEffect,
+  useRef,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { drawAreas } from "@/lib/map/drawMap";
 import {
   checkClick,
@@ -9,12 +15,28 @@ import { StatusContext } from "@/store/statusContext";
 
 export function useMapMaker({ data }: MapModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { mapAreas, mapObjects } = data;
   const statusCtx = useContext(StatusContext);
+  const { mapAreas, mapObjects } = data;
+  const [mapAreaLoaded, setMapAreaLoaded] = useState(false);
+  const [mapObjectLoaded, setMapObjectLoaded] = useState(false);
+
+  // Initialize data for canvas draw
+  // Canvas draw will fail if passed directly
+  // Seems like a dumb solution
+  useEffect(() => {
+    if (!mapAreas) return;
+    setMapAreaLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mapObjects) return;
+    setMapObjectLoaded(true);
+  }, []);
 
   useEffect(() => {
     // Set canvas
     if (!canvasRef.current) return;
+    if (!data || !data.mapAreas || !data.mapObjects) return;
     const canvas = canvasRef.current;
 
     // Canvas values
@@ -29,37 +51,56 @@ export function useMapMaker({ data }: MapModuleProps) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw Areas
-    // 240811 Unify draw functions or keep together for future expansion?
-    if (mapAreas) {
-      mapAreas.forEach((area) => {
-        const styles = area.styles;
-        ctx.lineWidth = styles.lineWidth || 4;
-        ctx.fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
-        ctx.strokeStyle = styles.strokeStyle || "black";
-        drawAreas(ctx, area, cw, ch);
-      });
-    }
+    const redrawCanvas = () => {
+      if (mapAreas) {
+        mapAreas.forEach((area, index) => {
+          const styles = area.styles;
+          ctx.lineWidth = styles.lineWidth || 4;
+          ctx.fillStyle = styles.fillStyle || "rgb(255, 255, 255)";
+          ctx.strokeStyle = styles.strokeStyle || "black";
+
+          // drawAreas(ctx, area, cw, ch);
+          ctx.beginPath();
+          ctx.moveTo(area.nodes[0].x * cw, area.nodes[0].y * ch);
+          for (var i = 1; i < area.nodes.length; i++) {
+            const point = {
+              x: area.nodes[i].x * cw,
+              y: area.nodes[i].y * ch,
+            };
+            ctx.lineTo(point.x, point.y);
+          }
+          ctx.closePath();
+          ctx.stroke();
+          ctx.fill();
+        });
+      }
+
+      // Draw Objects
+      if (mapObjects) {
+        mapObjects.forEach((object) => {
+          const thumbSize = 40;
+          const image = new Image(); // Using optional size for image
+          image.src = `${object.thumbUrl}`;
+          image.onload = () => {
+            ctx.drawImage(
+              image,
+              object.x * cw - thumbSize / 2,
+              object.y * ch - thumbSize / 2,
+              thumbSize,
+              thumbSize
+            );
+          };
+        });
+      }
+    };
+
+    // Initial draw
+    redrawCanvas();
 
     // TO DO 240816 Draw Objects
-    // Draw Objects
-    if (mapObjects) {
-      mapObjects.forEach((object) => {
-        const thumbSize = 40;
-        const image = new Image(); // Using optional size for image
-        image.src = `/${object.thumbUrl}`;
-        image.onload = () => {
-          ctx.drawImage(
-            image,
-            object.x * cw - thumbSize / 2,
-            object.y * ch - thumbSize / 2,
-            thumbSize,
-            thumbSize
-          );
-        };
-      });
-    }
+
     // Hover actions
-    //240814 Split hover actions into floating label (Currenlty statusbar)
+    // 240814 Split hover actions into floating label (Currenlty statusbar)
     canvas.onmousemove = (e) => {
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
@@ -105,7 +146,6 @@ export function useMapMaker({ data }: MapModuleProps) {
         });
       }
     };
-  }, []);
-
+  }, [mapAreaLoaded, mapObjectLoaded]);
   return { canvasRef };
 }

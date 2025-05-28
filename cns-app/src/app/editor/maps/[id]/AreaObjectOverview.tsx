@@ -36,7 +36,7 @@ export default async function AreaObjectOverviewModule({ settings }: Props) {
   if (error) {
     return <div className="text-destructive">{error}</div>;
   }
-  console.log(data);
+
   return (
     <StatusContextProvider>
       <div className="w-full grid grid-cols-9 gap-4">

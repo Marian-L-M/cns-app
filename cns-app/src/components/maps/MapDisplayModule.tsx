@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useContext, useEffect, useRef, useState } from "react";
 
 import StatusBar from "@/components/ui/maps/statusBar";
-import InfoBox from "@/components/ui/maps/infoBox";
 import { useMapMaker } from "@/hooks/useMapMaker";
 import { StatusContext } from "@/store/statusContext";
 
