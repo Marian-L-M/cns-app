@@ -28,6 +28,7 @@ interface MapModuleProps {
     mapObjects: GlobalObjectType[];
     mapAreas: GlobalAreaType[];
   };
+  settings?: string;
 }
 interface StoryModuleProps {
   data: {
@@ -107,6 +108,12 @@ interface storyNode {
   description: string;
   timeStart: number;
   timeEnd: number;
+  x: number;
+  y: number;
+}
+
+interface areaNode {
+  id: number;
   x: number;
   y: number;
 }

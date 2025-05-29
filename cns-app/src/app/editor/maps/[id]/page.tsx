@@ -5,6 +5,8 @@ import MapForm from "@/components/forms/MapForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import AreaObjectOverviewModule from "./AreaObjectOverview";
+import MapDisplayModule from "@/components/maps/MapDisplayModule";
+import { fetchMapData } from "@/lib/fetchMapData";
 
 interface Props {
   params: { id: string };
@@ -18,6 +20,13 @@ export default async function EditMapPage({ params, searchParams }: Props) {
   const resolvedSearchParams = await searchParams;
   const id = parseInt(resolvedParams.id);
   const modal = resolvedSearchParams.modal;
+
+  let data: {
+    map: MapType | null;
+    mapAreas: GlobalAreaType[];
+    mapObjects: GlobalObjectType[];
+  } = { map: null, mapAreas: [], mapObjects: [] };
+  let error: string | null = null;
 
   // Set active tab
   const activeTab =
@@ -35,6 +44,20 @@ export default async function EditMapPage({ params, searchParams }: Props) {
     return notFound();
   }
 
+  try {
+    data = await fetchMapData(id);
+
+    if (!data.map) {
+      error = "Map not found";
+    }
+  } catch (err) {
+    error = "Failed to fetch data";
+  }
+
+  if (error) {
+    return <div className="text-destructive">{error}</div>;
+  }
+
   // Check if current user has permission to edit
   const session = await requireOwnerOrAdmin({ authors: map.authors });
 
@@ -48,16 +71,25 @@ export default async function EditMapPage({ params, searchParams }: Props) {
           <TabsTrigger value="objects">Objects</TabsTrigger>
         </TabsList>
         <TabsContent value="setup">
-          <MapForm map={map} user={session.user} />
+          <div className="flex gap-4">
+            <div className="w-2/5 flex-1">
+              <MapDisplayModule data={data} />
+            </div>
+            <div className="w-3/5 flex-1">
+              <MapForm map={map} user={session.user} />
+            </div>
+          </div>
         </TabsContent>
         <TabsContent value="areas">
           <AreaObjectOverviewModule
             settings={{ mapId: id, label: "Areas", type: "areas" }}
+            data={data}
           />
         </TabsContent>
         <TabsContent value="objects">
           <AreaObjectOverviewModule
             settings={{ mapId: id, label: "Objects", type: "objects" }}
+            data={data}
           />
         </TabsContent>
       </Tabs>

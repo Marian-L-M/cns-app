@@ -13,7 +13,7 @@ import {
 } from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
 
-export function useMapMaker({ data }: MapModuleProps) {
+export function useMapMaker({ data, settings }: MapModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const statusCtx = useContext(StatusContext);
   const { mapAreas, mapObjects } = data;
@@ -50,9 +50,9 @@ export function useMapMaker({ data }: MapModuleProps) {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Areas
     const redrawCanvas = () => {
-      if (mapAreas) {
+      // Draw Areas
+      if (mapAreas && !(settings == "objects")) {
         mapAreas.forEach((area, index) => {
           const styles = area.styles;
           ctx.lineWidth = styles.lineWidth || 4;
@@ -76,7 +76,7 @@ export function useMapMaker({ data }: MapModuleProps) {
       }
 
       // Draw Objects
-      if (mapObjects) {
+      if (mapObjects && !(settings == "areas")) {
         mapObjects.forEach((object) => {
           const thumbSize = 40;
           const image = new Image(); // Using optional size for image
@@ -96,8 +96,6 @@ export function useMapMaker({ data }: MapModuleProps) {
 
     // Initial draw
     redrawCanvas();
-
-    // TO DO 240816 Draw Objects
 
     // Hover actions
     // 240814 Split hover actions into floating label (Currenlty statusbar)

@@ -6,14 +6,14 @@ import StatusBar from "@/components/ui/maps/statusBar";
 import { useMapMaker } from "@/hooks/useMapMaker";
 import { StatusContext } from "@/store/statusContext";
 
-export default function MapDisplayModule({ data }: MapModuleProps) {
+export default function MapDisplayModule({ data, settings }: MapModuleProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({
     width: 1024,
     height: 1024,
   });
 
-  const { canvasRef } = useMapMaker({ data });
+  const { canvasRef } = useMapMaker({ data, settings });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
 

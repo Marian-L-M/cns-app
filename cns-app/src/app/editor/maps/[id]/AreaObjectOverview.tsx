@@ -1,6 +1,5 @@
 import AreaObjectList from "@/components/lists/AreaObjectList";
 import MapDisplayModule from "@/components/maps/MapDisplayModule";
-import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -11,38 +10,43 @@ interface Props {
     label: string;
     type: string;
   };
-}
-
-// Todo 250526 to do: Area object overview module is not displaying objects -> Map display module bugging, data is passed
-
-export default async function AreaObjectOverviewModule({ settings }: Props) {
-  let data: {
+  data: {
     map: MapType | null;
     mapAreas: GlobalAreaType[];
     mapObjects: GlobalObjectType[];
-  } = { map: null, mapAreas: [], mapObjects: [] };
+  };
+}
+
+export default async function AreaObjectOverviewModule({
+  settings,
+  data,
+}: Props) {
   let error: string | null = null;
 
-  try {
-    data = await fetchMapData(settings.mapId);
+  if (!data.map) {
+    error = "Map not found";
+  }
 
-    if (!data.map) {
-      error = "Map not found";
+  if (!data.mapAreas && !data.mapObjects) {
+    error = "No data found";
+    return;
+  }
+
+  const dataList = () => {
+    if (settings.type == "areas") {
+      return data?.mapAreas;
+    } else if (settings.type == "objects") {
+      return data?.mapObjects;
     }
-  } catch (err) {
-    error = "Failed to fetch data";
-  }
-
-  if (error) {
-    return <div className="text-destructive">{error}</div>;
-  }
+    return [];
+  };
 
   return (
     <StatusContextProvider>
       <div className="w-full grid grid-cols-9 gap-4">
-        <MapDisplayModule data={data} />
+        <MapDisplayModule data={data} settings={settings.type} />
         <AreaObjectList
-          dataList={settings.type == "areas" ? data.mapAreas : data.mapObjects}
+          dataList={dataList()}
           label={settings.label}
           type={settings.type}
           mapId={settings.mapId}
