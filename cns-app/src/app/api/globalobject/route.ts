@@ -1,6 +1,6 @@
 import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,28 +19,33 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const newGlobalObject = await prisma.globalObject.create({
-      data: {
-        title: validation.data.title,
-        description: validation.data.description,
-        imageUrl: validation.data.imageUrl || "",
-        thumbUrl: validation.data.thumbUrl || "",
-        x: validation.data.x || 0,
-        y: validation.data.y || 0,
-        objectTime: validation.data.objectTime || 0,
-        infobox: validation.data.infobox || null,
-        map: {
-          connect: {
-            id: validation.data.mapId,
-          },
-        },
-        wiki: {
-          connect: {
-            id: validation.data.wikiId,
-          },
+    const data: any = {
+      title: validation.data.title,
+      description: validation.data.description,
+      imageUrl: validation.data.imageUrl || "",
+      thumbUrl: validation.data.thumbUrl || "",
+      x: validation.data.x || 0,
+      y: validation.data.y || 0,
+      objectTime: validation.data.objectTime || 0,
+      infobox: validation.data.infobox || null,
+      map: {
+        connect: {
+          id: validation.data.mapId,
         },
       },
+    };
+
+    // Connect wiki optionally
+    if (validation.data.wikiId) {
+      data.wiki = {
+        connect: {
+          id: validation.data.wikiId,
+        },
+      };
+    }
+
+    const newGlobalObject = await prisma.globalObject.create({
+      data: data,
     });
 
     return NextResponse.json(newGlobalObject, { status: 201 });
