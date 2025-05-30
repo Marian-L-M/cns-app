@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useContext,
-  useLayoutEffect,
-  useState,
-} from "react";
-import { drawAreas } from "@/lib/map/drawMap";
+import { useEffect, useRef, useContext, useState } from "react";
 import {
   checkClick,
   checkHover,
@@ -19,10 +12,10 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
   const { mapAreas, mapObjects } = data;
   const [mapAreaLoaded, setMapAreaLoaded] = useState(false);
   const [mapObjectLoaded, setMapObjectLoaded] = useState(false);
+  const imageCache = useRef<Map<string, HTMLImageElement>>(new Map()); // Cache images to prevent asynchronous loading issue duplicate images drawn on multiple canvas in tabs
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   // Initialize data for canvas draw
-  // Canvas draw will fail if passed directly
-  // Seems like a dumb solution
   useEffect(() => {
     if (!mapAreas) return;
     setMapAreaLoaded(true);
@@ -33,10 +26,50 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
     setMapObjectLoaded(true);
   }, []);
 
+  // Pre-load all images
+  useEffect(() => {
+    if (!mapObjects || mapObjects.length === 0) {
+      setImagesLoaded(true);
+      return;
+    }
+
+    const loadImages = async () => {
+      const imagePromises = mapObjects.map((object) => {
+        return new Promise<void>((resolve, reject) => {
+          // Check if image is already cached
+          if (imageCache.current.has(object.thumbUrl)) {
+            resolve();
+            return;
+          }
+
+          const img = new Image();
+          img.onload = () => {
+            imageCache.current.set(object.thumbUrl, img);
+            resolve();
+          };
+          img.onerror = reject;
+          img.src = object.thumbUrl;
+        });
+      });
+
+      try {
+        await Promise.all(imagePromises);
+        setImagesLoaded(true);
+      } catch (error) {
+        console.error("Failed to load some images:", error);
+        setImagesLoaded(true); // Continue anyway
+      }
+    };
+
+    loadImages();
+  }, [mapObjects]);
+
   useEffect(() => {
     // Set canvas
     if (!canvasRef.current) return;
     if (!data || !data.mapAreas || !data.mapObjects) return;
+    if (!imagesLoaded) return;
+
     const canvas = canvasRef.current;
 
     // Canvas values
@@ -47,10 +80,10 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     const redrawCanvas = () => {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       // Draw Areas
       if (mapAreas && !(settings == "objects")) {
         mapAreas.forEach((area, index) => {
@@ -75,31 +108,30 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
         });
       }
 
-      // Draw Objects
-      if (mapObjects && !(settings == "areas")) {
+      // Draw objects w preloaded images
+      if (mapObjects && settings !== "areas") {
+        const thumbSize = 40;
         mapObjects.forEach((object) => {
-          const thumbSize = 40;
-          const image = new Image(); // Using optional size for image
-          image.src = `${object.thumbUrl}`;
-          image.onload = () => {
+          const cachedImage = imageCache.current.get(object.thumbUrl);
+          if (cachedImage) {
             ctx.drawImage(
-              image,
+              cachedImage,
               object.x * cw - thumbSize / 2,
               object.y * ch - thumbSize / 2,
               thumbSize,
               thumbSize
             );
-          };
+          }
         });
       }
     };
 
-    // Initial draw
+    // Draw contents
     redrawCanvas();
 
     // Hover actions
     // 240814 Split hover actions into floating label (Currenlty statusbar)
-    canvas.onmousemove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
@@ -114,7 +146,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
     // Click actions
     // 240814 Split click actions to show infobox
     // 240818 Join mapAreas and mapObjects click events
-    canvas.onmousedown = (e) => {
+    const handleMouseDown = (e: MouseEvent) => {
       // Check areas
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (clickedArea && !(clickedArea.length == 0)) {
@@ -124,6 +156,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
           id: id,
           type: type,
         });
+        return;
       }
 
       // Check objects
@@ -144,6 +177,25 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
         });
       }
     };
-  }, [mapAreaLoaded, mapObjectLoaded]);
+
+    // Add event listeners
+    // 250530 to do Eventually should be hooked up to a sonner or sidebar infobox
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mousedown", handleMouseDown);
+
+    // Cleanup function
+    return () => {
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings]);
+
+  // Cleanup image cache when component unmounts
+  useEffect(() => {
+    return () => {
+      imageCache.current.clear();
+    };
+  }, []);
+
   return { canvasRef };
 }
