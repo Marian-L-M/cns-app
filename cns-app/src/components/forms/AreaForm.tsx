@@ -1,12 +1,19 @@
 "use client";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Menu, Palette } from "lucide-react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import ColorPicker from "@/components/ui/color-picker/ColorPicker";
+import LineColorPicker from "@/components/ui/color-picker/LineColorPicker";
 import WikiSearchDialog from "@/components/ui/dialog/wikiSearchDialog";
 import {
   Form,
@@ -16,24 +23,21 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { fetchWikiName } from "@/lib/fetchWikiData";
-import { GlobalArea } from "@prisma/client";
-import { EditorContext } from "@/store/mapEditorContext";
-import { GlobalAreasSchema } from "@/ValidationSchemas/global";
-
-import "easymde/dist/easymde.min.css";
+import LineWidthPicker from "@/components/ui/linewidth-picker/LineWidthPicker";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import ColorPicker from "../ui/color-picker/ColorPicker";
-import { Menu, Palette } from "lucide-react";
-import LineColorPicker from "../ui/color-picker/LineColorPicker";
-import LineWidthPicker from "../ui/linewidth-picker/LineWidthPicker";
+} from "@/components/ui/select";
+import { fetchWikiName } from "@/lib/fetchWikiData";
+import { UploadButton } from "@/lib/uploadthing/utils";
+import { GlobalArea } from "@prisma/client";
+import { EditorContext } from "@/store/mapEditorContext";
+import { GlobalAreasSchema } from "@/ValidationSchemas/global";
+
+import "easymde/dist/easymde.min.css";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -132,6 +136,8 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
       form.setValue("wikiId", selectedWikiId);
     }
   }, [selectedWikiId, form]);
+
+  const thumbImg = form.watch("imageUrl");
 
   async function onSubmit(values: GlobalAreaFormData) {
     if (editorCtx.nodeList.length < 1) {
@@ -252,7 +258,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
               )}
             />
           </div>
-          <div className="w-full" id="thumbnail-container">
+          {/* <div className="w-full" id="thumbnail-container">
             <FormField
               control={form.control}
               name="imageUrl"
@@ -266,6 +272,49 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                 </FormItem>
               )}
             />
+          </div> */}
+          <div className="upload-field">
+            <h4>Thumbnail Image</h4>
+            <Card>
+              <CardContent className="space-y-2 mt-2">
+                {thumbImg && (
+                  <Image
+                    src={thumbImg}
+                    alt="thumbnail image"
+                    className="object-cover object-center"
+                    width={240}
+                    height={240}
+                  />
+                )}
+
+                {!thumbImg && (
+                  <UploadButton
+                    endpoint="imageUploader"
+                    onClientUploadComplete={(res: { url: string }[]) => {
+                      form.setValue("imageUrl", res[0].url);
+                    }}
+                    onUploadError={(error: Error) => {
+                      toast.error("Thumbnail image upload failed", {
+                        className: "error",
+                        description: `ERROR! ${error.message}`,
+                      });
+                    }}
+                  />
+                )}
+                <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  defaultValue={map?.imageUrl}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input placeholder="Thumbnail" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
           </div>
           <div className="w-full" id="timestamp-container">
             <FormField
