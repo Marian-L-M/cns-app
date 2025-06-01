@@ -239,14 +239,18 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                   <FormLabel>Wiki</FormLabel>
                   <FormControl>
                     <div className="flex flex-row gap-2">
-                      <div className="w-2/3">
-                        <Input type="hidden" placeholder="WikiId" {...field} />
-                        {wikiName && (
+                      {wikiName && (
+                        <div className="w-2/3">
+                          <Input
+                            type="hidden"
+                            placeholder="WikiId"
+                            {...field}
+                          />
                           <div className="p-2 border rounded-md h-10 flex items-center">
                             <p className="truncate text-sm">{wikiName}</p>
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                       <div className="w-1/3">
                         <WikiSearchDialog
                           setSelectedWikiId={setSelectedWikiId}
