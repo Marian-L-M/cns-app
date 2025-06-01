@@ -82,7 +82,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
   const [error, setError] = useState("");
 
   const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
-    globalArea?.wikiId
+    globalArea?.wikiId ?? undefined
   );
   const [wikiName, setWikiName] = useState<string>("");
 
@@ -101,7 +101,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
       description: globalArea?.description || "",
       imageUrl: globalArea?.imageUrl || "",
       mapId: globalArea?.mapId || map.id,
-      wikiId: globalArea?.wikiId || undefined,
+      wikiId: globalArea?.wikiId ?? undefined,
       type:
         (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
         "GEOGRAPHY",
@@ -233,7 +233,6 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
             <FormField
               control={form.control}
               name="wikiId"
-              defaultValue={globalArea?.wikiId}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Wiki</FormLabel>

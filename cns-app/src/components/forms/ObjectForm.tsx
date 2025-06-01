@@ -45,7 +45,7 @@ export default function GlobalObjectForm({
   const [error, setError] = useState("");
 
   const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
-    globalObject?.wikiId
+    globalObject?.wikiId ?? undefined
   );
   const [wikiName, setWikiName] = useState<string>("");
 
@@ -59,7 +59,7 @@ export default function GlobalObjectForm({
       imageUrl: globalObject?.imageUrl || "",
       thumbUrl: globalObject?.thumbUrl || "",
       mapId: globalObject?.mapId || map.id,
-      wikiId: globalObject?.wikiId || undefined,
+      wikiId: globalObject?.wikiId ?? undefined,
       x: globalObject?.x || 100,
       y: globalObject?.y || 100,
     },
@@ -164,7 +164,6 @@ export default function GlobalObjectForm({
             <FormField
               control={form.control}
               name="wikiId"
-              defaultValue={globalObject?.wikiId}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Wiki</FormLabel>
