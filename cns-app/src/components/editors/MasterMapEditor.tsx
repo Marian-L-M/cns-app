@@ -84,7 +84,7 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
       } else {
         const response = await axios.post(`/api/mastermaps`, values);
         const newMasterMap = response.data;
-        router.push(`/maps/mastermaps/${newMasterMap?.id}`);
+        router.push(`/editor/mastermaps/${newMasterMap?.id}`);
         router.refresh();
         setIsSubmitting(false);
       }
@@ -100,7 +100,7 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
 
     try {
       await axios.delete(`/api/childmaps/${id}`);
-      router.push(`/maps/mastermaps/${MasterMap?.id}/edit`);
+      router.push(`/editor/mastermaps/${MasterMap?.id}/edit`);
       router.refresh();
     } catch (error) {
       setError("An error occured while deleteing");
@@ -129,28 +129,32 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
     }
   }, [selectedParentMapId]);
 
+  console.log(MasterMap);
+
   return (
     <div className="w-full" id="map-editor-module">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
-        <div
-          className="relative z-10 max-w-screen-lg col-span-4 bg-black"
-          id="map-base"
-        >
-          <canvas
-            ref={canvasRef}
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize}
-            className="border border-grey relative z-10 w-full"
-          />
-          <Image
-            priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-            src={`/maps/kamolin-map.jpg`} // make dynamic
-            alt="Map of Kamolin"
-            width="1024"
-            height="1024"
-          />
-        </div>
+        {MasterMap?.parentMap && (
+          <div
+            className="relative z-10 max-w-screen-lg col-span-4 bg-black"
+            id="map-base"
+          >
+            <canvas
+              ref={canvasRef}
+              width={windowSize > 1024 ? 1024 : windowSize}
+              height={windowSize > 1024 ? 1024 : windowSize}
+              className="border border-grey relative z-10 w-full"
+            />
+            <Image
+              priority={true}
+              className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+              src={MasterMap?.parentMap.mapUrl}
+              alt="Map of Kamolin"
+              width="1024"
+              height="1024"
+            />
+          </div>
+        )}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -225,7 +229,7 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
                       <div className="btn-row flex justify-evenly gap-2 text-xs">
                         <Button variant={"secondary"} asChild>
                           <Link
-                            href={`/maps/mastermaps/${map.hierarchyParentId}/childmaps/${map.hierarchyChildId}/edit`}
+                            href={`/editor/mastermaps/${MasterMap.id}/childmaps/${map.hierarchyChildId}/edit`}
                           >
                             <Edit />
                           </Link>
@@ -243,17 +247,17 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
                   ))}
                   <Button variant={"secondary"} asChild>
                     <Link
-                      href={`/maps/mastermaps/${MasterMap.id}/childmaps/new`}
+                      href={`/editor/mastermaps/${MasterMap.id}/childmaps/new`}
                     >
                       <Plus />
                     </Link>
                   </Button>
                 </div>
-                <Button type="submit" disabled={isSubmitting}>
-                  {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
-                </Button>
               </div>
             )}
+            <Button type="submit" disabled={isSubmitting}>
+              {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
+            </Button>
           </form>
         </Form>
       </div>
