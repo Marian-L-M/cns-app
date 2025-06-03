@@ -1,9 +1,9 @@
 "use client";
 import axios from "axios";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import SimpleMDE from "react-simplemde-editor";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +25,13 @@ import {
 } from "@/ValidationSchemas/wiki";
 
 import WikiInfoboxFormField from "./WikiInfoboxForm";
+
 import "easymde/dist/easymde.min.css";
+const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
+
+// 250603 To do: Submission issue (Probably because of new properties added to validation -> add them in the form)
 
 type bar = z.infer<typeof barItemSchema>;
 type InfoboxItem = z.infer<typeof infoBoxItemSchema>;
@@ -35,9 +41,15 @@ export type WikiFormData = z.infer<typeof wikiSchema> & {
 
 interface Props {
   wiki?: Wiki;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
-export default function WikiForm({ wiki }: Props) {
+export default function WikiForm({ wiki, user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -79,6 +91,11 @@ export default function WikiForm({ wiki }: Props) {
       description: wiki?.description || "",
       wikiText: wiki?.wikiText || "",
       infobox: parseInfobox(wiki?.infobox),
+      thumbUrl: wiki?.thumbUrl || "",
+      category: wiki?.category || "",
+      tags: wiki?.tags || [],
+      featured: wiki?.featured || false,
+      authors: wiki?.authors?.wiki((author) => author.id) || [user.id],
     },
   });
 
@@ -137,7 +154,10 @@ export default function WikiForm({ wiki }: Props) {
                     defaultValue={wiki?.description}
                     control={form.control}
                     render={({ field }) => (
-                      <SimpleMDE placeholder="Wiki Description" {...field} />
+                      <SimpleMdeEditor
+                        placeholder="Wiki Description"
+                        {...field}
+                      />
                     )}
                   />
                 </div>
@@ -149,7 +169,7 @@ export default function WikiForm({ wiki }: Props) {
                   defaultValue={wiki?.wikiText}
                   control={form.control}
                   render={({ field }) => (
-                    <SimpleMDE placeholder="Wiki Text" {...field} />
+                    <SimpleMdeEditor placeholder="Wiki Text" {...field} />
                   )}
                 />
                 <Button type="submit" disabled={isSubmitting}>
