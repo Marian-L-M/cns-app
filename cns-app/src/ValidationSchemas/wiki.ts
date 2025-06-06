@@ -1,3 +1,4 @@
+import { WikiType } from "@prisma/client";
 import { z } from "zod";
 
 export const barItemSchema = z.object({
@@ -24,6 +25,7 @@ export const wikiSchema = z.object({
   thumbUrl: z.string().optional(),
   category: z.string().min(1, "Cateogry is required").max(255),
   tags: z.array(z.string().max(128)).optional(),
+  type: z.nativeEnum(WikiType).default("GENERAL"),
   featured: z.boolean().default(false),
   authors: z.array(z.string()),
 });
