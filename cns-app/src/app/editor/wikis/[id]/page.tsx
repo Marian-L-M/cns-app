@@ -1,0 +1,36 @@
+import { notFound } from "next/navigation";
+
+import prisma from "@/../prisma/db";
+import WikiForm from "@/components/forms/WikiForm";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
+
+// import EditWikiClient from "./client";
+
+interface Props {
+  params: { id: string };
+}
+
+export default async function EditWikiPage({ params }: Props) {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
+  const wiki = await prisma.wiki.findUnique({
+    where: { id: id },
+    include: {
+      authors: true,
+    },
+  });
+
+  if (!wiki) {
+    return notFound();
+  }
+
+  // Check if current user has permission to edit
+  const session = await requireOwnerOrAdmin({ authors: wiki.authors });
+
+  return <WikiForm wiki={wiki} user={session.user} />;
+}
+
+// 2240907 Next action: Change description to a text field
+// 2240907 Next action: Make Wiki body text fields generative
+// 240908 fix structure -> Move edit into [id] folder

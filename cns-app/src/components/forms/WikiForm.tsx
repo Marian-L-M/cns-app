@@ -100,6 +100,7 @@ export default function WikiForm({ wiki, user }: Props) {
   };
 
   // Form handling
+  console.log(wiki);
   const form = useForm<WikiFormData>({
     resolver: zodResolver(wikiSchema),
     defaultValues: {
@@ -112,7 +113,7 @@ export default function WikiForm({ wiki, user }: Props) {
       type: wiki?.type || "GENERAL",
       tags: wiki?.tags || [],
       featured: wiki?.featured || false,
-      authors: wiki?.authors?.wiki((author) => author.id) || [user.id],
+      authors: wiki?.authors?.map((author) => author.id) || [user.id],
     },
   });
 

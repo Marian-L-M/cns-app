@@ -1,6 +1,6 @@
 import { wikiSchema } from "@/ValidationSchemas/wiki";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,8 +10,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
 
+    // Map author ids back to user objects
+    const { authors, ...fields } = body;
+    const updateData: any = { ...fields };
+
+    // Handle authors field if it exists
+    if (authors !== undefined) {
+      if (Array.isArray(authors)) {
+        updateData.authors = {
+          connect: authors.map((authorId: string) => ({
+            id: authorId,
+          })),
+        };
+      }
+    }
+
     const newWiki = await prisma.wiki.create({
-      data: { ...body },
+      data: { ...updateData },
     });
     return NextResponse.json(newWiki, { status: 201 });
   } catch (error) {

@@ -1,6 +1,6 @@
 import { wikiSchema } from "@/ValidationSchemas/wiki";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 interface Props {
   params: { id: string };
@@ -51,12 +51,35 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Wiki not found" }, { status: 404 });
   }
 
-  const updateWiki = await prisma.wiki.update({
-    where: { id: wiki.id },
-    data: { ...body },
-  });
+  // Map author ids back to user objects
+  const { authors, ...fields } = body;
+  const updateData: any = { ...fields };
 
-  return NextResponse.json(updateWiki, { status: 200 });
+  // Handle authors field if it exists
+  if (authors !== undefined) {
+    if (Array.isArray(authors)) {
+      updateData.authors = {
+        set: authors.map((authorId: string) => ({
+          id: authorId,
+        })),
+      };
+    }
+  }
+
+  try {
+    const updateWiki = await prisma.wiki.update({
+      where: { id: wiki.id },
+      data: updateData,
+    });
+
+    return NextResponse.json(updateWiki, { status: 200 });
+  } catch (error) {
+    console.error("Update error:", error);
+    return NextResponse.json(
+      { error: "Failed to update wiki" },
+      { status: 500 }
+    );
+  }
 }
 
 // Todo 240823 add deletetion route

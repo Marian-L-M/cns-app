@@ -57,7 +57,7 @@ export default async function MasterMapPage() {
                 <TableRow key={wiki.id} data-href="/">
                   <TableCell>{wiki.id}</TableCell>
                   <TableCell>
-                    <Link href={`editor/wikis/${wiki.id}`}>{wiki.title}</Link>
+                    <Link href={`/editor/wikis/${wiki.id}`}>{wiki.title}</Link>
                   </TableCell>
                   <TableCell>{wiki.type}</TableCell>
                   <TableCell>
