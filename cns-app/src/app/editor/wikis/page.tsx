@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { SessionProvider } from "next-auth/react";
 
-import { auth } from "@/auth";
 import {
   Table,
   TableBody,
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import prisma from "@/../prisma/db";
 import { Button } from "@/components/ui/button";
+import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 
 export default async function MasterMapPage() {
   const wikis = await prisma.wiki.findMany({
@@ -25,7 +25,7 @@ export default async function MasterMapPage() {
     },
   });
 
-  const session = await auth();
+  const session = await requireAuthorOrAdmin();
 
   return (
     <SessionProvider session={session}>

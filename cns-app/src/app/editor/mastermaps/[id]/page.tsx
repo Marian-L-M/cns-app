@@ -1,4 +1,5 @@
 import MasterMapEditor from "@/components/editors/MasterMapEditor";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import { fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
 
@@ -9,10 +10,10 @@ interface MapPageProps {
 export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
-  console.log(params);
 
   const masterMap = await fetchMasterMap(id);
-  console.log(masterMap);
+  const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
+
   if (!masterMap) {
     return <div className="text-destructive">No maps found</div>;
   }

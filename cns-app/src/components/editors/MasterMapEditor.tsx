@@ -129,8 +129,6 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
     }
   }, [selectedParentMapId]);
 
-  console.log(MasterMap);
-
   return (
     <div className="w-full" id="map-editor-module">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">

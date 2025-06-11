@@ -42,6 +42,7 @@ export async function fetchMasterMap(masterMapId: string) {
   const masterMap = await prisma.mapHierarchyMaster.findUnique({
     where: { id: parseInt(masterMapId) },
     include: {
+      authors: true,
       parentMap: true,
       childMaps: {
         include: {

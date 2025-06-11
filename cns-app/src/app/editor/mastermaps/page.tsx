@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { SessionProvider } from "next-auth/react";
 
-import { auth } from "@/auth";
 import {
   Table,
   TableBody,
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import prisma from "@/../prisma/db";
 import { Button } from "@/components/ui/button";
+import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 
 export default async function MasterMapPage() {
   const masterMaps = await prisma.mapHierarchyMaster.findMany({
@@ -21,7 +21,7 @@ export default async function MasterMapPage() {
     },
   });
 
-  const session = await auth();
+  const session = await requireAuthorOrAdmin();
 
   return (
     <SessionProvider session={session}>
@@ -52,14 +52,17 @@ export default async function MasterMapPage() {
                 <TableRow key={map.id} data-href="/">
                   <TableCell>{map.id}</TableCell>
                   <TableCell>
-                    <Link href={`/maps/mastermaps/${map.id}`}>{map.title}</Link>
+                    <Link href={`/editor/mastermaps/${map.id}`}>
+                      {map.title}
+                    </Link>
                   </TableCell>
                   <TableCell>
-                    <Link href={`/maps/${map.parentMapId}`}>
+                    <Link href={`/editor/mastermaps/${map.parentMapId}`}>
                       {map.parentMap?.title || map.parentMapId}
                     </Link>
                   </TableCell>
                   <TableCell>
+                    {/* 20250602 To do:  */}
                     {map.childMaps.length > 0
                       ? map.childMaps.map((child) => child.id).join(", ")
                       : "No children"}
