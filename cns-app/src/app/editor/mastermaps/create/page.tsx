@@ -7,7 +7,7 @@ export default async function MasterMapEditorPage() {
 
   return (
     <CursorContextProvider>
-      <MasterMapEditor />
+      <MasterMapEditor user={session.user} />
     </CursorContextProvider>
   );
 }

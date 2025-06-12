@@ -7,11 +7,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Map, MapHierarchyMaster } from "@prisma/client";
+import { Map, MapHierarchyMaster, User } from "@prisma/client";
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
 
 import { Button } from "@/components/ui/button";
@@ -43,13 +44,20 @@ interface MasterMapWithChildren {
   parentMapId: number;
   parentMap: Map;
   childMaps: MapWithRectangularArea[];
+  authors: User[];
 }
 
 interface MasterMapProps {
   MasterMap?: MasterMapWithChildren;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
-export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
+export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
   const childMaps = MasterMap?.childMaps || [];
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,6 +77,7 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
     defaultValues: {
       title: MasterMap?.title || "",
       parentMapId: MasterMap?.parentMapId || 0,
+      authors: MasterMap?.authors?.map((author) => author.id) || [user.id],
     },
   });
 
@@ -78,18 +87,24 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
       setError("");
       if (MasterMap) {
         await axios.patch(`/api/mastermaps/${MasterMap.id}`, values);
-        router.push(`/maps/mastermaps/${MasterMap?.id}/edit`);
-        router.refresh();
+        // router.push(`/editor/mastermaps/${MasterMap?.id}`);
+        // router.refresh();
+        toast.success("Mastermap updated succesfully");
         setIsSubmitting(false);
       } else {
         const response = await axios.post(`/api/mastermaps`, values);
         const newMasterMap = response.data;
         router.push(`/editor/mastermaps/${newMasterMap?.id}`);
         router.refresh();
+        toast.success("Mastermap created succesfully");
         setIsSubmitting(false);
       }
     } catch (error) {
-      setError("Unknown error occurred");
+      toast.error("Mastermap update failed", {
+        className: "error",
+        description: `ERROR!`,
+        // Add error message
+      });
       setIsSubmitting(false);
     }
   }
@@ -205,6 +220,62 @@ export default function MasterMapEditor({ MasterMap }: MasterMapProps) {
                             setSelectedMapId={setSelectedParentMapId}
                           />
                         </div>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="w-full" id="author-container">
+              <FormField
+                control={form.control}
+                name="authors"
+                defaultValue={
+                  MasterMap?.authors
+                    ? MasterMap?.authors?.map((author) => author.id)
+                    : [user.id]
+                }
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Author</FormLabel>
+                    <FormControl>
+                      <div>
+                        {(field.value || []).map((author, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2 mb-2"
+                          >
+                            <Input
+                              value={author}
+                              onChange={(e) => {
+                                const newAuthors = [...(field.value || [])];
+                                newAuthors[index] = e.target.value;
+                                field.onChange(newAuthors);
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newAuthors = [...(field.value || [])];
+                                newAuthors.splice(index, 1);
+                                field.onChange(newAuthors);
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            field.onChange([...(field.value || []), ""]);
+                          }}
+                        >
+                          Add Author
+                        </Button>
                       </div>
                     </FormControl>
                   </FormItem>

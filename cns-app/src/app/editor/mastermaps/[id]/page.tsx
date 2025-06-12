@@ -15,12 +15,12 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
 
   if (!masterMap) {
-    return <div className="text-destructive">No maps found</div>;
+    return <div className="text-destructive">No Mastermaps found</div>;
   }
 
   return (
     <CursorContextProvider>
-      <MasterMapEditor MasterMap={masterMap} />
+      <MasterMapEditor MasterMap={masterMap} user={session.user} />
     </CursorContextProvider>
   );
 }

@@ -1,4 +1,5 @@
 import EditorHeader from "@/components/shared/editor-header";
+import { Toaster } from "@/components/ui/sonner";
 
 const menuList = [
   { title: "Overview", url: "/editor" },
@@ -22,6 +23,7 @@ export default function EditorLayout({
           {children}
         </div>
       </div>
+      <Toaster />
     </>
   );
 }

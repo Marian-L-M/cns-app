@@ -25,4 +25,5 @@ export const MasterMapSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   parentMapId: z.number().int().positive("Parent map is required"),
   childMaps: z.array(ChildMapSchema).optional(),
+  authors: z.array(z.string()),
 });

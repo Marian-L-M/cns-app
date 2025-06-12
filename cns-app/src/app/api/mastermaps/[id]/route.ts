@@ -1,6 +1,6 @@
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 interface Props {
   params: { id: string };
@@ -21,17 +21,37 @@ export async function PATCH(request: NextRequest, { params }: Props) {
   });
 
   if (!masterMap) {
-    return NextResponse.json({ error: "Map not found" }, { status: 404 });
+    return NextResponse.json({ error: "Mastermap not found" }, { status: 404 });
   }
 
-  const updateMap = await prisma.mapHierarchyMaster.update({
-    where: { id: masterMap.id },
-    data: {
-      ...body,
-    },
-  });
+  // Map author ids back to user objects
+  const { authors, ...fields } = body;
+  const updateData: any = { ...fields };
 
-  return NextResponse.json(updateMap, { status: 200 });
+  // Handle authors field if it exists
+  if (authors !== undefined) {
+    if (Array.isArray(authors)) {
+      updateData.authors = {
+        set: authors.map((authorId: string) => ({
+          id: authorId,
+        })),
+      };
+    }
+  }
+  try {
+    const updateMap = await prisma.mapHierarchyMaster.update({
+      where: { id: masterMap.id },
+      data: updateData,
+    });
+
+    return NextResponse.json(updateMap, { status: 200 });
+  } catch (error) {
+    console.error("Update error:", error);
+    return NextResponse.json(
+      { error: "Failed to update Mastermap" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(request: NextRequest, { params }: Props) {
