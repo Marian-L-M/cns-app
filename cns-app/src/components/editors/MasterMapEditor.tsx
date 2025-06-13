@@ -1,4 +1,3 @@
-// To do: Is the MasterMapEditor even needed when we handle editing via childmapeditor
 "use client";
 import axios from "axios";
 import { Edit, Plus, Trash } from "lucide-react";
@@ -25,8 +24,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fetchMapName } from "@/lib/fetchMapData";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +34,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
+import { fetchMapName } from "@/lib/fetchMapData";
 
 export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
