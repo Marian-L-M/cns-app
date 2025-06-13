@@ -26,6 +26,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { fetchMapName } from "@/lib/fetchMapData";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
@@ -115,7 +127,7 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
 
     try {
       await axios.delete(`/api/childmaps/${id}`);
-      router.push(`/editor/mastermaps/${MasterMap?.id}/edit`);
+      router.push(`/editor/mastermaps/${MasterMap?.id}`);
       router.refresh();
     } catch (error) {
       setError("An error occured while deleteing");
@@ -162,9 +174,9 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
               priority={true}
               className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
               src={MasterMap?.parentMap.mapUrl}
-              alt="Map of Kamolin"
-              width="1024"
-              height="1024"
+              alt={MasterMap?.parentMap.title}
+              width={windowSize > 1024 ? 1024 : windowSize}
+              height={windowSize > 1024 ? 1024 : windowSize}
             />
           </div>
         )}
@@ -298,25 +310,46 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
                       <div className="btn-row flex justify-evenly gap-2 text-xs">
                         <Button variant={"secondary"} asChild>
                           <Link
-                            href={`/editor/mastermaps/${MasterMap.id}/childmaps/${map.hierarchyChildId}/edit`}
+                            href={`/editor/mastermaps/${MasterMap.id}/childmaps/${map.hierarchyChildId}`}
                           >
                             <Edit />
                           </Link>
                         </Button>
-                        <Button
-                          variant={"destructive"}
-                          onClick={() => {
-                            handleDeleteChildMap(map.hierarchyChildId);
-                          }}
-                        >
-                          <Trash />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive">
+                              <Trash />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you absolutely sure?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will delete the childmap relation for [
+                                {map.title}]
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                onClick={() => {
+                                  handleDeleteChildMap(map.hierarchyChildId);
+                                }}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   ))}
                   <Button variant={"secondary"} asChild>
                     <Link
-                      href={`/editor/mastermaps/${MasterMap.id}/childmaps/new`}
+                      href={`/editor/mastermaps/${MasterMap.id}/childmaps/create`}
                     >
                       <Plus />
                     </Link>
