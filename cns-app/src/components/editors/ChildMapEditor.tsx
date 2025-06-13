@@ -102,12 +102,12 @@ export default function ChildMapEditor({
       setError("");
       if (ChildMap) {
         await axios.patch(`/api/childmaps/${ChildMap.id}`, values);
-        router.push(`/maps/mastermaps/${ChildMap.hierarchyId}/edit`);
+        router.push(`/editor/mastermaps/${ChildMap.hierarchyId}`);
         router.refresh();
       } else {
         const response = await axios.post(`/api/childmaps`, values);
         const NewChildMap = response.data;
-        router.push(`/maps/mastermaps/${NewChildMap.hierarchyId}/edit`);
+        router.push(`/editor/mastermaps/${NewChildMap.hierarchyId}`);
         router.refresh();
       }
     } catch (error) {
@@ -151,10 +151,10 @@ export default function ChildMapEditor({
           <Image
             priority={true}
             className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-            src={`/maps/kamolin-map.jpg`} // make dynamic
-            alt="Map of Kamolin"
-            width="1024"
-            height="1024"
+            src={MasterMap?.parentMap.mapUrl}
+            alt={MasterMap?.parentMap.title}
+            width={windowSize > 1024 ? 1024 : windowSize}
+            height={windowSize > 1024 ? 1024 : windowSize}
           />
         </div>
         <Form {...form}>
