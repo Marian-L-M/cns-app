@@ -21,11 +21,6 @@ export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
   ChildMap: MapHierarchyChild;
 };
 
-interface MapWithRectangularArea
-  extends HierarchyConnection,
-    Map,
-    PointRectangularArea {}
-
 interface MasterMapWithChildren {
   id: number;
   createdAt: Date;
@@ -33,16 +28,24 @@ interface MasterMapWithChildren {
   title: string;
   parentMapId: number;
   parentMap: Map;
-  childMaps: MapWithRectangularArea[];
+  childMaps: Map[];
 }
 
 interface ChildMapEditorProps {
   MasterMap: MasterMapWithChildren;
-  ChildMap?: MapHierarchyChild;
+  ChildMap?: MapHierarchyChildEditable;
 }
 
-interface ChildMapEditable extends PointRectangularArea {
+interface MapHierarchyChildEditable extends MapHierarchyChild {
   mapTitle: string;
+}
+
+interface ChildMapEditorItem {
+  mapTitle: string;
+  x: number;
+  y: number;
+  wx: number;
+  wy: number;
 }
 
 // 250329 To do: Connect childmap details to state
@@ -55,7 +58,7 @@ export default function ChildMapEditor({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [childMapCoordinates, setChildMapCoordinates] =
-    useState<ChildMapEditable>({
+    useState<ChildMapEditorItem>({
       x: ChildMap?.x || 100,
       y: ChildMap?.y || 100,
       wx: ChildMap?.wx || 100,
@@ -63,6 +66,7 @@ export default function ChildMapEditor({
       mapTitle: ChildMap?.mapTitle || "",
     });
 
+  console.log(ChildMap);
   // Set canvas
   const { canvasRef } = useChildMapMaker({
     childMapCoordinates,
