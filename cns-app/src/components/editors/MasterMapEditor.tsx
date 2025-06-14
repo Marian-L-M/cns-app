@@ -11,7 +11,12 @@ import { z } from "zod";
 
 import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Map, MapHierarchyMaster, User } from "@prisma/client";
+import {
+  Map,
+  MapHierarchyChild,
+  MapHierarchyMaster,
+  User,
+} from "@prisma/client";
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
 
 import { Button } from "@/components/ui/button";
@@ -53,7 +58,7 @@ interface MasterMapWithChildren {
   title: string;
   parentMapId: number;
   parentMap: Map;
-  childMaps: MapWithRectangularArea[];
+  childMaps: MapHierarchyChildEditable[];
   authors: User[];
 }
 
@@ -65,6 +70,10 @@ interface MasterMapProps {
     email: string;
     role: string;
   };
+}
+
+interface MapHierarchyChildEditable extends MapHierarchyChild {
+  title: string;
 }
 
 export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
