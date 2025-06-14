@@ -1,8 +1,8 @@
 import ChildMapEditor from "@/components/editors/ChildMapEditor";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import { fetchHierarchyChild, fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
 
-// Todo: Fetiching with both ids seems innefficent
 interface MapPageProps {
   params: { id: string; cmid: string };
 }
@@ -13,9 +13,12 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
 
   const masterMap = await fetchMasterMap(id);
   const childMap = await fetchHierarchyChild(cmid);
+  const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
 
   if (!masterMap || !childMap) {
     return <div className="text-destructive">No map found</div>;
+  } else if (!session) {
+    return <div className="text-destructive">No user data found found</div>;
   }
 
   return (

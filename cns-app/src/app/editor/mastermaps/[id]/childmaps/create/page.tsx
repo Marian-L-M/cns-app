@@ -1,4 +1,5 @@
 import ChildMapEditor from "@/components/editors/ChildMapEditor";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import { fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
 
@@ -11,9 +12,12 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const { id } = resolvedParams;
 
   const masterMap = await fetchMasterMap(id);
+  const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
 
   if (!masterMap) {
     return <div className="text-destructive">No maps found</div>;
+  } else if (!session) {
+    return <div className="text-destructive">No user data found found</div>;
   }
 
   return (

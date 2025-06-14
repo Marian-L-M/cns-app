@@ -16,6 +16,8 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
 
   if (!masterMap) {
     return <div className="text-destructive">No Mastermaps found</div>;
+  } else if (!session) {
+    return <div className="text-destructive">No user data found found</div>;
   }
 
   return (
