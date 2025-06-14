@@ -112,7 +112,7 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
     } catch (error) {
       toast.error("Mastermap update failed", {
         className: "error",
-        description: `ERROR!`,
+        description: `ERROR! ${error}`,
         // Add error message
       });
       setIsSubmitting(false);
@@ -127,8 +127,13 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
       await axios.delete(`/api/childmaps/${id}`);
       router.push(`/editor/mastermaps/${MasterMap?.id}`);
       router.refresh();
+      toast.success("Childmap removed succesfully");
     } catch (error) {
       setError("An error occured while deleteing");
+      toast.error("Childmap removal failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     } finally {
       setIsDeleting(false);
       setIsSubmitting(false);
@@ -178,188 +183,192 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
             />
           </div>
         )}
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="relative z-20 col-span-2 flex flex-col gap-4"
-            id="sidebar"
-          >
-            <div className="w-full flex flex-col gap-4" id="form-top">
-              <div className="w-9/12 pr-8" id="title-container">
+        <div
+          className="relative z-20 col-span-2 flex flex-col gap-4"
+          id="sidebar"
+        >
+          <Form {...form}>
+            <form
+              className="w-full flex flex-col gap-4"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <div className="w-full flex flex-col gap-4" id="form-top">
+                <div className="w-9/12 pr-8" id="title-container">
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    defaultValue={MasterMap?.title}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Wiki Title..." {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="w-full" id="parentmap-container">
                 <FormField
                   control={form.control}
-                  name="title"
-                  defaultValue={MasterMap?.title}
+                  name="parentMapId"
+                  defaultValue={MasterMap?.parentMapId}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>Parent Map</FormLabel>
                       <FormControl>
-                        <Input placeholder="Wiki Title..." {...field} />
+                        <div className="flex flex-row gap-2">
+                          <div className="w-2/3">
+                            <Input
+                              type="hidden"
+                              placeholder="parentMapId"
+                              {...field}
+                            />
+                            {parentMapName && (
+                              <div className="p-2 border rounded-md h-10 flex items-center">
+                                <p className="truncate text-sm">
+                                  {parentMapName}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="w-1/3">
+                            <MapSearchDialog
+                              setSelectedMapId={setSelectedParentMapId}
+                            />
+                          </div>
+                        </div>
                       </FormControl>
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
-            <div className="w-full" id="parentmap-container">
-              <FormField
-                control={form.control}
-                name="parentMapId"
-                defaultValue={MasterMap?.parentMapId}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Parent Map</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-row gap-2">
-                        <div className="w-2/3">
-                          <Input
-                            type="hidden"
-                            placeholder="parentMapId"
-                            {...field}
-                          />
-                          {parentMapName && (
-                            <div className="p-2 border rounded-md h-10 flex items-center">
-                              <p className="truncate text-sm">
-                                {parentMapName}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                        <div className="w-1/3">
-                          <MapSearchDialog
-                            setSelectedMapId={setSelectedParentMapId}
-                          />
-                        </div>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="w-full" id="author-container">
-              <FormField
-                control={form.control}
-                name="authors"
-                defaultValue={
-                  MasterMap?.authors
-                    ? MasterMap?.authors?.map((author) => author.id)
-                    : [user.id]
-                }
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Author</FormLabel>
-                    <FormControl>
-                      <div>
-                        {(field.value || []).map((author, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center space-x-2 mb-2"
-                          >
-                            <Input
-                              value={author}
-                              onChange={(e) => {
-                                const newAuthors = [...(field.value || [])];
-                                newAuthors[index] = e.target.value;
-                                field.onChange(newAuthors);
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const newAuthors = [...(field.value || [])];
-                                newAuthors.splice(index, 1);
-                                field.onChange(newAuthors);
-                              }}
+              <div className="w-full" id="author-container">
+                <FormField
+                  control={form.control}
+                  name="authors"
+                  defaultValue={
+                    MasterMap?.authors
+                      ? MasterMap?.authors?.map((author) => author.id)
+                      : [user.id]
+                  }
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Author</FormLabel>
+                      <FormControl>
+                        <div>
+                          {(field.value || []).map((author, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center space-x-2 mb-2"
                             >
-                              Remove
-                            </Button>
-                          </div>
-                        ))}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            field.onChange([...(field.value || []), ""]);
-                          }}
-                        >
-                          Add Author
-                        </Button>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            {MasterMap && (
-              <div
-                className="flex flex-col gap-4 w-full mt-8"
-                id="childmap-container"
-              >
-                <h3 className="font-semibold text-sm">Child maps</h3>
-                <div className="w-full flex flex-col items-center gap-2 border border-slate-200 rounded-sm p-2">
-                  {childMaps.map((map) => (
-                    <div
-                      key={`chilmdap-${map.id}`}
-                      className="w-full flex justify-between items-center gap-2 "
-                    >
-                      <h5>{map.title}</h5>
-                      <div className="btn-row flex justify-evenly gap-2 text-xs">
-                        <Button variant={"secondary"} asChild>
-                          <Link
-                            href={`/editor/mastermaps/${MasterMap.id}/childmaps/${map.hierarchyChildId}`}
-                          >
-                            <Edit />
-                          </Link>
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="destructive">
-                              <Trash />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Are you absolutely sure?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will delete the childmap relation for [
-                                {map.title}]
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              <Input
+                                value={author}
+                                onChange={(e) => {
+                                  const newAuthors = [...(field.value || [])];
+                                  newAuthors[index] = e.target.value;
+                                  field.onChange(newAuthors);
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
                                 onClick={() => {
-                                  handleDeleteChildMap(map.hierarchyChildId);
+                                  const newAuthors = [...(field.value || [])];
+                                  newAuthors.splice(index, 1);
+                                  field.onChange(newAuthors);
                                 }}
                               >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  ))}
-                  <Button variant={"secondary"} asChild>
-                    <Link
-                      href={`/editor/mastermaps/${MasterMap.id}/childmaps/create`}
-                    >
-                      <Plus />
-                    </Link>
-                  </Button>
-                </div>
+                                Remove
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              field.onChange([...(field.value || []), ""]);
+                            }}
+                          >
+                            Add Author
+                          </Button>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
-            )}
-            <Button type="submit" disabled={isSubmitting}>
-              {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
-            </Button>
-          </form>
-        </Form>
+              <Button type="submit" disabled={isSubmitting}>
+                {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
+              </Button>
+            </form>
+          </Form>
+          {MasterMap && (
+            <div
+              className="flex flex-col gap-4 w-full mt-8"
+              id="childmap-container"
+            >
+              <h3 className="font-semibold text-sm">Child maps</h3>
+              <div className="w-full flex flex-col items-center gap-2 border border-slate-200 rounded-sm p-2">
+                {childMaps.map((map) => (
+                  <div
+                    key={`chilmdap-${map.id}`}
+                    className="w-full flex justify-between items-center gap-2 "
+                  >
+                    <h5>{map.title}</h5>
+                    <div className="btn-row flex justify-evenly gap-2 text-xs">
+                      <Button variant={"secondary"} asChild>
+                        <Link
+                          href={`/editor/mastermaps/${MasterMap.id}/childmaps/${map.hierarchyChildId}`}
+                        >
+                          <Edit />
+                        </Link>
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive">
+                            <Trash />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will delete the childmap relation for [
+                              {map.title}]
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => {
+                                handleDeleteChildMap(map.hierarchyChildId);
+                              }}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
+                <Button variant={"secondary"} asChild>
+                  <Link
+                    href={`/editor/mastermaps/${MasterMap.id}/childmaps/create`}
+                  >
+                    <Plus />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
