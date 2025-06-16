@@ -4,7 +4,7 @@ import { Story, Status } from "@prisma/client";
 import prisma from "@/../prisma/db";
 
 import StatusFilter from "@/components/filters/StatusFilter";
-import Pagination from "@/components/Pagination";
+import Pagination from "@/components/ui/pagination";
 import { buttonVariants } from "@/components/ui/button";
 
 import DataTable from "./DataTable";

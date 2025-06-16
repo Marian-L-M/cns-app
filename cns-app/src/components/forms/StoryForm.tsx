@@ -1,5 +1,7 @@
 "use client";
 import axios from "axios";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,6 +13,7 @@ import { Story } from "@prisma/client";
 import { StoriesSchema } from "@/ValidationSchemas/stories";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import MapSearchDialog from "@/components/ui/dialog/mapSearchDialog";
 import {
   Form,
@@ -28,18 +31,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Dynamic import of SimpleMDE to avoid uncontrolled changes error
-import dynamic from "next/dynamic";
+import { UploadButton } from "@/lib/uploadthing/utils";
+import { toast } from "sonner";
+
+import "easymde/dist/easymde.min.css";
+import { Checkbox } from "../ui/checkbox";
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
-import "easymde/dist/easymde.min.css";
 
 type StoryFormData = z.infer<typeof StoriesSchema>;
 
 interface Props {
   story?: Story;
   substories?: Story[];
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
 interface MapFetchProps {
@@ -47,7 +58,7 @@ interface MapFetchProps {
   setMapName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function StoryForm({ story, substories }: Props) {
+export default function StoryForm({ story, substories, user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -58,6 +69,19 @@ export default function StoryForm({ story, substories }: Props) {
 
   const form = useForm<StoryFormData>({
     resolver: zodResolver(StoriesSchema),
+    defaultValues: {
+      title: story?.title || "",
+      description: story?.description || "",
+      imageUrl: story?.imageUrl || "",
+      storyTime: story?.storyTime || 1000,
+      status: story?.status || "UPCOMING",
+      category: story?.category || "",
+      tags: story?.tags || [],
+      featured: story?.featured || false,
+      rating: story?.rating || 0,
+      assignedToMapID: story?.assignedToMapID || 0,
+      authors: story?.authors?.map((author) => author.id) || [user.id],
+    },
   });
 
   // Fetch wiki name when wikiId changes
@@ -79,13 +103,15 @@ export default function StoryForm({ story, substories }: Props) {
         await axios.post("/api/story", values);
       }
       setIsSubmitting(false);
-      router.push("/stories");
+      router.push("/editor/stories");
       router.refresh();
     } catch (error) {
       setError("Unknown error occurred");
       setIsSubmitting(false);
     }
   }
+
+  const thumbImg = form.watch("imageUrl");
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -195,22 +221,49 @@ export default function StoryForm({ story, substories }: Props) {
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              defaultValue={story?.imageUrl}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="This will turn into an upload field eventually"
-                      {...field}
+            <div className="upload-field">
+              <h4>Thumbnail Image</h4>
+              <Card>
+                <CardContent className="space-y-2 mt-2">
+                  {thumbImg && (
+                    <Image
+                      src={thumbImg}
+                      alt="thumbnail image"
+                      className="object-cover object-center"
+                      width={240}
+                      height={240}
                     />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                  )}
+
+                  {!thumbImg && (
+                    <UploadButton
+                      endpoint="imageUploader"
+                      onClientUploadComplete={(res: { url: string }[]) => {
+                        form.setValue("imageUrl", res[0].url);
+                      }}
+                      onUploadError={(error: Error) => {
+                        toast.error("Thumbnail image upload failed", {
+                          className: "error",
+                          description: `ERROR! ${error.message}`,
+                        });
+                      }}
+                    />
+                  )}
+                  <FormField
+                    control={form.control}
+                    name="imageUrl"
+                    defaultValue={story?.imageUrl}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Thumbnail" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </div>
             <FormField
               control={form.control}
               name="category"
@@ -219,14 +272,144 @@ export default function StoryForm({ story, substories }: Props) {
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="This will turn into a dynamic cat dropdown later"
-                      {...field}
-                    />
+                    <Input type="text" placeholder="" {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
+            {/* Tags array field */}
+            <FormField
+              control={form.control}
+              name="tags"
+              defaultValue={story?.tags || []}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <div>
+                      {(field.value || []).map((tag, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 mb-2"
+                        >
+                          <Input
+                            value={tag}
+                            onChange={(e) => {
+                              const newTags = [...(field.value || [])];
+                              newTags[index] = e.target.value;
+                              field.onChange(newTags);
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newTags = [...(field.value || [])];
+                              newTags.splice(index, 1);
+                              field.onChange(newTags);
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          field.onChange([...(field.value || []), ""]);
+                        }}
+                      >
+                        Add Tag
+                      </Button>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="featured"
+              defaultValue={story?.featured}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Featured</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="featured"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <label
+                        htmlFor="featured"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Is featured?
+                      </label>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* Authors array field -- To do: Replace with search input */}
+            {user.role == "ADMIN" && (
+              <FormField
+                control={form.control}
+                name="authors"
+                defaultValue={
+                  story?.authors
+                    ? story?.authors?.map((author) => author.id)
+                    : [user.id]
+                }
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Author</FormLabel>
+                    <FormControl>
+                      <div>
+                        {(field.value || []).map((author, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2 mb-2"
+                          >
+                            <Input
+                              value={author}
+                              onChange={(e) => {
+                                const newAuthors = [...(field.value || [])];
+                                newAuthors[index] = e.target.value;
+                                field.onChange(newAuthors);
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newAuthors = [...(field.value || [])];
+                                newAuthors.splice(index, 1);
+                                field.onChange(newAuthors);
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            field.onChange([...(field.value || []), ""]);
+                          }}
+                        >
+                          Add Author
+                        </Button>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
             <div className="w-1/3" id="map-container">
               <FormField
                 control={form.control}

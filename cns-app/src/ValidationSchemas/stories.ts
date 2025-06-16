@@ -6,10 +6,13 @@ export const StoriesSchema = z.object({
   description: z.string().min(1, "Description is required").max(65535),
   imageUrl: z.string().min(1, "image url").max(255).optional(),
   category: z.string().min(1, "category").max(255).optional(),
+  tags: z.array(z.string().max(128)).optional(),
   rating: z.number().min(0, "Rating").max(5).optional(),
   storyTime: z.number().min(0, "Story time").max(9999).optional(),
   status: z.string().min(1, "Status").max(10).optional(),
   assignedToMapID: z.number().int().optional(),
+  featured: z.boolean().default(false),
+  authors: z.array(z.string()),
 });
 
 export const NodeItemSchema = z.object({
