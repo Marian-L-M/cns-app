@@ -24,14 +24,35 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Story not found" }, { status: 404 });
   }
 
-  const updateStory = await prisma.story.update({
-    where: { id: story.id },
-    data: {
-      ...body,
-    },
-  });
+  // Map author ids back to user objects
+  const { authors, ...fields } = body;
+  const updateData: any = { ...fields };
 
-  return NextResponse.json(updateStory, { status: 200 });
+  // Handle authors field if it exists
+  if (authors !== undefined) {
+    if (Array.isArray(authors)) {
+      updateData.authors = {
+        set: authors.map((authorId: string) => ({
+          id: authorId,
+        })),
+      };
+    }
+  }
+
+  try {
+    const updateStory = await prisma.story.update({
+      where: { id: story.id },
+      data: updateData,
+    });
+
+    return NextResponse.json(updateStory, { status: 200 });
+  } catch (error) {
+    console.error("Update error:", error);
+    return NextResponse.json(
+      { error: "Failed to update Story" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(request: NextRequest, { params }: Props) {

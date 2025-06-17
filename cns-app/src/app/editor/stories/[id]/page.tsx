@@ -1,5 +1,6 @@
 import StoryForm from "@/components/forms/StoryForm";
 import prisma from "@/../prisma/db";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 
 interface Props {
   params: { id: string };
@@ -11,6 +12,9 @@ export default async function EditStory({ params }: Props) {
 
   const story = await prisma?.story.findUnique({
     where: { id },
+    include: {
+      authors: true,
+    },
   });
 
   if (!story) {
@@ -21,9 +25,12 @@ export default async function EditStory({ params }: Props) {
     where: { storyId: story.id },
   });
 
+  // Check if current user has permission to edit
+  const session = await requireOwnerOrAdmin({ authors: story.authors });
+
   return (
     <div className="w-full" id="story-editor-module">
-      <StoryForm story={story} substories={substories} />
+      <StoryForm story={story} substories={substories} user={session.user} />
     </div>
   );
 }

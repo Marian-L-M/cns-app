@@ -267,7 +267,7 @@ export default function StoryForm({ story, substories, user }: Props) {
             <FormField
               control={form.control}
               name="category"
-              defaultValue={story?.category}
+              defaultValue={story?.category || ""}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
@@ -457,7 +457,7 @@ export default function StoryForm({ story, substories, user }: Props) {
                 <li key={`substory-${subStory.id}`} className="flex gap-2">
                   {subStory.title}
                   <Link
-                    href={`/stories/${story.id}/substories/${subStory.id}/edit`}
+                    href={`/editor/stories/${story.id}/substories/${subStory.id}`}
                   >
                     <Button variant={"secondary"}>edit</Button>
                   </Link>
@@ -466,11 +466,8 @@ export default function StoryForm({ story, substories, user }: Props) {
             </ol>
           )}
           <div id="link-container" className="flex gap-2">
-            <Link href={`/stories/${story.id}/substories/`}>
-              <Button variant={"secondary"}>Overview</Button>
-            </Link>
-            <Link href={`/stories/${story.id}/substories/new`}>
-              <Button variant={"default"}>New</Button>
+            <Link href={`/editor/stories/${story.id}/substories/create`}>
+              <Button variant={"default"}>Add</Button>
             </Link>
           </div>
         </section>
