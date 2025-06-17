@@ -8,6 +8,7 @@ import StoryBox from "@/components/ui/maps/storyBox";
 import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { StatusContext } from "@/store/statusContext";
 
+// to do: Rename to story display module
 //240822 Unify story module with map module
 export default function StoryModule({ data, story }: StoryModuleProps) {
   const { canvasRef } = useStoryMaker({ data, story });
@@ -44,6 +45,7 @@ export default function StoryModule({ data, story }: StoryModuleProps) {
       </div>
       <div className="w-full grid grid-cols-3 gap-4 max-w-screen-2xl mx-auto">
         <div className="relative max-w-screen-lg col-span-2 " id="map-base">
+          {/* to do 250617 Create a map display component to handle display and resizing  */}
           <canvas
             // onMouseDown={onMouseDown}
             // handlerFunction

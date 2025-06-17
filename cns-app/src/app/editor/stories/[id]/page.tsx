@@ -28,6 +28,8 @@ export default async function EditStory({ params }: Props) {
   // Check if current user has permission to edit
   const session = await requireOwnerOrAdmin({ authors: story.authors });
 
+  // to do 250617 Implement tab structure
+
   return (
     <div className="w-full" id="story-editor-module">
       <StoryForm story={story} substories={substories} user={session.user} />

@@ -1,4 +1,4 @@
-import { storyObjectsSchema } from "@/ValidationSchemas/stories";
+import { SubStorySchema } from "@/ValidationSchemas/stories";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
 
@@ -8,7 +8,7 @@ interface Props {
 
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
-  const validation = storyObjectsSchema.safeParse(body);
+  const validation = SubStorySchema.safeParse(body);
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.sid);
 

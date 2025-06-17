@@ -3,7 +3,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -30,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface EditorProps {
   story: Story;
   substory?: SubStory & { nodes: StoryNode[] };
-  map?: Map; // To do is map still optional?
+  map?: Map;
 }
 
 type StoryNode = {
@@ -84,6 +84,35 @@ export default function StoryEditorModule({
     activeSubstoryID,
     setActiveSubstoryID,
   });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({
+    width: 1024,
+    height: 1024,
+  });
+
+  // Handle map size
+  useEffect(() => {
+    // Function to update the container size
+    const updateSize = () => {
+      if (containerRef.current) {
+        const { width } = containerRef.current.getBoundingClientRect();
+        // Set the height equal to width for a square canvas, or adjust as needed
+        setContainerSize({
+          width: Math.min(width, 1024),
+          height: Math.min(width, 1024),
+        });
+      }
+    };
+
+    // Initial size update
+    updateSize();
+
+    // Add resize event listener
+    window.addEventListener("resize", updateSize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   const form = useForm<SubstoryFormData>({
     resolver: zodResolver(SubStorySchema),
@@ -114,6 +143,7 @@ export default function StoryEditorModule({
 
   async function onSubmit(values: SubstoryFormData) {
     // 250416 Suspect an issue with how nodes are being cleaned
+    // to do 250617 Unify structure with other editors
     try {
       setIsSubmitting(true);
       setError("");
@@ -131,7 +161,7 @@ export default function StoryEditorModule({
         });
       }
       setIsSubmitting(false);
-      router.push(`/stories/${editableSubStory.storyId}/substories`);
+      router.push(`/editor/stories/${editableSubStory.storyId}`);
       router.refresh();
     } catch (error: any) {
       console.error("Submission error:", error);
@@ -156,21 +186,21 @@ export default function StoryEditorModule({
           id="map-base"
         >
           <canvas
-            // onMouseDown={onMouseDown}
-            // handlerFunction
             ref={canvasRef}
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize}
-            className="border border-grey rounded-md relative z-10 w-full"
+            width={containerSize.width}
+            height={containerSize.height}
+            className="border border-grey relative z-10 w-full"
           />
-          <Image
-            priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none"
-            src={`/${map?.mapUrl || "maps/placeholder.jpg"}`}
-            alt="Map of Kamolin"
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize}
-          />
+          {map?.mapUrl && (
+            <Image
+              priority={true}
+              className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+              src={map.mapUrl}
+              alt="Map of Kamolin"
+              width={containerSize.width}
+              height={containerSize.height}
+            />
+          )}
         </div>
         <Form {...form}>
           <form

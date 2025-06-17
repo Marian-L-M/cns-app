@@ -1,5 +1,6 @@
-import SubStoryEditor from "@/components/editors/SubstoryEditor";
+import SubStoryEditor from "@/components/editors/SubStoryEditor";
 import prisma from "@/../prisma/db";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 
 interface SubstoryProps {
   params: {
@@ -14,6 +15,9 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
 
   const story = await prisma.story.findUnique({
     where: { id: id },
+    include: {
+      authors: true,
+    },
   });
 
   if (!story) {
@@ -31,6 +35,9 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
   if (!map) {
     return <div>Map not found</div>;
   }
+
+  // Check if current user has permission to edit
+  const session = await requireOwnerOrAdmin({ authors: story.authors });
 
   return (
     <div className="w-full" id="substory-detail-page">
