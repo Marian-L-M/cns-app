@@ -1,16 +1,25 @@
 "use client";
 import Image from "next/image";
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import StatusBar from "@/components/ui/maps/statusBar";
 import InfoBox from "@/components/ui/maps/infoBox";
 import StoryBox from "@/components/ui/maps/storyBox";
 import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { StatusContext } from "@/store/statusContext";
+import { Map } from "@prisma/client";
+import MapResponsiveCanvas from "../maps/MapResponsiveCanvas";
 
-// to do: Rename to story display module
-//240822 Unify story module with map module
-export default function StoryModule({ data, story }: StoryModuleProps) {
+interface StoryModuleProps {
+  data: {
+    map: Map;
+    mapObjects: GlobalObjectType[];
+    mapAreas: GlobalAreaType[];
+  };
+  story: story[];
+}
+
+export default function StoryDisplayModule({ data, story }: StoryModuleProps) {
   const { canvasRef } = useStoryMaker({ data, story });
   const statusCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
@@ -26,11 +35,6 @@ export default function StoryModule({ data, story }: StoryModuleProps) {
     infoData = mapAreas;
   }
 
-  let windowSize: number = 1024;
-  if (typeof window !== "undefined") {
-    windowSize = window.innerWidth;
-  }
-
   // 240811 TODO: Add story via state
   return (
     <div className="w-full flex flex-col">
@@ -43,28 +47,9 @@ export default function StoryModule({ data, story }: StoryModuleProps) {
           />
         )}
       </div>
-      <div className="w-full grid grid-cols-3 gap-4 max-w-screen-2xl mx-auto">
-        <div className="relative max-w-screen-lg col-span-2 " id="map-base">
-          {/* to do 250617 Create a map display component to handle display and resizing  */}
-          <canvas
-            // onMouseDown={onMouseDown}
-            // handlerFunction
-            ref={canvasRef}
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize} // Width for square maps
-            className="border border-grey rounded-md relative z-10 w-full"
-          />
-          <Image
-            // 240808 TODO: get placeholder image if map is not found
-            priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none"
-            src={`/${map?.mapUrl || "maps/placeholder.jpg"}`}
-            alt="Map of Kamolin"
-            width="1024"
-            height="1024"
-          />
-        </div>
-        <div className="flex flex-col gap-2" id="sidebar">
+      <div className="w-full">
+        <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
+        {/* <div className="flex flex-col gap-2" id="sidebar">
           <div
             className="border-2 border-indigo-500 rounded-md p-1"
             id="infobox"
@@ -91,7 +76,7 @@ export default function StoryModule({ data, story }: StoryModuleProps) {
               />
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );
