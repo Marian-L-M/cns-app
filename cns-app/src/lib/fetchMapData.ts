@@ -30,9 +30,25 @@ export async function fetchMapData(mapId: string | number) {
   });
   const mapAreas = await prisma.globalArea.findMany({
     where: { mapId: id },
+    include: {
+      wiki: {
+        select: {
+          infobox: true,
+          slug: true,
+        },
+      },
+    },
   });
   const mapObjects = await prisma.globalObject.findMany({
     where: { mapId: id },
+    include: {
+      wiki: {
+        select: {
+          infobox: true,
+          slug: true,
+        },
+      },
+    },
   });
 
   return { map, mapAreas, mapObjects };

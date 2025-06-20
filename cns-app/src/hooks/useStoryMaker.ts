@@ -7,11 +7,21 @@ import {
   checkObjectClick,
   checkStoryNodeClick,
 } from "@/lib/map/mouseActions";
+import { Map } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
 
-export function useStoryMaker({ data, story }: StoryModuleProps) {
+interface StoryModuleProps {
+  mapData: {
+    map: Map;
+    mapObjects: GlobalObjectType[];
+    mapAreas: GlobalAreaType[];
+  };
+  story: story[];
+}
+
+export function useStoryMaker({ mapData, story }: StoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { mapAreas, mapObjects } = data;
+  const { mapAreas, mapObjects } = mapData;
   const statusCtx = useContext(StatusContext);
 
   useEffect(() => {
@@ -48,7 +58,7 @@ export function useStoryMaker({ data, story }: StoryModuleProps) {
       mapObjects.forEach((object) => {
         const thumbSize = 40;
         const image = new Image(); // Using optional size for image
-        image.src = `/${object.thumbUrl}`;
+        image.src = `${object.thumbUrl}`;
         image.onload = () => {
           ctx.drawImage(
             image,
@@ -102,6 +112,7 @@ export function useStoryMaker({ data, story }: StoryModuleProps) {
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch);
       const { title, id, type } = hoverArea[0];
+
       statusCtx.showStatusBar({
         title: title,
         id: id,

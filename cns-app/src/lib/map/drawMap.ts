@@ -5,7 +5,6 @@ export function drawAreas(
   ch: number
 ) {
   const points = node.nodes;
-  console.log(ctx);
   ctx.beginPath();
   ctx.moveTo(points[0].x * cw, points[0].y * ch);
   for (var i = 1; i < points.length; i++) {

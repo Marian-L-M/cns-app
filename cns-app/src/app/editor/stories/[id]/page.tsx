@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StoryDisplayModule from "@/components/displays/StoryDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import Link from "next/link";
+import StatusContextProvider from "@/store/statusContext";
 
 interface Props {
   params: { id: string };
@@ -85,7 +86,9 @@ export default async function EditStory({ params, searchParams }: Props) {
         <TabsContent value="substories">
           <div className="flex gap-4">
             <div className="w-4/5">
-              <StoryDisplayModule data={mapData} story={substories} />
+              <StatusContextProvider>
+                <StoryDisplayModule mapData={mapData} story={substories} />
+              </StatusContextProvider>
             </div>
             <div className="w-1/5">
               <div
@@ -97,7 +100,7 @@ export default async function EditStory({ params, searchParams }: Props) {
                   {substories.map((substory) => (
                     <Link
                       key={substory.id}
-                      href={`/stories/${id}/substories/${substory.id}/edit`}
+                      href={`/editor/stories/${id}/substories/${substory.id}`}
                       className="flex gap-2 p-4 bg-slate-800 text-white rounded-lg hover:opacity-90"
                     >
                       <h6>{substory.title}</h6>

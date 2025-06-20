@@ -3,15 +3,27 @@ import Image from "next/image";
 import { useContext, useEffect, useRef, useState } from "react";
 
 import StatusBar from "@/components/ui/maps/statusBar";
-import InfoBox from "@/components/ui/maps/infoBox";
 import StoryBox from "@/components/ui/maps/storyBox";
 import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { StatusContext } from "@/store/statusContext";
 import { Map } from "@prisma/client";
 import MapResponsiveCanvas from "../maps/MapResponsiveCanvas";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import InfoBox from "../wiki/InfoBox";
 
 interface StoryModuleProps {
-  data: {
+  mapData: {
     map: Map;
     mapObjects: GlobalObjectType[];
     mapAreas: GlobalAreaType[];
@@ -19,50 +31,52 @@ interface StoryModuleProps {
   story: story[];
 }
 
-export default function StoryDisplayModule({ data, story }: StoryModuleProps) {
-  const { canvasRef } = useStoryMaker({ data, story });
+// 250619 To do: Renaming data -> mapData for more clarity
+export default function StoryDisplayModule({
+  mapData,
+  story,
+}: StoryModuleProps) {
+  const { canvasRef } = useStoryMaker({ mapData, story });
   const statusCtx = useContext(StatusContext);
-  const { map, mapAreas, mapObjects } = data;
+  const { map, mapAreas, mapObjects } = mapData;
 
-  const activeStatus = statusCtx.statusBar;
-  const activeInfo = statusCtx.infoBox;
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const isInitialRender = useRef(true);
+
   const activeStory = statusCtx.storyBox;
 
-  let infoData;
-  if (activeInfo?.type == "GlobalObjectType") {
-    infoData = mapObjects;
-  } else {
-    infoData = mapAreas;
-  }
+  const [infoData, setInfoData] = useState();
+
+  // Handle infoBox changes
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    if (statusCtx.infoBox) {
+      if (statusCtx.infoBox.type == "GlobalObjectType") {
+        const activeInfoObject = mapObjects.find(
+          (object) => object.id == statusCtx.infoBox?.id
+        );
+        setInfoData(activeInfoObject);
+      } else {
+        const activeInfoArea = mapAreas.find(
+          (area) => area.id == statusCtx.infoBox?.id
+        );
+        setInfoData(activeInfoArea);
+      }
+      setSheetOpen(true);
+    }
+  }, [statusCtx.infoBox]);
 
   // 240811 TODO: Add story via state
+  // 250619: To do Add sheet for infobox
+  // 250619: Handle story via drawer + ability to move
   return (
     <div className="w-full flex flex-col">
-      <div className="w-full text-center mb-2">
-        {activeStatus && (
-          <StatusBar
-            id={activeStatus.id}
-            title={activeStatus.title}
-            type={activeStatus.type}
-          />
-        )}
-      </div>
+      <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
       <div className="w-full">
-        <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
-        {/* <div className="flex flex-col gap-2" id="sidebar">
-          <div
-            className="border-2 border-indigo-500 rounded-md p-1"
-            id="infobox"
-          >
-            {activeInfo && (
-              <InfoBox
-                id={activeInfo.id}
-                title={activeInfo.title}
-                type={activeInfo.type}
-                infoData={infoData}
-              />
-            )}
-          </div>
+        <div className="flex flex-col gap-2" id="sidebar">
           {activeStory && (
             <div
               className="border-2 border-sky-500 rounded-md p-1"
@@ -76,8 +90,23 @@ export default function StoryDisplayModule({ data, story }: StoryModuleProps) {
               />
             </div>
           )}
-        </div> */}
+        </div>
       </div>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>{infoData?.title}</SheetTitle>
+            <SheetDescription>{infoData?.description}</SheetDescription>
+          </SheetHeader>
+          {infoData?.wiki && <InfoBox infobox={infoData?.wiki.infobox} />}
+          <SheetFooter>
+            <Link href={"/"}>Wiki Link</Link>
+            <SheetClose asChild>
+              <Button variant="outline">Close</Button>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

@@ -30,14 +30,6 @@ interface MapModuleProps {
   };
   settings?: string;
 }
-interface StoryModuleProps {
-  data: {
-    map: Map;
-    mapObjects: GlobalObjectType[];
-    mapAreas: GlobalAreaType[];
-  };
-  story: story[];
-}
 
 // For Drawing Map area from nodes
 type DrawMapArea = {
