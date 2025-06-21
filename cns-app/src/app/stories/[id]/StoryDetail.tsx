@@ -1,14 +1,15 @@
 import { fetchMapData } from "@/lib/fetchMapData";
-import { fetchSubStoryData } from "@/lib/fetchStoryData";
 import { Story } from "@prisma/client";
 import StatusContextProvider from "@/store/statusContext";
 
-import StoryModule from "@/components/displays/StoryDisplayModule";
+import StoryDisplayModule from "@/components/displays/StoryDisplayModule";
+import prisma from "@/../prisma/db";
 
 interface Props {
   story: Story;
 }
 
+// 250621 to do merge with page
 export default async function StoryDetail({ story }: Props) {
   let mapData: {
     map: MapType | null;
@@ -17,7 +18,16 @@ export default async function StoryDetail({ story }: Props) {
   } = { map: null, mapAreas: [], mapObjects: [] };
   let error: string | null = null;
 
-  // fetch map
+  if (!story) {
+    return <p className="text-destructive">Story not found</p>;
+  }
+
+  // fetch substories
+  const substories = await prisma.subStory.findMany({
+    where: { storyId: story.id },
+  });
+
+  // fetch mapdata
   try {
     // 240819 This is stupid - change fetchMapData to always expect an integer
     mapData = await fetchMapData(story.assignedToMapID?.toString() || "");
@@ -29,31 +39,12 @@ export default async function StoryDetail({ story }: Props) {
     error = "Failed to fetch data";
   }
 
-  // fetch story
-  let storyData: story[] = [];
-
-  try {
-    const fetchedStoryData = await fetchSubStoryData(story.id);
-
-    if (!fetchedStoryData.subStory || fetchedStoryData.subStory.length === 0) {
-      throw new Error("No story found");
-    } else {
-      storyData = fetchedStoryData.subStory;
-    }
-  } catch (err) {
-    error = (err as Error).message || "Failed to fetch story";
-  }
-
   // 240819 To Do 2: Hook up stories
   // 240820 Unify MapModule logic and StoryModule logic
   return (
     <div>
       <StatusContextProvider>
-        {storyData?.length > 0 ? (
-          <StoryModule data={mapData} story={storyData} />
-        ) : (
-          <div>{error || "An error occurred"}</div>
-        )}
+        <StoryDisplayModule mapData={mapData} story={substories} />
       </StatusContextProvider>
     </div>
   );
