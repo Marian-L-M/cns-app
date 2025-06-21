@@ -1,21 +1,27 @@
 "use client";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import Image from "next/image";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-
 import axios from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ChildMapSchema } from "@/ValidationSchemas/maps";
-import { Map, MapHierarchyChild } from "@prisma/client";
-import MapSearchDialog from "../ui/dialog/mapSearchDialog";
-import { fetchMapName } from "@/lib/fetchMapData";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import MapSearchDialog from "@/components/ui/dialog/mapSearchDialog";
 import { useChildMapMaker } from "@/hooks/useChildMapMaker";
+import { fetchMapName } from "@/lib/fetchMapData";
+import { Map, MapHierarchyChild } from "@prisma/client";
+import { ChildMapSchema } from "@/ValidationSchemas/maps";
 
 export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
   ChildMap: MapHierarchyChild;
@@ -66,7 +72,6 @@ export default function ChildMapEditor({
       mapTitle: ChildMap?.mapTitle || "",
     });
 
-  console.log(ChildMap);
   // Set canvas
   const { canvasRef } = useChildMapMaker({
     childMapCoordinates,
@@ -108,15 +113,21 @@ export default function ChildMapEditor({
         await axios.patch(`/api/childmaps/${ChildMap.id}`, values);
         router.push(`/editor/mastermaps/${ChildMap.hierarchyId}`);
         router.refresh();
+        toast.success("Childmap updated succesfully");
       } else {
         const response = await axios.post(`/api/childmaps`, values);
         const NewChildMap = response.data;
         router.push(`/editor/mastermaps/${NewChildMap.hierarchyId}`);
         router.refresh();
+        toast.success("Childmap created succesfully");
       }
     } catch (error) {
       setError("Unknown error occurred");
       setIsSubmitting(false);
+      toast.error("Childmap update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     }
   }
 

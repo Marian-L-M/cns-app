@@ -38,6 +38,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
       };
     }
   }
+
   try {
     const updateMap = await prisma.mapHierarchyMaster.update({
       where: { id: masterMap.id },

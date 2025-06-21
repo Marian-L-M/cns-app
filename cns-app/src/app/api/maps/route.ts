@@ -1,7 +1,6 @@
-import { mapSchema } from "@/ValidationSchemas/maps";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
-import { connect } from "http2";
+import { mapSchema } from "@/ValidationSchemas/maps";
 
 export async function POST(request: NextRequest) {
   try {

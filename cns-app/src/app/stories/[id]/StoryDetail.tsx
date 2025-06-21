@@ -3,7 +3,7 @@ import { fetchSubStoryData } from "@/lib/fetchStoryData";
 import { Story } from "@prisma/client";
 import StatusContextProvider from "@/store/statusContext";
 
-import StoryModule from "@/components/maps/StoryModule";
+import StoryModule from "@/components/displays/StoryDisplayModule";
 
 interface Props {
   story: Story;

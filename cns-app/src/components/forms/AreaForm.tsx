@@ -261,21 +261,6 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
               )}
             />
           </div>
-          {/* <div className="w-full" id="thumbnail-container">
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              defaultValue={globalArea?.imageUrl}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Area Thumbnail" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div> */}
           <div className="upload-field">
             <h4>Thumbnail Image</h4>
             <Card>

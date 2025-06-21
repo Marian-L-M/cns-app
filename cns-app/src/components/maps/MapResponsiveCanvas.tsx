@@ -44,7 +44,7 @@ export default function MapResponsiveCanvas({ map, canvasRef }: Props) {
   }, []);
 
   return (
-    <div className="relative w-full max-w-5xl" id="map-base">
+    <div className="relative w-full max-w-5xl bg-black" id="map-base">
       <canvas
         ref={canvasRef}
         width={containerSize.width}

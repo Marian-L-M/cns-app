@@ -1,3 +1,4 @@
+// 250620 To do: Delete -> Reuse actual wiki infobox instead
 import { SquareX } from "lucide-react";
 import Link from "next/link";
 import { useContext } from "react";

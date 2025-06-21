@@ -136,7 +136,14 @@ export default function StoryDisplayModule({
           <div className="flex flex-col gap-4 py-4 px-8">
             <div className="flex gap-4" id="story-progress">
               {storyData?.nodes?.map((node) => {
-                <div>Node</div>;
+                return (
+                  <div key={`progress-node-${node.id}`}>
+                    {node.name}{" "}
+                    {node.id == storyData?.nodes[storyIndex].id && (
+                      <span>(active)</span>
+                    )}
+                  </div>
+                );
               })}
             </div>
             <div className="flex gap-2">

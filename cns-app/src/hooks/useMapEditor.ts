@@ -3,12 +3,6 @@ import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
 import { mapObjectDefaultIcon } from "@/lib/constants/objectIcons";
 
-interface areaNode {
-  id: number;
-  x: number;
-  y: number;
-}
-
 interface IconBounds {
   left: number;
   right: number;
