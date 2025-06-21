@@ -95,6 +95,14 @@ export default function StoryDisplayModule({
       });
     }
   }, [statusCtx.storyBox]);
+
+  function changeStoryNodeIndex(increment: number) {
+    const storyLength = storyData?.nodes?.length;
+    if (storyLength > storyIndex + increment && storyIndex + increment >= 0) {
+      setStoryIndex(storyIndex + increment);
+    }
+  }
+
   // 250619: Handle story via drawer + ability to move
   return (
     <div className="w-full flex flex-col">
@@ -132,12 +140,22 @@ export default function StoryDisplayModule({
               })}
             </div>
             <div className="flex gap-2">
-              <button id="prev-story-node">Previous</button>
+              <Button
+                onClick={() => changeStoryNodeIndex(-1)}
+                id="prev-story-node"
+              >
+                Previous
+              </Button>
               <div id="story-node-text">
                 <h4>{storyData?.nodes[storyIndex].name}</h4>
                 <p>{storyData?.nodes[storyIndex].description}</p>
               </div>
-              <button id="next-story-node">Next</button>
+              <Button
+                onClick={() => changeStoryNodeIndex(1)}
+                id="next-story-node"
+              >
+                Next
+              </Button>
             </div>
           </div>
           <DrawerFooter>
