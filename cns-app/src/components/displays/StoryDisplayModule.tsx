@@ -19,6 +19,15 @@ import InfoBox from "@/components/wiki/InfoBox";
 import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { Map } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 interface StoryModuleProps {
   mapData: {
@@ -29,7 +38,6 @@ interface StoryModuleProps {
   story: story[];
 }
 
-// 250619 To do: Renaming data -> mapData for more clarity
 export default function StoryDisplayModule({
   mapData,
   story,
@@ -38,12 +46,12 @@ export default function StoryDisplayModule({
   const statusCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = mapData;
 
-  const [sheetOpen, setSheetOpen] = useState(false);
   const isInitialRender = useRef(true);
-
-  const activeStory = statusCtx.storyBox;
-
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [infoData, setInfoData] = useState();
+  const [storyData, setStoryData] = useState();
+  const [storyIndex, setStoryIndex] = useState(0);
 
   // Handle infoBox changes
   useEffect(() => {
@@ -67,27 +75,31 @@ export default function StoryDisplayModule({
     }
   }, [statusCtx.infoBox]);
 
+  // Handle storyBox changes
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    if (statusCtx.storyBox) {
+      // console.log(statusCtx.storyBox);
+      story.forEach((storyObject) => {
+        storyObject.nodes.forEach((storyNode, index) => {
+          if (storyNode.id == statusCtx?.storyBox?.id) {
+            setStoryIndex(index);
+            setStoryData(storyObject);
+            setDrawerOpen(true);
+            return;
+          }
+        });
+      });
+    }
+  }, [statusCtx.storyBox]);
   // 250619: Handle story via drawer + ability to move
   return (
     <div className="w-full flex flex-col">
       <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
-      <div className="w-full">
-        <div className="flex flex-col gap-2" id="sidebar">
-          {activeStory && (
-            <div
-              className="border-2 border-sky-500 rounded-md p-1"
-              id="storybox"
-            >
-              <StoryBox
-                id={activeStory.id}
-                title={activeStory.title}
-                type={activeStory.type}
-                description={activeStory.description}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Infobox Sheet */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent>
           <SheetHeader>
@@ -106,6 +118,35 @@ export default function StoryDisplayModule({
           </SheetFooter>
         </SheetContent>
       </Sheet>
+      {/* Story Drawer */}
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{storyData?.title}</DrawerTitle>
+            <DrawerDescription>{storyData?.description}</DrawerDescription>
+          </DrawerHeader>
+          <div className="flex flex-col gap-4 py-4 px-8">
+            <div className="flex gap-4" id="story-progress">
+              {storyData?.nodes?.map((node) => {
+                <div>Node</div>;
+              })}
+            </div>
+            <div className="flex gap-2">
+              <button id="prev-story-node">Previous</button>
+              <div id="story-node-text">
+                <h4>{storyData?.nodes[storyIndex].name}</h4>
+                <p>{storyData?.nodes[storyIndex].description}</p>
+              </div>
+              <button id="next-story-node">Next</button>
+            </div>
+          </div>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Hide</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
