@@ -1,13 +1,10 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
 
-import StatusBar from "@/components/ui/maps/statusBar";
 import StoryBox from "@/components/ui/maps/storyBox";
-import { useStoryMaker } from "@/hooks/useStoryMaker";
-import { StatusContext } from "@/store/statusContext";
-import { Map } from "@prisma/client";
-import MapResponsiveCanvas from "../maps/MapResponsiveCanvas";
+import MapResponsiveCanvas from "@/components/maps/MapResponsiveCanvas";
 import {
   Sheet,
   SheetClose,
@@ -16,11 +13,12 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
-} from "../ui/sheet";
-import { Button } from "../ui/button";
-import Link from "next/link";
-import InfoBox from "../wiki/InfoBox";
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import InfoBox from "@/components/wiki/InfoBox";
+import { useStoryMaker } from "@/hooks/useStoryMaker";
+import { Map } from "@prisma/client";
+import { StatusContext } from "@/store/statusContext";
 
 interface StoryModuleProps {
   mapData: {
@@ -69,8 +67,6 @@ export default function StoryDisplayModule({
     }
   }, [statusCtx.infoBox]);
 
-  // 240811 TODO: Add story via state
-  // 250619: To do Add sheet for infobox
   // 250619: Handle story via drawer + ability to move
   return (
     <div className="w-full flex flex-col">
@@ -98,7 +94,10 @@ export default function StoryDisplayModule({
             <SheetTitle>{infoData?.title}</SheetTitle>
             <SheetDescription>{infoData?.description}</SheetDescription>
           </SheetHeader>
-          {infoData?.wiki && <InfoBox infobox={infoData?.wiki.infobox} />}
+          {/* 250620 - Infobox logic bugging */}
+          {infoData?.wiki?.infobox && (
+            <InfoBox infoBox={infoData?.wiki?.infobox} />
+          )}
           <SheetFooter>
             <Link href={"/"}>Wiki Link</Link>
             <SheetClose asChild>
