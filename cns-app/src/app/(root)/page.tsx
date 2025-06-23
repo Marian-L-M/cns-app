@@ -1,9 +1,9 @@
-import MasterMapModule from "@/components/maps/MasterMapModule";
+import MastermapDisplayModule from "@/components/displays/MastermapDisplayModule";
 import { fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
 
 export default async function Home() {
-  const masterMap = await fetchMasterMap("2");
+  const masterMap = await fetchMasterMap(6);
 
   if (!masterMap) {
     return <div className="text-destructive">No maps found</div>;
@@ -15,9 +15,9 @@ export default async function Home() {
       className="w-ful grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
     >
       <h1 className="text-2xl col-span-4 ">Discover Kamolin!</h1>
-      {/* <CursorContextProvider>
-        <MasterMapModule masterMap={masterMap} />
-      </CursorContextProvider> */}
+      <CursorContextProvider>
+        <MastermapDisplayModule masterMap={masterMap} />
+      </CursorContextProvider>
       <div
         id="info-container"
         className="col-span-2 row-span-2 flex flex-col gap-1"

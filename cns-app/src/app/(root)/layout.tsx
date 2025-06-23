@@ -1,4 +1,4 @@
-import { Map, ScrollText, BookMarked } from "lucide-react";
+import { Map, ScrollText, BookMarked, ListStart } from "lucide-react";
 import { cookies } from "next/headers";
 
 import Footer from "@/components/footer";
@@ -16,6 +16,11 @@ export default async function RootLayout({
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   const mainMenuItems = [
+    {
+      title: "Overview",
+      url: "/",
+      icon: ListStart,
+    },
     {
       title: "Wiki",
       url: "/wiki",

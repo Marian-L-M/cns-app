@@ -20,7 +20,7 @@ interface Props {
 // To do db naming is confusing imageUrl = Thumbnail url, mapUrl is the main map image
 export default function MapTable({ maps }: Props) {
   return (
-    <div className="grid w-full items-center gap-4 grid-cols-3">
+    <div className="grid w-full items-center gap-6 grid-cols-4 p-4">
       {maps ? (
         maps.map((mapObject) => (
           <Card className="hover:bg-indigo-300/10" key={mapObject.id}>
@@ -32,18 +32,15 @@ export default function MapTable({ maps }: Props) {
                 <Image
                   src={`${mapObject.imageUrl}`}
                   alt={`${mapObject.title}-thumbnail`}
-                  width="480"
-                  height="375"
+                  width="240"
+                  height="240"
                 />
               </Link>
-              <CardDescription className="mt-4">
+              <CardDescription className="mt-2">
                 {mapObject.description}
               </CardDescription>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Link href={`/maps/${mapObject.id}/edit`}>
-                <Button variant="outline">Edit</Button>
-              </Link>
               <Link href={`/maps/${mapObject.id}`}>
                 <Button variant="outline">View</Button>
               </Link>

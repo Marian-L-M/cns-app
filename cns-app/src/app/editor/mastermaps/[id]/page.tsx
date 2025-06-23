@@ -11,7 +11,12 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  const masterMap = await fetchMasterMap(id);
+  // 250623 Still seems like a dirty way of handling this
+  if (isNaN(parseInt(id))) {
+    return <div className="text-destructive">Invalid Mastermap id</div>;
+  }
+
+  const masterMap = await fetchMasterMap(parseInt(id));
   const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
 
   if (!masterMap) {

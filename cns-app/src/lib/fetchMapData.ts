@@ -54,9 +54,9 @@ export async function fetchMapData(mapId: string | number) {
   return { map, mapAreas, mapObjects };
 }
 
-export async function fetchMasterMap(masterMapId: string) {
+export async function fetchMasterMap(masterMapId: number) {
   const masterMap = await prisma.mapHierarchyMaster.findUnique({
-    where: { id: parseInt(masterMapId) },
+    where: { id: masterMapId },
     include: {
       authors: true,
       parentMap: true,

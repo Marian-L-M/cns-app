@@ -1,4 +1,4 @@
-import MasterMapModule from "@/components/maps/MasterMapModule";
+import MasterMapModule from "@/components/displays/MastermapDisplayModule";
 import { fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
 

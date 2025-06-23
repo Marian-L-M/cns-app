@@ -19,7 +19,7 @@ interface MasterMapProps {
   };
 }
 
-export default function MasterMapModule({ masterMap }: MasterMapProps) {
+export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
   const { parentMap, childMaps } = masterMap;
   const { canvasRef } = useMasterMapMaker({ childMaps });
   const tooltipCtx = useContext(CursorContext);
@@ -42,7 +42,7 @@ export default function MasterMapModule({ masterMap }: MasterMapProps) {
         <Image
           priority={true}
           className="absolute top-0 left-0 z-1 pointer-events-none"
-          src={`/${parentMap.mapUrl || "maps/placeholder.jpg"}`}
+          src={`${parentMap.mapUrl || "/maps/placeholder.jpg"}`}
           alt={`${parentMap.title} - map`}
           width="1024"
           height="1024"
@@ -63,7 +63,7 @@ const MouseToolTip = ({ cursorContext }: any) => {
     <MouseTracker offset={{ x: 20, y: 20 }}>
       <div className="bg-white border border-gray-300 rounded p-2 shadow-md flex flex-col align-center gap-1">
         <Image
-          src={`/${cursorContext.mouseTooltip.imageUrl}`}
+          src={`${cursorContext.mouseTooltip.imageUrl}`}
           alt="dummy"
           width={100}
           height={100}

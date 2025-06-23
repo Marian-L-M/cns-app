@@ -122,14 +122,7 @@ export default function DataTable({ stories, searchParams }: Props) {
                         minute: "2-digit",
                       })}
                     </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/stories/${story.id}/edit`}
-                        className={buttonVariants({ variant: "outline" })}
-                      >
-                        Edit
-                      </Link>
-                    </TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 ))
               : null}

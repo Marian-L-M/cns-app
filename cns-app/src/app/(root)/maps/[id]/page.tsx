@@ -1,3 +1,4 @@
+import MapDisplayModule from "@/components/maps/MapDisplayModule";
 import MapModule from "@/components/maps/MapModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
@@ -30,8 +31,10 @@ export default async function MapPage({ params }: MapPageProps) {
     return <div className="text-destructive">{error}</div>;
   }
   return (
-    <StatusContextProvider>
-      <MapModule data={data} />
-    </StatusContextProvider>
+    <div className="flex gap-4">
+      <div className="w-2/5 flex-1">
+        <MapDisplayModule data={data} />
+      </div>
+    </div>
   );
 }

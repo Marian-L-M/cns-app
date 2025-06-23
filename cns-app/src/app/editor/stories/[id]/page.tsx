@@ -69,7 +69,7 @@ export default async function EditStory({ params, searchParams }: Props) {
     <div className="w-full flex flex-col gap-4" id="story-editor-module">
       <h1 className="text-2xl">Edit Story</h1>
       {/* <Tabs defaultValue={activeTab} className="w-full"> */}
-      <Tabs defaultValue={"substories"} className="w-full">
+      <Tabs defaultValue={activeTab} className="w-full">
         <TabsList>
           <TabsTrigger value="setup">Setup</TabsTrigger>
           <TabsTrigger value="substories">Substories</TabsTrigger>

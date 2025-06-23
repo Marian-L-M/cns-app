@@ -60,12 +60,6 @@ export default async function Stories({
   return (
     <div className="w-full h-full bg-white">
       <div className="flex gap-2">
-        <Link
-          href="/stories/new"
-          className={buttonVariants({ variant: "default" })}
-        >
-          New Story
-        </Link>
         <StatusFilter />
       </div>
       <DataTable stories={stories} searchParams={searchParams} />

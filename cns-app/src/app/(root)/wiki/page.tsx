@@ -42,24 +42,13 @@ export default async function Wiki() {
             id="top-content"
           >
             <div id="title-container">
-              <h1 className="text-4xl">Eternity of Magic Wiki</h1>
-              <p className="italic">powered by Clouds and Spaceships</p>
+              <h1 className="text-4xl">Wiki</h1>
             </div>
             <div
               className="flex flex-col justify-end gap-4 text-sm"
               id="wiki-meta"
             >
-              <div className="flex gap-8 justify-between" id="meta-top">
-                <Link
-                  type="button"
-                  className={`${buttonVariants({
-                    variant: "outline",
-                  })} p-2`}
-                  href={`/wiki/new`}
-                >
-                  Add New
-                </Link>
-              </div>
+              <div className="flex gap-8 justify-between" id="meta-top"></div>
             </div>
           </div>
           <div className="grid grid-cols-4 gap-x-8 gap-y-12" id="intro-content">
