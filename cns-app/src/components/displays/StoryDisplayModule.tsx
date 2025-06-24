@@ -3,31 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
 
-import StoryBox from "@/components/ui/maps/storyBox";
 import MapResponsiveCanvas from "@/components/maps/MapResponsiveCanvas";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import InfoBox from "@/components/wiki/InfoBox";
 import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { Map } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+
+import InfoBoxSheet from "./parts/InfoBoxSheet";
+import StoryDrawer from "./parts/StoryDrawer";
 
 interface StoryModuleProps {
   mapData: {
@@ -96,82 +78,24 @@ export default function StoryDisplayModule({
     }
   }, [statusCtx.storyBox]);
 
-  function changeStoryNodeIndex(increment: number) {
-    const storyLength = storyData?.nodes?.length;
-    if (storyLength > storyIndex + increment && storyIndex + increment >= 0) {
-      setStoryIndex(storyIndex + increment);
-    }
-  }
-
-  // 250619: Handle story via drawer + ability to move
   return (
     <div className="w-full flex flex-col">
       <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
       {/* Infobox Sheet */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>{infoData?.title}</SheetTitle>
-            <SheetDescription>{infoData?.description}</SheetDescription>
-          </SheetHeader>
-          {/* 250620 - Infobox logic bugging */}
-          {infoData?.wiki?.infobox && (
-            <InfoBox infoBox={infoData?.wiki?.infobox} />
-          )}
-          <SheetFooter>
-            <Link href={"/"}>Wiki Link</Link>
-            <SheetClose asChild>
-              <Button variant="outline">Close</Button>
-            </SheetClose>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+      <InfoBoxSheet
+        sheetOpen={sheetOpen}
+        setSheetOpen={setSheetOpen}
+        infoData={infoData}
+      />
+
       {/* Story Drawer */}
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>{storyData?.title}</DrawerTitle>
-            <DrawerDescription>{storyData?.description}</DrawerDescription>
-          </DrawerHeader>
-          <div className="flex flex-col gap-4 py-4 px-8">
-            <div className="flex gap-4" id="story-progress">
-              {storyData?.nodes?.map((node) => {
-                return (
-                  <div key={`progress-node-${node.id}`}>
-                    {node.name}{" "}
-                    {node.id == storyData?.nodes[storyIndex].id && (
-                      <span>(active)</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => changeStoryNodeIndex(-1)}
-                id="prev-story-node"
-              >
-                Previous
-              </Button>
-              <div id="story-node-text">
-                <h4>{storyData?.nodes[storyIndex].name}</h4>
-                <p>{storyData?.nodes[storyIndex].description}</p>
-              </div>
-              <Button
-                onClick={() => changeStoryNodeIndex(1)}
-                id="next-story-node"
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-          <DrawerFooter>
-            <DrawerClose asChild>
-              <Button variant="outline">Hide</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <StoryDrawer
+        storyData={storyData}
+        storyIndex={storyIndex}
+        setStoryIndex={setStoryIndex}
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+      />
     </div>
   );
 }
