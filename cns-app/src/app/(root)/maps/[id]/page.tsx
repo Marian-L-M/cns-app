@@ -31,10 +31,16 @@ export default async function MapPage({ params }: MapPageProps) {
     return <div className="text-destructive">{error}</div>;
   }
   return (
-    <div>
-      <StatusContextProvider>
-        <MapDisplayModule data={data} />
-      </StatusContextProvider>
+    <div className="w-full flex gap-4">
+      <div className="col-span-6">
+        <StatusContextProvider>
+          <MapDisplayModule data={data} />
+        </StatusContextProvider>
+      </div>
+      <div className="col-span-3 flex flex-col gap-4">
+        <h2 className="text-2xl">{data.map.title}</h2>
+        <div id="description">{data.map.description}</div>
+      </div>
     </div>
   );
 }

@@ -48,10 +48,16 @@ export default async function ViewStory({
   }
 
   return (
-    <div>
-      <StatusContextProvider>
-        <StoryDisplayModule mapData={mapData} story={substories} />
-      </StatusContextProvider>
+    <div className="w-full flex gap-4">
+      <div className="col-span-6">
+        <StatusContextProvider>
+          <StoryDisplayModule mapData={mapData} story={substories} />
+        </StatusContextProvider>
+      </div>
+      <div className="col-span-3 flex flex-col gap-4">
+        <h2 className="text-2xl">{story.title}</h2>
+        <div id="description">{story.description}</div>
+      </div>
     </div>
   );
 }
