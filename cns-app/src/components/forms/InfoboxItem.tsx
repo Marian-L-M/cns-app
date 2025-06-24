@@ -1,8 +1,15 @@
 import { Plus, Trash2 } from "lucide-react";
-import { Control, useFieldArray, UseFormRegister } from "react-hook-form";
+import {
+  Control,
+  useFieldArray,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { UploadButton } from "@/lib/uploadthing/utils";
 
 import { WikiFormData } from "./WikiForm";
 
@@ -21,6 +28,7 @@ interface InfoboxItemProps {
   index: number;
   register: UseFormRegister<WikiFormData>;
   control: Control<WikiFormData>;
+  setValue: UseFormSetValue<WikiFormData>;
   remove: (index: number) => void;
 }
 
@@ -29,6 +37,7 @@ export default function InfoboxItem({
   index,
   register,
   control,
+  setValue,
   remove,
 }: InfoboxItemProps) {
   const {
@@ -65,6 +74,19 @@ export default function InfoboxItem({
       <div className="flex flex-col gap-2">
         {field.type === "image" && (
           <>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res: { url: string }[]) => {
+                setValue(`infobox.${index}.url`, res[0].url);
+                toast.success("Image uploaded successfully!");
+              }}
+              onUploadError={(error: Error) => {
+                toast.error("Thumbnail image upload failed", {
+                  className: "error",
+                  description: `ERROR! ${error.message}`,
+                });
+              }}
+            />
             <Input
               {...register(`infobox.${index}.url`)}
               placeholder="Image URL"

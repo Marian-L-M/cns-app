@@ -1,5 +1,10 @@
 import React from "react";
-import { useFieldArray, Control, UseFormRegister } from "react-hook-form";
+import {
+  useFieldArray,
+  Control,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
 import { WikiFormData } from "./WikiForm";
 import { ImagePlus, ListPlus, SquarePlus } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -8,11 +13,13 @@ import InfoboxItem from "./InfoboxItem";
 interface InfoboxFormFieldProps {
   control: Control<WikiFormData>;
   register: UseFormRegister<WikiFormData>;
+  setValue: UseFormSetValue<WikiFormData>;
 }
 
 export default function WikiInfoboxFormField({
   control,
   register,
+  setValue,
 }: InfoboxFormFieldProps) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -56,6 +63,7 @@ export default function WikiInfoboxFormField({
               index={index}
               register={register}
               control={control}
+              setValue={setValue}
               remove={remove}
             />
           ))}

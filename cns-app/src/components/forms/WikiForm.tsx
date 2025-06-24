@@ -464,6 +464,7 @@ export default function WikiForm({ wiki, user }: Props) {
                         <WikiInfoboxFormField
                           control={form.control}
                           register={form.register}
+                          setValue={form.setValue}
                         />
                       </FormControl>
                     </FormItem>

@@ -72,29 +72,11 @@ export default async function WikiPage({ params }: WikiPageProps) {
               id="wiki-meta"
             >
               <div className="flex gap-8 justify-between" id="meta-top">
-                <Button variant={"ghost"}>
-                  <ThumbsUp className="text-lime-900" />
-                </Button>
                 <div className="text-xs text-end" id="wiki-date">
                   <p>Created: {dateCreated}</p>
                   <p>Last Update: {dateUpdated}</p>
                 </div>
-                <Link
-                  type="button"
-                  className={`${buttonVariants({
-                    variant: "outline",
-                  })} w-16`}
-                  href={`/wiki/edit/${wiki.id}`}
-                >
-                  Edit
-                </Link>
               </div>
-              <p
-                className="bg-slate-100 border-1 rounded-sm px-4 py-1 "
-                id="meta-wiki-message"
-              >
-                Check out related article yada yada
-              </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-y-8 justify-between">
