@@ -218,14 +218,13 @@ model GlobalObject {
   description String        @db.Text
   imageUrl    String
   thumbUrl    String
-  infobox     Json?
   styles      Json?
   x           Int
   y           Int
   objectTime  Int
   map         Map           @relation(fields: [mapId], references: [id])
   mapId       Int
-  wiki        Wiki?          @relation(fields: [wikiId], references: [id])
+  wiki        Wiki?         @relation(fields: [wikiId], references: [id])
   wikiId      Int?
   type        MapObjectType @default(LOCATION)
 
@@ -240,13 +239,12 @@ model GlobalArea {
   title       String      @db.VarChar(255)
   description String      @db.Text
   imageUrl    String
-  infobox     Json?
   nodes       Json?
   styles      Json?
   objectTime  Int
   map         Map         @relation(fields: [mapId], references: [id])
   mapId       Int
-  wiki        Wiki?        @relation(fields: [wikiId], references: [id])
+  wiki        Wiki?       @relation(fields: [wikiId], references: [id])
   wikiId      Int?
   type        MapAreaType @default(GEOGRAPHY)
 
@@ -263,16 +261,35 @@ model Wiki {
   title       String   @db.VarChar(255)
   description String   @db.Text
   wikiText    String   @default("") @db.Text
-  infobox     Json?
 
   category String?
   tags     String[]
   featured Boolean  @default(false)
 
-  objects GlobalObject[]
-  area    GlobalArea[]
-  type    WikiType       @default(GENERAL)
-  authors User[]
+  objects      GlobalObject[]
+  area         GlobalArea[]
+  type         WikiType          @default(GENERAL)
+  authors      User[]
+  infoboxItems WikiInfoboxItem[]
+}
+
+model WikiInfoboxItem {
+  id        Int             @id @default(autoincrement())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  type      WikiInfoboxType @default(TEXT)
+  order     Int
+
+  title       String @default("") @db.VarChar(255)
+  description String @default("") @db.Text
+  imageUrl    String @default("") @db.VarChar(2048)
+  caption     String @default("") @db.VarChar(255)
+  collections Json[] @default([]) @db.Json
+
+  wiki   Wiki @relation(fields: [wikiId], references: [id])
+  wikiId Int
+
+  @@index([wikiId])
 }
 
 enum WikiType {
@@ -287,6 +304,13 @@ enum WikiType {
   OTHER
 }
 
+enum WikiInfoboxType {
+  IMAGE
+  COLLECTION
+  TEXT
+  TITLE
+}
+
 enum MapObjectType {
   LOCATION
   HISTORY
@@ -299,6 +323,25 @@ enum MapAreaType {
   ABSTRACT
   INTERACTIVE
 }
+
+// Admin Settings 
+// Concept -> Each setting is a separate row identified via name and group
+// Check how caching works
+// Think about how to initialize data with base settings and giving the user the right options
+// model PageSettings {
+//   id          Int      @id @default(autoincrement())
+//   name        String   @unique
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   value       String   
+//   type        String   @default("string") // Change to enum or give it flexibility to be a boolean or number
+//   group       String?  // Change to enum
+//   description String?
+//   updatedBy       Int?     @map("updated_by")
+//   user            User?    @relation(fields: [updatedBy], references: [id])
+
+//   @@map("site_settings")
+// }
 
 // To do
 // User settings, user profile,  user interaction, admin settings,

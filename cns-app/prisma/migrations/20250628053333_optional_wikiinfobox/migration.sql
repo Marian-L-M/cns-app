@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "WikiInfoboxItem" ALTER COLUMN "title" DROP NOT NULL,
+ALTER COLUMN "description" DROP NOT NULL,
+ALTER COLUMN "imageUrl" DROP NOT NULL,
+ALTER COLUMN "caption" DROP NOT NULL;
