@@ -16,20 +16,19 @@ export default function InfoboxRow({ infoboxItem }: Props) {
       {infoboxItem.type == "TITLE" && (
         // Type Title
         <div className="w-full">
-          <h2 className="text-xl w-full bg-gray-100 text-center mb-2">
+          <h2 className="text-xl w-full bg-gray-200 text-center mb-2">
             {infoboxItem.title}
           </h2>
         </div>
       )}
       {infoboxItem.type == "IMAGE" && (
         // Type image with optional caption
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full max-w-3xs flex flex-col items-center">
           <Image
-            width={280}
-            height={280}
+            width={250}
+            height={250}
             src={infoboxItem.imageUrl}
             alt={infoboxItem.caption}
-            className="w-full"
           />
           {infoboxItem.caption && (
             <h3 className="w-full text-md text-center mb-2">
@@ -42,7 +41,7 @@ export default function InfoboxRow({ infoboxItem }: Props) {
         // Type Text with optional title
         <div className="w-full">
           {infoboxItem.title && (
-            <h3 className="text-md w-full bg-gray-100 text-center mb-2">
+            <h3 className="text-md w-full bg-gray-200 text-center mb-2">
               {infoboxItem.title}
             </h3>
           )}
@@ -54,7 +53,7 @@ export default function InfoboxRow({ infoboxItem }: Props) {
         <div className="w-full">
           {infoboxItem.collections?.map((collection: any) => (
             <div key={`collection-${collection?.title}`}>
-              <h3 className="w-full text-md bg-gray-100 text-center mb-2">
+              <h3 className="w-full text-md bg-gray-200 text-center mb-2">
                 {collection?.title}
               </h3>
               <div className="text-xs flex flex-col gap-1">

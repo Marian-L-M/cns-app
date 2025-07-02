@@ -11,7 +11,9 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id, cmid } = resolvedParams;
 
-  const masterMap = await fetchMasterMap(id);
+  const masterMap = await fetchMasterMap(
+    typeof id == "string" ? parseInt(id) : id
+  );
   const childMap = await fetchHierarchyChild(cmid);
 
   if (!masterMap || !childMap) {
