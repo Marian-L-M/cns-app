@@ -5,7 +5,7 @@ import MapForm from "@/components/forms/MapForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import AreaObjectOverviewModule from "./AreaObjectOverview";
-import MapDisplayModule from "@/components/maps/MapDisplayModule";
+import MapDisplayModule from "@/components/displays/MapDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 
 interface Props {

@@ -14,6 +14,7 @@ import { buttonVariants } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
+import { Trash } from "lucide-react";
 
 interface Props {
   objectId: number;
@@ -31,7 +32,7 @@ const DeleteButton = ({ objectId, type, path, redirect }: Props) => {
     try {
       setIsDeleting(true);
       await axios.delete(`/api/${path}/${objectId}`);
-      router.push(`/${redirect}`);
+      router.push(`${redirect}`);
       router.refresh();
     } catch (error) {
       setIsDeleting(false);
@@ -42,12 +43,12 @@ const DeleteButton = ({ objectId, type, path, redirect }: Props) => {
     <>
       <AlertDialog>
         <AlertDialogTrigger
-          className={buttonVariants({
+          className={`${buttonVariants({
             variant: "destructive",
-          })}
+          })} text-xs p-1`}
           disabled={isDeleting}
         >
-          Delete {type}
+          <Trash />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

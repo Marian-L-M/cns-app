@@ -1,5 +1,5 @@
 import AreaObjectList from "@/components/lists/AreaObjectList";
-import MapDisplayModule from "@/components/maps/MapDisplayModule";
+import MapDisplayModule from "@/components/displays/MapDisplayModule";
 import StatusContextProvider from "@/store/statusContext";
 import { Plus } from "lucide-react";
 import Link from "next/link";

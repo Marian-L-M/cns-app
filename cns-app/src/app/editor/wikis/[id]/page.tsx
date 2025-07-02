@@ -25,10 +25,15 @@ export default async function EditWikiPage({ params }: Props) {
     return notFound();
   }
 
+  const infobox = await prisma.wikiInfoboxItem.findMany({
+    where: { wikiId: id },
+    orderBy: { order: "asc" },
+  });
+
   // Check if current user has permission to edit
   const session = await requireOwnerOrAdmin({ authors: wiki.authors });
 
-  return <WikiForm wiki={wiki} user={session.user} />;
+  return <WikiForm wiki={wiki} user={session.user} infobox={infobox} />;
 }
 
 // 2240907 Next action: Change description to a text field

@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useMapMaker } from "@/hooks/useMapMaker";
 import { StatusContext } from "@/store/statusContext";
 import MapResponsiveCanvas from "../maps/MapResponsiveCanvas";
-import InfoBoxSheet from "./parts/InfoBoxSheet";
+import InfoBoxSheet from "./parts/InfoboxSheet";
 
 export default function MapDisplayModule({ data, settings }: MapModuleProps) {
   const { canvasRef } = useMapMaker({ data, settings });

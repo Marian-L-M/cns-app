@@ -56,6 +56,7 @@ import {
 } from "../ui/dialog/dialog";
 import { Label } from "../ui/label";
 import { Plus, Trash } from "lucide-react";
+import Link from "next/link";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -140,9 +141,16 @@ export default function WikiForm({ wiki, user, infobox }: Props) {
 
   return (
     <div className="flex flex-col gap-10 w-full">
-      <h1 className="text-3xl">
-        {wiki ? "Update Wiki entry" : "Add new Wiki entry"}
-      </h1>
+      <div className="w-full flex items-center justify-between">
+        <h1 className="text-3xl">
+          {wiki ? "Update Wiki entry" : "Add new Wiki entry"}
+        </h1>
+        {wiki && (
+          <Button variant={"outline"} asChild>
+            <Link href={`/wiki/${wiki.id}`}>View article</Link>
+          </Button>
+        )}
+      </div>
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-9">
           <Form {...form}>

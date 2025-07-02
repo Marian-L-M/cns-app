@@ -8,7 +8,7 @@ import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { Map } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
 
-import InfoBoxSheet from "./parts/InfoBoxSheet";
+import InfoBoxSheet from "./parts/InfoboxSheet";
 import StoryDrawer from "./parts/StoryDrawer";
 
 interface StoryModuleProps {
