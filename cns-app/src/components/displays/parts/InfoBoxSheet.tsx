@@ -8,8 +8,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import InfoBox from "@/components/wiki/InfoBox";
+// import InfoBox from "@/components/wiki/InfoBox";
 import Link from "next/link";
+import prisma from "../../../../prisma/db";
+import InfoboxDisplayModule from "../InfoboxDisplayModule";
+import InfoboxRow from "./InfoboxRow";
+import { fetchInfobox } from "@/lib/fetchWikiData";
 
 interface Props {
   sheetOpen: boolean;
@@ -19,26 +23,26 @@ interface Props {
     description?: string;
     wikiId?: number;
     wiki?: {
-      infobox?: any;
+      infoboxItems?: any;
       slug?: string;
     };
   };
 }
 
-export default function InfoBoxSheet({
+export default function InfoboxSheet({
   sheetOpen,
   setSheetOpen,
   infoData,
 }: Props) {
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-      <SheetContent>
+      <SheetContent className="flex flex-col gap-8">
         <SheetHeader>
           <SheetTitle>{infoData?.title}</SheetTitle>
           <SheetDescription>{infoData?.description}</SheetDescription>
         </SheetHeader>
-        {infoData?.wiki?.infobox && (
-          <InfoBox infoBox={infoData?.wiki?.infobox} />
+        {infoData.wiki?.infoboxItems && (
+          <InfoboxDisplayModule infobox={infoData.wiki?.infoboxItems} />
         )}
         <SheetFooter>
           {infoData?.wikiId && (

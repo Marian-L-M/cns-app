@@ -8,7 +8,7 @@ import { useStoryMaker } from "@/hooks/useStoryMaker";
 import { Map } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
 
-import InfoBoxSheet from "./parts/InfoboxSheet";
+import InfoboxSheet from "./parts/InfoboxSheet";
 import StoryDrawer from "./parts/StoryDrawer";
 
 interface StoryModuleProps {
@@ -77,25 +77,28 @@ export default function StoryDisplayModule({
       });
     }
   }, [statusCtx.storyBox]);
-
   return (
     <div className="w-full flex flex-col">
       <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
       {/* Infobox Sheet */}
-      <InfoBoxSheet
-        sheetOpen={sheetOpen}
-        setSheetOpen={setSheetOpen}
-        infoData={infoData}
-      />
+      {infoData && (
+        <InfoboxSheet
+          sheetOpen={sheetOpen}
+          setSheetOpen={setSheetOpen}
+          infoData={infoData}
+        />
+      )}
 
       {/* Story Drawer */}
-      <StoryDrawer
-        storyData={storyData}
-        storyIndex={storyIndex}
-        setStoryIndex={setStoryIndex}
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}
-      />
+      {storyData && (
+        <StoryDrawer
+          storyData={storyData}
+          storyIndex={storyIndex}
+          setStoryIndex={setStoryIndex}
+          drawerOpen={drawerOpen}
+          setDrawerOpen={setDrawerOpen}
+        />
+      )}
     </div>
   );
 }

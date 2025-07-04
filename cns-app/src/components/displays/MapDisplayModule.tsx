@@ -41,11 +41,13 @@ export default function MapDisplayModule({ data, settings }: MapModuleProps) {
     <div className="w-full flex flex-col">
       <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
       {/* Infobox Sheet */}
-      <InfoBoxSheet
-        sheetOpen={sheetOpen}
-        setSheetOpen={setSheetOpen}
-        infoData={infoData}
-      />
+      {infoData && (
+        <InfoBoxSheet
+          sheetOpen={sheetOpen}
+          setSheetOpen={setSheetOpen}
+          infoData={infoData}
+        />
+      )}
     </div>
   );
 }
