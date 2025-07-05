@@ -1,10 +1,5 @@
-// Move to utils folder and polish concept
+// To do Move to draw live
 // Draw functions are double
-interface areaNode {
-  id: number;
-  x: number;
-  y: number;
-}
 
 export function draw(
   ctx: CanvasRenderingContext2D,

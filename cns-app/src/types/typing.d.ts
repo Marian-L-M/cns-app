@@ -94,15 +94,25 @@ interface story {
   storyId: number;
 }
 
-interface storyNode {
+type StoryNode = {
   id: number;
-  name: string;
-  description: string;
-  timeStart: number;
-  timeEnd: number;
   x: number;
   y: number;
-}
+  name: string;
+  description: string;
+  timeStart?: number;
+  timeEnd?: number;
+};
+
+// interface StoryNode {
+//   id: number;
+//   name: string;
+//   description: string;
+//   timeStart: number;
+//   timeEnd: number;
+//   x: number;
+//   y: number;
+// }
 
 interface areaNode {
   id: number;

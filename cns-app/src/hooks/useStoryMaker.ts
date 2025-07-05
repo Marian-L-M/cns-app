@@ -9,6 +9,7 @@ import {
 } from "@/lib/map/mouseActions";
 import { Map } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
+import { drawArrowLine, drawNode } from "@/lib/draw/drawStory";
 
 interface StoryModuleProps {
   mapData: {
@@ -17,9 +18,14 @@ interface StoryModuleProps {
     mapAreas: GlobalAreaType[];
   };
   story: story[];
+  storyIndex: number;
 }
 
-export function useStoryMaker({ mapData, story }: StoryModuleProps) {
+export function useStoryMaker({
+  mapData,
+  story,
+  storyIndex,
+}: StoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { mapAreas, mapObjects } = mapData;
   const statusCtx = useContext(StatusContext);
@@ -75,32 +81,22 @@ export function useStoryMaker({ mapData, story }: StoryModuleProps) {
     // 240822 Nodes are drawn behind theimage by default, overwriting seems pretty painful, so might be smarter to split the canvas (into 3: image canvas, drawing/interaction canvas, animation canvas) in future iterations.
     if (story) {
       story.forEach((storyObject) => {
-        let previousNode: Point;
+        drawArrowLine(ctx, storyObject, cw, ch);
 
-        storyObject.nodes.forEach((node: storyNode) => {
-          // Draw Story Line
-          if (previousNode) {
-            ctx.beginPath();
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 2;
-            ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
-            ctx.lineTo(node.x * cw, node.y * ch);
-            ctx.closePath;
-            ctx.stroke();
-          }
-          previousNode = { x: node.x, y: node.y };
-        });
-        storyObject.nodes.forEach((node: storyNode) => {
-          // Draw Current Story node
-          ctx.fillStyle = "red";
-          ctx.beginPath();
-          ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
-          ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
-          ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
-          ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
-          ctx.closePath();
-          ctx.stroke();
-          ctx.fill();
+        // storyObject.nodes.forEach((node: StoryNode) => {
+        //   // Draw Current Story node
+        //   ctx.fillStyle = "red";
+        //   ctx.beginPath();
+        //   ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
+        //   ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
+        //   ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
+        //   ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
+        //   ctx.closePath();
+        //   ctx.stroke();
+        //   ctx.fill();
+        // });
+        storyObject.nodes.forEach((node: StoryNode) => {
+          drawNode(ctx, node, cw, ch, storyObject.nodes[storyIndex].id);
         });
       });
     }
@@ -172,7 +168,7 @@ export function useStoryMaker({ mapData, story }: StoryModuleProps) {
         });
       }
     };
-  }, []);
+  }, [story, storyIndex]);
 
   return { canvasRef };
 }

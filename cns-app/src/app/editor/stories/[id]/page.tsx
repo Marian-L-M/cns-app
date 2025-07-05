@@ -36,6 +36,7 @@ export default async function EditStory({ params, searchParams }: Props) {
     where: { id },
     include: {
       authors: true,
+      assignedToMap: true,
     },
   });
 

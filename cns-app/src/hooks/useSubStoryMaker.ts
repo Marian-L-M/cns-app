@@ -1,19 +1,14 @@
-// Temporary hook - to be unified with useStoryMaker
 import { useEffect, useRef } from "react";
 import { SubStory } from "@prisma/client";
-
-type StoryNode = {
-  id: number;
-  x: number;
-  y: number;
-  name: string;
-  description: string;
-  timeStart?: number;
-  timeEnd?: number;
-};
+import {
+  drawArrowLine,
+  drawMetaNode,
+  drawNode,
+  drawNodeSquare,
+} from "@/lib/draw/drawStory";
 
 interface substoryModuleProps {
-  editableSubStory: SubStory & { nodes: StoryNode[] }; // Add the new prop
+  editableSubStory: SubStory & { nodes: StoryNode[] };
   setEditableSubStory: React.Dispatch<
     React.SetStateAction<SubStory & { nodes: StoryNode[] }>
   >;
@@ -134,20 +129,7 @@ const redrawCanvas = (
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw Lines
-  let previousNode: Point | undefined;
-  editableSubStory.nodes.forEach((node: StoryNode) => {
-    // Draw Story Line
-    if (previousNode) {
-      ctx.beginPath();
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 2;
-      ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
-      ctx.lineTo(node.x * cw, node.y * ch);
-      ctx.closePath;
-      ctx.stroke();
-    }
-    previousNode = { x: node.x, y: node.y };
-  });
+  drawArrowLine(ctx, editableSubStory, cw, ch);
 
   // Draw Nodes
   editableSubStory.nodes.forEach((node: StoryNode) => {
@@ -156,55 +138,8 @@ const redrawCanvas = (
 };
 
 // 250217 Todo: make code less dry
-const drawNode = (
-  ctx: CanvasRenderingContext2D,
-  node: StoryNode,
-  cw: number,
-  ch: number,
-  activeSubstoryID?: number
-) => {
-  if (activeSubstoryID === node.id) {
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 10, "yellow", "black");
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "blue", "none");
-  } else {
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "red", "black");
-  }
-};
 
 // Unify with useMapEditor drawmeta node)
-const drawMetaNode = (
-  ctx: CanvasRenderingContext2D,
-  node: StoryNode,
-  cw: number,
-  ch: number
-) => {
-  drawNodeSquare(ctx, node.x, node.y, cw, ch, 10, "unset", "unset");
-};
-
-const drawNodeSquare = (
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  cw: number,
-  ch: number,
-  offset: number,
-  fillStyle?: string,
-  strokeStyle?: string
-) => {
-  ctx.beginPath();
-  ctx.lineWidth = 1;
-  fillStyle ? (ctx.fillStyle = fillStyle) : (ctx.fillStyle = "none");
-  strokeStyle ? (ctx.strokeStyle = strokeStyle) : (ctx.strokeStyle = "none");
-  ctx.moveTo((x - offset) * cw, (y - offset) * ch);
-  ctx.lineTo((x + offset) * cw, (y - offset) * ch);
-  ctx.lineTo((x + offset) * cw, (y + offset) * ch);
-  ctx.lineTo((x - offset) * cw, (y + offset) * ch);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-  ctx.fillStyle = "none";
-  ctx.strokeStyle = "none";
-};
 
 const addNode = (
   newNode: StoryNode,

@@ -24,7 +24,6 @@ export default function StoryDisplayModule({
   mapData,
   story,
 }: StoryModuleProps) {
-  const { canvasRef } = useStoryMaker({ mapData, story });
   const statusCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = mapData;
 
@@ -35,6 +34,8 @@ export default function StoryDisplayModule({
   const [storyData, setStoryData] = useState();
   const [storyIndex, setStoryIndex] = useState(0);
 
+  // Set Canvas
+  const { canvasRef } = useStoryMaker({ mapData, story, storyIndex }); // Add styles and settings
   // Handle infoBox changes
   useEffect(() => {
     if (isInitialRender.current) {
@@ -64,7 +65,6 @@ export default function StoryDisplayModule({
       return;
     }
     if (statusCtx.storyBox) {
-      // console.log(statusCtx.storyBox);
       story.forEach((storyObject) => {
         storyObject.nodes.forEach((storyNode, index) => {
           if (storyNode.id == statusCtx?.storyBox?.id) {
