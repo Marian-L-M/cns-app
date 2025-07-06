@@ -37,6 +37,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -47,6 +48,7 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("sessions")
 }
 
@@ -76,6 +78,12 @@ model User {
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt
+
+  @@index([storyId])
+  @@index([mapId])
+  @@index([mapHierarchyId])
+  @@index([subStoryId])
+  @@index([wikiId])
 }
 
 model VerificationToken {
@@ -156,6 +164,7 @@ model Map {
   objects         GlobalObject[]
   area            GlobalArea[]
   authors         User[]
+  canvasStyles    CanvasStyleItem[]
 
   parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
   childInHierarchies  MapHierarchyChild[]  @relation("ChildMap")
@@ -190,6 +199,8 @@ model MapHierarchyChild {
   wx Int @default(0)
   wy Int @default(0)
 
+  canvasStyles CanvasStyleItem[]
+
   @@unique([hierarchyId, childMapId])
   @@index([hierarchyId])
   @@index([childMapId])
@@ -205,7 +216,9 @@ model SubStory {
   objectTime  Int
   story       Story    @relation(fields: [storyId], references: [id])
   storyId     Int
-  authors     User[]
+
+  authors      User[]
+  canvasStyles CanvasStyleItem[]
 
   @@index([storyId])
 }
@@ -228,6 +241,8 @@ model GlobalObject {
   wikiId      Int?
   type        MapObjectType @default(LOCATION)
 
+  canvasStyles CanvasStyleItem[]
+
   @@index([mapId])
   @@index([wikiId])
 }
@@ -247,6 +262,8 @@ model GlobalArea {
   wiki        Wiki?       @relation(fields: [wikiId], references: [id])
   wikiId      Int?
   type        MapAreaType @default(GEOGRAPHY)
+
+  canvasStyles CanvasStyleItem[]
 
   @@index([mapId])
   @@index([wikiId])
@@ -292,6 +309,31 @@ model WikiInfoboxItem {
   @@index([wikiId])
 }
 
+model CanvasStyleItem {
+  id        Int                 @id @default(autoincrement())
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  type      CanvasStyleItemType
+  value     String              @default("")
+
+  map                 Map?               @relation(fields: [mapId], references: [id])
+  mapId               Int
+  globalObject        GlobalObject?      @relation(fields: [globalObjectId], references: [id])
+  globalObjectId      Int?
+  globalArea          GlobalArea?        @relation(fields: [globalAreaId], references: [id])
+  globalAreaId        Int?
+  mapHierarchyChild   MapHierarchyChild? @relation(fields: [mapHierarchyChildId], references: [id])
+  mapHierarchyChildId Int?
+  subStory            SubStory?          @relation(fields: [subStoryId], references: [id])
+  subStoryId          Int?
+
+  @@index([mapId])
+  @@index([globalObjectId])
+  @@index([globalAreaId])
+  @@index([mapHierarchyChildId])
+  @@index([subStoryId])
+}
+
 enum WikiType {
   GENERAL
   STORY
@@ -309,6 +351,13 @@ enum WikiInfoboxType {
   COLLECTION
   TEXT
   TITLE
+}
+
+enum CanvasStyleItemType {
+  font
+  lineWidth
+  fillStyle
+  strokeStyle
 }
 
 enum MapObjectType {
