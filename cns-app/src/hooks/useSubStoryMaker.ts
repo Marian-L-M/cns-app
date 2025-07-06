@@ -1,11 +1,6 @@
 import { useEffect, useRef } from "react";
 import { SubStory } from "@prisma/client";
-import {
-  drawArrowLine,
-  drawMetaNode,
-  drawNode,
-  drawNodeSquare,
-} from "@/lib/draw/drawStory";
+import { drawArrowLine, drawMetaNode, drawNode } from "@/lib/draw/drawStory";
 
 interface substoryModuleProps {
   editableSubStory: SubStory & { nodes: StoryNode[] };
@@ -136,10 +131,6 @@ const redrawCanvas = (
     drawNode(ctx, node, cw, ch, activeSubstoryID);
   });
 };
-
-// 250217 Todo: make code less dry
-
-// Unify with useMapEditor drawmeta node)
 
 const addNode = (
   newNode: StoryNode,
