@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Menu, Palette } from "lucide-react";
+import { Menu, Palette, Plus } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -33,11 +33,14 @@ import {
 } from "@/components/ui/select";
 import { fetchWikiName } from "@/lib/fetchWikiData";
 import { UploadButton } from "@/lib/uploadthing/utils";
-import { GlobalArea } from "@prisma/client";
+import { CanvasStyleItem, GlobalArea } from "@prisma/client";
 import { EditorContext } from "@/store/mapEditorContext";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 
 import "easymde/dist/easymde.min.css";
+import StyleEditListModule from "../displays/StyleEditListModule";
+import StyleItemForm from "./StyleItemForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -66,6 +69,7 @@ interface Props {
         mapId: number;
         wikiId: number;
         type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+        canvasStyles: CanvasStyleItem[];
       }
     | undefined;
 }
@@ -81,16 +85,29 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // Style items
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentStyleItem, setCurrentStyleItem] = useState<
+    CanvasStyleItem | undefined
+  >(undefined);
+
+  // Wiki search
   const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
     globalArea?.wikiId ?? undefined
   );
   const [wikiName, setWikiName] = useState<string>("");
 
   // Intialize styles (250112 - Structure inefficient)
+  // To do: map to style items and delete styles column
   const styles = {
     fillStyle: editorCtx.objectColor,
     lineWidth: editorCtx.objectLineWidth,
     strokeStyle: editorCtx.objectLineWidth,
+  };
+
+  const showStyleForm = (canvasStyle?: CanvasStyleItem) => {
+    setCurrentStyleItem(canvasStyle);
+    setIsDialogOpen(true);
   };
 
   // Set form data
@@ -196,180 +213,226 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="relative z-20 col-span-2 flex flex-col gap-4"
-        id="sidebar"
-      >
-        <div className="w-full flex flex-col gap-4" id="form-top">
-          <div className="w-full" id="title-container">
-            <FormField
-              control={form.control}
-              name="title"
-              defaultValue={globalArea?.title}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Area Title..." {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="description-container">
-            <h5 className="">Description</h5>
-            <Controller
-              name="description"
-              defaultValue={globalArea?.description}
-              control={form.control}
-              render={({ field }) => (
-                <SimpleMdeEditor placeholder="Area description" {...field} />
-              )}
-            />
-          </div>
-          <div className="w-full" id="wiki-container">
-            <FormField
-              control={form.control}
-              name="wikiId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wiki</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-row gap-2">
-                      {wikiName && (
-                        <div className="w-2/3">
-                          <Input
-                            type="hidden"
-                            placeholder="WikiId"
-                            {...field}
-                          />
-                          <div className="p-2 border rounded-md h-10 flex items-center">
-                            <p className="truncate text-sm">{wikiName}</p>
-                          </div>
-                        </div>
+    <div className="flex flex-col gap-8 col-span-2">
+      <Tabs defaultValue={"form"} className="w-full">
+        <TabsList>
+          <TabsTrigger value="form">Form</TabsTrigger>
+          <TabsTrigger value="styles">Styles</TabsTrigger>
+        </TabsList>
+        <TabsContent value="form">
+          <div className="w-full">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-4"
+                id="sidebar"
+              >
+                <div className="w-full flex flex-col gap-4" id="form-top">
+                  <div className="w-full" id="title-container">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      defaultValue={globalArea?.title}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Area Title..." {...field} />
+                          </FormControl>
+                        </FormItem>
                       )}
-                      <div className="w-1/3">
-                        <WikiSearchDialog
-                          setSelectedWikiId={setSelectedWikiId}
-                        />
-                      </div>
-                    </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="upload-field">
-            <h4>Thumbnail Image</h4>
-            <Card>
-              <CardContent className="space-y-2 mt-2">
-                {thumbImg && (
-                  <Image
-                    src={thumbImg}
-                    alt="thumbnail image"
-                    className="object-cover object-center"
-                    width={240}
-                    height={240}
-                  />
-                )}
-
-                {!thumbImg && (
-                  <UploadButton
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res: { url: string }[]) => {
-                      form.setValue("imageUrl", res[0].url);
-                    }}
-                    onUploadError={(error: Error) => {
-                      toast.error("Thumbnail image upload failed", {
-                        className: "error",
-                        description: `ERROR! ${error.message}`,
-                      });
-                    }}
-                  />
-                )}
-                <FormField
-                  control={form.control}
-                  name="imageUrl"
-                  defaultValue={map?.imageUrl}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input placeholder="Thumbnail" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-          </div>
-          <div className="w-full" id="timestamp-container">
-            <FormField
-              control={form.control}
-              name="objectTime"
-              defaultValue={globalArea?.objectTime}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Area Timestamp</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Area Timestamp"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      value={field.value || ""}
                     />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                  </div>
+                  <div className="w-full" id="description-container">
+                    <h5 className="">Description</h5>
+                    <Controller
+                      name="description"
+                      defaultValue={globalArea?.description}
+                      control={form.control}
+                      render={({ field }) => (
+                        <SimpleMdeEditor
+                          placeholder="Area description"
+                          {...field}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="w-full" id="wiki-container">
+                    <FormField
+                      control={form.control}
+                      name="wikiId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Wiki</FormLabel>
+                          <FormControl>
+                            <div className="flex flex-row gap-2">
+                              {wikiName && (
+                                <div className="w-2/3">
+                                  <Input
+                                    type="hidden"
+                                    placeholder="WikiId"
+                                    {...field}
+                                  />
+                                  <div className="p-2 border rounded-md h-10 flex items-center">
+                                    <p className="truncate text-sm">
+                                      {wikiName}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                              <div className="w-1/3">
+                                <WikiSearchDialog
+                                  setSelectedWikiId={setSelectedWikiId}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="upload-field">
+                    <h4>Thumbnail Image</h4>
+                    <Card>
+                      <CardContent className="space-y-2 mt-2">
+                        {thumbImg && (
+                          <Image
+                            src={thumbImg}
+                            alt="thumbnail image"
+                            className="object-cover object-center"
+                            width={240}
+                            height={240}
+                          />
+                        )}
+
+                        {!thumbImg && (
+                          <UploadButton
+                            endpoint="imageUploader"
+                            onClientUploadComplete={(
+                              res: { url: string }[]
+                            ) => {
+                              form.setValue("imageUrl", res[0].url);
+                            }}
+                            onUploadError={(error: Error) => {
+                              toast.error("Thumbnail image upload failed", {
+                                className: "error",
+                                description: `ERROR! ${error.message}`,
+                              });
+                            }}
+                          />
+                        )}
+                        <FormField
+                          control={form.control}
+                          name="imageUrl"
+                          defaultValue={map?.imageUrl}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input placeholder="Thumbnail" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                  <div className="w-full" id="timestamp-container">
+                    <FormField
+                      control={form.control}
+                      name="objectTime"
+                      defaultValue={globalArea?.objectTime}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Area Timestamp</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="Area Timestamp"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="w-full" id="type-container">
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Type..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="GEOGRAPHY">
+                                Geography
+                              </SelectItem>
+                              <SelectItem value="POLITICAL">
+                                Political
+                              </SelectItem>
+                              <SelectItem value="OTHER">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </Button>
+              </form>
+            </Form>
           </div>
-          <div className="w-full" id="type-container">
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+        </TabsContent>
+        <TabsContent value="styles">
+          <div className="w-full">
+            {/* Style column */}
+            {globalArea ? (
+              <div className="w-full flex flex-col gap-4">
+                <div className="w-full gap-2 flex items-center justify-between">
+                  <h4 className="text-lg">Styles</h4>
+                  <Button
+                    type="button"
+                    className="self-end"
+                    variant="default"
+                    onClick={() => showStyleForm()}
                   >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Type..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="GEOGRAPHY">Geography</SelectItem>
-                      <SelectItem value="POLITICAL">Political</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+                    <Plus />
+                  </Button>
+                </div>
+                <StyleEditListModule
+                  canvasStyles={globalArea.canvasStyles}
+                  showStyleForm={showStyleForm}
+                  currentPage={`/editor/maps/${map.id}/areas/${globalArea.id}`}
+                />
+                <StyleItemForm
+                  parentId={globalArea.id}
+                  parentType="globalArea"
+                  parentSlug={`/editor/maps/${map.id}/areas/${globalArea.id}`}
+                  dialogOpen={isDialogOpen}
+                  setDialogOpen={setIsDialogOpen}
+                  canvasStyleItem={currentStyleItem}
+                />
+              </div>
+            ) : (
+              <p>Save area to change style</p>
+            )}
           </div>
-        </div>
-        {/* Move pickers into an overlay over the map editor */}
-        <div className="flex justify-between gap-1" id="color-pickers">
-          <ColorPicker
-            label={"Fill Style"}
-            icon={<Palette className="text-slate-300" />}
-            editorContext={"objectColor"}
-          />
-          <LineColorPicker
-            label={"Line Style"}
-            icon={<Palette className="text-slate-300" />}
-            editorContext={"lineColor"}
-          />
-          <LineWidthPicker icon={<Menu className="text-slate-300" />} />
-        </div>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
-      </form>
-    </Form>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

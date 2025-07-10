@@ -1,12 +1,51 @@
+"use client";
+import { useState } from "react";
+import SaveButton from "./saveButton";
+
+interface ViewProps {
+  setOpenLineWidthPicker: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 interface Props {
   children: React.ReactNode;
 }
 
-export default function LineWidthBox({ children }: Props) {
+export default function LineWidthBox() {
+  const lineDefaults = [1, 2, 4, 8, 16];
+  const [selectedLineWidth, setSelectedLineWidth] = useState<number>(0);
+  const heightClasses: Record<number, string> = {
+    1: "h-[1px]",
+    2: "h-[2px]",
+    4: "h-[4px]",
+    8: "h-[8px]",
+    16: "h-[16px]",
+  };
+
+  const handleClick = (e: React.MouseEvent, lineWidth: number) => {
+    e.preventDefault();
+    setSelectedLineWidth(lineWidth);
+  };
+
   return (
-    <div className="rounded-xl w-56 bg-slate-900 border border-slate-900 absolute mt-2 left-1/2 -translate-x-1/2 p-4 text-white">
-      <div className="absolute top-0 -translate-y-1.5 left-1/2 -translate-x-1/2 border-b-[8px] border-b-slate-900 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent" />
-      {children}
+    <div className="flex flex-col gap-4 w-full">
+      {lineDefaults.map((lineWidth) => (
+        <button
+          key={`bar-${lineWidth}`}
+          onClick={(e) => handleClick(e, lineWidth)}
+          className={`w-full flex items-center gap-2 h-fit hover:opacity-75`}
+        >
+          <span className="w-12">{lineWidth}px</span>
+          <span
+            className={`w-full ${heightClasses[lineWidth]} ${
+              selectedLineWidth == lineWidth ? "bg-slate-800" : "bg-slate-400"
+            }`}
+          />
+        </button>
+      ))}
+      {/* <SaveButton
+        lineWidth={selectedLineWidth}
+        setOpenLineWidthPicker={setOpenLineWidthPicker}
+      /> */}
     </div>
   );
 }

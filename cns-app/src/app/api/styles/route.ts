@@ -5,6 +5,7 @@ import { CanvasStylesSchema } from "@/ValidationSchemas/styles";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log(body);
     const validation = CanvasStylesSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(validation.error.format(), { status: 400 });

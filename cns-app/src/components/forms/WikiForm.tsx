@@ -62,9 +62,6 @@ const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
 });
 
 // 250603 To do: Submission issue (Probably because of new properties added to validation -> add them in the form)
-
-type bar = z.infer<typeof barItemSchema>;
-// type InfoboxItem = z.infer<typeof infoBoxItemSchema>;
 export type WikiFormData = z.infer<typeof wikiSchema>;
 
 interface Props {
@@ -482,17 +479,6 @@ export default function WikiForm({ wiki, user, infobox }: Props) {
               >
                 <Plus />
               </Button>
-              {/* {infobox?.map((infoboxItem) => (
-                <div key={`infoboxItem-${infoboxItem.id}`}>
-                  {infoboxItem.type}
-                  <Button
-                    variant="outline"
-                    onClick={() => showInfoboxForm(infoboxItem)}
-                  >
-                    Edit
-                  </Button>
-                </div>
-              ))} */}
               <InfoboxEditListModule
                 infobox={infobox}
                 dialogOpen={isDialogOpen}
