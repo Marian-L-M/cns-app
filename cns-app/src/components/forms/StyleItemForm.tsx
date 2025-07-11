@@ -59,6 +59,7 @@ export default function StyleItemForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const [currentStyleValue, setCurrentStyleValue] = useState("");
 
   const toggleSelectedType = (type: CanvasStyleItemType) => {
     setSelectedType(type);
@@ -73,13 +74,20 @@ export default function StyleItemForm({
     },
   });
 
+  // link form field value to visual inputs
+  useEffect(() => {
+    // Update form
+    if (currentStyleValue) {
+      form.setValue("value", currentStyleValue);
+    }
+  }, [currentStyleValue]);
+
+  // Reset form on switch
   useEffect(() => {
     form.reset({
       type: canvasStyleItem?.type || "fillStyle",
       value: canvasStyleItem?.value || "",
     });
-    // if (canvasStyleItem) {
-    // }
   }, [canvasStyleItem, parentId, form]);
 
   async function onSubmit(values: CanvasStyleItem) {
@@ -149,7 +157,11 @@ export default function StyleItemForm({
               <div className="w-full">
                 {(selectedType == "lineWidth" ||
                   canvasStyleItem?.type == "lineWidth") && (
-                  <LineWidthPicker icon={<Menu className="text-slate-300" />} />
+                  <LineWidthPicker
+                    icon={<Menu className="text-slate-300" />}
+                    currentStyleValue={currentStyleValue}
+                    setCurrentStyleValue={setCurrentStyleValue}
+                  />
                 )}
                 <FormField
                   control={form.control}

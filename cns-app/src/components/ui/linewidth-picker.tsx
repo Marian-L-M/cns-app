@@ -1,18 +1,21 @@
-"use client";
-import { useState } from "react";
-import SaveButton from "./saveButton";
+"use-client";
+import { SetStateAction, useState } from "react";
 
-interface ViewProps {
-  setOpenLineWidthPicker: React.Dispatch<React.SetStateAction<boolean>>;
+interface LineWidthPickerProps {
+  icon: React.ReactNode;
+  currentStyleValue: string;
+  setCurrentStyleValue: React.Dispatch<SetStateAction<string>>;
 }
 
-interface Props {
-  children: React.ReactNode;
-}
-
-export default function LineWidthBox() {
+export default function LineWidthPicker({
+  icon,
+  currentStyleValue,
+  setCurrentStyleValue,
+}: LineWidthPickerProps) {
   const lineDefaults = [1, 2, 4, 8, 16];
-  const [selectedLineWidth, setSelectedLineWidth] = useState<number>(0);
+  const [selectedLineWidth, setSelectedLineWidth] = useState<number>(
+    parseInt(currentStyleValue) | 0
+  );
   const heightClasses: Record<number, string> = {
     1: "h-[1px]",
     2: "h-[2px]",
@@ -24,6 +27,7 @@ export default function LineWidthBox() {
   const handleClick = (e: React.MouseEvent, lineWidth: number) => {
     e.preventDefault();
     setSelectedLineWidth(lineWidth);
+    setCurrentStyleValue(lineWidth.toString());
   };
 
   return (
@@ -42,10 +46,6 @@ export default function LineWidthBox() {
           />
         </button>
       ))}
-      {/* <SaveButton
-        lineWidth={selectedLineWidth}
-        setOpenLineWidthPicker={setOpenLineWidthPicker}
-      /> */}
     </div>
   );
 }
