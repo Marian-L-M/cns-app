@@ -25,8 +25,9 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { CanvasStylesSchema } from "@/ValidationSchemas/styles";
-import LineWidthPicker from "../ui/linewidth-picker/LineWidthPicker";
+import LineWidthPicker from "../ui/linewidth-picker";
 import { Menu } from "lucide-react";
+import { SketchPicker, ColorResult } from "react-color";
 
 interface Props {
   parentId: number;
@@ -60,6 +61,9 @@ export default function StyleItemForm({
   const [error, setError] = useState("");
   const router = useRouter();
   const [currentStyleValue, setCurrentStyleValue] = useState("");
+  const [selectedColor, setSelectedColor] = useState(
+    canvasStyleItem?.value || "#ffffff"
+  );
 
   const toggleSelectedType = (type: CanvasStyleItemType) => {
     setSelectedType(type);
@@ -74,6 +78,17 @@ export default function StyleItemForm({
     },
   });
 
+  // Handle color change from SketchPicker
+  const handleColorChange = (color: ColorResult) => {
+    const colorValue = color.rgb;
+    setSelectedColor(colorValue);
+    setCurrentStyleValue(colorValue);
+    form.setValue(
+      "value",
+      `rgba(${colorValue.r},${colorValue.g},${colorValue.b},${colorValue.a})`
+    );
+  };
+
   // link form field value to visual inputs
   useEffect(() => {
     // Update form
@@ -84,10 +99,15 @@ export default function StyleItemForm({
 
   // Reset form on switch
   useEffect(() => {
+    const defaultValue = canvasStyleItem?.value || "";
     form.reset({
       type: canvasStyleItem?.type || "fillStyle",
       value: canvasStyleItem?.value || "",
     });
+
+    setSelectedType(canvasStyleItem?.type || "fillStyle");
+    setSelectedColor(defaultValue || "#ffffff");
+    setCurrentStyleValue(defaultValue);
   }, [canvasStyleItem, parentId, form]);
 
   async function onSubmit(values: CanvasStyleItem) {
@@ -153,10 +173,9 @@ export default function StyleItemForm({
               className="overflow-scroll flex flex-col gap-8"
               id="contents-wrapper"
             >
-              {/* General fields */}
+              {/* Line Picker */}
               <div className="w-full">
-                {(selectedType == "lineWidth" ||
-                  canvasStyleItem?.type == "lineWidth") && (
+                {selectedType == "lineWidth" && (
                   <LineWidthPicker
                     icon={<Menu className="text-slate-300" />}
                     currentStyleValue={currentStyleValue}
@@ -182,20 +201,16 @@ export default function StyleItemForm({
                     </FormItem>
                   )}
                 />
+                {/* Color Picker */}
+                {(selectedType == "fillStyle" ||
+                  selectedType == "strokeStyle") && (
+                  <SketchPicker
+                    color={selectedColor}
+                    onChange={handleColorChange}
+                    onChangeComplete={handleColorChange}
+                  />
+                )}
               </div>
-              {/* <div className="flex justify-between gap-1" id="color-pickers">
-                <ColorPicker
-                  label={"Fill Style"}
-                  icon={<Palette className="text-slate-300" />}
-                  editorContext={"objectColor"}
-                />
-                <LineColorPicker
-                  label={"Line Style"}
-                  icon={<Palette className="text-slate-300" />}
-                  editorContext={"lineColor"}
-                />
-                
-              </div> */}
             </div>
             <DialogFooter>
               <DialogClose asChild>

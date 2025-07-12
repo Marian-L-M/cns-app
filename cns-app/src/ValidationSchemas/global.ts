@@ -15,13 +15,6 @@ export const GlobalObjectsSchema = z.object({
   wikiId: z.number().int().positive().optional(),
 });
 
-// export const GlobalAreasSchema = z.object({
-//   title: z.string().min(1, "Title is required").max(255),
-//   description: z.string().min(1, "Description is required").max(65535),
-//   imageUrl: z.string().min(1, "image url").max(255).optional(),
-//   objectTime: z.number().min(0, "Object time").max(9999).optional(),
-//   type: z.string().min(1, "object type").max(255).optional(),
-// });
 export const MapAreaType = z.enum(["GEOGRAPHY", "POLITICAL", "OTHER"]);
 
 export const GlobalAreasSchema = z.object({
@@ -31,8 +24,6 @@ export const GlobalAreasSchema = z.object({
   mapId: z.number().int().positive("Map ID is required"),
   wikiId: z.number().int().positive().optional(),
   nodes: z.any().nullable().optional(),
-  styles: z.any().nullable().optional(),
   objectTime: z.number().int(),
   type: MapAreaType.default("GEOGRAPHY"),
-  infobox: z.any().nullable().optional(),
 });

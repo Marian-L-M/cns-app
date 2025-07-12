@@ -1,8 +1,8 @@
 import MapEditorModule from "@/components/maps/MapEditorModule";
-import EditorContextProvider from "@/store/mapEditorContext";
-import prisma from "@/../prisma/db";
 import { fetchMapAuthorId } from "@/lib/fetchMapData";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
+import prisma from "@/../prisma/db";
+import EditorContextProvider from "@/store/mapEditorContext";
 
 interface MapAreaEditorProps {
   params: {
@@ -32,6 +32,9 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
   // Get corresponding area and map
   const area = await prisma.globalArea.findUnique({
     where: { id: areaId },
+    include: {
+      canvasStyles: true,
+    },
   });
 
   const map = await prisma.map.findUnique({

@@ -1,4 +1,5 @@
 import axios from "axios";
+import prisma from "../../prisma/db";
 
 interface WikiFetchProps {
   selectedWikiId: number | undefined;
@@ -29,5 +30,15 @@ export async function fetchWikiName({
   } catch (error) {
     console.error("Error fetching wiki data:", error);
     setWikiName("");
+  }
+}
+
+export async function fetchInfobox(wikiId: number) {
+  try {
+    const infobox = await axios.get(`/api/wiki/${wikiId}/infobox`);
+    return { infobox };
+  } catch (error) {
+    console.error("Error fetching wiki data:", error);
+    return;
   }
 }

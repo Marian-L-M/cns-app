@@ -21,11 +21,11 @@ export default async function NewMapAreaEditor({ params }: MapAreaEditorProps) {
   const mapAuthors = await fetchMapAuthorId(id);
   const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
 
-  const { map, mapAreas } = await fetchMapData(id);
+  const { map } = await fetchMapData(id);
 
   return (
     <EditorContextProvider>
-      <MapEditorModule map={map} globalArea={mapAreas} editorMode={"area"} />
+      <MapEditorModule map={map} editorMode={"area"} />
     </EditorContextProvider>
   );
 }

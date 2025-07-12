@@ -32,7 +32,7 @@ interface MapEditorContextProviderProps {
 }
 
 export const EditorContext = createContext<MapEditorStyleContextType>({
-  objectColor: "red",
+  objectColor: "grey",
   pickObjectColor: () => {},
   objectLineColor: "black",
   pickLineColor: () => {},

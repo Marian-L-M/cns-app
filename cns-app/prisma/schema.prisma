@@ -255,7 +255,6 @@ model GlobalArea {
   description String      @db.Text
   imageUrl    String
   nodes       Json?
-  styles      Json?
   objectTime  Int
   map         Map         @relation(fields: [mapId], references: [id])
   mapId       Int

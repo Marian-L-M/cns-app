@@ -1,80 +1,33 @@
 "use client";
-import axios from "axios";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Menu, Palette } from "lucide-react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useContext, useEffect, useRef, useState } from "react";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
-import ColorPicker from "@/components/ui/color-picker/ColorPicker";
-import LineColorPicker from "@/components/ui/color-picker/LineColorPicker";
-import LineWidthPicker from "@/components/ui/linewidth-picker/LineWidthPicker";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import IconPicker from "@/components/ui/icon-picker/IconPicker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import WikiSearchDialog from "@/components/ui/dialog/wikiSearchDialog";
+import { useEffect, useRef, useState } from "react";
 import { useMapEditor } from "@/hooks/useMapEditor";
-import { fetchWikiName } from "@/lib/fetchWikiData";
-import { GlobalArea, GlobalObject } from "@prisma/client";
-import { EditorContext } from "@/store/mapEditorContext";
-import {
-  GlobalAreasSchema,
-  GlobalObjectsSchema,
-} from "@/ValidationSchemas/global";
+import { CanvasStyleItem, GlobalObject } from "@prisma/client";
 
-// To do: Might need to switch to dynamic?
-// To do: Split off area and object form. Component is too big
-import "easymde/dist/easymde.min.css";
 import GlobalObjectForm from "../forms/ObjectForm";
 import GlobalAreaForm from "../forms/AreaForm";
 
-const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
-
-// interface Props {
-//   map: MapType;
-//   globalObject?: GlobalObject;
-//   globalArea?:
-//     | {
-//         id: number;
-//         createdAt: Date;
-//         updatedAt: Date;
-//         title: string;
-//         description: string;
-//         imageUrl: string;
-//         infobox: {};
-//         nodes?: areaNode[];
-//         styles: {};
-//         objectTime: number;
-//         mapId: number;
-//         wikiId: number;
-//         type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
-//       }
-//     | undefined;
-//   editorMode?: string;
-// }
-
-// export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
-//   globalArea: GlobalArea;
-// };
+interface Props {
+  map: MapType;
+  globalObject?: GlobalObject;
+  globalArea?:
+    | {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        description: string;
+        imageUrl: string;
+        nodes?: areaNode[];
+        objectTime: number;
+        mapId: number;
+        wikiId: number;
+        type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+        canvasStyles: CanvasStyleItem[];
+      }
+    | undefined;
+  editorMode?: string;
+}
 
 export default function MapEditorModule({
   map,
@@ -153,47 +106,3 @@ export default function MapEditorModule({
     </div>
   );
 }
-
-// 241127 To do:
-// Split form into area and object form
-// Rewiring Area
-// Create object form
-
-// 20241004 Next actions
-// Map editor is designed to be a popup module on top of the map.
-
-// 20241007 Next actions
-
-// For now: One area - one popup
-// 2. Create API endpoint for GlobalArea (post)
-// 1. Create API endpoint for GlobalArea (patch)
-// 3. Create API endpoint for GlobalArea (delete)
-// 4. Change Mapeditor module to a form
-
-// 20241023 Next actions
-// 1. Add opacity to the fill style
-// 2. Clean up the map editor module
-// 3. Change map editor to popup + list of global areas
-// 4. Add global objects functionality
-
-// 20241217 Solution to editor module not showing the other icons
-// Grey out normal map in the back with the edior only rendering the current object (Two canvas elements)
-// Would reduce rerendering stress
-
-// Fetch wiki name with wiki id and set the name in wiki
-// async function fetchWikiName({ selectedWikiId, setWikiName }: WikiFetchProps) {
-//   if (!selectedWikiId) {
-//     setWikiName("");
-//     return;
-//   }
-
-//   try {
-//     const response = await axios.get(`/api/wiki/${selectedWikiId}`);
-//     if (response.data && response.data.title) {
-//       setWikiName(response.data.title);
-//     }
-//   } catch (error) {
-//     console.error("Error fetching wiki data:", error);
-//     setWikiName("");
-//   }
-// }

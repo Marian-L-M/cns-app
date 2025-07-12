@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
 import { mapObjectDefaultIcon } from "@/lib/constants/objectIcons";
+import { getValueFirstOfEachStyleType } from "@/lib/utils";
 
 interface IconBounds {
   left: number;
@@ -16,10 +17,11 @@ export function useMapEditor({
   globalObject,
   editorMode,
 }: any = {}) {
-  // 2025011 Todo implement area editormode logic
-  // if (globalArea && editorMode == "area") {
   if (globalArea || editorMode == "area") {
-    const { canvasRef } = useAreaEditor(globalArea?.nodes, globalArea?.styles);
+    const { canvasRef } = useAreaEditor(
+      globalArea?.nodes,
+      globalArea?.canvasStyles
+    );
     return { canvasRef };
   } else if (globalObject || editorMode == "object") {
     const { canvasRef } = useObjectEditor(globalObject);
@@ -35,25 +37,24 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [isActiveFlag, setIsActiveFlag] = useState(false);
 
-  // 20240926 Next actions
-  // 1. Draw object by clicking on map
-  // 2. Add object function (preset forms)
-  // 3. Object list - with names and colors
-  // 4. Activated object form list
-  // 5. Activated object on click
-  // 6. Work on object nodes click on node to remove, drag to reposition
+  if (styles) {
+    const filteredStyle = getValueFirstOfEachStyleType(styles);
 
-  // 241007 Next actions
-  // If an area objects exists without nodes, it will break the map maker module
-
-  // Initialize context
-  useEffect(() => {
-    if (!nodes) return;
-    editorCtx.updateNodeList(nodes); // Working, but in Prisma Schema declared as JSON not list of objects
-    editorCtx.pickObjectColor(styles.fillStyle);
-    editorCtx.pickLineColor(styles.strokeStyle);
-    editorCtx.pickLineWidth(styles.lineWidth);
-  }, []);
+    // Initialize context
+    useEffect(() => {
+      if (!nodes) return;
+      editorCtx.updateNodeList(nodes);
+      if (filteredStyle.fillStyle) {
+        editorCtx.pickObjectColor(filteredStyle.fillStyle);
+      }
+      if (filteredStyle.strokeStyle) {
+        editorCtx.pickLineColor(filteredStyle.strokeStyle);
+      }
+      if (filteredStyle.lineWidth) {
+        editorCtx.pickLineWidth(parseInt(filteredStyle.lineWidth));
+      }
+    }, [styles]);
+  }
 
   // Draw logic
   useEffect(() => {

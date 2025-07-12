@@ -33,8 +33,8 @@ export async function fetchMapData(mapId: string | number) {
     include: {
       wiki: {
         select: {
-          infobox: true,
           slug: true,
+          infoboxItems: true,
         },
       },
     },
@@ -44,8 +44,8 @@ export async function fetchMapData(mapId: string | number) {
     include: {
       wiki: {
         select: {
-          infobox: true,
           slug: true,
+          infoboxItems: true,
         },
       },
     },

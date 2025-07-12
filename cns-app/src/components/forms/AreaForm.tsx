@@ -1,7 +1,6 @@
 "use client";
 import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Menu, Palette, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,9 +11,8 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import ColorPicker from "@/components/ui/color-picker/ColorPicker";
-import LineColorPicker from "@/components/ui/color-picker/LineColorPicker";
 import WikiSearchDialog from "@/components/ui/dialog/wikiSearchDialog";
+import StyleEditListModule from "@/components/displays/StyleEditListModule";
 import {
   Form,
   FormControl,
@@ -23,7 +21,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import LineWidthPicker from "@/components/ui/linewidth-picker/LineWidthPicker";
 import {
   Select,
   SelectContent,
@@ -31,6 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { fetchWikiName } from "@/lib/fetchWikiData";
 import { UploadButton } from "@/lib/uploadthing/utils";
 import { CanvasStyleItem, GlobalArea } from "@prisma/client";
@@ -38,9 +37,8 @@ import { EditorContext } from "@/store/mapEditorContext";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 
 import "easymde/dist/easymde.min.css";
-import StyleEditListModule from "../displays/StyleEditListModule";
 import StyleItemForm from "./StyleItemForm";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -62,9 +60,7 @@ interface Props {
         title: string;
         description: string;
         imageUrl: string;
-        infobox: {};
         nodes?: areaNode[];
-        styles: {};
         objectTime: number;
         mapId: number;
         wikiId: number;
@@ -79,7 +75,6 @@ export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
 };
 
 export default function GlobalAreaForm({ map, globalArea }: Props) {
-  // const { styles } = useMapEditor(globalArea);
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -97,8 +92,6 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
   );
   const [wikiName, setWikiName] = useState<string>("");
 
-  // Intialize styles (250112 - Structure inefficient)
-  // To do: map to style items and delete styles column
   const styles = {
     fillStyle: editorCtx.objectColor,
     lineWidth: editorCtx.objectLineWidth,
@@ -110,6 +103,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
     setIsDialogOpen(true);
   };
 
+  // --- Form settings ---
   // Set form data
   const form = useForm<GlobalAreaFormData>({
     resolver: zodResolver(GlobalAreasSchema),
@@ -122,13 +116,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
       type:
         (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
         "GEOGRAPHY",
-      infobox: null,
       nodes: globalArea?.nodes || [],
-      styles: {
-        fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
-        lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
-        strokeStyle: styles?.strokeStyle || "black",
-      },
       objectTime: globalArea?.objectTime || 1000,
     },
   });
@@ -136,16 +124,10 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
   // Keep form values synchronized with context
   useEffect(() => {
     form.setValue("nodes", editorCtx.nodeList);
-    form.setValue("styles", {
-      fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
-      lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
-      strokeStyle: styles?.strokeStyle || "black",
-    });
   }, [editorCtx.nodeList, form, styles]);
 
   // Fetch wiki name when wikiId changes
   useEffect(() => {
-    // Update Wiki Name
     fetchWikiName({ selectedWikiId, setWikiName });
 
     // Update form
@@ -165,14 +147,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
     // Set submission values to latest canvas values
     const submissionValues = {
       ...values,
-      styles: {
-        fillStyle: editorCtx.objectColor || "rgba(0, 0, 0, 0.5)",
-        strokeStyle: editorCtx.objectLineColor || "black",
-        lineWidth:
-          typeof editorCtx.objectLineWidth === "number" ? styles?.lineWidth : 5,
-      },
       nodes: editorCtx.nodeList,
-      // wikiId: selectedWikiId,
     };
 
     try {
