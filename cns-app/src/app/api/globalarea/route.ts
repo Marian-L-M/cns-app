@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
       objectTime: validation.data.objectTime,
       type: validation.data.type as MapAreaType,
       nodes: validation.data.nodes || null,
-      styles: validation.data.styles || null,
       map: {
         connect: {
           id: validation.data.mapId,

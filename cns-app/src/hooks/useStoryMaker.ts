@@ -64,7 +64,7 @@ export function useStoryMaker({
       mapObjects.forEach((object) => {
         const thumbSize = 40;
         const image = new Image(); // Using optional size for image
-        image.src = `${object.thumbUrl}`;
+        image.src = `${object.iconUrl}`;
         image.onload = () => {
           ctx.drawImage(
             image,

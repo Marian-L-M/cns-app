@@ -1,6 +1,7 @@
 import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
+import { MapObjectType } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,12 +23,12 @@ export async function POST(request: NextRequest) {
     const data: any = {
       title: validation.data.title,
       description: validation.data.description,
-      imageUrl: validation.data.imageUrl || "",
       thumbUrl: validation.data.thumbUrl || "",
+      iconUrl: validation.data.iconUrl || "",
       x: validation.data.x || 0,
       y: validation.data.y || 0,
       objectTime: validation.data.objectTime || 0,
-      infobox: validation.data.infobox || null,
+      type: validation.data.type as MapObjectType,
       map: {
         connect: {
           id: validation.data.mapId,

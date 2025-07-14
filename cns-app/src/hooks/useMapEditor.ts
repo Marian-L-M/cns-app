@@ -169,12 +169,14 @@ function useObjectEditor(globalObject: any) {
   // Initialize context
   // To do 250525 - Implement object styles
 
+  // To do 260713 -> Initialization is broken - always initializes with dummy, even though proper icon is loaded into db
   useEffect(() => {
-    if (globalObject.length > 0) {
+    console.log(globalObject);
+    if (globalObject) {
       editorCtx.updateGlobalObjectSettings({
         x: globalObject.x,
         y: globalObject.y,
-        url: globalObject.thumbUrl,
+        url: globalObject.iconUrl,
         name: globalObject.title,
       });
       // 20250107 Issue: This will break on small computers due to lack of cw/ch

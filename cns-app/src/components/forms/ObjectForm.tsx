@@ -34,11 +34,7 @@ interface Props {
   editorMode?: string;
 }
 
-export default function GlobalObjectForm({
-  map,
-  globalObject,
-  editorMode,
-}: Props) {
+export default function GlobalObjectForm({ map, globalObject }: Props) {
   const editorCtx = useContext(EditorContext);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,18 +52,22 @@ export default function GlobalObjectForm({
     defaultValues: {
       title: globalObject?.title || "",
       description: globalObject?.description || "",
-      imageUrl: globalObject?.imageUrl || "",
       thumbUrl: globalObject?.thumbUrl || "",
+      iconUrl: globalObject?.iconUrl || "",
       mapId: globalObject?.mapId || map.id,
       wikiId: globalObject?.wikiId ?? undefined,
       x: globalObject?.x || 100,
       y: globalObject?.y || 100,
+      objectTime: globalObject?.objectTime || 1000,
+      type:
+        (globalObject?.type as "LOCATION" | "HISTORY" | "NATURAL" | "EVENT") ||
+        "LOCATION",
     },
   });
 
   // Keep form values synchronized with context
   useEffect(() => {
-    form.setValue("thumbUrl", editorCtx.globalObjectSettings.url);
+    form.setValue("iconUrl", editorCtx.globalObjectSettings.url);
     form.setValue("x", editorCtx.globalObjectSettings.x);
     form.setValue("y", editorCtx.globalObjectSettings.y);
   }, [editorCtx.globalObjectSettings, form]);
@@ -192,22 +192,7 @@ export default function GlobalObjectForm({
               )}
             />
           </div>
-          <div className="w-full" id="image-container">
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              defaultValue={globalObject?.imageUrl}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Object Image" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="thumbnail-container">
+          <div className="w-full" id="icon-container">
             <FormField
               control={form.control}
               name="thumbUrl"
@@ -217,6 +202,21 @@ export default function GlobalObjectForm({
                   <FormLabel>Thumbnail</FormLabel>
                   <FormControl>
                     <Input placeholder="Object Thumbnail" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full" id="icon-container">
+            <FormField
+              control={form.control}
+              name="iconUrl"
+              defaultValue={globalObject?.iconUrl}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Object icon" {...field} />
                   </FormControl>
                 </FormItem>
               )}

@@ -37,18 +37,18 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       const imagePromises = mapObjects.map((object) => {
         return new Promise<void>((resolve, reject) => {
           // Check if image is already cached
-          if (imageCache.current.has(object.thumbUrl)) {
+          if (imageCache.current.has(object.iconUrl)) {
             resolve();
             return;
           }
 
           const img = new Image();
           img.onload = () => {
-            imageCache.current.set(object.thumbUrl, img);
+            imageCache.current.set(object.iconUrl, img);
             resolve();
           };
           img.onerror = reject;
-          img.src = object.thumbUrl;
+          img.src = object.iconUrl;
         });
       });
 
@@ -112,7 +112,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       if (mapObjects && settings !== "areas") {
         const thumbSize = 40;
         mapObjects.forEach((object) => {
-          const cachedImage = imageCache.current.get(object.thumbUrl);
+          const cachedImage = imageCache.current.get(object.iconUrl);
           if (cachedImage) {
             ctx.drawImage(
               cachedImage,

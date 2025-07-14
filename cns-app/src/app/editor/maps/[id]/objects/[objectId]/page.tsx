@@ -1,6 +1,5 @@
-import MapEditor from "@/components/editors/MapEditor";
 import prisma from "@/../prisma/db";
-import { fetchMapAuthorId, fetchMapData } from "@/lib/fetchMapData";
+import { fetchMapAuthorId } from "@/lib/fetchMapData";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import EditorContextProvider from "@/store/mapEditorContext";
 import MapEditorModule from "@/components/maps/MapEditorModule";
@@ -33,6 +32,9 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
   // Get corresponding Objects and map
   const object = await prisma.globalObject.findUnique({
     where: { id: objectId },
+    include: {
+      canvasStyles: true,
+    },
   });
 
   const map = await prisma.map.findUnique({
