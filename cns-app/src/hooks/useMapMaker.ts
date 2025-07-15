@@ -91,8 +91,10 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       console.log(mapAreas);
       if (mapAreas && !(settings == "objects")) {
         mapAreas.forEach((area, index) => {
-          if (styles) {
-            const filteredStyle = getValueFirstOfEachStyleType(area.styles);
+          if (area.canvasStyles) {
+            const filteredStyle = getValueFirstOfEachStyleType(
+              area.canvasStyles
+            );
             ctx.lineWidth = parseInt(filteredStyle.lineWidth) || 4;
             ctx.fillStyle = filteredStyle.fillStyle || "rgb(255, 255, 255)";
             ctx.strokeStyle = filteredStyle.storkeStyle || "black";
@@ -199,7 +201,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mousedown", handleMouseDown);
     };
-  }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings, styles]);
+  }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings]);
 
   // Cleanup image cache when component unmounts
   useEffect(() => {

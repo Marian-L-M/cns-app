@@ -229,9 +229,8 @@ model GlobalObject {
   updatedAt   DateTime      @updatedAt
   title       String        @db.VarChar(255)
   description String        @db.Text
-  imageUrl    String
-  thumbUrl    String
-  styles      Json?
+  thumbUrl    String        @default("")
+  iconUrl     String        @default("")
   x           Int
   y           Int
   objectTime  Int
@@ -309,11 +308,11 @@ model WikiInfoboxItem {
 }
 
 model CanvasStyleItem {
-  id        Int                 @id @default(autoincrement())
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
-  type      CanvasStyleItemType
-  value     String              @default("")
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  type      String   @default("")
+  value     String   @default("")
 
   map                 Map?               @relation(fields: [mapId], references: [id])
   mapId               Int?
@@ -360,11 +359,14 @@ enum WikiInfoboxType {
   TITLE
 }
 
-enum CanvasStyleItemType {
+enum CanvasIconType {
+  label
   font
-  lineWidth
-  fillStyle
-  strokeStyle
+  imageSize
+  imageOpacity
+  fontFillStyle
+  svgFillStyle
+  svgStrokeStyle
 }
 
 enum MapObjectType {

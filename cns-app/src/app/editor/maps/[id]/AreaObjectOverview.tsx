@@ -44,13 +44,17 @@ export default async function AreaObjectOverviewModule({
   return (
     <StatusContextProvider>
       <div className="w-full grid grid-cols-9 gap-4">
-        <MapDisplayModule data={data} settings={settings.type} />
-        <AreaObjectList
-          dataList={dataList()}
-          label={settings.label}
-          type={settings.type}
-          mapId={settings.mapId}
-        />
+        <div className="col-span-7">
+          <MapDisplayModule data={data} settings={settings.type} />
+        </div>
+        <div className="col-span-2">
+          <AreaObjectList
+            dataList={dataList()}
+            label={settings.label}
+            type={settings.type}
+            mapId={settings.mapId}
+          />
+        </div>
       </div>
       <Link
         href={`/editor/maps/${settings.mapId}/${settings.type}/create`}

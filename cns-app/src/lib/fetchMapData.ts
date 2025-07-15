@@ -37,6 +37,7 @@ export async function fetchMapData(mapId: string | number) {
           infoboxItems: true,
         },
       },
+      canvasStyles: true,
     },
   });
   const mapObjects = await prisma.globalObject.findMany({
@@ -48,6 +49,7 @@ export async function fetchMapData(mapId: string | number) {
           infoboxItems: true,
         },
       },
+      canvasStyles: true,
     },
   });
 
