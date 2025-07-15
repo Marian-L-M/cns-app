@@ -1,5 +1,5 @@
-import { CanvasStyleItemType } from "@prisma/client";
 import { z } from "zod";
+import { CanvasStyleItemType } from "@/lib/constants/styles";
 
 export const CanvasStylesSchema = z.object({
   type: z.nativeEnum(CanvasStyleItemType).default("fillStyle"),

@@ -1,5 +1,5 @@
 "use client";
-import { CanvasStyleItem, CanvasStyleItemType } from "@prisma/client";
+import { CanvasStyleItem } from "@prisma/client";
 import {
   Dialog,
   DialogClose,
@@ -28,6 +28,7 @@ import { CanvasStylesSchema } from "@/ValidationSchemas/styles";
 import LineWidthPicker from "../ui/linewidth-picker";
 import { Menu } from "lucide-react";
 import { SketchPicker, ColorResult } from "react-color";
+import { CanvasStyleItemType } from "@/lib/constants/styles";
 
 interface Props {
   parentId: number;
@@ -45,6 +46,8 @@ const parentTypeMap: Record<string, string> = {
   mapHierarchyChild: "mapHierarchyChildId",
   subStory: "subStoryId",
 };
+
+// const CANVAS_STYLE_TYPES = ["font", "lineWidth", "fillStyle", "strokeStyle"];
 
 export default function StyleItemForm({
   parentId,
@@ -164,7 +167,7 @@ export default function StyleItemForm({
                       toggleSelectedType(type);
                     }}
                   >
-                    {type.charAt(0) + type.slice(1).toLowerCase()}
+                    {type}
                   </Button>
                 ))
               )}

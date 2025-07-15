@@ -5,7 +5,7 @@ interface iconButton {
 
 export const mapObjectDefaultIcon: iconButton = {
   name: "airplane",
-  url: "/img/objects/icons/airplane.svg",
+  url: "/img/objects/icons/airship_submarine.svg",
 };
 
 export const iconList: iconButton[] = [

@@ -1,4 +1,4 @@
-import { CanvasStyleItem, CanvasStyleItemType } from "@prisma/client";
+import { CanvasStyleItem } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -35,12 +35,21 @@ export function formatError(error: any) {
   }
 }
 
-export function getValueFirstOfEachStyleType(array: CanvasStyleItem[]) {
-  return Object.values(CanvasStyleItemType).reduce((acc, type) => {
-    const found = array.find((obj) => obj.type === type);
-    acc[type] = found?.value;
-    return acc;
-  }, {} as Record<CanvasStyleItemType, string | undefined>);
+const CANVAS_STYLE_TYPES = ["font", "lineWidth", "fillStyle", "strokeStyle"];
+
+export function getValueFirstOfEachStyleType(
+  canvasStyleItems: CanvasStyleItem[]
+) {
+  const result: Record<string, string> = {};
+
+  CANVAS_STYLE_TYPES.forEach((styleType) => {
+    const firstItem = canvasStyleItems.find((item) => item.type === styleType);
+    if (firstItem) {
+      result[styleType] = firstItem.value;
+    }
+  });
+
+  return result;
 }
 
 interface FilterProps {

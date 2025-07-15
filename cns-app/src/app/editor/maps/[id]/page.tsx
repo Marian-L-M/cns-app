@@ -37,6 +37,7 @@ export default async function EditMapPage({ params, searchParams }: Props) {
     where: { id: id },
     include: {
       authors: true,
+      canvasStyles: true,
     },
   });
 

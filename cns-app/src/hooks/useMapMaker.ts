@@ -5,6 +5,7 @@ import {
   checkObjectClick,
 } from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
+import { getValueFirstOfEachStyleType } from "@/lib/utils";
 
 export function useMapMaker({ data, settings }: MapModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -80,17 +81,27 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Get relevant styles
+
     const redrawCanvas = () => {
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw Areas
+      console.log(mapAreas);
       if (mapAreas && !(settings == "objects")) {
         mapAreas.forEach((area, index) => {
-          const styles = area.styles;
-          ctx.lineWidth = styles.lineWidth || 4;
-          ctx.fillStyle = styles.fillStyle || "rgb(255, 255, 255)";
-          ctx.strokeStyle = styles.strokeStyle || "black";
+          if (styles) {
+            const filteredStyle = getValueFirstOfEachStyleType(area.styles);
+            ctx.lineWidth = parseInt(filteredStyle.lineWidth) || 4;
+            ctx.fillStyle = filteredStyle.fillStyle || "rgb(255, 255, 255)";
+            ctx.strokeStyle = filteredStyle.storkeStyle || "black";
+          } else {
+            // ugly solution
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+            ctx.strokeStyle = "black";
+          }
 
           // drawAreas(ctx, area, cw, ch);
           ctx.beginPath();
@@ -188,7 +199,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mousedown", handleMouseDown);
     };
-  }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings]);
+  }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings, styles]);
 
   // Cleanup image cache when component unmounts
   useEffect(() => {
