@@ -60,6 +60,7 @@ export default function StyleItemForm({
   dialogOpen,
   setDialogOpen,
 }: Props) {
+  const initialType = parentType === "globalObject" ? "size" : "fillStyle";
   const [selectedType, setSelectedType] = useState(
     canvasStyleItem?.type || "fillStyle"
   );
@@ -83,7 +84,7 @@ export default function StyleItemForm({
   const form = useForm<CanvasStyleItem>({
     resolver: zodResolver(CanvasStylesSchema),
     defaultValues: {
-      type: canvasStyleItem?.type || "fillStyle",
+      type: canvasStyleItem?.type || initialType,
       value: canvasStyleItem?.value || "",
     },
   });
@@ -111,11 +112,11 @@ export default function StyleItemForm({
   useEffect(() => {
     const defaultValue = canvasStyleItem?.value || "";
     form.reset({
-      type: canvasStyleItem?.type || "fillStyle",
+      type: canvasStyleItem?.type || initialType,
       value: canvasStyleItem?.value || "",
     });
 
-    setSelectedType(canvasStyleItem?.type || "fillStyle");
+    setSelectedType(canvasStyleItem?.type || initialType);
     setSelectedColor(defaultValue || "#ffffff");
     setCurrentStyleValue(defaultValue);
   }, [canvasStyleItem, parentId, form]);
@@ -126,7 +127,6 @@ export default function StyleItemForm({
     if (parentFieldName) {
       (values as any)[parentFieldName] = parentId;
     }
-    console.log(values);
     try {
       setIsSubmitting(true);
       setError("");
