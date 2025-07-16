@@ -5,4 +5,11 @@ export const CanvasStyleItemType = {
   STROKE_STYLE: "strokeStyle",
 } as const;
 
-// export const ObjectStyleItemType = {} as const;
+export const ObjectStyleItemType = {
+  ICON_SIZE: "size",
+} as const;
+
+export const AllStyleItemType = {
+  ...CanvasStyleItemType,
+  ...ObjectStyleItemType,
+} as const;

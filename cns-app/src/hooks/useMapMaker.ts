@@ -88,7 +88,6 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw Areas
-      console.log(mapAreas);
       if (mapAreas && !(settings == "objects")) {
         mapAreas.forEach((area, index) => {
           if (area.canvasStyles) {
@@ -97,7 +96,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
             );
             ctx.lineWidth = parseInt(filteredStyle.lineWidth) || 4;
             ctx.fillStyle = filteredStyle.fillStyle || "rgb(255, 255, 255)";
-            ctx.strokeStyle = filteredStyle.storkeStyle || "black";
+            ctx.strokeStyle = filteredStyle.strokeStyle || "black";
           } else {
             // ugly solution
             ctx.lineWidth = 4;

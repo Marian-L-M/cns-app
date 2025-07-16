@@ -28,7 +28,10 @@ import { CanvasStylesSchema } from "@/ValidationSchemas/styles";
 import LineWidthPicker from "../ui/linewidth-picker";
 import { Menu } from "lucide-react";
 import { SketchPicker, ColorResult } from "react-color";
-import { CanvasStyleItemType } from "@/lib/constants/styles";
+import {
+  CanvasStyleItemType,
+  ObjectStyleItemType,
+} from "@/lib/constants/styles";
 
 interface Props {
   parentId: number;
@@ -68,7 +71,11 @@ export default function StyleItemForm({
     canvasStyleItem?.value || "#ffffff"
   );
 
-  const toggleSelectedType = (type: CanvasStyleItemType) => {
+  const activeStyleSelection =
+    parentType === "globalObject" ? ObjectStyleItemType : CanvasStyleItemType;
+  const toggleSelectedType = (
+    type: CanvasStyleItemType | ObjectStyleItemType
+  ) => {
     setSelectedType(type);
     form.setValue("type", type);
   };
@@ -119,7 +126,7 @@ export default function StyleItemForm({
     if (parentFieldName) {
       (values as any)[parentFieldName] = parentId;
     }
-
+    console.log(values);
     try {
       setIsSubmitting(true);
       setError("");
@@ -158,7 +165,7 @@ export default function StyleItemForm({
               {canvasStyleItem ? (
                 <h4 className="text-lg font-bold">{canvasStyleItem.type}</h4>
               ) : (
-                Object.values(CanvasStyleItemType).map((type) => (
+                Object.values(activeStyleSelection).map((type) => (
                   <Button
                     key={type}
                     type="button"
@@ -176,15 +183,7 @@ export default function StyleItemForm({
               className="overflow-scroll flex flex-col gap-8"
               id="contents-wrapper"
             >
-              {/* Line Picker */}
               <div className="w-full">
-                {selectedType == "lineWidth" && (
-                  <LineWidthPicker
-                    icon={<Menu className="text-slate-300" />}
-                    currentStyleValue={currentStyleValue}
-                    setCurrentStyleValue={setCurrentStyleValue}
-                  />
-                )}
                 <FormField
                   control={form.control}
                   name="value"
@@ -204,6 +203,36 @@ export default function StyleItemForm({
                     </FormItem>
                   )}
                 />
+                {/* Line Picker */}
+                {selectedType == "lineWidth" && (
+                  <LineWidthPicker
+                    icon={<Menu className="text-slate-300" />}
+                    currentStyleValue={currentStyleValue}
+                    setCurrentStyleValue={setCurrentStyleValue}
+                  />
+                )}
+                {/* Size picker */}
+                {selectedType == "size" && (
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium">
+                      Size: {currentStyleValue || "1"}
+                    </label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="100"
+                      value={currentStyleValue || "1"}
+                      onChange={(e) =>
+                        setCurrentStyleValue(e.target.value.toString())
+                      }
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>1</span>
+                      <span>100</span>
+                    </div>
+                  </div>
+                )}
                 {/* Color Picker */}
                 {(selectedType == "fillStyle" ||
                   selectedType == "strokeStyle") && (
