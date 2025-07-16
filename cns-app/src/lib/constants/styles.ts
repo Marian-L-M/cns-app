@@ -7,6 +7,7 @@ export const CanvasStyleItemType = {
 
 export const ObjectStyleItemType = {
   ICON_SIZE: "size",
+  ICON_OPACITY: "opacity",
 } as const;
 
 export const AllStyleItemType = {

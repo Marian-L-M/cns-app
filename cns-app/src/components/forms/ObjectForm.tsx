@@ -1,7 +1,8 @@
 "use client";
 import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import dynamic from "next/dynamic";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -28,6 +29,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import StyleEditListModule from "../displays/StyleEditListModule";
 import { Plus } from "lucide-react";
 import StyleItemForm from "./StyleItemForm";
+import { Card, CardContent } from "../ui/card";
+import { UploadButton } from "@/lib/uploadthing/utils";
+import { toast } from "sonner";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -73,12 +77,6 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
   );
   const [wikiName, setWikiName] = useState<string>("");
 
-  const styles = {
-    fillStyle: editorCtx.objectColor,
-    lineWidth: editorCtx.objectLineWidth,
-    strokeStyle: editorCtx.objectLineWidth,
-  };
-
   const showStyleForm = (canvasStyle?: CanvasStyleItem) => {
     setCurrentStyleItem(canvasStyle);
     setIsDialogOpen(true);
@@ -101,6 +99,8 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
         "LOCATION",
     },
   });
+
+  const thumbImg = form.watch("thumbUrl");
 
   // Keep form values synchronized with context
   useEffect(() => {
@@ -242,20 +242,50 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
                       )}
                     />
                   </div>
-                  <div className="w-full" id="icon-container">
-                    <FormField
-                      control={form.control}
-                      name="thumbUrl"
-                      defaultValue={globalObject?.thumbUrl}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Thumbnail</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Object Thumbnail" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                  <div className="upload-field">
+                    <h4>Thumbnail Image</h4>
+                    <Card>
+                      <CardContent className="space-y-2 mt-2">
+                        {thumbImg && (
+                          <Image
+                            src={thumbImg}
+                            alt="thumbnail image"
+                            className="object-cover object-center"
+                            width={240}
+                            height={240}
+                          />
+                        )}
+
+                        {!thumbImg && (
+                          <UploadButton
+                            endpoint="imageUploader"
+                            onClientUploadComplete={(
+                              res: { url: string }[]
+                            ) => {
+                              form.setValue("thumbUrl", res[0].url);
+                            }}
+                            onUploadError={(error: Error) => {
+                              toast.error("Thumbnail image upload failed", {
+                                className: "error",
+                                description: `ERROR! ${error.message}`,
+                              });
+                            }}
+                          />
+                        )}
+                        <FormField
+                          control={form.control}
+                          name="thumbUrl"
+                          defaultValue={map?.imageUrl}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input placeholder="Thumbnail" {...field} />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </CardContent>
+                    </Card>
                   </div>
                   <div className="w-full" id="icon-container">
                     <FormField

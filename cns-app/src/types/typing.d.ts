@@ -153,4 +153,4 @@ type InfoBoxItem = ImageType | CollectionType | TextType;
 
 // Styles
 type CanvasStyleItemType = "font" | "lineWidth" | "fillStyle" | "strokeStyle";
-type ObjectStyleItemType = "size";
+type ObjectStyleItemType = "size" | "opacity";
