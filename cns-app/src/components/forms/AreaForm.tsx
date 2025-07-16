@@ -32,7 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fetchWikiName } from "@/lib/fetchWikiData";
 import { UploadButton } from "@/lib/uploadthing/utils";
-import { CanvasStyleItem, GlobalArea } from "@prisma/client";
+import { CanvasStyleItem } from "@prisma/client";
 import { EditorContext } from "@/store/mapEditorContext";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 
@@ -70,9 +70,7 @@ interface Props {
     | undefined;
 }
 
-export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
-  globalArea: GlobalArea;
-};
+type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema>;
 
 export default function GlobalAreaForm({ map, globalArea }: Props) {
   const editorCtx = useContext(EditorContext);
