@@ -167,18 +167,13 @@ function useObjectEditor(globalObject: any) {
   const [isEditing, setIsEditing] = useState(false);
   const [iconBounds, setIconBounds] = useState<IconBounds | null>(null);
 
+  // Style settings
   const styles = getValueFirstOfEachObjectType(globalObject.canvasStyles);
   const thumbSize = parseInt(styles.size);
   const thumbRadius = thumbSize / 2;
-  const opacity = parseInt(styles.opacity);
-  // Initialize context
-  // To do 250525 - Implement object styles
+  const opacity = parseInt(styles.opacity) / 100;
 
-  // To do 260713 -> Initialization is broken - always initializes with dummy, even though proper icon is loaded into db
   useEffect(() => {
-    // Parse styles here
-    // Add size and opacity options to context
-    // Keep it in sync with styles list
     if (globalObject) {
       editorCtx.updateGlobalObjectSettings({
         x: globalObject.x,
@@ -296,7 +291,7 @@ function useObjectEditor(globalObject: any) {
     // Mouse actions
     canvas.addEventListener("mousedown", mouseDownHandler);
     if (iconBounds) {
-      redrawCanvas(canvas, isEditing, gos, thumbSize, iconBounds);
+      redrawCanvas(canvas, isEditing, gos, thumbSize, opacity, iconBounds);
     }
 
     // Keyboard actions
@@ -306,7 +301,7 @@ function useObjectEditor(globalObject: any) {
       window.removeEventListener("keydown", keyboardHandler);
       canvas.removeEventListener("mousedown", mouseDownHandler);
     };
-  }, [editorCtx, isEditing, iconBounds, thumbSize]);
+  }, [editorCtx, isEditing, iconBounds]);
 
   return { canvasRef };
 }
@@ -316,6 +311,7 @@ export function redrawCanvas(
   isEditing: Boolean,
   globalObject: GlobalObjectType,
   thumbSize: number,
+  opacity: number,
   iconBounds: IconBounds
 ) {
   const ctx = canvas.getContext("2d");
@@ -325,7 +321,7 @@ export function redrawCanvas(
   const ch = canvas.height / 1000;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawIcon(thumbSize, ctx, globalObject, cw, ch);
+  drawIcon(thumbSize, opacity, ctx, globalObject, cw, ch);
   if (isEditing && iconBounds) {
     drawEditMarker(ctx, iconBounds);
   }
@@ -333,6 +329,7 @@ export function redrawCanvas(
 
 export function drawIcon(
   thumbSize: number,
+  opacity: number,
   ctx: CanvasRenderingContext2D,
   globalObject: GlobalObjectType,
   cw: number,
@@ -347,6 +344,8 @@ export function drawIcon(
 
   icon.src = globalObject.url || mapObjectDefaultIcon.url;
   icon.onload = () => {
+    ctx.save();
+    ctx.globalAlpha = opacity;
     ctx.drawImage(
       icon,
       globalObject.x * cw - thumbDiamater,
@@ -354,6 +353,7 @@ export function drawIcon(
       thumbSize,
       thumbSize
     );
+    ctx.restore();
   };
 }
 
