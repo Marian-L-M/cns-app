@@ -2,7 +2,10 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
 import { mapObjectDefaultIcon } from "@/lib/constants/objectIcons";
-import { getValueFirstOfEachStyleType } from "@/lib/utils";
+import {
+  getValueFirstOfEachObjectType,
+  getValueFirstOfEachStyleType,
+} from "@/lib/utils";
 
 interface IconBounds {
   left: number;
@@ -163,21 +166,27 @@ function useObjectEditor(globalObject: any) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [iconBounds, setIconBounds] = useState<IconBounds | null>(null);
-  const thumbSize = 40;
-  const thumbRadius = thumbSize / 2; // this is kind of stupid
 
+  const styles = getValueFirstOfEachObjectType(globalObject.canvasStyles);
+  const thumbSize = parseInt(styles.size);
+  const thumbRadius = thumbSize / 2;
+  const opacity = parseInt(styles.opacity);
   // Initialize context
   // To do 250525 - Implement object styles
 
   // To do 260713 -> Initialization is broken - always initializes with dummy, even though proper icon is loaded into db
   useEffect(() => {
-    console.log(globalObject);
+    // Parse styles here
+    // Add size and opacity options to context
+    // Keep it in sync with styles list
     if (globalObject) {
       editorCtx.updateGlobalObjectSettings({
         x: globalObject.x,
         y: globalObject.y,
         url: globalObject.iconUrl,
         name: globalObject.title,
+        size: thumbSize | 40,
+        opacity: opacity | 100,
       });
       // 20250107 Issue: This will break on small computers due to lack of cw/ch
       // Doesn't matter for alpha as it breaks anyway on small computers
@@ -193,12 +202,16 @@ function useObjectEditor(globalObject: any) {
         y: 100,
         url: mapObjectDefaultIcon.url,
         name: "dummy",
+        size: thumbSize | 40,
+        opacity: opacity | 100,
       };
       editorCtx.updateGlobalObjectSettings({
         x: objectInitializer.x,
         y: objectInitializer.y,
         url: objectInitializer.url,
         name: objectInitializer.name,
+        size: thumbSize | 40,
+        opacity: opacity | 100,
       });
       setIconBounds({
         left: objectInitializer.x - thumbRadius,
@@ -256,6 +269,8 @@ function useObjectEditor(globalObject: any) {
           url: gos.url,
           x: gos.x,
           y: gos.y,
+          size: thumbSize | 40,
+          opacity: opacity | 100,
         });
 
         const newBounds = {
