@@ -5,7 +5,10 @@ import {
   checkObjectClick,
 } from "@/lib/map/mouseActions";
 import { StatusContext } from "@/store/statusContext";
-import { getValueFirstOfEachStyleType } from "@/lib/utils";
+import {
+  getValueFirstOfEachObjectType,
+  getValueFirstOfEachStyleType,
+} from "@/lib/utils";
 
 export function useMapMaker({ data, settings }: MapModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -122,17 +125,28 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
 
       // Draw objects w preloaded images
       if (mapObjects && settings !== "areas") {
-        const thumbSize = 40;
         mapObjects.forEach((object) => {
           const cachedImage = imageCache.current.get(object.iconUrl);
+
+          // Style settings
+          const styles = getValueFirstOfEachObjectType(object.canvasStyles);
+          const thumbSize = parseInt(styles.size) | 40;
+          const thumbRadius = thumbSize / 2;
+          const opacity = parseInt(styles.opacity) / 100;
+          console.log(thumbRadius);
+          console.log(opacity);
+
           if (cachedImage) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
             ctx.drawImage(
               cachedImage,
-              object.x * cw - thumbSize / 2,
-              object.y * ch - thumbSize / 2,
+              object.x * cw - thumbRadius,
+              object.y * ch - thumbRadius,
               thumbSize,
               thumbSize
             );
+            ctx.restore();
           }
         });
       }
