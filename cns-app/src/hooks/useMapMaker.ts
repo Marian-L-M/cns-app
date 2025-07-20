@@ -133,8 +133,6 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
           const thumbSize = parseInt(styles.size) | 40;
           const thumbRadius = thumbSize / 2;
           const opacity = parseInt(styles.opacity) / 100;
-          console.log(thumbRadius);
-          console.log(opacity);
 
           if (cachedImage) {
             ctx.save();

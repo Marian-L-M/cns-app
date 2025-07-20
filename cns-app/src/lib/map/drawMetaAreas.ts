@@ -163,13 +163,16 @@ export function drawMetaObjects(
   ctx: CanvasRenderingContext2D,
   object: DrawMapObject,
   cw: number,
-  ch: number
+  ch: number,
+  objectSize?: number
 ) {
+  const diameter = objectSize ? objectSize / 2 : 20;
+
   ctx.beginPath();
-  ctx.moveTo((object.x - 20) * cw, (object.y - 20) * ch);
-  ctx.lineTo((object.x + 20) * cw, (object.y - 20) * ch);
-  ctx.lineTo((object.x + 20) * cw, (object.y + 20) * ch);
-  ctx.lineTo((object.x - 20) * cw, (object.y + 20) * ch);
+  ctx.moveTo((object.x - diameter) * cw, (object.y - diameter) * ch);
+  ctx.lineTo((object.x + diameter) * cw, (object.y - diameter) * ch);
+  ctx.lineTo((object.x + diameter) * cw, (object.y + diameter) * ch);
+  ctx.lineTo((object.x - diameter) * cw, (object.y + diameter) * ch);
   ctx.closePath();
 }
 

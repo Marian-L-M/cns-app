@@ -4,7 +4,7 @@ import {
   drawMetaStoryNodes,
   drawRectangularMetaArea,
 } from "./drawMetaAreas";
-import { Map } from "@prisma/client";
+import { CanvasStyleItem, Map } from "@prisma/client";
 interface MapWithRectangularArea extends Map, PointRectangularArea {}
 
 interface hitArea {
@@ -55,7 +55,6 @@ export function checkHitbox(
   const r = canvas.getBoundingClientRect();
   const mouseX = event.clientX - r.x;
   const mouseY = event.clientY - r.y;
-  console.log(areaList);
 
   const hitArea: hitArea[] = [];
 
@@ -85,7 +84,6 @@ export function checkClick(
   const r = canvas.getBoundingClientRect();
   const mouseX = event.clientX - r.x;
   const mouseY = event.clientY - r.y;
-  console.log("MouseX: ", mouseX, "MouseY: ", mouseY);
 
   const clickedArea: ClickStatus[] = [];
 
@@ -125,7 +123,13 @@ export function checkObjectClick(
 
   // Clear the canvas and redraw shapes
   mapObjects?.forEach((objectSet: GlobalObjectType) => {
-    drawMetaObjects(ctx, objectSet, cw, ch);
+    // Get icon size
+    const iconStyle = objectSet.canvasStyles.find(
+      (item: CanvasStyleItem) => item.type === "size"
+    );
+    const iconWidth = parseInt(iconStyle?.value) | 40;
+
+    drawMetaObjects(ctx, objectSet, cw, ch, iconWidth);
     if (ctx.isPointInPath(mouseX, mouseY)) {
       clickedObject.push({
         id: objectSet.id,
