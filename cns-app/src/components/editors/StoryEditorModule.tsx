@@ -137,8 +137,6 @@ export default function StoryEditorModule({
       storyId: editableSubStory.storyId || form.getValues("storyId"),
     };
     form.reset(values);
-    console.log("values");
-    console.log(values);
   }, [editableSubStory, form]);
 
   async function onSubmit(values: SubstoryFormData) {

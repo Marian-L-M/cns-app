@@ -1,5 +1,6 @@
-import SubStoryEditor from "@/components/editors/SubstoryEditor";
 import prisma from "@/../prisma/db";
+import EditorContextProvider from "@/store/mapEditorContext";
+import StoryEditorModule from "@/components/editors/StoryEditorModule";
 
 interface substoryProps {
   params: {
@@ -42,7 +43,9 @@ export default async function SubStoryDetailPage({ params }: substoryProps) {
 
   return (
     <div className="w-full" id="substory-detail-page">
-      <SubStoryEditor story={story} substory={substory} map={map} />
+      <EditorContextProvider>
+        <StoryEditorModule story={story} substory={substory} map={map} />
+      </EditorContextProvider>
     </div>
   );
 }

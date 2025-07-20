@@ -2,7 +2,7 @@
 import { Story } from "@prisma/client";
 import EditorContextProvider from "@/store/mapEditorContext";
 
-import StoryEditorModule from "@/components/maps/StoryEditorModule";
+import StoryEditorModule from "@/components/editors/StoryEditorModule";
 
 interface StoryProps {
   story: Story;
