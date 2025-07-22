@@ -5,11 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { SketchPicker, ColorResult } from "react-color";
 import { z } from "zod";
 
 import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
 import { Story, SubStory, Map } from "@prisma/client";
-import { SubStorySchema } from "@/ValidationSchemas/stories";
+import { SubstoryNodeType, SubStorySchema } from "@/ValidationSchemas/stories";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,25 +24,25 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "../ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { toast } from "sonner";
 
 interface EditorProps {
   story: Story;
   substory?: SubStory & { nodes: StoryNode[] };
   map?: Map;
 }
-
-type StoryNode = {
-  id: number;
-  x: number;
-  y: number;
-  name: string;
-  description: string;
-  timeStart?: number;
-  timeEnd?: number;
-};
 
 // Make local or move to types
 export type SubstoryFormData = z.infer<typeof SubStorySchema> & {
@@ -89,6 +90,15 @@ export default function StoryEditorModule({
     width: 1024,
     height: 1024,
   });
+
+  // Reusable color change handler
+  const createColorChangeHandler = (formFieldPath: string) => {
+    return (color: ColorResult) => {
+      const colorValue = color.rgb;
+      const rgbaString = `rgba(${colorValue.r},${colorValue.g},${colorValue.b},${colorValue.a})`;
+      form.setValue(formFieldPath as any, rgbaString);
+    };
+  };
 
   // Handle map size
   useEffect(() => {
@@ -139,8 +149,8 @@ export default function StoryEditorModule({
     form.reset(values);
   }, [editableSubStory, form]);
 
+  // 250721 quite messy -> cleanup
   async function onSubmit(values: SubstoryFormData) {
-    // 250416 Suspect an issue with how nodes are being cleaned
     // to do 250617 Unify structure with other editors
     try {
       setIsSubmitting(true);
@@ -159,19 +169,25 @@ export default function StoryEditorModule({
         });
       }
       setIsSubmitting(false);
-      router.push(`/editor/stories/${editableSubStory.storyId}`);
-      router.refresh();
+      // router.push(
+      //   `/editor/stories/${editableSubStory.storyId}/substories/${substory?.id}`
+      // );
+      // router.refresh();
+
+      // Update local state to trigger canvas redraw
+      setEditableSubStory((prev) => ({
+        ...prev,
+        ...values,
+        nodes: values.nodes,
+      }));
+
+      toast.success("Substory updated succesfully");
     } catch (error: any) {
       console.error("Submission error:", error);
       setError(error.response?.data?.message || "Unknown error occurred");
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  let windowSize: number = 1024;
-  if (typeof window !== "undefined") {
-    windowSize = window.innerWidth;
   }
 
   // 250206 Todo: Add form fields and submission logic
@@ -302,7 +318,17 @@ export default function StoryEditorModule({
                                 <FormItem>
                                   <FormLabel>X: </FormLabel>
                                   <FormControl>
-                                    <Input placeholder="x" {...field} />
+                                    <Input
+                                      type="number"
+                                      placeholder="x"
+                                      {...field}
+                                      onChange={(e) => {
+                                        const value = e.target.valueAsNumber;
+                                        field.onChange(
+                                          isNaN(value) ? 0 : value
+                                        );
+                                      }}
+                                    />
                                   </FormControl>
                                 </FormItem>
                               )}
@@ -315,7 +341,17 @@ export default function StoryEditorModule({
                                 <FormItem>
                                   <FormLabel>Y: </FormLabel>
                                   <FormControl>
-                                    <Input placeholder="y" {...field} />
+                                    <Input
+                                      type="number"
+                                      placeholder="y"
+                                      {...field}
+                                      onChange={(e) => {
+                                        const value = e.target.valueAsNumber;
+                                        field.onChange(
+                                          isNaN(value) ? 0 : value
+                                        );
+                                      }}
+                                    />
                                   </FormControl>
                                 </FormItem>
                               )}
@@ -334,8 +370,15 @@ export default function StoryEditorModule({
                                   <FormLabel>Time start: </FormLabel>
                                   <FormControl>
                                     <Input
+                                      type="number"
                                       placeholder="Time start"
                                       {...field}
+                                      onChange={(e) => {
+                                        const value = e.target.valueAsNumber;
+                                        field.onChange(
+                                          isNaN(value) ? 0 : value
+                                        );
+                                      }}
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -349,12 +392,173 @@ export default function StoryEditorModule({
                                 <FormItem>
                                   <FormLabel>Time end: </FormLabel>
                                   <FormControl>
-                                    <Input placeholder="Time end" {...field} />
+                                    <Input
+                                      type="number"
+                                      placeholder="Time end"
+                                      {...field}
+                                      onChange={(e) => {
+                                        const value = e.target.valueAsNumber;
+                                        field.onChange(
+                                          isNaN(value) ? 0 : value
+                                        );
+                                      }}
+                                    />
                                   </FormControl>
                                 </FormItem>
                               )}
                             />
                           </div>
+                          <FormField
+                            control={form.control}
+                            name={`nodes.${number}.iconType`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Type</FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select node type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {SubstoryNodeType.options.map(
+                                      (nodeType) => (
+                                        <SelectItem
+                                          key={`${number}-${nodeType}-select-option`}
+                                          value={nodeType}
+                                        >
+                                          {nodeType}
+                                        </SelectItem>
+                                      )
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`nodes.${number}.iconUrl`}
+                            defaultValue={(node as StoryNode).iconUrl || ""}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Icon</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Icon..." {...field} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`nodes.${number}.iconColor`}
+                            defaultValue={
+                              (node as StoryNode).iconColor || "#ffffff"
+                            }
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Icon Color</FormLabel>
+                                <FormControl>
+                                  <div>
+                                    <Input
+                                      placeholder="Icon Color..."
+                                      {...field}
+                                      readOnly
+                                    />
+                                    <SketchPicker
+                                      color={field.value || "#ffffff"}
+                                      onChange={createColorChangeHandler(
+                                        `nodes.${number}.iconColor`
+                                      )}
+                                      onChangeComplete={createColorChangeHandler(
+                                        `nodes.${number}.iconColor`
+                                      )}
+                                    />
+                                  </div>
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`nodes.${number}.iconSize`}
+                            defaultValue={(node as StoryNode)?.iconSize || 10}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Icon Size: {field.value}</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    min="1"
+                                    max="100"
+                                    type="range"
+                                    placeholder="Icon Size..."
+                                    {...field}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`nodes.${number}.label`}
+                            defaultValue={(node as StoryNode).label}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Label</FormLabel>
+                                <FormControl>
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`nodes-${number}-has-label`}
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                    <label
+                                      htmlFor={`nodes-${number}-has-label`}
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                      Has label?
+                                    </label>
+                                  </div>
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`nodes.${number}.labelColor`}
+                            defaultValue={(node as StoryNode).labelColor}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Label Color</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Label Color..."
+                                    {...field}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`nodes.${number}.fontColor`}
+                            defaultValue={(node as StoryNode).fontColor}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Font Color</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Font Color..."
+                                    {...field}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
                           <FormField
                             control={form.control}
                             name={`nodes.${number}.description`}

@@ -102,17 +102,14 @@ type StoryNode = {
   description: string;
   timeStart?: number;
   timeEnd?: number;
+  iconType?: string; // Individual icon overwrite Circle, Rectangle, diamond etc.
+  iconUrl?: string;
+  iconSize?: number;
+  iconColor?: string;
+  label: boolean;
+  labelColor?: string;
+  fontColor?: string;
 };
-
-// interface StoryNode {
-//   id: number;
-//   name: string;
-//   description: string;
-//   timeStart: number;
-//   timeEnd: number;
-//   x: number;
-//   y: number;
-// }
 
 interface areaNode {
   id: number;
@@ -154,3 +151,4 @@ type InfoBoxItem = ImageType | CollectionType | TextType;
 // Styles
 type CanvasStyleItemType = "font" | "lineWidth" | "fillStyle" | "strokeStyle";
 type ObjectStyleItemType = "size" | "opacity";
+type SubstoryNodeType = "square" | "Circle" | "diamond" | "icon";

@@ -15,6 +15,8 @@ export const StoriesSchema = z.object({
   authors: z.array(z.string()),
 });
 
+export const SubstoryNodeType = z.enum(["SQUARE", "CIRCLE", "DIAMOND", "ICON"]);
+
 export const NodeItemSchema = z.object({
   id: z.number().int().positive("Valid Id is required"),
   x: z.number().min(0, "Global X").max(1000),
@@ -27,6 +29,13 @@ export const NodeItemSchema = z.object({
     .max(9999)
     .optional(),
   timeEnd: z.number().min(0, "time end in object time").max(9999).optional(),
+  iconType: SubstoryNodeType.default("SQUARE"),
+  iconUrl: z.string().optional(),
+  iconColor: z.string().max(255).optional(),
+  iconSize: z.number().max(100).optional(),
+  label: z.boolean().default(false),
+  labelColor: z.string().max(255).optional(),
+  fontColor: z.string().max(255).optional(),
 });
 
 export const SubStorySchema = z.object({
