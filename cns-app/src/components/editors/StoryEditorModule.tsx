@@ -1,11 +1,12 @@
 "use client";
 import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Palette } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { SketchPicker, ColorResult } from "react-color";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
@@ -37,6 +38,16 @@ import {
   SelectValue,
 } from "../ui/select";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog/dialog";
+import IconPicker from "../ui/icon-picker/IconPicker";
 
 interface EditorProps {
   story: Story;
@@ -195,26 +206,26 @@ export default function StoryEditorModule({
   return (
     <div className="w-full" id="substory-editor-module">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
-        <div
-          className="relative z-10 max-w-screen-lg col-span-4 bg-black"
-          id="map-base"
-        >
-          <canvas
-            ref={canvasRef}
-            width={containerSize.width}
-            height={containerSize.height}
-            className="border border-grey relative z-10 w-full"
-          />
-          {map?.mapUrl && (
-            <Image
-              priority={true}
-              className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-              src={map.mapUrl}
-              alt="Map of Kamolin"
+        <div className="flex flex-col gap-2 max-w-screen-lg col-span-4">
+          <h5 className="flex items-center ">Current Mode:</h5>
+          <div className="relative z-10 bg-black" id="map-base">
+            <canvas
+              ref={canvasRef}
               width={containerSize.width}
               height={containerSize.height}
+              className="border border-grey relative z-10 w-full"
             />
-          )}
+            {map?.mapUrl && (
+              <Image
+                priority={true}
+                className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+                src={map.mapUrl}
+                alt="Map of Kamolin"
+                width={containerSize.width}
+                height={containerSize.height}
+              />
+            )}
+          </div>
         </div>
         <Form {...form}>
           <form
@@ -280,6 +291,7 @@ export default function StoryEditorModule({
                     className="border-2 border-indigo-500 rounded-md  hover:bg-slate-100 cursor-pointer p-2"
                     id="infobox"
                   >
+                    {/* todo 20250723 rethink concept - Collapsibles are not great use of space, change to dialogs with palettes as popovers */}
                     <Collapsible
                       open={activeSubstoryID === (node as StoryNode).id}
                       onClick={() =>
@@ -448,7 +460,10 @@ export default function StoryEditorModule({
                               <FormItem>
                                 <FormLabel>Icon</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Icon..." {...field} />
+                                  <div>
+                                    <Input placeholder="Icon..." {...field} />
+                                    {/* Todo 250723 Create an alternate icon picker (unbiased svgs) */}
+                                  </div>
                                 </FormControl>
                               </FormItem>
                             )}
@@ -457,27 +472,58 @@ export default function StoryEditorModule({
                             control={form.control}
                             name={`nodes.${number}.iconColor`}
                             defaultValue={
-                              (node as StoryNode).iconColor || "#ffffff"
+                              (node as StoryNode).iconColor ||
+                              "rgba(252,252,252,1)"
                             }
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Icon Color</FormLabel>
                                 <FormControl>
-                                  <div>
+                                  <div className="flex items-center gap-4">
                                     <Input
                                       placeholder="Icon Color..."
                                       {...field}
                                       readOnly
                                     />
-                                    <SketchPicker
-                                      color={field.value || "#ffffff"}
-                                      onChange={createColorChangeHandler(
-                                        `nodes.${number}.iconColor`
-                                      )}
-                                      onChangeComplete={createColorChangeHandler(
-                                        `nodes.${number}.iconColor`
-                                      )}
-                                    />
+                                    <Dialog>
+                                      <DialogTrigger asChild>
+                                        <Button
+                                          variant={"outline"}
+                                          className="py-1 px-2 text-md"
+                                        >
+                                          <Palette />
+                                        </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-xs">
+                                        <DialogHeader>
+                                          <DialogTitle>
+                                            Set icon color
+                                          </DialogTitle>
+                                        </DialogHeader>
+                                        <SketchPicker
+                                          className="m-auto"
+                                          color={
+                                            field.value || "rgba(252,252,252,1)"
+                                          }
+                                          onChange={createColorChangeHandler(
+                                            `nodes.${number}.iconColor`
+                                          )}
+                                          onChangeComplete={createColorChangeHandler(
+                                            `nodes.${number}.iconColor`
+                                          )}
+                                        />
+                                        <DialogFooter>
+                                          <DialogClose
+                                            asChild
+                                            className="w-full"
+                                          >
+                                            <Button variant="default">
+                                              Close
+                                            </Button>
+                                          </DialogClose>
+                                        </DialogFooter>
+                                      </DialogContent>
+                                    </Dialog>
                                   </div>
                                 </FormControl>
                               </FormItem>
@@ -492,6 +538,7 @@ export default function StoryEditorModule({
                                 <FormLabel>Icon Size: {field.value}</FormLabel>
                                 <FormControl>
                                   <Input
+                                    className="max-w-48"
                                     min="1"
                                     max="100"
                                     type="range"
@@ -530,15 +577,60 @@ export default function StoryEditorModule({
                           <FormField
                             control={form.control}
                             name={`nodes.${number}.labelColor`}
-                            defaultValue={(node as StoryNode).labelColor}
+                            defaultValue={
+                              (node as StoryNode).labelColor ||
+                              "rgba(252,252,252,1)"
+                            }
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Label Color</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    placeholder="Label Color..."
-                                    {...field}
-                                  />
+                                  <div className="flex items-center gap-4">
+                                    <Input
+                                      placeholder="Label Color..."
+                                      {...field}
+                                      readOnly
+                                    />
+                                    <Dialog>
+                                      <DialogTrigger asChild>
+                                        <Button
+                                          variant={"outline"}
+                                          className="py-1 px-2 text-md"
+                                        >
+                                          <Palette />
+                                        </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-xs">
+                                        <DialogHeader>
+                                          <DialogTitle>
+                                            Set label color
+                                          </DialogTitle>
+                                        </DialogHeader>
+                                        <SketchPicker
+                                          className="m-auto"
+                                          color={
+                                            field.value || "rgba(252,252,252,1)"
+                                          }
+                                          onChange={createColorChangeHandler(
+                                            `nodes.${number}.labelColor`
+                                          )}
+                                          onChangeComplete={createColorChangeHandler(
+                                            `nodes.${number}.labelColor`
+                                          )}
+                                        />
+                                        <DialogFooter>
+                                          <DialogClose
+                                            asChild
+                                            className="w-full"
+                                          >
+                                            <Button variant="default">
+                                              Close
+                                            </Button>
+                                          </DialogClose>
+                                        </DialogFooter>
+                                      </DialogContent>
+                                    </Dialog>
+                                  </div>
                                 </FormControl>
                               </FormItem>
                             )}
@@ -546,15 +638,56 @@ export default function StoryEditorModule({
                           <FormField
                             control={form.control}
                             name={`nodes.${number}.fontColor`}
-                            defaultValue={(node as StoryNode).fontColor}
+                            defaultValue={
+                              (node as StoryNode).fontColor || "rgba(0,0,0,1)"
+                            }
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Font Color</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    placeholder="Font Color..."
-                                    {...field}
-                                  />
+                                  <div className="flex items-center gap-4">
+                                    <Input
+                                      placeholder="Font Color..."
+                                      {...field}
+                                    />
+                                    <Dialog>
+                                      <DialogTrigger asChild>
+                                        <Button
+                                          variant={"outline"}
+                                          className="py-1 px-2 text-md"
+                                        >
+                                          <Palette />
+                                        </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-xs">
+                                        <DialogHeader>
+                                          <DialogTitle>
+                                            Set font color
+                                          </DialogTitle>
+                                        </DialogHeader>
+                                        <SketchPicker
+                                          className="m-auto"
+                                          color={field.value || "rgba(0,0,0,1)"}
+                                          onChange={createColorChangeHandler(
+                                            `nodes.${number}.fontColor`
+                                          )}
+                                          onChangeComplete={createColorChangeHandler(
+                                            `nodes.${number}.fontColor`
+                                          )}
+                                        />
+                                        <DialogFooter>
+                                          <DialogClose
+                                            asChild
+                                            className="w-full"
+                                          >
+                                            <Button variant="default">
+                                              Close
+                                            </Button>
+                                          </DialogClose>
+                                        </DialogFooter>
+                                      </DialogContent>
+                                    </Dialog>
+                                  </div>
                                 </FormControl>
                               </FormItem>
                             )}

@@ -90,6 +90,13 @@ export function useSubStoryMaker({
           description: "New node description",
           timeStart: 1003,
           timeEnd: 1004,
+          iconType: "rectangle",
+          iconUrl: "",
+          iconSize: 10,
+          iconColor: "#ffffff",
+          label: false,
+          labelColor: "#000000",
+          fontColor: "#000000",
         };
 
         addNode(newNode, setEditableSubStory);
