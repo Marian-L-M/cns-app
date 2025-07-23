@@ -169,7 +169,7 @@ function useObjectEditor(globalObject: any) {
 
   // Style settings
   const styles = getValueFirstOfEachObjectType(globalObject.canvasStyles);
-  const thumbSize = parseInt(styles.size);
+  const thumbSize = parseInt(styles.size) || 40;
   const thumbRadius = thumbSize / 2;
   const opacity = parseInt(styles.opacity) / 100;
 
@@ -180,8 +180,8 @@ function useObjectEditor(globalObject: any) {
         y: globalObject.y,
         url: globalObject.iconUrl,
         name: globalObject.title,
-        size: thumbSize | 40,
-        opacity: opacity | 100,
+        size: thumbSize || 40,
+        opacity: opacity || 100,
       });
       // 20250107 Issue: This will break on small computers due to lack of cw/ch
       // Doesn't matter for alpha as it breaks anyway on small computers
@@ -264,8 +264,8 @@ function useObjectEditor(globalObject: any) {
           url: gos.url,
           x: gos.x,
           y: gos.y,
-          size: thumbSize | 40,
-          opacity: opacity | 100,
+          size: thumbSize || 40,
+          opacity: opacity || 100,
         });
 
         const newBounds = {
