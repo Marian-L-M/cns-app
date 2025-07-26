@@ -20,6 +20,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
   // Initialize data for canvas draw
+  // 250725 -> Clean up - make more efficient
   useEffect(() => {
     if (!mapAreas) return;
     setMapAreaLoaded(true);
@@ -32,6 +33,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
 
   // Pre-load all images
   useEffect(() => {
+    console.log(mapObjects);
     if (!mapObjects || mapObjects.length === 0) {
       setImagesLoaded(true);
       return;

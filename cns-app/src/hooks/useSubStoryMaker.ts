@@ -1,6 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SubStory } from "@prisma/client";
-import { drawArrowLine, drawMetaNode, drawNode } from "@/lib/draw/drawStory";
+import {
+  drawArrowLine,
+  drawMetaNode,
+  drawNode,
+  drawNodeAsCircle,
+  drawNodeAsDiamond,
+} from "@/lib/draw/drawStory";
 
 interface substoryModuleProps {
   editableSubStory: SubStory & { nodes: StoryNode[] };
@@ -18,6 +24,56 @@ export function useSubStoryMaker({
   setActiveSubstoryID,
 }: substoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
+
+  // Pre-load all images
+  useEffect(() => {
+    if (!editableSubStory.nodes || editableSubStory.nodes.length === 0) {
+      setImagesLoaded(true);
+      return;
+    }
+
+    const loadImages = async () => {
+      // Check if nodes have image, abort if none has
+      const nodesWithImages = editableSubStory.nodes.filter(
+        (node) => node?.iconUrl && node.iconUrl.trim() !== ""
+      );
+
+      if (nodesWithImages.length === 0) {
+        setImagesLoaded(true);
+        return;
+      }
+
+      const imagePromises = editableSubStory.nodes.map((object) => {
+        return new Promise<void>((resolve, reject) => {
+          // Check if image is already cached
+          if (imageCache.current.has(object.iconUrl)) {
+            resolve();
+          }
+
+          const img = new Image();
+          img.onload = () => {
+            imageCache.current.set(object.iconUrl, img);
+            resolve();
+            return;
+          };
+          img.src = object.iconUrl;
+        });
+      });
+
+      try {
+        await Promise.all(imagePromises);
+        setImagesLoaded(true);
+        setEditableSubStory((prev) => ({ ...prev })); // Force rerender
+      } catch (error) {
+        console.error("Failed to load some images:", error);
+        setImagesLoaded(true);
+      }
+    };
+
+    loadImages();
+  }, [editableSubStory.nodes]);
 
   useEffect(() => {
     // Initialize canvas
@@ -41,6 +97,64 @@ export function useSubStoryMaker({
         setActiveSubstoryID(undefined);
         return;
       }
+    };
+
+    const redrawCanvas = (
+      canvas: HTMLCanvasElement,
+      editableSubStory: SubStory & { nodes: StoryNode[] },
+      ctx: CanvasRenderingContext2D,
+      cw: number,
+      ch: number,
+      activeSubstoryID?: number
+    ) => {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Lines
+      drawArrowLine(ctx, editableSubStory, cw, ch);
+
+      // Draw Nodes
+      editableSubStory.nodes.forEach((node: StoryNode) => {
+        switch (node.iconType) {
+          case "CIRCLE":
+            drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+            break;
+          case "DIAMOND":
+            drawNodeAsDiamond(ctx, node, cw, ch, activeSubstoryID);
+            break;
+          case "ICON":
+            // Only try to load icon if iconUrl exists and is not empty
+            if (node.iconUrl && node.iconUrl.trim() !== "") {
+              console.log(imageCache.current);
+              console.log(node.iconUrl);
+              const cachedIcon = imageCache.current.get(node.iconUrl);
+              if (cachedIcon) {
+                console.log(cachedIcon);
+                const iconSize = node.iconSize || 20;
+                ctx.save();
+                ctx.drawImage(
+                  cachedIcon,
+                  (node.x - iconSize / 2) * cw,
+                  (node.y - iconSize / 2) * ch,
+                  iconSize,
+                  iconSize
+                );
+                ctx.restore();
+              } else {
+                // Fallback to default node rendering if image not cached
+                console.log("no cache");
+                drawNode(ctx, node, cw, ch, activeSubstoryID);
+              }
+            } else {
+              // Fallback to default node rendering when no iconUrl
+              console.log("no icon");
+              drawNode(ctx, node, cw, ch, activeSubstoryID);
+            }
+            break;
+          default:
+            drawNode(ctx, node, cw, ch, activeSubstoryID);
+        }
+      });
     };
 
     //250204 This check could be cleaner
@@ -114,30 +228,17 @@ export function useSubStoryMaker({
         canvas.onmousedown = null;
       };
     };
-  }, [editableSubStory, activeSubstoryID]);
+  }, [
+    editableSubStory,
+    activeSubstoryID,
+    imageCache,
+    setActiveSubstoryID,
+    setEditableSubStory,
+    imagesLoaded, // 250725 Issue
+  ]);
 
   return { canvasRef };
 }
-
-const redrawCanvas = (
-  canvas: HTMLCanvasElement,
-  editableSubStory: SubStory & { nodes: StoryNode[] },
-  ctx: CanvasRenderingContext2D,
-  cw: number,
-  ch: number,
-  activeSubstoryID?: number
-) => {
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw Lines
-  drawArrowLine(ctx, editableSubStory, cw, ch);
-
-  // Draw Nodes
-  editableSubStory.nodes.forEach((node: StoryNode) => {
-    drawNode(ctx, node, cw, ch, activeSubstoryID);
-  });
-};
 
 const addNode = (
   newNode: StoryNode,

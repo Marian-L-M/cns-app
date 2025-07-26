@@ -374,12 +374,15 @@ enum MapObjectType {
   HISTORY
   NATURAL
   EVENT
+  OTHER
 }
 
 enum MapAreaType {
   GEOGRAPHY
+  POLITICAL
   ABSTRACT
   INTERACTIVE
+  OTHER
 }
 
 // Admin Settings 

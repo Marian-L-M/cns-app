@@ -108,6 +108,53 @@ export function drawNodeSquare(
   ctx.strokeStyle = "none";
 }
 
+export function drawNodeCircle(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  cw: number,
+  ch: number,
+  offset: number,
+  fillStyle?: string,
+  strokeStyle?: string
+) {
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  fillStyle ? (ctx.fillStyle = fillStyle) : (ctx.fillStyle = "none");
+  strokeStyle ? (ctx.strokeStyle = strokeStyle) : (ctx.strokeStyle = "none");
+  ctx.arc(x * cw, y * ch, offset, 0, 2 * Math.PI);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "none";
+  ctx.strokeStyle = "none";
+}
+
+export function drawNodeDiamond(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  cw: number,
+  ch: number,
+  offset: number,
+  fillStyle?: string,
+  strokeStyle?: string
+) {
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  fillStyle ? (ctx.fillStyle = fillStyle) : (ctx.fillStyle = "none");
+  strokeStyle ? (ctx.strokeStyle = strokeStyle) : (ctx.strokeStyle = "none");
+  ctx.moveTo(x * cw, (y - offset) * ch);
+  ctx.lineTo((x + offset) * cw, y * ch);
+  ctx.lineTo(x * cw, (y + offset) * ch);
+  ctx.lineTo((x - offset) * cw, y * ch);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "none";
+  ctx.strokeStyle = "none";
+}
+
 export function drawNode(
   ctx: CanvasRenderingContext2D,
   node: StoryNode,
@@ -115,10 +162,73 @@ export function drawNode(
   ch: number,
   activeSubstoryID?: number
 ) {
+  const iconSize = node.iconSize || 5;
+  const iconColor = node.iconColor || "#ffffff";
   if (activeSubstoryID === node.id) {
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 10, "yellow", "black");
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "blue", "none");
+    drawNodeSquare(
+      ctx,
+      node.x,
+      node.y,
+      cw,
+      ch,
+      iconSize + 3,
+      "#ff0f0f",
+      "black"
+    ); // Border
+    drawNodeSquare(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
   } else {
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "red", "black");
+    drawNodeSquare(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "black");
+  }
+}
+
+export function drawNodeAsCircle(
+  ctx: CanvasRenderingContext2D,
+  node: StoryNode,
+  cw: number,
+  ch: number,
+  activeSubstoryID?: number
+) {
+  const iconSize = node.iconSize || 5;
+  const iconColor = node.iconColor || "#ffffff";
+  if (activeSubstoryID === node.id) {
+    drawNodeCircle(
+      ctx,
+      node.x,
+      node.y,
+      cw,
+      ch,
+      iconSize + 3,
+      "#ff0f0f",
+      "black"
+    );
+    drawNodeCircle(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
+  } else {
+    drawNodeCircle(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
+  }
+}
+
+export function drawNodeAsDiamond(
+  ctx: CanvasRenderingContext2D,
+  node: StoryNode,
+  cw: number,
+  ch: number,
+  activeSubstoryID?: number
+) {
+  const iconSize = node.iconSize || 5;
+  const iconColor = node.iconColor || "#ffffff";
+  if (activeSubstoryID === node.id) {
+    drawNodeDiamond(
+      ctx,
+      node.x,
+      node.y,
+      cw,
+      ch,
+      iconSize + 3,
+      "#ff0f0f",
+      "black"
+    );
+    drawNodeDiamond(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
+  } else {
+    drawNodeDiamond(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
   }
 }

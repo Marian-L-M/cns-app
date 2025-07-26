@@ -171,7 +171,7 @@ export default function StoryForm({ story, substories, user }: Props) {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="rating"
                 defaultValue={story?.rating}
@@ -200,7 +200,7 @@ export default function StoryForm({ story, substories, user }: Props) {
                     </Select>
                   </FormItem>
                 )}
-              />
+              /> */}
               <FormField
                 control={form.control}
                 name="storyTime"

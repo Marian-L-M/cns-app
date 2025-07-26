@@ -19,6 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,9 +33,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fetchWikiName } from "@/lib/fetchWikiData";
 import { UploadButton } from "@/lib/uploadthing/utils";
-import { CanvasStyleItem } from "@prisma/client";
+import { CanvasStyleItem, MapAreaType } from "@prisma/client";
 import { EditorContext } from "@/store/mapEditorContext";
-import { GlobalAreasSchema } from "@/ValidationSchemas/global";
+import { GlobalAreasSchema, MapAreaTypeList } from "@/ValidationSchemas/global";
 
 import "easymde/dist/easymde.min.css";
 import StyleItemForm from "./StyleItemForm";
@@ -64,7 +65,7 @@ interface Props {
         objectTime: number;
         mapId: number;
         wikiId: number;
-        type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+        type: MapAreaType;
         canvasStyles: CanvasStyleItem[];
       }
     | undefined;
@@ -209,6 +210,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Title</FormLabel>
+                          <FormMessage />
                           <FormControl>
                             <Input placeholder="Area Title..." {...field} />
                           </FormControl>
@@ -237,6 +239,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Wiki</FormLabel>
+                          <FormMessage />
                           <FormControl>
                             <div className="flex flex-row gap-2">
                               {wikiName && (
@@ -300,6 +303,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                           defaultValue={map?.imageUrl}
                           render={({ field }) => (
                             <FormItem>
+                              <FormMessage />
                               <FormControl>
                                 <Input placeholder="Thumbnail" {...field} />
                               </FormControl>
@@ -317,6 +321,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Area Timestamp</FormLabel>
+                          <FormMessage />
                           <FormControl>
                             <Input
                               type="number"
@@ -339,6 +344,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Type</FormLabel>
+                          <FormMessage />
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -349,13 +355,14 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="GEOGRAPHY">
-                                Geography
-                              </SelectItem>
-                              <SelectItem value="POLITICAL">
-                                Political
-                              </SelectItem>
-                              <SelectItem value="OTHER">Other</SelectItem>
+                              {MapAreaTypeList.options.map((areaType) => (
+                                <SelectItem
+                                  key={`${areaType}-select-option`}
+                                  value={areaType}
+                                >
+                                  {areaType}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </FormItem>

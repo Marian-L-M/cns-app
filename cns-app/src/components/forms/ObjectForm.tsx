@@ -15,6 +15,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import IconPicker from "@/components/ui/icon-picker/IconPicker";
@@ -22,7 +23,10 @@ import { Button } from "@/components/ui/button";
 import { fetchWikiName } from "@/lib/fetchWikiData";
 import { CanvasStyleItem, GlobalObject, MapObjectType } from "@prisma/client";
 import { EditorContext } from "@/store/mapEditorContext";
-import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
+import {
+  GlobalObjectsSchema,
+  MapObjectTypeList,
+} from "@/ValidationSchemas/global";
 
 import "easymde/dist/easymde.min.css";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -32,6 +36,13 @@ import StyleItemForm from "./StyleItemForm";
 import { Card, CardContent } from "../ui/card";
 import { UploadButton } from "@/lib/uploadthing/utils";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -94,9 +105,7 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
       x: globalObject?.x || 100,
       y: globalObject?.y || 100,
       objectTime: globalObject?.objectTime || 1000,
-      type:
-        (globalObject?.type as "LOCATION" | "HISTORY" | "NATURAL" | "EVENT") ||
-        "LOCATION",
+      type: globalObject?.type || "LOCATION",
     },
   });
 
@@ -187,6 +196,7 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Title</FormLabel>
+                          <FormMessage />
                           <FormControl>
                             <Input placeholder="Object Title..." {...field} />
                           </FormControl>
@@ -208,6 +218,38 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
                       )}
                     />
                   </div>
+                  <div className="w-full" id="type-container">
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type</FormLabel>
+                          <FormMessage />
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Type..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {MapObjectTypeList.options.map((objectType) => (
+                                <SelectItem
+                                  key={`${objectType}-select-option`}
+                                  value={objectType}
+                                >
+                                  {objectType}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <div className="w-full" id="wiki-container">
                     <FormField
                       control={form.control}
@@ -215,6 +257,7 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Wiki</FormLabel>
+                          <FormMessage />
                           <FormControl>
                             <div className="flex flex-row gap-2">
                               {wikiName && (
@@ -278,6 +321,7 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
                           defaultValue={map?.imageUrl}
                           render={({ field }) => (
                             <FormItem>
+                              <FormMessage />
                               <FormControl>
                                 <Input placeholder="Thumbnail" {...field} />
                               </FormControl>
@@ -294,6 +338,7 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
                       defaultValue={globalObject?.iconUrl}
                       render={({ field }) => (
                         <FormItem>
+                          <FormMessage />
                           <FormLabel>Icon</FormLabel>
                           <FormControl>
                             <Input placeholder="Object icon" {...field} />

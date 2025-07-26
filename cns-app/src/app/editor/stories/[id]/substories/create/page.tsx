@@ -1,4 +1,4 @@
-import SubStoryEditor from "@/components/editors/SubStoryEditor";
+import StoryEditor from "@/components/editors/StoryEditor";
 import prisma from "@/../prisma/db";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 
@@ -41,7 +41,7 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
 
   return (
     <div className="w-full" id="substory-detail-page">
-      <SubStoryEditor story={story} map={map} />
+      <StoryEditor story={story} map={map} />
     </div>
   );
 }

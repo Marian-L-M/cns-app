@@ -55,7 +55,7 @@ export default function DataTable({ stories, searchParams }: Props) {
                   )}
                 </div>
               </TableHead>
-              <TableHead>
+              {/* <TableHead>
                 <div className="flex justify-center">
                   <Link href={{ query: createQueryObject("rating") }}>
                     Rating
@@ -64,7 +64,7 @@ export default function DataTable({ stories, searchParams }: Props) {
                     <ArrowDown className="inline p-1" />
                   )}
                 </div>
-              </TableHead>
+              </TableHead> */}
               <TableHead>
                 <Link href={{ query: createQueryObject("createdAt") }}>
                   Created At
@@ -99,11 +99,11 @@ export default function DataTable({ stories, searchParams }: Props) {
                         <StoryStatusBadge status={story.status} />
                       </div>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <div className="flex justify-center">
                         <StoryRating rating={story.rating} />
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       {story.createdAt.toLocaleDateString("ja-JP", {
                         year: "2-digit",
