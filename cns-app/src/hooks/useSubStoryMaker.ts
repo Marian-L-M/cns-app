@@ -123,13 +123,10 @@ export function useSubStoryMaker({
             drawNodeAsDiamond(ctx, node, cw, ch, activeSubstoryID);
             break;
           case "ICON":
-            // Only try to load icon if iconUrl exists and is not empty
             if (node.iconUrl && node.iconUrl.trim() !== "") {
-              console.log(imageCache.current);
-              console.log(node.iconUrl);
               const cachedIcon = imageCache.current.get(node.iconUrl);
               if (cachedIcon) {
-                console.log(cachedIcon);
+                drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
                 const iconSize = node.iconSize || 20;
                 ctx.save();
                 ctx.drawImage(

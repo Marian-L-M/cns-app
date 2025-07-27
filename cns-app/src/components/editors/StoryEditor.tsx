@@ -47,7 +47,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog/dialog";
-import IconPicker from "../ui/icon-picker/IconPicker";
+import SelectIcon from "../ui/icon-picker/SelectIcon";
 
 interface EditorProps {
   story: Story;
@@ -198,7 +198,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
   }
 
   // 250206 Todo: Add form fields and submission logic
-
+  console.log(substory.nodes);
   return (
     <div className="w-full" id="substory-editor-module">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
@@ -448,22 +448,32 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                               </FormItem>
                             )}
                           />
-                          <FormField
-                            control={form.control}
-                            name={`nodes.${number}.iconUrl`}
-                            defaultValue={(node as StoryNode).iconUrl || ""}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Icon</FormLabel>
-                                <FormControl>
-                                  <div>
-                                    <Input placeholder="Icon..." {...field} />
-                                    {/* Todo 250723 Create an alternate icon picker (unbiased svgs) */}
-                                  </div>
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
+                          {/* 250727 Connect to state */}
+                          {/* Icons are only showing when editor is opened. Rendering issue. */}
+                          {editableSubStory.nodes[number].iconType ==
+                            "ICON" && (
+                            <FormField
+                              control={form.control}
+                              name={`nodes.${number}.iconUrl`}
+                              defaultValue={(node as StoryNode).iconUrl || ""}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Icon</FormLabel>
+                                  <FormControl>
+                                    <div className="space-y-2">
+                                      {/* Icon picker component */}
+                                      <SelectIcon
+                                        path={`nodes.${number}.iconUrl`}
+                                        currentIcon={field.value || ""}
+                                        setValue={form.setValue}
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          )}
                           <FormField
                             control={form.control}
                             name={`nodes.${number}.iconColor`}
