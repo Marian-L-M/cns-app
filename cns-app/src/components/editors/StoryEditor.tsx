@@ -48,6 +48,9 @@ import {
   DialogTrigger,
 } from "../ui/dialog/dialog";
 import SelectIcon from "../ui/icon-picker/SelectIcon";
+import { iconListMonochrome } from "@/lib/constants/objectIcons";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 
 interface EditorProps {
   story: Story;
@@ -197,13 +200,27 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
     }
   }
 
-  // 250206 Todo: Add form fields and submission logic
-  console.log(substory.nodes);
+  console.log(activeSubstoryID);
+
   return (
     <div className="w-full" id="substory-editor-module">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
-        <div className="flex flex-col gap-2 max-w-screen-lg col-span-4">
-          <h5 className="flex items-center ">Current Mode:</h5>
+        <div className="flex flex-col max-w-screen-lg col-span-4">
+          <div className="flex items-center space-x-2 bg-slate-100 p-2">
+            <Switch
+              id="airplane-mode"
+              checked={activeSubstoryID ? true : false}
+              onCheckedChange={() => {
+                setActiveSubstoryID(undefined);
+              }}
+              disabled={activeSubstoryID ? false : true}
+            />
+            <Label htmlFor="airplane-mode">
+              <h4 className="text-lg">
+                {activeSubstoryID ? "Edit Node Mode" : "Add Node Mode"}
+              </h4>
+            </Label>
+          </div>
           <div className="relative z-10 bg-black" id="map-base">
             <canvas
               ref={canvasRef}
@@ -424,7 +441,8 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                                 <FormLabel>Type</FormLabel>
                                 <Select
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value}
+                                  defaultValue={field.value || "SQUARE"}
+                                  value={field.value || "SQUARE"}
                                 >
                                   <FormControl>
                                     <SelectTrigger>
@@ -436,7 +454,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                                       (nodeType) => (
                                         <SelectItem
                                           key={`${number}-${nodeType}-select-option`}
-                                          value={nodeType}
+                                          value={nodeType || "SQUARE"}
                                         >
                                           {nodeType}
                                         </SelectItem>
@@ -448,7 +466,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                               </FormItem>
                             )}
                           />
-                          {/* 250727 Connect to state */}
+                          {/* 250727 to do Connect to state */}
                           {/* Icons are only showing when editor is opened. Rendering issue. */}
                           {editableSubStory.nodes[number].iconType ==
                             "ICON" && (
@@ -466,6 +484,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                                         path={`nodes.${number}.iconUrl`}
                                         currentIcon={field.value || ""}
                                         setValue={form.setValue}
+                                        iconList={iconListMonochrome}
                                       />
                                     </div>
                                   </FormControl>

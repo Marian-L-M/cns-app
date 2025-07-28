@@ -80,7 +80,8 @@ export function drawMetaNode(
   cw: number,
   ch: number
 ) {
-  drawNodeSquare(ctx, node.x, node.y, cw, ch, 10, "unset", "unset");
+  const iconSize = node.iconSize || 10;
+  drawNodeSquare(ctx, node.x, node.y, cw, ch, iconSize, "unset", "unset");
 }
 
 export function drawNodeSquare(

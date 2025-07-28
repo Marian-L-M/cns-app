@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { SubStory } from "@prisma/client";
 import {
   drawArrowLine,
@@ -45,125 +45,128 @@ export function useSubStoryMaker({
         return;
       }
 
-      const imagePromises = editableSubStory.nodes.map((object) => {
+      const imagePromises = nodesWithImages.map((node) => {
         return new Promise<void>((resolve, reject) => {
           // Check if image is already cached
-          if (imageCache.current.has(object.iconUrl)) {
+          if (imageCache.current.has(node.iconUrl)) {
             resolve();
+            return;
           }
 
           const img = new Image();
           img.onload = () => {
-            imageCache.current.set(object.iconUrl, img);
+            imageCache.current.set(node.iconUrl, img);
             resolve();
-            return;
           };
-          img.src = object.iconUrl;
+          img.onerror = () => {
+            console.warn(`Failed to load image: ${node.iconUrl}`);
+            reject(new Error(`Failed to load image: ${node.iconUrl}`));
+          };
+          img.src = node.iconUrl;
         });
       });
 
       try {
         await Promise.all(imagePromises);
         setImagesLoaded(true);
-        setEditableSubStory((prev) => ({ ...prev })); // Force rerender
       } catch (error) {
         console.error("Failed to load some images:", error);
+        // Continue even if images fail to load
         setImagesLoaded(true);
       }
     };
 
+    setImagesLoaded(false);
     loadImages();
   }, [editableSubStory.nodes]);
 
-  useEffect(() => {
-    // Initialize canvas
+  // Memoized redraw function
+  const redrawCanvas = useCallback(() => {
     if (!canvasRef.current || !editableSubStory) return;
+
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
     // Canvas values
     const cw = canvas.width / 1000;
     const ch = canvas.height / 1000;
 
-    // Get context
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Only draw if we have nodes
+    if (
+      !Array.isArray(editableSubStory.nodes) ||
+      editableSubStory.nodes.length === 0
+    ) {
+      return;
+    }
+
+    // Draw Lines
+    drawArrowLine(ctx, editableSubStory, cw, ch);
+
+    // Draw Nodes
+    editableSubStory.nodes.forEach((node: StoryNode) => {
+      switch (node.iconType) {
+        case "CIRCLE":
+          drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+          break;
+        case "DIAMOND":
+          drawNodeAsDiamond(ctx, node, cw, ch, activeSubstoryID);
+          break;
+        case "ICON":
+          if (node.iconUrl && node.iconUrl.trim() !== "") {
+            const cachedIcon = imageCache.current.get(node.iconUrl);
+            if (cachedIcon) {
+              drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+              const iconSize = node.iconSize || 20;
+              ctx.save();
+              ctx.drawImage(
+                cachedIcon,
+                (node.x - iconSize / 2) * cw,
+                (node.y - iconSize / 2) * ch,
+                iconSize,
+                iconSize
+              );
+              ctx.restore();
+            } else {
+              drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+            }
+          } else {
+            drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+          }
+          break;
+        default:
+          drawNode(ctx, node, cw, ch, activeSubstoryID);
+      }
+    });
+  }, [editableSubStory, activeSubstoryID, imagesLoaded]);
+
+  // Effect to redraw canvas whenever dependencies change
+  useEffect(() => {
+    redrawCanvas();
+  }, [redrawCanvas]);
+
+  // Effect to handle mouse events and keyboard shortcuts
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !editableSubStory) return;
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cw = canvas.width / 1000;
+    const ch = canvas.height / 1000;
 
     // Keyboard shortcuts
     const keyboardHandler = (e: KeyboardEvent) => {
       if (e.key === "Enter" || e.key === "e") {
         setActiveSubstoryID(undefined);
-        return;
       }
     };
 
-    const redrawCanvas = (
-      canvas: HTMLCanvasElement,
-      editableSubStory: SubStory & { nodes: StoryNode[] },
-      ctx: CanvasRenderingContext2D,
-      cw: number,
-      ch: number,
-      activeSubstoryID?: number
-    ) => {
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw Lines
-      drawArrowLine(ctx, editableSubStory, cw, ch);
-
-      // Draw Nodes
-      editableSubStory.nodes.forEach((node: StoryNode) => {
-        switch (node.iconType) {
-          case "CIRCLE":
-            drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
-            break;
-          case "DIAMOND":
-            drawNodeAsDiamond(ctx, node, cw, ch, activeSubstoryID);
-            break;
-          case "ICON":
-            if (node.iconUrl && node.iconUrl.trim() !== "") {
-              const cachedIcon = imageCache.current.get(node.iconUrl);
-              if (cachedIcon) {
-                drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
-                const iconSize = node.iconSize || 20;
-                ctx.save();
-                ctx.drawImage(
-                  cachedIcon,
-                  (node.x - iconSize / 2) * cw,
-                  (node.y - iconSize / 2) * ch,
-                  iconSize,
-                  iconSize
-                );
-                ctx.restore();
-              } else {
-                // Fallback to default node rendering if image not cached
-                console.log("no cache");
-                drawNode(ctx, node, cw, ch, activeSubstoryID);
-              }
-            } else {
-              // Fallback to default node rendering when no iconUrl
-              console.log("no icon");
-              drawNode(ctx, node, cw, ch, activeSubstoryID);
-            }
-            break;
-          default:
-            drawNode(ctx, node, cw, ch, activeSubstoryID);
-        }
-      });
-    };
-
-    //250204 This check could be cleaner
-    if (
-      Array.isArray(editableSubStory.nodes) &&
-      editableSubStory.nodes.length > 0
-    ) {
-      redrawCanvas(canvas, editableSubStory, ctx, cw, ch, activeSubstoryID);
-    }
-
-    // Update canvas on click
-    canvas.onmousedown = (e) => {
+    const handleMouseDown = (e: MouseEvent) => {
       // Click events
       const r = canvas.getBoundingClientRect();
       const mouseX = e.clientX - r.x;
@@ -201,7 +204,7 @@ export function useSubStoryMaker({
           description: "New node description",
           timeStart: 1003,
           timeEnd: 1004,
-          iconType: "rectangle",
+          iconType: "SQUARE",
           iconUrl: "",
           iconSize: 10,
           iconColor: "#ffffff",
@@ -211,27 +214,22 @@ export function useSubStoryMaker({
         };
 
         addNode(newNode, setEditableSubStory);
-      } else {
-        return;
       }
-      // Keyboard actions
-      window.addEventListener("keydown", keyboardHandler);
+    };
 
-      // Update canvas
-      redrawCanvas(canvas, editableSubStory, ctx, cw, ch, activeSubstoryID);
+    canvas.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("keydown", keyboardHandler);
 
-      // Cleanup
-      return () => {
-        canvas.onmousedown = null;
-      };
+    // Cleanup
+    return () => {
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("keydown", keyboardHandler);
     };
   }, [
     editableSubStory,
     activeSubstoryID,
-    imageCache,
     setActiveSubstoryID,
     setEditableSubStory,
-    imagesLoaded, // 250725 Issue
   ]);
 
   return { canvasRef };

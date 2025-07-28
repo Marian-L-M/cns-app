@@ -16,61 +16,24 @@ import { UseFormSetValue } from "react-hook-form";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 
+type icon = {
+  name: string;
+  url: string;
+};
+
 interface SelectIconProps {
   path: string;
   currentIcon: string;
   setValue: UseFormSetValue<any>;
+  iconList: icon[];
   trigger?: React.ReactNode;
 }
-
-const iconList = [
-  {
-    name: "swords",
-    url: "/icons/story/swords.svg",
-  },
-  //   {
-  //     name: "shield",
-  //     url: "/icons/story/shield.svg",
-  //   },
-  //   {
-  //     name: "castle",
-  //     url: "/icons/story/castle.svg",
-  //   },
-  //   {
-  //     name: "crown",
-  //     url: "/icons/story/crown.svg",
-  //   },
-  //   {
-  //     name: "home",
-  //     url: "/icons/story/home.svg",
-  //   },
-  //   {
-  //     name: "mountain",
-  //     url: "/icons/story/mountain.svg",
-  //   },
-  //   {
-  //     name: "forest",
-  //     url: "/icons/story/forest.svg",
-  //   },
-  //   {
-  //     name: "water",
-  //     url: "/icons/story/water.svg",
-  //   },
-  //   {
-  //     name: "sun",
-  //     url: "/icons/story/sun.svg",
-  //   },
-  //   {
-  //     name: "moon",
-  //     url: "/icons/story/moon.svg",
-  //   },
-  // Add more icons as needed
-];
 
 export default function SelectIcon({
   path,
   currentIcon,
   setValue,
+  iconList,
   trigger,
 }: SelectIconProps) {
   const [searchTerm, setSearchTerm] = useState("");
