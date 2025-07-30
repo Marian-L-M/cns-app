@@ -6,6 +6,7 @@ import {
   drawNode,
   drawNodeAsCircle,
   drawNodeAsDiamond,
+  drawStoryNode,
 } from "@/lib/draw/drawStory";
 
 interface substoryModuleProps {
@@ -17,7 +18,7 @@ interface substoryModuleProps {
   setActiveSubstoryID: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-export function useSubStoryMaker({
+export function useSubStoryEditor({
   editableSubStory,
   setEditableSubStory,
   activeSubstoryID,
@@ -108,45 +109,9 @@ export function useSubStoryMaker({
 
     // Draw Nodes
     editableSubStory.nodes.forEach((node: StoryNode) => {
-      switch (node.iconType) {
-        case "CIRCLE":
-          drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
-          break;
-        case "DIAMOND":
-          drawNodeAsDiamond(ctx, node, cw, ch, activeSubstoryID);
-          break;
-        case "ICON":
-          if (node.iconUrl && node.iconUrl.trim() !== "") {
-            const cachedIcon = imageCache.current.get(node.iconUrl);
-            if (cachedIcon) {
-              drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
-              const iconSize = node.iconSize || 20;
-              ctx.save();
-              ctx.drawImage(
-                cachedIcon,
-                (node.x - iconSize / 2) * cw,
-                (node.y - iconSize / 2) * ch,
-                iconSize,
-                iconSize
-              );
-              ctx.restore();
-            } else {
-              drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
-            }
-          } else {
-            drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
-          }
-          break;
-        default:
-          drawNode(ctx, node, cw, ch, activeSubstoryID);
-      }
+      drawStoryNode(ctx, node, cw, ch, imageCache, activeSubstoryID);
     });
   }, [editableSubStory, activeSubstoryID, imagesLoaded]);
-
-  // Effect to redraw canvas whenever dependencies change
-  useEffect(() => {
-    redrawCanvas();
-  }, [redrawCanvas]);
 
   // Effect to handle mouse events and keyboard shortcuts
   useEffect(() => {
@@ -232,6 +197,7 @@ export function useSubStoryMaker({
     setEditableSubStory,
   ]);
 
+  redrawCanvas();
   return { canvasRef };
 }
 

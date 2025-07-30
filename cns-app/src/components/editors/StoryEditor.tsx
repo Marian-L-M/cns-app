@@ -9,7 +9,7 @@ import { SketchPicker, ColorResult } from "react-color";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { useSubStoryMaker } from "@/hooks/useSubStoryMaker";
+import { useSubStoryEditor } from "@/hooks/useSubStoryEditor";
 import { Story, SubStory, Map } from "@prisma/client";
 import { SubstoryNodeType, SubStorySchema } from "@/ValidationSchemas/stories";
 
@@ -89,7 +89,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
     undefined
   );
 
-  const { canvasRef } = useSubStoryMaker({
+  const { canvasRef } = useSubStoryEditor({
     editableSubStory,
     setEditableSubStory,
     activeSubstoryID,
@@ -199,8 +199,6 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
       setIsSubmitting(false);
     }
   }
-
-  console.log(activeSubstoryID);
 
   return (
     <div className="w-full" id="substory-editor-module">

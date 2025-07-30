@@ -22,18 +22,13 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
   // Initialize data for canvas draw
   // 250725 -> Clean up - make more efficient
   useEffect(() => {
-    if (!mapAreas) return;
+    if (!mapAreas || !mapObjects) return;
     setMapAreaLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mapObjects) return;
     setMapObjectLoaded(true);
   }, []);
 
   // Pre-load all images
   useEffect(() => {
-    console.log(mapObjects);
     if (!mapObjects || mapObjects.length === 0) {
       setImagesLoaded(true);
       return;
@@ -162,6 +157,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
       const { title, id, type } = hoverArea[0];
+      // 250630 to do remove
       statusCtx.showStatusBar({
         title: title,
         id: id,

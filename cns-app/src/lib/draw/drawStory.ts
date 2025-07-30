@@ -58,21 +58,6 @@ export function drawArrowLine(
   });
 }
 
-export function drawStoryNode(
-  ctx: CanvasRenderingContext2D,
-  node: StoryNode,
-  cw: number,
-  ch: number,
-  activeSubstoryID?: number
-) {
-  if (activeSubstoryID === node.id) {
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 10, "yellow", "black");
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "blue", "none");
-  } else {
-    drawNodeSquare(ctx, node.x, node.y, cw, ch, 5, "red", "black");
-  }
-}
-
 // Unify with useMapEditor drawmeta node)
 export function drawMetaNode(
   ctx: CanvasRenderingContext2D,
@@ -231,5 +216,47 @@ export function drawNodeAsDiamond(
     drawNodeDiamond(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
   } else {
     drawNodeDiamond(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
+  }
+}
+
+export function drawStoryNode(
+  ctx: CanvasRenderingContext2D,
+  node: StoryNode,
+  cw: number,
+  ch: number,
+  imageCache: any,
+  activeSubstoryID?: number
+) {
+  switch (node.iconType) {
+    case "CIRCLE":
+      drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+      break;
+    case "DIAMOND":
+      drawNodeAsDiamond(ctx, node, cw, ch, activeSubstoryID);
+      break;
+    case "ICON":
+      if (node.iconUrl && node.iconUrl.trim() !== "") {
+        const cachedIcon = imageCache.current.get(node.iconUrl);
+        if (cachedIcon) {
+          drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+          const iconSize = node.iconSize || 20;
+          ctx.save();
+          ctx.drawImage(
+            cachedIcon,
+            (node.x - iconSize / 2) * cw,
+            (node.y - iconSize / 2) * ch,
+            iconSize,
+            iconSize
+          );
+          ctx.restore();
+        } else {
+          drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+        }
+      } else {
+        drawNodeAsCircle(ctx, node, cw, ch, activeSubstoryID);
+      }
+      break;
+    default:
+      drawNode(ctx, node, cw, ch, activeSubstoryID);
   }
 }
