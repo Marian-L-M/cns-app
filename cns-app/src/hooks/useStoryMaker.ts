@@ -1,12 +1,11 @@
 import { useEffect, useRef, useContext, useState } from "react";
 
-import { drawAreas } from "@/lib/map/drawMap";
 import {
   checkClick,
   checkHover,
   checkObjectClick,
   checkStoryNodeClick,
-} from "@/lib/map/mouseActions";
+} from "@/lib/mouseActions";
 import { Map as MapType } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
 import { drawArrowLine, drawNode, drawStoryNode } from "@/lib/draw/drawStory";
@@ -229,14 +228,13 @@ export function useStoryMaker({
           drawArrowLine(ctx, storyObject, cw, ch);
 
           storyObject.nodes.forEach((node: StoryNode) => {
-            // drawNode(ctx, node, cw, ch, storyObject.nodes[storyIndex].id);
             drawStoryNode(
               ctx,
               node,
               cw,
               ch,
               iconCache,
-              storyObject.nodes[storyIndex].id
+              storyObject.nodes[storyIndex]?.id
             );
           });
         });
@@ -302,6 +300,7 @@ export function useStoryMaker({
         cw,
         ch
       );
+
       if (clickedStoryNodes && !(clickedStoryNodes.length == 0)) {
         const { title, id, type, description } = clickedStoryNodes[0];
         statusCtx.showStoryBox({

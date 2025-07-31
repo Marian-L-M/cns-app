@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useContext } from "react";
 
-import { checkHitbox } from "@/lib/map/mouseActions";
+import { checkHitbox } from "@/lib/mouseActions";
 import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
 import { Map } from "@prisma/client";
 import { CursorContext } from "@/store/cursorContext";

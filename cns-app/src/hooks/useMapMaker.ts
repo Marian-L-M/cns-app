@@ -1,9 +1,5 @@
 import { useEffect, useRef, useContext, useState } from "react";
-import {
-  checkClick,
-  checkHover,
-  checkObjectClick,
-} from "@/lib/map/mouseActions";
+import { checkClick, checkHover, checkObjectClick } from "@/lib/mouseActions";
 import { StatusContext } from "@/store/statusContext";
 import {
   getValueFirstOfEachObjectType,

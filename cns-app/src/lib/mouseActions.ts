@@ -1,9 +1,9 @@
+import { drawMetaNode } from "./draw/drawStory";
 import {
   drawMetaAreas,
   drawMetaObjects,
-  drawMetaStoryNodes,
   drawRectangularMetaArea,
-} from "./drawMetaAreas";
+} from "./map/drawMetaAreas";
 import { CanvasStyleItem, Map } from "@prisma/client";
 interface MapWithRectangularArea extends Map, PointRectangularArea {}
 
@@ -162,7 +162,7 @@ export function checkStoryNodeClick(
   // Clear the canvas and redraw shapes
   story.forEach((mapNodes) => {
     mapNodes.nodes.forEach((nodeSet: GlobalStoryType) => {
-      drawMetaStoryNodes(ctx, nodeSet, cw, ch);
+      drawMetaNode(ctx, nodeSet, cw, ch);
       if (ctx.isPointInPath(mouseX, mouseY)) {
         clickedStoryNode.push({
           id: nodeSet.id,
