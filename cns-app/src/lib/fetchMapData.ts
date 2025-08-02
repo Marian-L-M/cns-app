@@ -106,6 +106,7 @@ export async function fetchHierarchyChild(childMapId: string) {
     where: { id: parseInt(childMapId) },
     include: {
       childMap: true,
+      canvasStyles: true,
     },
   });
 

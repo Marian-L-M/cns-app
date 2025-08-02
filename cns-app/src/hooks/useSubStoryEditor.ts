@@ -124,13 +124,6 @@ export function useSubStoryEditor({
     const cw = canvas.width / 1000;
     const ch = canvas.height / 1000;
 
-    // Keyboard shortcuts
-    const keyboardHandler = (e: KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === "e") {
-        setActiveSubstoryID(undefined);
-      }
-    };
-
     const handleMouseDown = (e: MouseEvent) => {
       // Click events
       const r = canvas.getBoundingClientRect();
@@ -183,12 +176,10 @@ export function useSubStoryEditor({
     };
 
     canvas.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("keydown", keyboardHandler);
 
     // Cleanup
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("keydown", keyboardHandler);
     };
   }, [
     editableSubStory,

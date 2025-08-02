@@ -34,6 +34,7 @@ export function useMapEditor({
   return { canvasRef };
 }
 
+// 250801 -> Structure is stupid , model it to the same as global object
 function useAreaEditor(nodes?: areaNode[], styles?: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);

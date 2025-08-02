@@ -20,8 +20,11 @@ import { Input } from "@/components/ui/input";
 import MapSearchDialog from "@/components/ui/dialog/mapSearchDialog";
 import { useChildMapMaker } from "@/hooks/useChildMapMaker";
 import { fetchMapName } from "@/lib/fetchMapData";
-import { Map, MapHierarchyChild } from "@prisma/client";
+import { CanvasStyleItem, Map, MapHierarchyChild } from "@prisma/client";
 import { ChildMapSchema } from "@/ValidationSchemas/maps";
+import { Plus } from "lucide-react";
+import StyleEditListModule from "../displays/StyleEditListModule";
+import StyleItemForm from "../forms/StyleItemForm";
 
 export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
   ChildMap: MapHierarchyChild;
@@ -44,6 +47,7 @@ interface ChildMapEditorProps {
 
 interface MapHierarchyChildEditable extends MapHierarchyChild {
   mapTitle: string;
+  canvasStyles: CanvasStyleItem[];
 }
 
 interface ChildMapEditorItem {
@@ -52,6 +56,7 @@ interface ChildMapEditorItem {
   y: number;
   wx: number;
   wy: number;
+  canvasStyles: CanvasStyleItem[];
 }
 
 // 250329 To do: Connect childmap details to state
@@ -63,19 +68,30 @@ export default function ChildMapEditor({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [childMapCoordinates, setChildMapCoordinates] =
+  const [childMapEditorItem, setChildMapEditorItem] =
     useState<ChildMapEditorItem>({
       x: ChildMap?.x || 100,
       y: ChildMap?.y || 100,
       wx: ChildMap?.wx || 100,
       wy: ChildMap?.wy || 100,
       mapTitle: ChildMap?.mapTitle || "",
+      canvasStyles: ChildMap?.canvasStyles || [],
     });
+
+  // Style items
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentStyleItem, setCurrentStyleItem] = useState<
+    CanvasStyleItem | undefined
+  >(undefined);
+  const showStyleForm = (canvasStyle?: CanvasStyleItem) => {
+    setCurrentStyleItem(canvasStyle);
+    setIsDialogOpen(true);
+  };
 
   // Set canvas
   const { canvasRef } = useChildMapMaker({
-    childMapCoordinates,
-    setChildMapCoordinates,
+    childMapEditorItem,
+    setChildMapEditorItem,
   });
   // To do write a hook for handling map size
   let windowSize: number = 1024;
@@ -97,13 +113,13 @@ export default function ChildMapEditor({
   });
 
   useEffect(() => {
-    if (childMapCoordinates) {
-      form.setValue("x", childMapCoordinates.x || form.getValues("x"));
-      form.setValue("y", childMapCoordinates.y || form.getValues("y"));
-      form.setValue("wx", childMapCoordinates.wx || form.getValues("wx"));
-      form.setValue("wy", childMapCoordinates.wy || form.getValues("wy"));
+    if (childMapEditorItem) {
+      form.setValue("x", childMapEditorItem.x || form.getValues("x"));
+      form.setValue("y", childMapEditorItem.y || form.getValues("y"));
+      form.setValue("wx", childMapEditorItem.wx || form.getValues("wx"));
+      form.setValue("wy", childMapEditorItem.wy || form.getValues("wy"));
     }
-  }, [childMapCoordinates, form]);
+  }, [childMapEditorItem, form]);
 
   async function onSubmit(values: ChildMapFormData) {
     try {
@@ -172,155 +188,198 @@ export default function ChildMapEditor({
             height={windowSize > 1024 ? 1024 : windowSize}
           />
         </div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="relative z-20 col-span-2 flex flex-col gap-4"
-            id="sidebar"
-          >
-            <div className="w-full" id="parentmap-container">
-              <FormField
-                control={form.control}
-                name="childMapId"
-                defaultValue={ChildMap?.childMapId}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Map as child map</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-row gap-2">
-                        <div className="w-2/3">
-                          <Input
-                            type="hidden"
-                            placeholder="childMapId"
-                            {...field}
-                          />
-                          {mapName && (
-                            <div className="p-2 border rounded-md h-10 flex items-center">
-                              <p className="truncate text-sm">{mapName}</p>
-                            </div>
-                          )}
-                        </div>
-                        <div className="w-1/3">
-                          <MapSearchDialog
-                            setSelectedMapId={setSelectedMapId}
-                          />
-                        </div>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div
-              className="flex flex-col gap-4 w-full mt-8"
-              id="childmap-fields-container"
+        <div className="w-full flex flex-col gap-8 col-span-2">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="relative z-20  flex flex-col gap-4 w-full"
+              id="sidebar"
             >
-              <FormField
-                control={form.control}
-                name="x"
-                defaultValue={ChildMap?.x}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Child Map X</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-row gap-2">
-                        <div className="w-2/3">
-                          <Input
-                            type="number"
-                            placeholder="X"
-                            {...field}
-                            onChange={(e) => {
-                              const value = e.target.valueAsNumber;
-                              field.onChange(isNaN(value) ? 0 : value);
-                            }}
-                          />
+              <div className="w-full" id="parentmap-container">
+                <FormField
+                  control={form.control}
+                  name="childMapId"
+                  defaultValue={ChildMap?.childMapId}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Map as child map</FormLabel>
+                      <FormControl>
+                        <div className="flex flex-row gap-2">
+                          <div className="w-2/3">
+                            <Input
+                              type="hidden"
+                              placeholder="childMapId"
+                              {...field}
+                            />
+                            {mapName && (
+                              <div className="p-2 border rounded-md h-10 flex items-center">
+                                <p className="truncate text-sm">{mapName}</p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="w-1/3">
+                            <MapSearchDialog
+                              setSelectedMapId={setSelectedMapId}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="y"
-                defaultValue={ChildMap?.y}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Child Map Y</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-row gap-2">
-                        <div className="w-2/3">
-                          <Input
-                            type="number"
-                            placeholder="Y"
-                            {...field}
-                            onChange={(e) => {
-                              const value = e.target.valueAsNumber;
-                              field.onChange(isNaN(value) ? 0 : value);
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="wx"
-                defaultValue={ChildMap?.wx}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Child Map Width</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-row gap-2">
-                        <div className="w-2/3">
-                          <Input
-                            type="number"
-                            placeholder="wx"
-                            {...field}
-                            onChange={(e) => {
-                              const value = e.target.valueAsNumber;
-                              field.onChange(isNaN(value) ? 0 : value);
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="wy"
-                defaultValue={ChildMap?.wy}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Child Map Height</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-row gap-2">
-                        <div className="w-2/3">
-                          <Input
-                            type="number"
-                            placeholder="WY"
-                            {...field}
-                            onChange={(e) => {
-                              const value = e.target.valueAsNumber;
-                              field.onChange(isNaN(value) ? 0 : value);
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <Button type="submit" disabled={isSubmitting}>
-              {ChildMap ? "Update Childmap" : "Submit Childmap"}
-            </Button>
-          </form>
-        </Form>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div id="form-wrapp" className="flex flex-col gap-8">
+                <div
+                  className="flex flex-col gap-4 w-full mt-8"
+                  id="childmap-fields-container"
+                >
+                  <div className="flex items-center gap-4">
+                    <FormField
+                      control={form.control}
+                      name="x"
+                      defaultValue={ChildMap?.x}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Child Map X</FormLabel>
+                          <FormControl>
+                            <div className="flex flex-row gap-2">
+                              <div className="w-2/3">
+                                <Input
+                                  type="number"
+                                  placeholder="X"
+                                  {...field}
+                                  onChange={(e) => {
+                                    const value = e.target.valueAsNumber;
+                                    field.onChange(isNaN(value) ? 0 : value);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="y"
+                      defaultValue={ChildMap?.y}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Child Map Y</FormLabel>
+                          <FormControl>
+                            <div className="flex flex-row gap-2">
+                              <div className="w-2/3">
+                                <Input
+                                  type="number"
+                                  placeholder="Y"
+                                  {...field}
+                                  onChange={(e) => {
+                                    const value = e.target.valueAsNumber;
+                                    field.onChange(isNaN(value) ? 0 : value);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <FormField
+                      control={form.control}
+                      name="wx"
+                      defaultValue={ChildMap?.wx}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Child Map Width</FormLabel>
+                          <FormControl>
+                            <div className="flex flex-row gap-2">
+                              <div className="w-2/3">
+                                <Input
+                                  type="number"
+                                  placeholder="wx"
+                                  {...field}
+                                  onChange={(e) => {
+                                    const value = e.target.valueAsNumber;
+                                    field.onChange(isNaN(value) ? 0 : value);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="wy"
+                      defaultValue={ChildMap?.wy}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Child Map Height</FormLabel>
+                          <FormControl>
+                            <div className="flex flex-row gap-2">
+                              <div className="w-2/3">
+                                <Input
+                                  type="number"
+                                  placeholder="WY"
+                                  {...field}
+                                  onChange={(e) => {
+                                    const value = e.target.valueAsNumber;
+                                    field.onChange(isNaN(value) ? 0 : value);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+              <Button type="submit" disabled={isSubmitting}>
+                {ChildMap ? "Update Childmap" : "Submit Childmap"}
+              </Button>
+            </form>
+          </Form>
+          <div className="w-full">
+            {/* Style column */}
+            {ChildMap ? (
+              <div className="w-full flex flex-col gap-4">
+                <div className="w-full gap-2 flex items-center justify-between">
+                  <h4 className="text-lg">Styles</h4>
+                  <Button
+                    type="button"
+                    className="self-end"
+                    variant="default"
+                    onClick={() => showStyleForm()}
+                  >
+                    <Plus />
+                  </Button>
+                </div>
+                <StyleEditListModule
+                  canvasStyles={ChildMap.canvasStyles}
+                  showStyleForm={showStyleForm}
+                  currentPage={`/editor/mastermaps/${MasterMap.id}/childmaps/${ChildMap.id}`}
+                />
+                <StyleItemForm
+                  parentId={ChildMap.id}
+                  parentType="mapHierarchyChild"
+                  parentSlug={`/editor/mastermaps/${MasterMap.id}/childmaps/${ChildMap.id}`}
+                  dialogOpen={isDialogOpen}
+                  setDialogOpen={setIsDialogOpen}
+                  canvasStyleItem={currentStyleItem}
+                />
+              </div>
+            ) : (
+              <p>Save area to change style</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

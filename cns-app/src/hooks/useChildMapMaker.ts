@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Map } from "@prisma/client";
+import { CanvasStyleItem, Map } from "@prisma/client";
 
 import {
   drawPointFixedMetaSquare,
@@ -7,29 +7,27 @@ import {
   drawRectangularMetaArea,
   drawSizeMarker,
 } from "@/lib/map/drawMetaAreas";
-
-interface MapWithRectangularArea
-  extends HierarchyConnection,
-    Map,
-    PointRectangularArea {}
+import { getValueFirstOfEachStyleType } from "@/lib/utils";
 
 interface ChildMapEditable extends PointRectangularArea {
   mapTitle: string;
+  canvasStyles: CanvasStyleItem[];
 }
 
 interface ChildMapEditorHookProps {
-  childMapCoordinates: ChildMapEditable;
-  setChildMapCoordinates: React.Dispatch<
-    React.SetStateAction<ChildMapEditable>
-  >;
+  childMapEditorItem: ChildMapEditable;
+  setChildMapEditorItem: React.Dispatch<React.SetStateAction<ChildMapEditable>>;
 }
 
 export function useChildMapMaker({
-  childMapCoordinates,
-  setChildMapCoordinates,
+  childMapEditorItem,
+  setChildMapEditorItem,
 }: ChildMapEditorHookProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [editorState, setEditorState] = useState("");
+
+  // Style settings
+  const styles = getValueFirstOfEachStyleType(childMapEditorItem.canvasStyles);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -44,14 +42,20 @@ export function useChildMapMaker({
     if (!ctx) return;
 
     // Set Canvas
-    const { positionToggle, sizeToggle } = redrawCanvas(
+    const canvasResult = redrawCanvas(
       canvas,
       ctx,
       cw,
       ch,
-      childMapCoordinates,
+      childMapEditorItem,
+      styles,
       editorState
     );
+
+    // Early return if redrawCanvas returned undefined
+    if (!canvasResult) return;
+
+    const { positionToggle, sizeToggle } = canvasResult;
 
     // Keyboard actions
     function keyboardHandler(e: KeyboardEvent) {
@@ -79,51 +83,53 @@ export function useChildMapMaker({
       const r = canvas.getBoundingClientRect();
       const mouseX = e.x - r.x;
       const mouseY = e.y - r.y;
-      const diffXNormalized = mouseX / cw - childMapCoordinates.x;
-      const diffYNormalized = mouseY / ch - childMapCoordinates.y;
+      const diffXNormalized = mouseX / cw - childMapEditorItem.x;
+      const diffYNormalized = mouseY / ch - childMapEditorItem.y;
 
       // Limit rectangle size to canvas bounds
       const boundedWxFromPosition = checkUpperBounds(
         mouseX,
-        childMapCoordinates.wx
+        childMapEditorItem.wx
       );
       const boundedWyFromPosition = checkUpperBounds(
         mouseY,
-        childMapCoordinates.wy
+        childMapEditorItem.wy
       );
       const boundedWxFromSize = checkUpperBounds(
-        childMapCoordinates.x,
+        childMapEditorItem.x,
         diffXNormalized
       );
       const boundedWyFromSize = checkUpperBounds(
-        childMapCoordinates.y,
+        childMapEditorItem.y,
         diffYNormalized
       );
 
       switch (editorState) {
         case "POSITION":
-          setChildMapCoordinates({
+          setChildMapEditorItem({
             x: mouseX,
             y: mouseY,
             wx: boundedWxFromPosition,
             wy: boundedWyFromPosition,
-            mapTitle: childMapCoordinates.mapTitle,
+            mapTitle: childMapEditorItem.mapTitle,
+            canvasStyles: childMapEditorItem.canvasStyles,
           });
           break;
         case "SIZE":
-          setChildMapCoordinates({
-            x: childMapCoordinates.x,
-            y: childMapCoordinates.y,
+          setChildMapEditorItem({
+            x: childMapEditorItem.x,
+            y: childMapEditorItem.y,
             wx: boundedWxFromSize,
             wy: boundedWyFromSize,
-            mapTitle: childMapCoordinates.mapTitle,
+            mapTitle: childMapEditorItem.mapTitle,
+            canvasStyles: childMapEditorItem.canvasStyles,
           });
           break;
         default:
           return;
       }
     };
-  }, [childMapCoordinates, editorState]);
+  }, [childMapEditorItem, editorState]);
 
   return { canvasRef };
 }
@@ -133,7 +139,8 @@ function redrawCanvas(
   ctx: CanvasRenderingContext2D,
   cw: number,
   ch: number,
-  childMapCoordinates: ChildMapEditable,
+  childMapEditorItem: ChildMapEditable,
+  styles: any,
   editorState: string
 ) {
   if (!ctx) return;
@@ -142,26 +149,37 @@ function redrawCanvas(
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw initial areas
-  if (!childMapCoordinates) return;
+  if (!childMapEditorItem) return;
 
-  ctx.lineWidth = 4;
-  ctx.fillStyle = "rgba(256, 256, 256, 0.2)";
-  ctx.strokeStyle = "white";
-  drawRectangularMetaArea(ctx, childMapCoordinates, cw, ch);
-  ctx.font = "16px mono";
+  // Style presets
+  const fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
+  const strokeStyle = styles.strokeStyle || "#ffffff";
+  const lineWidth = parseInt(styles.lineWidth) || 4;
+  const fontSize = parseInt(styles.fontSize) || 16;
+  const fontColor = styles.fontColor || "#ffffff";
+  const fontType = styles.fontType || "mono";
+
+  // Draw childmap indicator
+  // 250801 to do: Export to lib
+  // 250801 to do: Doesnt rerender on style submission
+  ctx.lineWidth = lineWidth;
+  ctx.fillStyle = fillStyle;
+  ctx.strokeStyle = strokeStyle;
+  drawRectangularMetaArea(ctx, childMapEditorItem, cw, ch);
+  ctx.font = `${fontSize}px ${fontType}`;
   ctx.stroke();
   ctx.fill();
-  ctx.fillStyle = "white";
+  ctx.fillStyle = fontColor;
   ctx.fillText(
-    childMapCoordinates.mapTitle,
-    childMapCoordinates.x * cw + 4,
-    (childMapCoordinates.y + childMapCoordinates.wy) * ch - 4
+    childMapEditorItem.mapTitle,
+    childMapEditorItem.x * cw + lineWidth,
+    (childMapEditorItem.y + childMapEditorItem.wy) * ch - lineWidth
   );
 
   // Draw Placement indicator
   const positionToggle = {
-    x: childMapCoordinates.x,
-    y: childMapCoordinates.y,
+    x: childMapEditorItem.x,
+    y: childMapEditorItem.y,
     size: 20,
     name: "POSITION",
   };
@@ -181,8 +199,8 @@ function redrawCanvas(
 
   // Draw size indicator
   const sizeToggle = {
-    x: childMapCoordinates.x + childMapCoordinates.wx,
-    y: childMapCoordinates.y + childMapCoordinates.wy,
+    x: childMapEditorItem.x + childMapEditorItem.wx,
+    y: childMapEditorItem.y + childMapEditorItem.wy,
     size: 20,
     name: "SIZE",
   };

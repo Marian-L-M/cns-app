@@ -1,5 +1,7 @@
 export const CanvasStyleItemType = {
-  FONT: "font",
+  FONT_SIZE: "fontSize",
+  FONT_COLOR: "fontColor",
+  FONT_TYPE: "fontType",
   LINE_WIDTH: "lineWidth",
   FILL_STYLE: "fillStyle",
   STROKE_STYLE: "strokeStyle",

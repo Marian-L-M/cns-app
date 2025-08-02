@@ -32,6 +32,13 @@ import {
   CanvasStyleItemType,
   ObjectStyleItemType,
 } from "@/lib/constants/styles";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface Props {
   parentId: number;
@@ -50,8 +57,6 @@ const parentTypeMap: Record<string, string> = {
   subStory: "subStoryId",
 };
 
-// const CANVAS_STYLE_TYPES = ["font", "lineWidth", "fillStyle", "strokeStyle"];
-
 export default function StyleItemForm({
   parentId,
   parentType,
@@ -60,7 +65,6 @@ export default function StyleItemForm({
   dialogOpen,
   setDialogOpen,
 }: Props) {
-  const initialType = parentType === "globalObject" ? "size" : "fillStyle";
   const [selectedType, setSelectedType] = useState(
     canvasStyleItem?.type || "fillStyle"
   );
@@ -72,8 +76,26 @@ export default function StyleItemForm({
     canvasStyleItem?.value || "#ffffff"
   );
 
-  const activeStyleSelection =
-    parentType === "globalObject" ? ObjectStyleItemType : CanvasStyleItemType;
+  // Set form initial style
+  const initialType = (parentType: string) => {
+    switch (parentType) {
+      case "globalObject":
+        return "size";
+      default:
+        return "fillStyle";
+    }
+  };
+
+  const activeStyleSelection = (parentType: string) => {
+    switch (parentType) {
+      case "globalObject":
+        return ObjectStyleItemType;
+      default:
+        // Used by areas, childmaps
+        return CanvasStyleItemType;
+    }
+  };
+
   const toggleSelectedType = (
     type: CanvasStyleItemType | ObjectStyleItemType
   ) => {
@@ -84,7 +106,7 @@ export default function StyleItemForm({
   const form = useForm<CanvasStyleItem>({
     resolver: zodResolver(CanvasStylesSchema),
     defaultValues: {
-      type: canvasStyleItem?.type || initialType,
+      type: canvasStyleItem?.type || initialType(parentType),
       value: canvasStyleItem?.value || "",
     },
   });
@@ -112,11 +134,11 @@ export default function StyleItemForm({
   useEffect(() => {
     const defaultValue = canvasStyleItem?.value || "";
     form.reset({
-      type: canvasStyleItem?.type || initialType,
+      type: canvasStyleItem?.type || initialType(parentType),
       value: canvasStyleItem?.value || "",
     });
 
-    setSelectedType(canvasStyleItem?.type || initialType);
+    setSelectedType(canvasStyleItem?.type || initialType(parentType));
     setSelectedColor(defaultValue || "#ffffff");
     setCurrentStyleValue(defaultValue);
   }, [canvasStyleItem, parentId, form]);
@@ -161,11 +183,11 @@ export default function StyleItemForm({
                 {canvasStyleItem ? "Edit style" : "Create style"}
               </DialogTitle>
             </DialogHeader>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {canvasStyleItem ? (
                 <h4 className="text-lg font-bold">{canvasStyleItem.type}</h4>
               ) : (
-                Object.values(activeStyleSelection).map((type) => (
+                Object.values(activeStyleSelection(parentType)).map((type) => (
                   <Button
                     key={type}
                     type="button"
@@ -233,14 +255,68 @@ export default function StyleItemForm({
                     </div>
                   </div>
                 )}
+                {selectedType == "fontSize" && (
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium">
+                      Font Size: {currentStyleValue || "16"}
+                    </label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="100"
+                      value={currentStyleValue || "16"}
+                      onChange={(e) =>
+                        setCurrentStyleValue(e.target.value.toString())
+                      }
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>1</span>
+                      <span>100</span>
+                    </div>
+                  </div>
+                )}
                 {/* Color Picker */}
                 {(selectedType == "fillStyle" ||
-                  selectedType == "strokeStyle") && (
+                  selectedType == "strokeStyle" ||
+                  selectedType == "fontColor") && (
                   <SketchPicker
                     color={selectedColor}
                     onChange={handleColorChange}
                     onChangeComplete={handleColorChange}
                   />
+                )}
+                {/* Font Picker */}
+                {selectedType == "fontType" && (
+                  <Select
+                    onValueChange={(value) => setCurrentStyleValue(value)}
+                    value={currentStyleValue || "mono"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select font" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="monospace">Monospace</SelectItem>
+                      <SelectItem value="Arial, sans-serif">Arial</SelectItem>
+                      <SelectItem value="Times New Roman, serif">
+                        Times New Roman
+                      </SelectItem>
+                      <SelectItem value="Helvetica, sans-serif">
+                        Helvetica
+                      </SelectItem>
+                      <SelectItem value="Georgia, serif">Georgia</SelectItem>
+                      <SelectItem value="Verdana, sans-serif">
+                        Verdana
+                      </SelectItem>
+                      <SelectItem value="Courier New, monospace">
+                        Courier New
+                      </SelectItem>
+                      <SelectItem value="Impact, fantasy">Impact</SelectItem>
+                      <SelectItem value="Papyrus, fantasy">Papyrus</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
               </div>
             </div>
