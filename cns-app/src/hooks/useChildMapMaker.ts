@@ -8,6 +8,7 @@ import {
   drawSizeMarker,
 } from "@/lib/map/drawMetaAreas";
 import { getValueFirstOfEachStyleType } from "@/lib/utils";
+import { drawMasterMapArea } from "@/lib/map/drawMap";
 
 interface ChildMapEditable extends PointRectangularArea {
   mapTitle: string;
@@ -151,30 +152,7 @@ function redrawCanvas(
   // Draw initial areas
   if (!childMapEditorItem) return;
 
-  // Style presets
-  const fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
-  const strokeStyle = styles.strokeStyle || "#ffffff";
-  const lineWidth = parseInt(styles.lineWidth) || 4;
-  const fontSize = parseInt(styles.fontSize) || 16;
-  const fontColor = styles.fontColor || "#ffffff";
-  const fontType = styles.fontType || "mono";
-
-  // Draw childmap indicator
-  // 250801 to do: Export to lib
-  // 250801 to do: Doesnt rerender on style submission
-  ctx.lineWidth = lineWidth;
-  ctx.fillStyle = fillStyle;
-  ctx.strokeStyle = strokeStyle;
-  drawRectangularMetaArea(ctx, childMapEditorItem, cw, ch);
-  ctx.font = `${fontSize}px ${fontType}`;
-  ctx.stroke();
-  ctx.fill();
-  ctx.fillStyle = fontColor;
-  ctx.fillText(
-    childMapEditorItem.mapTitle,
-    childMapEditorItem.x * cw + lineWidth,
-    (childMapEditorItem.y + childMapEditorItem.wy) * ch - lineWidth
-  );
+  drawMasterMapArea(ctx, childMapEditorItem, styles, cw, ch);
 
   // Draw Placement indicator
   const positionToggle = {

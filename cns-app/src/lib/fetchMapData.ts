@@ -65,6 +65,7 @@ export async function fetchMasterMap(masterMapId: number) {
       childMaps: {
         include: {
           childMap: true,
+          canvasStyles: true,
         },
       },
     },
@@ -82,6 +83,7 @@ export async function fetchMasterMap(masterMapId: number) {
       y: child.y,
       wx: child.wx,
       wy: child.wy,
+      canvasStyles: child.canvasStyles,
     })),
   };
 }
