@@ -29,6 +29,9 @@ https://nextjs.org/docs/app/api-reference/file-conventions
 16. Protect api?
 17. Hierarchy typings are fubar. Burn and rebuild. Mastermaps treats childmaps as maps. Childmap treats individual childmaps like extended hierarchychild with map attached.
 18. Disentangle Mastermap form from editor(?)
+19. Bug when submitting wiki
+20. Json fields infobox and styles should actually be relational tables (Only two groups overall: StylesObject & Infoboxitem everything else to be handled by relation to the parent object)
+21. drawMetaNodes -> same name two functions (Map nodes and story nodes)
 
 ## General
 
@@ -61,6 +64,8 @@ https://nextjs.org/docs/app/api-reference/file-conventions
 25. Pregenerate pages for SEO
 26. Map Display full size mode/lightbox
 27. Breadcrumbs
+28. Dictionary , Dramatis Personae
+29. Conjoined storypoint issue
 
 - System message banner (floating not blocked)
 - Map hover banner (floating not blocked)
@@ -118,6 +123,8 @@ https://nextjs.org/docs/app/api-reference/file-conventions
 
 - [] add style object to mastermaps
 - Nice to have: Nested mastermaps
+- Preload images for hover
+- Create child maps functionality is broken
 
 ## Wiki
 
@@ -135,8 +142,11 @@ https://nextjs.org/docs/app/api-reference/file-conventions
 
 ## Timelines & History
 
-- Create a timeline tool
+- Create a timeline tool -> Hook up to year not node(?)
+- Timeline slide
+- Through the times functionality
 - Integrate with Wiki
+- Display date or other directional indicator on story timeline (E.g. an arrow in the line)
 
 ## DB
 
@@ -145,6 +155,7 @@ https://nextjs.org/docs/app/api-reference/file-conventions
 ## Auth
 
 - Check if API routes can be accessed without auth
+- Check if no page was forgotten in editor and admin
 
 # Setup
 

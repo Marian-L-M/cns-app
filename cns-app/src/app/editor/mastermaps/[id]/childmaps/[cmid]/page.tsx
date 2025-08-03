@@ -11,7 +11,7 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const { id, cmid } = resolvedParams;
 
-  const masterMap = await fetchMasterMap(id);
+  const masterMap = await fetchMasterMap(parseInt(id));
   const childMap = await fetchHierarchyChild(cmid);
   const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
 

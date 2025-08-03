@@ -129,7 +129,7 @@ export function useChildMapMaker({
           return;
       }
     };
-  }, [childMapEditorItem, editorState]);
+  }, [childMapEditorItem, editorState, childMapEditorItem.canvasStyles]);
 
   return { canvasRef };
 }
@@ -236,7 +236,6 @@ function checkToggleHit(
   drawPointFixedMetaSquare(hitPoint, ctx, cw, ch);
 
   if (ctx.isPointInPath(mouseX, mouseY)) {
-    console.log(`hit ${hitPoint.name}`);
     setEditorState(hitPoint.name);
   }
 }

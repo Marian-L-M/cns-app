@@ -88,6 +88,16 @@ export default function ChildMapEditor({
     setIsDialogOpen(true);
   };
 
+  // Re-render canvas when styles change
+  useEffect(() => {
+    if (ChildMap) {
+      setChildMapEditorItem((prev) => ({
+        ...prev,
+        canvasStyles: ChildMap.canvasStyles || [],
+      }));
+    }
+  }, [ChildMap?.canvasStyles]);
+
   // Set canvas
   const { canvasRef } = useChildMapMaker({
     childMapEditorItem,
@@ -376,7 +386,7 @@ export default function ChildMapEditor({
                 />
               </div>
             ) : (
-              <p>Save area to change style</p>
+              <p>Save child map to change style</p>
             )}
           </div>
         </div>
