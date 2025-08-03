@@ -1,4 +1,3 @@
-import { getValueFirstOfEachStyleType } from "../utils";
 import { drawRectangularMetaArea } from "./drawMetaAreas";
 
 export function drawAreas(
