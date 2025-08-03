@@ -12,7 +12,6 @@ export function drawAreas(
   for (var i = 1; i < points.length; i++) {
     ctx.lineTo(points[i].x * cw, points[i].y * ch);
   }
-  // ctx.lineTo(points[0].x * cw, points[0].y * ch);
   ctx.closePath();
   ctx.stroke();
   ctx.fill();
