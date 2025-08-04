@@ -183,13 +183,31 @@ export function drawNodeAsCircle(
       node.y,
       cw,
       ch,
-      iconSize + 3,
+      iconSize / 2 + 3,
       "#ff0f0f",
       "black"
     );
-    drawNodeCircle(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
+    drawNodeCircle(
+      ctx,
+      node.x,
+      node.y,
+      cw,
+      ch,
+      iconSize / 2,
+      iconColor,
+      "none"
+    );
   } else {
-    drawNodeCircle(ctx, node.x, node.y, cw, ch, iconSize, iconColor, "none");
+    drawNodeCircle(
+      ctx,
+      node.x,
+      node.y,
+      cw,
+      ch,
+      iconSize / 2,
+      iconColor,
+      "none"
+    );
   }
 }
 
@@ -242,11 +260,12 @@ export function drawStoryNode(
           const iconSize = node.iconSize || 20;
           ctx.save();
           ctx.drawImage(
+            // Icon at ~75% of circle
             cachedIcon,
-            (node.x - iconSize / 2) * cw,
-            (node.y - iconSize / 2) * ch,
-            iconSize,
-            iconSize
+            (node.x - iconSize / 3) * cw,
+            (node.y - iconSize / 3) * ch,
+            iconSize / 1.5,
+            iconSize / 1.5
           );
           ctx.restore();
         } else {
@@ -259,4 +278,67 @@ export function drawStoryNode(
     default:
       drawNode(ctx, node, cw, ch, activeSubstoryID);
   }
+}
+
+export function drawStoryLabel(
+  ctx: CanvasRenderingContext2D,
+  node: StoryNode,
+  cw: number,
+  ch: number
+) {
+  const fontSize = 16;
+  const fontColor = node.fontColor || "#fff";
+  const iconSize = node.iconSize || 10;
+  const iconDiameter =
+    node.iconType === "CIRCLE" || node.iconType === "ICON"
+      ? iconSize / 2
+      : iconSize;
+
+  // Draw label
+  const textMetrics = ctx.measureText(node.name);
+  const textWidth = textMetrics.width;
+  const textHeight = fontSize;
+  const twHalf = textWidth / 2;
+  const thHalf = textHeight / 2;
+  const fillStyle = node.labelColor || "#000";
+  const strokeStyle = fontColor;
+  const padX = 10;
+  const padY = 5;
+  const labelOffset = iconDiameter + fontSize + padY * 2;
+
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  ctx.fillStyle = fillStyle;
+  ctx.strokeStyle = strokeStyle;
+  ctx.moveTo(
+    (node.x - padX - twHalf) * cw,
+    (node.y - padY - thHalf + labelOffset) * ch
+  );
+  ctx.lineTo(
+    (node.x + padX + twHalf) * cw,
+    (node.y - padY - thHalf + labelOffset) * ch
+  );
+  ctx.lineTo(
+    (node.x + padX + twHalf) * cw,
+    (node.y + padY + thHalf + labelOffset) * ch
+  );
+  ctx.lineTo(
+    (node.x - padX - twHalf) * cw,
+    (node.y + padY + thHalf + labelOffset) * ch
+  );
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "none";
+  ctx.strokeStyle = "none";
+
+  // Draw Text
+  ctx.font = `${fontSize}px mono`;
+  ctx.fillStyle = fontColor;
+  ctx.textAlign = "center";
+  ctx.fillText(
+    node.name,
+    node.x * cw,
+    (node.y + labelOffset + padY / 2 + thHalf / 2) * ch
+  );
 }

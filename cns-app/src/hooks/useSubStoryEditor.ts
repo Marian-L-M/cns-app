@@ -6,6 +6,7 @@ import {
   drawNode,
   drawNodeAsCircle,
   drawNodeAsDiamond,
+  drawStoryLabel,
   drawStoryNode,
 } from "@/lib/draw/drawStory";
 
@@ -110,6 +111,9 @@ export function useSubStoryEditor({
     // Draw Nodes
     editableSubStory.nodes.forEach((node: StoryNode) => {
       drawStoryNode(ctx, node, cw, ch, imageCache, activeSubstoryID);
+      if (node.label) {
+        drawStoryLabel(ctx, node, cw, ch);
+      }
     });
   }, [editableSubStory, activeSubstoryID, imagesLoaded]);
 
@@ -167,8 +171,8 @@ export function useSubStoryEditor({
           iconSize: 10,
           iconColor: "#ffffff",
           label: false,
-          labelColor: "#000000",
-          fontColor: "#000000",
+          labelColor: "rgba(255,255,255,0.8)",
+          fontColor: "rgba(0,0,0,1)",
         };
 
         addNode(newNode, setEditableSubStory);

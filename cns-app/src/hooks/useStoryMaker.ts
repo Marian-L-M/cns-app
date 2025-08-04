@@ -8,7 +8,12 @@ import {
 } from "@/lib/mouseActions";
 import { Map as MapType } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
-import { drawArrowLine, drawNode, drawStoryNode } from "@/lib/draw/drawStory";
+import {
+  drawArrowLine,
+  drawNode,
+  drawStoryLabel,
+  drawStoryNode,
+} from "@/lib/draw/drawStory";
 import {
   getValueFirstOfEachObjectType,
   getValueFirstOfEachStyleType,
@@ -236,6 +241,9 @@ export function useStoryMaker({
               iconCache,
               storyObject.nodes[storyIndex]?.id
             );
+            if (node.label) {
+              drawStoryLabel(ctx, node, cw, ch);
+            }
           });
         });
       }

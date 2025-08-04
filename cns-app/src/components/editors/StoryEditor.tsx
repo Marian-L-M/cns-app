@@ -606,7 +606,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                             name={`nodes.${number}.labelColor`}
                             defaultValue={
                               (node as StoryNode).labelColor ||
-                              "rgba(252,252,252,1)"
+                              "rgba(255,255,255,0.8)"
                             }
                             render={({ field }) => (
                               <FormItem>
@@ -636,7 +636,8 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                                         <SketchPicker
                                           className="m-auto"
                                           color={
-                                            field.value || "rgba(252,252,252,1)"
+                                            field.value ||
+                                            "rgba(255,255,255,0.8)"
                                           }
                                           onChange={createColorChangeHandler(
                                             `nodes.${number}.labelColor`
