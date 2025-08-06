@@ -22,7 +22,7 @@ interface StoryModuleProps {
 
 export default function StoryDisplayModule({
   mapData,
-  story,
+  story, // naming issue story has not been renamed to substory
 }: StoryModuleProps) {
   const statusCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = mapData;

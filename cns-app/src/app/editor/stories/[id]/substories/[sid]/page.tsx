@@ -20,6 +20,9 @@ export default async function SubStoryDetailPage({ params }: substoryProps) {
 
   const substory = await prisma.subStory.findUnique({
     where: { id: sid },
+    include: {
+      canvasStyles: true,
+    },
   });
 
   if (!story) {

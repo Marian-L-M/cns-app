@@ -10,7 +10,6 @@ import { Map as MapType } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
 import {
   drawArrowLine,
-  drawNode,
   drawStoryLabel,
   drawStoryNode,
 } from "@/lib/draw/drawStory";
@@ -31,7 +30,7 @@ interface StoryModuleProps {
 
 export function useStoryMaker({
   mapData,
-  story,
+  story, // To do: 250807 refactor -> this is substories
   storyIndex,
 }: StoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);

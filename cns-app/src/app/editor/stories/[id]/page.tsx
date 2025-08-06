@@ -47,6 +47,9 @@ export default async function EditStory({ params, searchParams }: Props) {
   // fetch substories
   const substories = await prisma.subStory.findMany({
     where: { storyId: story.id },
+    include: {
+      canvasStyles: true,
+    },
   });
 
   // fetch mapdata

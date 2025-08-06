@@ -93,7 +93,9 @@ export function drawMetaNode(
   ch: number
 ) {
   const iconSize = node.iconSize || 10;
-  drawNodeSquare(ctx, node.x, node.y, cw, ch, iconSize, "unset", "unset");
+  ctx.fillStyle = "transparent";
+  ctx.strokeStyle = "transparent";
+  drawNodeSquare(ctx, node.x, node.y, cw, ch, iconSize, "none", "none");
 }
 
 export function drawNodeSquare(
