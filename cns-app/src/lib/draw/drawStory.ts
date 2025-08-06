@@ -1,3 +1,5 @@
+import { getValueFirstOfEachLineType } from "../utils";
+
 export function drawArrowLine(
   ctx: CanvasRenderingContext2D,
   storyObject: story,
@@ -6,53 +8,78 @@ export function drawArrowLine(
 ) {
   let previousNode: Point;
 
+  // Get styles
+  const filteredStyle = getValueFirstOfEachLineType(
+    storyObject.canvasStyles || []
+  );
+  const lineArrow = filteredStyle.lineArrow || "classic";
+  const lineType = filteredStyle.lineType || "solid";
+  const strokeStyle = filteredStyle.strokeStyle || "#000";
+  const lineWidth = parseInt(filteredStyle.lineWidth) || 2;
+
   storyObject.nodes.forEach((node: StoryNode) => {
-    // Draw Story Line
     if (previousNode) {
-      ctx.beginPath();
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 2;
-      ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
-      ctx.lineTo(node.x * cw, node.y * ch);
-      ctx.closePath();
-      ctx.stroke();
+      // Draw Story Line
+      if (!(lineType == "none")) {
+        ctx.beginPath();
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = lineWidth;
+        switch (lineType) {
+          case "dotted":
+            ctx.setLineDash([lineWidth, lineWidth]);
+          case "dashed":
+            ctx.setLineDash([lineWidth * 2, lineWidth]);
+          case "none":
+            ctx.lineWidth = 0;
+          default:
+            break;
+        }
+
+        ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
+        ctx.lineTo(node.x * cw, node.y * ch);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
 
       // Triangle size
-      const triangleSize = 12;
+      if (!(lineType == "none") && !(lineArrow == "none")) {
+        const triangleSize = 12;
 
-      // Define triangle points (pointing right initially)
-      const trianglePoints = [
-        { x: triangleSize, y: 0 },
-        { x: -triangleSize / 2, y: -triangleSize / 2 },
-        { x: -triangleSize / 2, y: triangleSize / 2 },
-      ];
+        // Define triangle points (pointing right initially)
+        const trianglePoints = [
+          { x: triangleSize, y: 0 },
+          { x: -triangleSize / 2, y: -triangleSize / 2 },
+          { x: -triangleSize / 2, y: triangleSize / 2 },
+        ];
 
-      // Draw rotated triangle
-      const diffX = node.x - previousNode.x;
-      const diffY = node.y - previousNode.y;
-      const centerX = ((previousNode.x + node.x) / 2) * cw;
-      const centerY = ((previousNode.y + node.y) / 2) * ch;
-      const angle = Math.atan2(diffY, diffX); // Angle between diff point and origin
+        // Draw rotated triangle
+        const diffX = node.x - previousNode.x;
+        const diffY = node.y - previousNode.y;
+        const centerX = ((previousNode.x + node.x) / 2) * cw;
+        const centerY = ((previousNode.y + node.y) / 2) * ch;
+        const angle = Math.atan2(diffY, diffX); // Angle between diff point and origin
 
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(angle); // Rotate canvas to match angle of diff point
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(angle); // Rotate canvas to match angle of diff point
 
-      ctx.beginPath();
-      ctx.strokeStyle = "black";
-      ctx.fillStyle = "black";
-      ctx.lineWidth = 2;
+        ctx.beginPath();
 
-      ctx.moveTo(trianglePoints[0].x, trianglePoints[0].y);
-      trianglePoints.slice(1).forEach((point) => {
-        ctx.lineTo(point.x, point.y);
-      });
-      ctx.closePath();
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = strokeStyle;
 
-      ctx.fill();
-      ctx.stroke();
+        ctx.moveTo(trianglePoints[0].x, trianglePoints[0].y);
+        trianglePoints.slice(1).forEach((point) => {
+          ctx.lineTo(point.x, point.y);
+        });
+        ctx.closePath();
 
-      ctx.restore();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.restore();
+      }
     }
     previousNode = { x: node.x, y: node.y };
   });

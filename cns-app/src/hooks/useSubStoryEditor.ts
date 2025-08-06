@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { SubStory } from "@prisma/client";
+import { CanvasStyleItem, SubStory } from "@prisma/client";
 import {
   drawArrowLine,
   drawMetaNode,
-  drawNode,
-  drawNodeAsCircle,
-  drawNodeAsDiamond,
   drawStoryLabel,
   drawStoryNode,
 } from "@/lib/draw/drawStory";
+import { getValueFirstOfEachLineType } from "@/lib/utils";
 
 interface substoryModuleProps {
-  editableSubStory: SubStory & { nodes: StoryNode[] };
+  editableSubStory: SubStory & {
+    nodes: StoryNode[];
+    canvasStyles: CanvasStyleItem[];
+  };
   setEditableSubStory: React.Dispatch<
     React.SetStateAction<SubStory & { nodes: StoryNode[] }>
   >;

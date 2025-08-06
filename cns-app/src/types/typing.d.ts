@@ -92,6 +92,7 @@ interface story {
   nodes: JsonValue;
   objectTime: number;
   storyId: number;
+  canvasStyles?: CanvasStyleItem[];
 }
 
 type StoryNode = {
@@ -149,6 +150,13 @@ type TextType = {
 type InfoBoxItem = ImageType | CollectionType | TextType;
 
 // Styles
-type CanvasStyleItemType = "font" | "lineWidth" | "fillStyle" | "strokeStyle";
+type CanvasStyleItemType =
+  | "fontSize"
+  | "fontColor"
+  | "fontType"
+  | "lineWidth"
+  | "fillStyle"
+  | "strokeStyle";
+type LineStyleItemType = "lineArrow" | "lineType" | "strokeStyle" | "lineWidth";
 type ObjectStyleItemType = "size" | "opacity";
 type SubstoryNodeType = "square" | "Circle" | "diamond" | "icon";

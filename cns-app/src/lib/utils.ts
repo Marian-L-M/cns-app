@@ -1,7 +1,11 @@
 import { CanvasStyleItem } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { CanvasStyleItemType, ObjectStyleItemType } from "./constants/styles";
+import {
+  CanvasStyleItemTypeList,
+  LineStyleItemTypeList,
+  ObjectStyleItemTypeList,
+} from "./constants/styles";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,15 +40,22 @@ export function formatError(error: any) {
   }
 }
 
+// 250806 To do unify and fix
 type CanvasStyleItemTypeValues =
-  (typeof CanvasStyleItemType)[keyof typeof CanvasStyleItemType];
+  (typeof CanvasStyleItemTypeList)[keyof typeof CanvasStyleItemTypeList];
+
+type ObjectStyleItemTypeValues =
+  (typeof ObjectStyleItemTypeList)[keyof typeof ObjectStyleItemTypeList];
+
+type LineStyleItemTypeValues =
+  (typeof LineStyleItemTypeList)[keyof typeof LineStyleItemTypeList];
 
 export function getValueFirstOfEachStyleType(
   canvasStyleItems: CanvasStyleItem[]
 ): Record<CanvasStyleItemTypeValues, string> {
   const result = {} as Record<CanvasStyleItemTypeValues, string>;
 
-  Object.values(CanvasStyleItemType).forEach((styleType) => {
+  Object.values(CanvasStyleItemTypeList).forEach((styleType) => {
     const firstItem = canvasStyleItems.find((item) => item.type === styleType);
     if (firstItem) {
       result[styleType] = firstItem.value;
@@ -54,16 +65,28 @@ export function getValueFirstOfEachStyleType(
   return result;
 }
 
-type ObjectStyleItemTypeValues =
-  (typeof ObjectStyleItemType)[keyof typeof ObjectStyleItemType];
-
 export function getValueFirstOfEachObjectType(
   canvasStyleItems: CanvasStyleItem[]
 ): Record<ObjectStyleItemTypeValues, string> {
   const result = {} as Record<ObjectStyleItemTypeValues, string>;
 
-  Object.values(ObjectStyleItemType).forEach((styleType) => {
+  Object.values(ObjectStyleItemTypeList).forEach((styleType) => {
     const firstItem = canvasStyleItems.find((item) => item.type === styleType);
+    if (firstItem) {
+      result[styleType] = firstItem.value;
+    }
+  });
+
+  return result;
+}
+
+export function getValueFirstOfEachLineType(
+  LineStyleItems: CanvasStyleItem[]
+): Record<LineStyleItemTypeValues, string> {
+  const result = {} as Record<LineStyleItemTypeValues, string>;
+
+  Object.values(LineStyleItemTypeList).forEach((styleType) => {
+    const firstItem = LineStyleItems.find((item) => item.type === styleType);
     if (firstItem) {
       result[styleType] = firstItem.value;
     }

@@ -29,8 +29,9 @@ import LineWidthPicker from "../ui/linewidth-picker";
 import { Menu } from "lucide-react";
 import { SketchPicker, ColorResult } from "react-color";
 import {
-  CanvasStyleItemType,
-  ObjectStyleItemType,
+  CanvasStyleItemTypeList,
+  LineStyleItemTypeList,
+  ObjectStyleItemTypeList,
 } from "@/lib/constants/styles";
 import {
   Select,
@@ -81,6 +82,8 @@ export default function StyleItemForm({
     switch (parentType) {
       case "globalObject":
         return "size";
+      case "subStory":
+        return "lineType";
       default:
         return "fillStyle";
     }
@@ -89,15 +92,17 @@ export default function StyleItemForm({
   const activeStyleSelection = (parentType: string) => {
     switch (parentType) {
       case "globalObject":
-        return ObjectStyleItemType;
+        return ObjectStyleItemTypeList;
+      case "subStory":
+        return LineStyleItemTypeList;
       default:
         // Used by areas, childmaps
-        return CanvasStyleItemType;
+        return CanvasStyleItemTypeList;
     }
   };
 
   const toggleSelectedType = (
-    type: CanvasStyleItemType | ObjectStyleItemType
+    type: CanvasStyleItemType | ObjectStyleItemType | LineStyleItemType
   ) => {
     setSelectedType(type);
     form.setValue("type", type);
@@ -315,6 +320,42 @@ export default function StyleItemForm({
                       </SelectItem>
                       <SelectItem value="Impact, fantasy">Impact</SelectItem>
                       <SelectItem value="Papyrus, fantasy">Papyrus</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+                {/* Arrow Picker */}
+                {selectedType == "lineArrow" && (
+                  <Select
+                    onValueChange={(value) => setCurrentStyleValue(value)}
+                    value={currentStyleValue || "classic"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select arrow" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="classic">▶︎</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+                {/* Line Type Picker */}
+                {selectedType == "lineType" && (
+                  <Select
+                    onValueChange={(value) => setCurrentStyleValue(value)}
+                    value={currentStyleValue || "solid"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select line type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="solid">Solid</SelectItem>
+                      <SelectItem value="dashed">Dashed</SelectItem>
+                      <SelectItem value="dotted">Dotted</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
