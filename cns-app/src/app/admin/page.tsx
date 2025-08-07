@@ -4,10 +4,8 @@ export const metadata = {
   title: "Admin",
 };
 
-async function AdminOverviewPage() {
+export default async function AdminOverviewPage() {
   await requireAdmin();
 
   return <h1>Ello Boss!</h1>;
 }
-
-export default AdminOverviewPage;
