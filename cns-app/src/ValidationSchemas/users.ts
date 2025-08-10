@@ -4,7 +4,6 @@ export const userSchema = z.object({
   email: z.string().email().min(3, "Email is required"),
   role: z.string().min(3, "Role is required.").max(10),
   name: z.string().min(3, "Name is required").max(255),
-  image: z.string().min(3, "image url").max(255).optional(),
   password: z
     .string()
     .min(6, "Password must at least be 6 characters")
@@ -18,6 +17,9 @@ export const userProfileSchema = z.object({
   profileCatch: z.string().max(511).optional(),
   profileDescription: z.string().max(65535).optional(),
   thumbnail: z.string().optional(),
+  banner: z.string().optional(),
+  socials: z.any().nullable().optional(),
+  userId: z.string().min(1, "Map ID is required"),
 });
 
 export const updateUserSettingsSchema = z.object({

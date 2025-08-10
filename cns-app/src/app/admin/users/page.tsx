@@ -1,18 +1,18 @@
 import { requireAdmin } from "@/lib/auth-guards";
-import DataTableSimple from "./data-table-simple";
+import DataTable from "./data-table";
 import prisma from "@/../prisma/db";
 
 export const metadata = {
   title: "User management",
 };
 
-export default async function adminPage() {
+export default async function adminUsersPage() {
   await requireAdmin();
   const users = await prisma.user.findMany();
 
   return (
     <div>
-      <DataTableSimple users={users} />
+      <DataTable users={users} />
     </div>
   );
 }

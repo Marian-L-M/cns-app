@@ -32,7 +32,7 @@ interface Props {
   user?: User;
 }
 
-export default function UserForm({ user }: Props) {
+export default function UserAdminForm({ user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -51,7 +51,7 @@ export default function UserForm({ user }: Props) {
         await axios.post("/api/users", values);
       }
       setIsSubmitting(false);
-      router.push("/users");
+      router.push("/admin/users");
       router.refresh();
     } catch (error) {
       setError("Unknown error occurred");
@@ -88,22 +88,6 @@ export default function UserForm({ user }: Props) {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="Email" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="image"
-            defaultValue={user?.image || ""}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Image</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="This will turn into an upload field eventually"
-                    {...field}
-                  />
                 </FormControl>
               </FormItem>
             )}
@@ -148,7 +132,7 @@ export default function UserForm({ user }: Props) {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="USER">User</SelectItem>
-                      <SelectItem value="TECH">Tech</SelectItem>
+                      <SelectItem value="AUTHOR">Author</SelectItem>
                       <SelectItem value="ADMIN">Admin</SelectItem>
                     </SelectContent>
                   </Select>

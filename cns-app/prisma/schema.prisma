@@ -108,10 +108,10 @@ model UserProfile {
   thumbnail String?
   socials   Json[]  @default([]) @db.Json
 
-  UserId      String @unique
-  RelatedUser User   @relation("RelatedUser", fields: [UserId], references: [id])
+  userId      String @unique
+  RelatedUser User   @relation("RelatedUser", fields: [userId], references: [id])
 
-  @@index([UserId])
+  @@index([userId])
 }
 
 model Story {
