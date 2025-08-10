@@ -57,7 +57,6 @@ model User {
   name          String    @default("NO_NAME")
   email         String    @unique(map: "user_email_idx")
   emailVerified DateTime? @map("email_verified")
-  image         String?
   password      String?
   accounts      Account[]
   sessions      Session[]
@@ -105,7 +104,9 @@ model UserProfile {
   profileCatch       String? @db.Text
   profileDescription String? @db.Text
 
+  banner    String?
   thumbnail String?
+  socials   Json[]  @default([]) @db.Json
 
   UserId      String @unique
   RelatedUser User   @relation("RelatedUser", fields: [UserId], references: [id])
@@ -333,11 +334,19 @@ model CanvasStyleItem {
 }
 
 model AdminSettings {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  type      String   @default("")
-  value     String   @default("")
+  id        Int               @id @default(autoincrement())
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  category  AdminSettingsType @default(OTHER)
+  type      String            @default("")
+  value     String            @default("")
+}
+
+enum AdminSettingsType {
+  USER
+  PAGE
+  DESIGN
+  OTHER
 }
 
 enum WikiType {

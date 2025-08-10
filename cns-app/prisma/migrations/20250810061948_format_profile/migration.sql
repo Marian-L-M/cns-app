@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "UserProfile" ALTER COLUMN "socials" SET DEFAULT ARRAY[]::JSON[],
+ALTER COLUMN "socials" SET DATA TYPE JSON[];

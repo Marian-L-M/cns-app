@@ -7,6 +7,7 @@ interface Props {
   params: { id: string };
 }
 
+// 250808 To do: Does the delete routes need additionaly protection?
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = userSchema.safeParse(body);
@@ -51,4 +52,22 @@ export async function PATCH(request: NextRequest, { params }: Props) {
   });
 
   return NextResponse.json(updateUser);
+}
+
+export async function DELETE(request: NextRequest, { params }: Props) {
+  const resolvedParams = await params;
+
+  const user = await prisma.user.findUnique({
+    where: { id: resolvedParams.id },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "user not found" }, { status: 404 });
+  }
+
+  await prisma.user.delete({
+    where: { id: user.id },
+  });
+
+  return NextResponse.json({ message: "user deleted" }, { status: 200 });
 }
