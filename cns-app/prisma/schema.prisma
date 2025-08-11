@@ -18,6 +18,7 @@ enum Role {
   ADMIN
   AUTHOR
   USER
+  INACTIVE
 }
 
 model Account {
@@ -109,7 +110,7 @@ model UserProfile {
   socials   Json[]  @default([]) @db.Json
 
   userId      String @unique
-  RelatedUser User   @relation("RelatedUser", fields: [userId], references: [id])
+  RelatedUser User   @relation("RelatedUser", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId])
 }
@@ -132,7 +133,7 @@ model Story {
   authors         User[]
   subStories      SubStory[]
   assignedToMapID Int?
-  assignedToMap   Map?       @relation(fields: [assignedToMapID], references: [id])
+  assignedToMap   Map?       @relation(fields: [assignedToMapID], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   rating Int @default(0)
 
@@ -178,7 +179,7 @@ model MapHierarchyMaster {
   title     String   @db.VarChar(255)
 
   parentMapId Int
-  parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id])
+  parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id], onUpdate: Cascade)
   childMaps   MapHierarchyChild[]
   authors     User[]
 
@@ -193,7 +194,7 @@ model MapHierarchyChild {
   hierarchyId Int
   hierarchy   MapHierarchyMaster @relation(fields: [hierarchyId], references: [id])
   childMapId  Int
-  childMap    Map                @relation("ChildMap", fields: [childMapId], references: [id])
+  childMap    Map                @relation("ChildMap", fields: [childMapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   x  Int @default(0)
   y  Int @default(0)
@@ -215,7 +216,7 @@ model SubStory {
   description String   @db.Text
   nodes       Json[]
   objectTime  Int
-  story       Story    @relation(fields: [storyId], references: [id])
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   storyId     Int
 
   authors      User[]
@@ -235,9 +236,9 @@ model GlobalObject {
   x           Int
   y           Int
   objectTime  Int
-  map         Map           @relation(fields: [mapId], references: [id])
+  map         Map           @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   mapId       Int
-  wiki        Wiki?         @relation(fields: [wikiId], references: [id])
+  wiki        Wiki?         @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   wikiId      Int?
   type        MapObjectType @default(LOCATION)
 
@@ -256,9 +257,9 @@ model GlobalArea {
   imageUrl    String
   nodes       Json?
   objectTime  Int
-  map         Map         @relation(fields: [mapId], references: [id])
+  map         Map         @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   mapId       Int
-  wiki        Wiki?       @relation(fields: [wikiId], references: [id])
+  wiki        Wiki?       @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   wikiId      Int?
   type        MapAreaType @default(GEOGRAPHY)
 
@@ -302,7 +303,7 @@ model WikiInfoboxItem {
   caption     String @default("") @db.VarChar(255)
   collections Json[] @default([]) @db.Json
 
-  wiki   Wiki @relation(fields: [wikiId], references: [id])
+  wiki   Wiki @relation(fields: [wikiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   wikiId Int
 
   @@index([wikiId])
@@ -315,15 +316,15 @@ model CanvasStyleItem {
   type      String   @default("")
   value     String   @default("")
 
-  map                 Map?               @relation(fields: [mapId], references: [id])
+  map                 Map?               @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   mapId               Int?
-  globalObject        GlobalObject?      @relation(fields: [globalObjectId], references: [id])
+  globalObject        GlobalObject?      @relation(fields: [globalObjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   globalObjectId      Int?
-  globalArea          GlobalArea?        @relation(fields: [globalAreaId], references: [id])
+  globalArea          GlobalArea?        @relation(fields: [globalAreaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   globalAreaId        Int?
-  mapHierarchyChild   MapHierarchyChild? @relation(fields: [mapHierarchyChildId], references: [id])
+  mapHierarchyChild   MapHierarchyChild? @relation(fields: [mapHierarchyChildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   mapHierarchyChildId Int?
-  subStory            SubStory?          @relation(fields: [subStoryId], references: [id])
+  subStory            SubStory?          @relation(fields: [subStoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   subStoryId          Int?
 
   @@index([mapId])
@@ -337,6 +338,7 @@ model AdminSettings {
   id        Int               @id @default(autoincrement())
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+  order     Int               @default(1)
   category  AdminSettingsType @default(OTHER)
   type      String            @default("")
   value     String            @default("")
@@ -393,25 +395,3 @@ enum MapAreaType {
   INTERACTIVE
   OTHER
 }
-
-// Admin Settings 
-// Concept -> Each setting is a separate row identified via name and group
-// Check how caching works
-// Think about how to initialize data with base settings and giving the user the right options
-// model PageSettings {
-//   id          Int      @id @default(autoincrement())
-//   name        String   @unique
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-//   value       String   
-//   type        String   @default("string") // Change to enum or give it flexibility to be a boolean or number
-//   group       String?  // Change to enum
-//   description String?
-//   updatedBy       Int?     @map("updated_by")
-//   user            User?    @relation(fields: [updatedBy], references: [id])
-
-//   @@map("site_settings")
-// }
-
-// To do
-// User settings, user profile,  user interaction, admin settings,

@@ -134,6 +134,7 @@ export default function UserAdminForm({ user }: Props) {
                       <SelectItem value="USER">User</SelectItem>
                       <SelectItem value="AUTHOR">Author</SelectItem>
                       <SelectItem value="ADMIN">Admin</SelectItem>
+                      <SelectItem value="INACTIVE">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -143,6 +144,12 @@ export default function UserAdminForm({ user }: Props) {
           <Button type="submit" disabled={isSubmitting}>
             {user ? "Update User" : "Submit User"}
           </Button>
+          {/* <DeleteButton
+            objectId={user.id}
+            type="Canvas Style Item"
+            path="styles"
+            redirect={currentPage}
+          /> */}
         </form>
       </Form>
       <p className="text-destructive">{error}</p>

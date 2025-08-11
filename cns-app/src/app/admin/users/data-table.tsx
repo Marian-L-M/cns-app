@@ -64,11 +64,6 @@ export default function DataTable({ users }: Props) {
                               Profile
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Link href={`/admin/users/${user.id}/delete`}>
-                              Delete
-                            </Link>
-                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

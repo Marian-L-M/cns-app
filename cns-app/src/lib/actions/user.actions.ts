@@ -18,6 +18,28 @@ export async function signInWithCredentials(
       password: formData.get("password"),
     });
 
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: user.email,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+      },
+    });
+
+    if (!existingUser) {
+      return { success: false, message: "Invalid email or password" };
+    }
+
+    if (existingUser.role === "INACTIVE") {
+      return {
+        success: false,
+        message: "Your account has been deactivated. Please contact support.",
+      };
+    }
+
     await signIn("credentials", user);
 
     return { success: true, message: "Signed in successfully" };
