@@ -25,6 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import DeleteUserButton from "@/components/buttons/DeleteUserButton";
+import Link from "next/link";
 
 type UserFormData = z.infer<typeof userSchema>;
 
@@ -141,15 +143,28 @@ export default function UserAdminForm({ user }: Props) {
               )}
             />
           </div>
-          <Button type="submit" disabled={isSubmitting}>
-            {user ? "Update User" : "Submit User"}
-          </Button>
-          {/* <DeleteButton
-            objectId={user.id}
-            type="Canvas Style Item"
-            path="styles"
-            redirect={currentPage}
-          /> */}
+          <div id="btn-container" className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <Button type="submit" disabled={isSubmitting}>
+                {user ? "Update User" : "Submit User"}
+              </Button>
+              {user && (
+                <Link href={`/admin/users/${user?.id}/profile`}>
+                  <Button variant={"outline"}>Profile</Button>
+                </Link>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {user && (
+                <DeleteUserButton
+                  objectId={user.id}
+                  type="User account"
+                  path="users"
+                  redirect={`/admin/users`}
+                />
+              )}
+            </div>
+          </div>
         </form>
       </Form>
       <p className="text-destructive">{error}</p>
