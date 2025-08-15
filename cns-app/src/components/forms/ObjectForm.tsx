@@ -21,14 +21,13 @@ import { Input } from "@/components/ui/input";
 import IconPicker from "@/components/ui/icon-picker/IconPicker";
 import { Button } from "@/components/ui/button";
 import { fetchWikiName } from "@/lib/fetchWikiData";
-import { CanvasStyleItem, GlobalObject, MapObjectType } from "@prisma/client";
+import { CanvasStyleItem, MapObjectType } from "@prisma/client";
 import { EditorContext } from "@/store/mapEditorContext";
 import {
   GlobalObjectsSchema,
   MapObjectTypeList,
 } from "@/ValidationSchemas/global";
 
-import "easymde/dist/easymde.min.css";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import StyleEditListModule from "../displays/StyleEditListModule";
 import { Plus } from "lucide-react";
@@ -43,6 +42,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+
+import "easymde/dist/easymde.min.css";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });

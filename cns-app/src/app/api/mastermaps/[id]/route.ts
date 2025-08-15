@@ -6,6 +6,36 @@ interface Props {
   params: { id: string };
 }
 
+export async function GET(request: NextRequest, { params }: Props) {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
+  if (isNaN(id)) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
+
+  try {
+    const masterMap = await prisma.mapHierarchyMaster.findUnique({
+      where: { id: id },
+    });
+
+    if (!masterMap) {
+      return NextResponse.json(
+        { error: "masterMap not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(masterMap, { status: 200 });
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = MasterMapSchema.safeParse(body);

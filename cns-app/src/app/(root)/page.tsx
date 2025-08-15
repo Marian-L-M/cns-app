@@ -1,54 +1,86 @@
 import MastermapDisplayModule from "@/components/displays/MastermapDisplayModule";
 import { fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
+import prisma from "@/../prisma/db";
+import ReactMarkDown from "react-markdown";
+import { AdminSettings } from "@prisma/client";
 
 export default async function Home() {
-  const masterMap = await fetchMasterMap(6);
+  const settings = await prisma.adminSettings.findMany({
+    where: {
+      category: "PAGE",
+      subCategory: "top",
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
 
-  if (!masterMap) {
-    return <div className="text-destructive">No maps found</div>;
-  }
+  // Take first mastermapid and main title
+  const masterMapId = settings.find((item) => item.type === "mastermapId");
+  const mainTitle = settings.find((item) => item.type === "mainTitle");
+  const contents = settings.filter(
+    (item) => item.type === "subTitle" || item.type === "text"
+  );
 
-  return (
-    <div
-      id="top-content"
-      className="w-ful grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
-    >
-      <h1 className="text-2xl col-span-4 ">Discover Kamolin!</h1>
-      <CursorContextProvider>
-        <MastermapDisplayModule masterMap={masterMap} />
-      </CursorContextProvider>
+  if (!masterMapId) {
+    // Text only mode
+    return (
       <div
-        id="info-container"
-        className="col-span-2 row-span-2 flex flex-col gap-1"
+        id="top-content"
+        className="w-full flex flex-col gap-4 max-w-screen-2xl mx-auto relative"
       >
-        <h2 className="text-xl">This is the intro text!</h2>
-        <p>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vitae ab
-          molestias excepturi quae possimus soluta consequatur labore unde?
-          Repudiandae magni itaque non, delectus sapiente perferendis minus
-          reprehenderit aut, optio nemo obcaecati voluptas aliquam eos ea nobis
-          consectetur maiores in ullam natus blanditiis, placeat repellat atque
-          odit iure. Odit blanditiis ratione dolore suscipit veritatis
-          perspiciatis delectus qui debitis tempore, deleniti unde repellat
-          amet, dolorem minus, nulla non earum error! Qui laboriosam voluptates
-          minima dignissimos, officia debitis consequatur vitae possimus quod
-          eius! Inventore odit, dignissimos odio omnis tempora fuga, nisi esse
-          doloribus alias similique molestias obcaecati modi. Architecto itaque
-          cum unde sapiente dolorem ad magni provident necessitatibus corporis,
-          ducimus ipsam repellat expedita, autem, alias odit mollitia tempora
-          perferendis incidunt quis! Deleniti, commodi! Voluptatum magnam maxime
-          ipsa eius unde eos alias ad odio mollitia numquam, quasi ipsam
-          necessitatibus. Aperiam dolorem incidunt nesciunt expedita repellendus
-          tempore tenetur voluptate quisquam dicta nemo. Dignissimos dolore
-          mollitia velit aspernatur. Nihil, suscipit? Nisi, nostrum incidunt,
-          ipsa facilis vitae ducimus veritatis autem, odit voluptatem expedita
-          repellat! Repellendus tenetur accusantium commodi aliquam deleniti
-          enim, doloribus libero voluptatum tempora ea saepe ipsam optio quam
-          laboriosam expedita quisquam hic ratione facere similique possimus
-          odio. Harum, modi! Natus sequi tempore sit nulla itaque?
-        </p>
+        {mainTitle && (
+          <h1 className="text-2xl col-span-4 ">{mainTitle.value}</h1>
+        )}
+        <div
+          id="content-container"
+          className=" border border-slate-100 rounded-md p-2"
+        >
+          <ContentList contents={contents} />
+        </div>
       </div>
+    );
+  } else {
+    // Mastermap mode
+    const masterMap = await fetchMasterMap(parseInt(masterMapId.value));
+    return (
+      <div
+        id="top-content"
+        className="w-ful grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
+      >
+        {mainTitle && (
+          <h1 className="text-2xl col-span-4 ">{mainTitle.value}</h1>
+        )}
+        {masterMap && (
+          <CursorContextProvider>
+            <MastermapDisplayModule masterMap={masterMap} />
+          </CursorContextProvider>
+        )}
+        <div
+          id="content-container"
+          className="col-span-2 row-span-2  border border-slate-100 rounded-md p-2"
+        >
+          <ContentList contents={contents} />
+        </div>
+      </div>
+    );
+  }
+}
+
+function ContentList({ contents }: { contents: AdminSettings[] }) {
+  return (
+    <div className="flex flex-col gap-1 w-full">
+      {contents.map((content, index) => (
+        <div key={`content-${content.type}-${content.order}-${index}`}>
+          {content.type === "subTitle" && <h3>{content.value}</h3>}
+          {content.type === "text" && (
+            <ReactMarkDown className={"prose dark:prose-invert"}>
+              {content.value}
+            </ReactMarkDown>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

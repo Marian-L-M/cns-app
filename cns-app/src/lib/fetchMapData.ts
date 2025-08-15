@@ -142,3 +142,28 @@ export async function fetchMapName({
     setMapName("");
   }
 }
+
+interface MastermapFetchProps {
+  selectedMastermapId: number | undefined;
+  setMastermapName: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export async function fetchMastermapName({
+  selectedMastermapId,
+  setMastermapName,
+}: MastermapFetchProps) {
+  if (!selectedMastermapId) {
+    setMastermapName("");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`/api/mastermaps/${selectedMastermapId}`);
+    if (response.data && response.data.title) {
+      setMastermapName(response.data.title);
+    }
+  } catch (error) {
+    console.error("Error fetching mastermap data:", error);
+    setMastermapName("");
+  }
+}

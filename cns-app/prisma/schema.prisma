@@ -335,13 +335,14 @@ model CanvasStyleItem {
 }
 
 model AdminSettings {
-  id        Int               @id @default(autoincrement())
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  order     Int               @default(1)
-  category  AdminSettingsType @default(OTHER)
-  type      String            @default("")
-  value     String            @default("")
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  order       Int               @default(1)
+  category    AdminSettingsType @default(OTHER)
+  subCategory String?           @default("")
+  type        String            @default("") @db.Text
+  value       String            @default("")
 }
 
 enum AdminSettingsType {

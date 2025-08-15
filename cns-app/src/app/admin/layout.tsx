@@ -1,8 +1,10 @@
 import EditorHeader from "@/components/shared/editor-header";
+import { Toaster } from "@/components/ui/sonner";
 
 const menuList = [
   { title: "Overview", url: "/admin" },
   { title: "Users", url: "/admin/users" },
+  { title: "Page", url: "/admin/page" },
 ];
 
 export default function AdminLayout({
@@ -28,6 +30,7 @@ export default function AdminLayout({
           {children}
         </div>
       </div>
+      <Toaster />
     </>
   );
 }
