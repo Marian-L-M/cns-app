@@ -1,66 +1,80 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Map } from "@prisma/client";
+import { useWindowSize } from "@/hooks/useWindow";
+import { Switch } from "../ui/switch";
+
 interface Props {
   map: Map;
   canvasRef: any;
 }
 
 export default function MapResponsiveCanvas({ map, canvasRef }: Props) {
-  let windowSize: number = 1024;
-  if (typeof window !== "undefined") {
-    windowSize = window.innerWidth;
-  }
+  // const aspectRatio = 1;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerSize, setContainerSize] = useState({
-    width: 1024,
-    height: 1024,
+  const [fullscreen, setFullscreen] = useState(false);
+  const windowSize = useWindowSize({
+    padding: 40,
+    border: 1,
+    fullscreen: fullscreen,
   });
 
-  // Handle map size
-  useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        const { width } = containerRef.current.getBoundingClientRect();
-
-        // To do: handle rectangular maps
-        setContainerSize({
-          width: Math.min(width, 1024),
-          height: Math.min(width, 1024),
-        });
-      }
-    };
-
-    // Initial size update
-    updateSize();
-
-    // Add resize event listener
-    window.addEventListener("resize", updateSize);
-
-    // Clean up
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
   return (
-    <div className="relative w-full max-w-5xl bg-black" id="map-base">
-      <canvas
-        ref={canvasRef}
-        width={containerSize.width}
-        height={containerSize.height}
-        className="border border-grey relative z-10 w-full"
-      />
-      {map?.mapUrl && (
-        <Image
-          priority={true}
-          className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-          src={map.mapUrl}
-          alt={map.title}
-          width={containerSize.width}
-          height={containerSize.height}
+    <div
+      className={` flex flex-col gap-2 ${
+        fullscreen
+          ? "fixed top-0 left-0 w-full h-full z-20 bg-black bg-opacity-80 p-10"
+          : ""
+      }`}
+      id="item-container"
+    >
+      <div
+        id="fullscreen-toogle"
+        className={`flex gap-2 ${
+          fullscreen
+            ? "absolute top-2 left-2 text-white"
+            : "text-black relative z-10"
+        }`}
+      >
+        <Switch
+          id="fullscreen-mode"
+          checked={fullscreen ? true : false}
+          onCheckedChange={() => {
+            setFullscreen(!fullscreen);
+          }}
         />
-      )}
+        {fullscreen ? "Exit fullscreen" : "Fullscreen"}
+      </div>
+      <div
+        className="relative z-10 w-fit max-w-full max-h-full bg-black"
+        id="map-base"
+      >
+        <canvas
+          ref={canvasRef}
+          width={windowSize.width}
+          height={windowSize.height}
+          className="border border-grey relative z-10"
+        />
+        {map?.mapUrl && (
+          <Image
+            priority={true}
+            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+            src={map.mapUrl}
+            alt={map.title}
+            width={windowSize.width}
+            height={windowSize.height}
+          />
+        )}
+      </div>
+      {/* disable fullscreen */}
+      <div
+        className="absolute z-0 top-0 left-0 w-full h-full"
+        onClick={() => {
+          setFullscreen(false);
+        }}
+      ></div>
     </div>
   );
 }

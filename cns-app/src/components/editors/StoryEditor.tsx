@@ -239,7 +239,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
         <div className="flex flex-col max-w-screen-lg col-span-4">
           <div className="flex items-center space-x-2 bg-slate-100 p-2">
             <Switch
-              id="airplane-mode"
+              id="edit-mode"
               checked={activeSubstoryID ? true : false}
               onCheckedChange={() => {
                 setActiveSubstoryID(undefined);

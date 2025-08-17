@@ -143,8 +143,10 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       }
     };
 
-    // Draw contents
-    redrawCanvas();
+    // Listen for resize events
+    const resizeObserver = new ResizeObserver(() => {
+      redrawCanvas();
+    });
 
     // Hover actions
     // 240814 Split hover actions into floating label (Currenlty statusbar)
@@ -196,6 +198,13 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       }
     };
 
+    // Initialize
+    // Draw contents
+    redrawCanvas();
+
+    // Redraw on resize
+    resizeObserver.observe(canvas);
+
     // Add event listeners
     // 250530 to do Eventually should be hooked up to a sonner or sidebar infobox
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -205,6 +214,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
     return () => {
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mousedown", handleMouseDown);
+      resizeObserver.disconnect();
     };
   }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings]);
 
