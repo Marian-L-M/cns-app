@@ -148,15 +148,18 @@ enum Status {
 
 // In the long term maps need to have parent-child maps to accommodate zoom levels and global maps
 model Map {
-  id          Int      @id @default(autoincrement())
-  slug        String?  @unique(map: "map_slug_idx")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  imageUrl    String
-  mapTime     Int
-  mapUrl      String
+  id                Int      @id @default(autoincrement())
+  slug              String?  @unique(map: "map_slug_idx")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  title             String   @db.VarChar(255)
+  description       String   @db.Text
+  imageUrl          String
+  mapTime           Int
+  mapUrl            String
+  mapWidth          Int      @default(1000)
+  mapHeight         Int      @default(1000)
+  canvasAspectRatio Float    @default(1)
 
   category String
   tags     String[]

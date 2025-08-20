@@ -16,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -57,6 +58,9 @@ export default function MapForm({ map, user }: Props) {
       title: map?.title || "",
       description: map?.description || "",
       mapUrl: map?.mapUrl || "",
+      mapWidth: map?.mapWidth || 1000,
+      mapHeight: map?.mapHeight || 1000,
+      canvasAspectRatio: map?.canvasAspectRatio || 1,
       imageUrl: map?.imageUrl || "",
       mapTime: map?.mapTime || 1000,
       category: map?.category || "",
@@ -123,7 +127,8 @@ export default function MapForm({ map, user }: Props) {
             <div className="upload-field">
               <h4>Map Image</h4>
               <Card>
-                <CardContent className="space-y-2 mt-2">
+                <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
+                  {/* Image upload */}
                   {mapImg && (
                     <Image
                       src={mapImg}
@@ -156,6 +161,75 @@ export default function MapForm({ map, user }: Props) {
                       <FormItem>
                         <FormControl>
                           <Input placeholder="Base Map" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  {/* Image size */}
+                  <FormField
+                    control={form.control}
+                    name="mapWidth"
+                    defaultValue={map?.mapWidth}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Map Image Width</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="100-"
+                            {...field}
+                            min={100}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="mapHeight"
+                    defaultValue={map?.mapHeight}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Map Image Height</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="100-"
+                            {...field}
+                            min={100}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="canvasAspectRatio"
+                    defaultValue={map?.canvasAspectRatio}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Canvas Aspect Ratio: {field.value}
+                        </FormLabel>
+                        <FormDescription>Width unit per Height</FormDescription>
+                        <FormControl>
+                          <Input
+                            type="range"
+                            placeholder="0.1-10"
+                            {...field}
+                            min={0.1}
+                            max={10}
+                            step={0.1}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
                         </FormControl>
                       </FormItem>
                     )}

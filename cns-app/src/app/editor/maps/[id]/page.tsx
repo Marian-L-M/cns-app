@@ -7,6 +7,7 @@ import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import AreaObjectOverviewModule from "./AreaObjectOverview";
 import MapDisplayModule from "@/components/displays/MapDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
+import StatusContextProvider from "@/store/statusContext";
 
 interface Props {
   params: { id: string };
@@ -72,11 +73,13 @@ export default async function EditMapPage({ params, searchParams }: Props) {
           <TabsTrigger value="objects">Objects</TabsTrigger>
         </TabsList>
         <TabsContent value="setup">
-          <div className="flex gap-4">
-            <div className="w-2/5 flex-1">
-              <MapDisplayModule data={data} />
+          <div className="flex flex-wrap gap-4">
+            <div className="w-4xl max-w-full flex-1">
+              <StatusContextProvider>
+                <MapDisplayModule data={data} />
+              </StatusContextProvider>
             </div>
-            <div className="w-3/5 flex-1">
+            <div className="w-sm max-w-full flex-1">
               <MapForm map={map} user={session.user} />
             </div>
           </div>

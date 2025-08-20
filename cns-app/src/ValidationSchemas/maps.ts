@@ -5,6 +5,12 @@ export const mapSchema = z.object({
   description: z.string().min(1, "Description is required").max(65535),
   imageUrl: z.string().min(1, "Display image is required"),
   mapUrl: z.string().min(1, "Map image is required"),
+  mapWidth: z.number().min(100, "Image too small"),
+  mapHeight: z.number().min(100, "Image too small"),
+  canvasAspectRatio: z
+    .number()
+    .min(0.1, "Max vertical is 1-10")
+    .max(10, "Max horizontal is 10-1"),
   mapTime: z.number().min(0, "Story time on Map").max(9999).optional(),
   category: z.string().min(1, "Cateogry is required").max(255),
   tags: z.array(z.string().max(128)).optional(),

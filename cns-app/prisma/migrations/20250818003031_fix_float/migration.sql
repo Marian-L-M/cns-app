@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Map" ALTER COLUMN "canvasAspectRatio" SET DEFAULT 1,
+ALTER COLUMN "canvasAspectRatio" SET DATA TYPE DOUBLE PRECISION;
