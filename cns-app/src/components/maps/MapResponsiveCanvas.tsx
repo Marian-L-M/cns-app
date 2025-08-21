@@ -8,12 +8,20 @@ import { Switch } from "../ui/switch";
 interface Props {
   map: Map;
   canvasRef: any;
+  fullscreen: boolean;
+  setFullscreen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function MapResponsiveCanvas({ map, canvasRef }: Props) {
+// 250820 - Issue: Object drawing doesnt rerender on fullscreen toggle (Objects are offset)
+export default function MapResponsiveCanvas({
+  map,
+  canvasRef,
+  fullscreen,
+  setFullscreen,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState<number>(896);
-  const [fullscreen, setFullscreen] = useState(false);
+  // const [fullscreen, setFullscreen] = useState(false);
 
   const windowSize = useWindowSize({
     aspectRatio: map.canvasAspectRatio,
@@ -62,10 +70,7 @@ export default function MapResponsiveCanvas({ map, canvasRef }: Props) {
         />
         {fullscreen ? "Exit fullscreen" : "Fullscreen"}
       </div>
-      <div
-        className="relative z-10 w-fit max-w-full max-h-full bg-black"
-        id="map-base"
-      >
+      <div className="relative z-10 w-fit max-w-full max-h-full" id="map-base">
         <canvas
           ref={canvasRef}
           width={windowSize.width}
@@ -75,11 +80,13 @@ export default function MapResponsiveCanvas({ map, canvasRef }: Props) {
         {map?.mapUrl && (
           <Image
             priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+            className="absolute top-0 left-0 z-1 pointer-events-none "
             src={map.mapUrl}
             alt={map.title}
-            width={windowSize.width}
-            height={windowSize.height}
+            style={{ objectFit: "contain" }}
+            fill={true}
+            // width={windowSize.width}
+            // height={windowSize.height}
           />
         )}
       </div>

@@ -29,6 +29,7 @@ interface MapModuleProps {
     mapAreas: GlobalAreaType[];
   };
   settings?: string;
+  fullscreen?: boolean;
 }
 
 // For Drawing Map area from nodes

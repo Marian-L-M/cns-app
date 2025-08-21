@@ -2,12 +2,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
 import { useMapMaker } from "@/hooks/useMapMaker";
-import StatusContextProvider, { StatusContext } from "@/store/statusContext";
+import { StatusContext } from "@/store/statusContext";
 import MapResponsiveCanvas from "../maps/MapResponsiveCanvas";
 import InfoBoxSheet from "./parts/InfoboxSheet";
 
 export default function MapDisplayModule({ data, settings }: MapModuleProps) {
-  const { canvasRef } = useMapMaker({ data, settings });
+  const [fullscreen, setFullscreen] = useState(false);
+  const { canvasRef } = useMapMaker({ data, settings, fullscreen });
   const statusCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
 
@@ -39,7 +40,12 @@ export default function MapDisplayModule({ data, settings }: MapModuleProps) {
 
   return (
     <div className="w-full flex flex-col">
-      <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
+      <MapResponsiveCanvas
+        map={map}
+        canvasRef={canvasRef}
+        fullscreen={fullscreen}
+        setFullscreen={setFullscreen}
+      />
       {/* Infobox Sheet */}
       {infoData && (
         <InfoBoxSheet

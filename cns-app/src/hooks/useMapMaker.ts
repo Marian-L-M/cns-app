@@ -6,7 +6,7 @@ import {
   getValueFirstOfEachStyleType,
 } from "@/lib/utils";
 
-export function useMapMaker({ data, settings }: MapModuleProps) {
+export function useMapMaker({ data, settings, fullscreen }: MapModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const statusCtx = useContext(StatusContext);
   const { mapAreas, mapObjects } = data;
@@ -14,7 +14,6 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
   const [mapObjectLoaded, setMapObjectLoaded] = useState(false);
   const imageCache = useRef<Map<string, HTMLImageElement>>(new Map()); // Cache images to prevent asynchronous loading issue duplicate images drawn on multiple canvas in tabs
   const [imagesLoaded, setImagesLoaded] = useState(false);
-
   // Initialize data for canvas draw
   // 250725 -> Clean up - make more efficient
   useEffect(() => {
@@ -69,17 +68,20 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
 
     const canvas = canvasRef.current;
 
-    // Canvas values
-    const cw = canvas.width / 1000;
-    const ch = canvas.height / 1000;
-
     // Get context
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Get relevant styles
+    // Get current scaling factors
+    const getScaling = () => ({
+      cw: canvas.width / 1000,
+      ch: canvas.height / 1000,
+    });
 
+    // Get relevant styles
     const redrawCanvas = () => {
+      const { cw, ch } = getScaling();
+
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -144,13 +146,17 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
     };
 
     // Listen for resize events
-    const resizeObserver = new ResizeObserver(() => {
-      redrawCanvas();
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Force redraw on any size change
+      requestAnimationFrame(() => {
+        redrawCanvas();
+      });
     });
 
     // Hover actions
     // 240814 Split hover actions into floating label (Currenlty statusbar)
     const handleMouseMove = (e: MouseEvent) => {
+      const { cw, ch } = getScaling();
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
@@ -167,6 +173,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
     // 240814 Split click actions to show infobox
     // 240818 Join mapAreas and mapObjects click events
     const handleMouseDown = (e: MouseEvent) => {
+      const { cw, ch } = getScaling();
       // Check areas
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (clickedArea && !(clickedArea.length == 0)) {
@@ -216,7 +223,7 @@ export function useMapMaker({ data, settings }: MapModuleProps) {
       canvas.removeEventListener("mousedown", handleMouseDown);
       resizeObserver.disconnect();
     };
-  }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings]);
+  }, [mapAreaLoaded, mapObjectLoaded, imagesLoaded, settings, fullscreen]);
 
   // Cleanup image cache when component unmounts
   useEffect(() => {

@@ -79,15 +79,24 @@ export default function MapForm({ map, user }: Props) {
       setError("");
       if (map) {
         await axios.patch(`/api/maps/${map.id}`, values);
+        router.push(`/editor/maps/${map.id}`);
+        router.refresh();
+        toast.success("Map updated succesfully");
       } else {
-        await axios.post(`/api/maps`, values);
+        const response = await axios.post(`/api/maps`, values);
+        const newMap = response.data;
+        router.push(`/editor/maps/${newMap.id}`);
+        router.refresh();
+        toast.success("Map created succesfully");
       }
       setIsSubmitting(false);
-      router.push("/editor/maps");
-      router.refresh();
     } catch (error) {
       setError("Unknown error occurred");
       setIsSubmitting(false);
+      toast.error("Map update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     }
   }
 
@@ -221,11 +230,11 @@ export default function MapForm({ map, user }: Props) {
                         <FormControl>
                           <Input
                             type="range"
-                            placeholder="0.1-10"
+                            placeholder="0.5-2"
                             {...field}
-                            min={0.1}
-                            max={10}
-                            step={0.1}
+                            min={0.5}
+                            max={2}
+                            step={0.01}
                             onChange={(e) =>
                               field.onChange(Number(e.target.value))
                             }
