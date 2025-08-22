@@ -1,11 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { useMasterMapMaker } from "@/hooks/useMasterMapMaker";
 import { Map, MapHierarchyMaster } from "@prisma/client";
 import { CursorContext } from "@/store/cursorContext";
+import { useWindowSize } from "@/hooks/useWindow";
+import { Switch } from "../ui/switch";
 
 interface MapWithRectangularArea extends Map, PointRectangularArea {}
 interface ParentMap extends Map, MapHierarchyMaster {}
@@ -20,23 +22,73 @@ interface MasterMapProps {
 }
 
 export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
+  const [fullscreen, setFullscreen] = useState(false);
   const { parentMap, childMaps } = masterMap;
   const { canvasRef } = useMasterMapMaker({ childMaps });
   const tooltipCtx = useContext(CursorContext);
 
-  let windowSize: number = 1024;
-  if (typeof window !== "undefined") {
-    windowSize = window.innerWidth;
-  }
+  // let windowSize: number = 1024;
+  // if (typeof window !== "undefined") {
+  //   windowSize = window.innerWidth;
+  // }
 
-  // 240925 Make map resizable
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [availableWidth, setAvailableWidth] = useState<number>(896);
+
+  const windowSize = useWindowSize({
+    aspectRatio: parentMap.canvasAspectRatio,
+    padding: 40,
+    border: 1,
+    fullscreen: fullscreen,
+    availabeWidth: availableWidth,
+  });
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current?.offsetWidth) {
+        setAvailableWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
+  // 240925 To do Issue - Child maps do not render initially
+  // Didn't update usermastermapmaker yet
   return (
-    <div className="w-full col-span-4 relative">
-      <div className="relative max-w-screen-lg" id="map-base">
+    <div
+      ref={containerRef}
+      className={` flex flex-col col-span-4 gap-2 ${
+        fullscreen
+          ? "fixed top-0 left-0 w-full h-full z-20 bg-black bg-opacity-80 p-10 flex flex-row items-center justify-center"
+          : ""
+      }`}
+      id="item-container"
+    >
+      <div
+        id="fullscreen-toogle"
+        className={`flex gap-2 ${
+          fullscreen
+            ? "absolute top-2 right-2 text-white"
+            : "text-black relative z-10"
+        }`}
+      >
+        <Switch
+          id="fullscreen-mode"
+          checked={fullscreen ? true : false}
+          onCheckedChange={() => {
+            setFullscreen(!fullscreen);
+          }}
+        />
+        {fullscreen ? "Exit fullscreen" : "Fullscreen"}
+      </div>
+      <div className="relative z-10 w-fit max-w-full max-h-full" id="map-base">
         <canvas
           ref={canvasRef}
-          width={windowSize > 1024 ? 1024 : windowSize}
-          height={windowSize > 1024 ? 1024 : windowSize}
+          width={windowSize.width}
+          height={windowSize.height}
           className="border border-grey relative z-10 w-full"
         />
         <Image

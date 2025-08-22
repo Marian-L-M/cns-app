@@ -21,7 +21,6 @@ export default function MapResponsiveCanvas({
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState<number>(896);
-  // const [fullscreen, setFullscreen] = useState(false);
 
   const windowSize = useWindowSize({
     aspectRatio: map.canvasAspectRatio,

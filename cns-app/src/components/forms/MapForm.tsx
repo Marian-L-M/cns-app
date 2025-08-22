@@ -31,6 +31,9 @@ const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
 
+//250821 to do: issue form does not rerender on submission.
+// Image size is not integrated into render logic
+
 type MapFormData = z.infer<typeof mapSchema>;
 
 type MapWithAuthors = Map & {
@@ -175,7 +178,7 @@ export default function MapForm({ map, user }: Props) {
                     )}
                   />
                   {/* Image size */}
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="mapWidth"
                     defaultValue={map?.mapWidth}
@@ -216,7 +219,7 @@ export default function MapForm({ map, user }: Props) {
                         </FormControl>
                       </FormItem>
                     )}
-                  />
+                  /> */}
                   <FormField
                     control={form.control}
                     name="canvasAspectRatio"
@@ -226,7 +229,9 @@ export default function MapForm({ map, user }: Props) {
                         <FormLabel>
                           Canvas Aspect Ratio: {field.value}
                         </FormLabel>
-                        <FormDescription>Width unit per Height</FormDescription>
+                        <FormDescription>
+                          Height unit per width unit
+                        </FormDescription>
                         <FormControl>
                           <Input
                             type="range"

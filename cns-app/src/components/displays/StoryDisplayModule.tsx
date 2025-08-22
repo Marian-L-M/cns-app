@@ -1,6 +1,4 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
 
 import MapResponsiveCanvas from "@/components/maps/MapResponsiveCanvas";
@@ -24,6 +22,7 @@ export default function StoryDisplayModule({
   mapData,
   story, // naming issue story has not been renamed to substory
 }: StoryModuleProps) {
+  const [fullscreen, setFullscreen] = useState(false);
   const statusCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = mapData;
 
@@ -35,7 +34,12 @@ export default function StoryDisplayModule({
   const [storyIndex, setStoryIndex] = useState(0);
 
   // Set Canvas
-  const { canvasRef } = useStoryMaker({ mapData, story, storyIndex }); // Add styles and settings
+  const { canvasRef } = useStoryMaker({
+    mapData,
+    story,
+    storyIndex,
+    fullscreen,
+  });
   // Handle infoBox changes
   useEffect(() => {
     if (isInitialRender.current) {
@@ -79,7 +83,12 @@ export default function StoryDisplayModule({
   }, [statusCtx.storyBox]);
   return (
     <div className="w-full flex flex-col">
-      <MapResponsiveCanvas map={map} canvasRef={canvasRef} />
+      <MapResponsiveCanvas
+        map={map}
+        canvasRef={canvasRef}
+        fullscreen={fullscreen}
+        setFullscreen={setFullscreen}
+      />
       {/* Infobox Sheet */}
       {infoData && (
         <InfoboxSheet

@@ -17,6 +17,7 @@ import {
   getValueFirstOfEachObjectType,
   getValueFirstOfEachStyleType,
 } from "@/lib/utils";
+import { getScaling } from "@/lib/draw/utils";
 
 interface StoryModuleProps {
   mapData: {
@@ -26,12 +27,14 @@ interface StoryModuleProps {
   };
   story: story[];
   storyIndex: number;
+  fullscreen?: boolean;
 }
 
 export function useStoryMaker({
   mapData,
   story, // To do: 250807 refactor -> this is substories
   storyIndex,
+  fullscreen,
 }: StoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const statusCtx = useContext(StatusContext);
@@ -153,10 +156,6 @@ export function useStoryMaker({
     if (!iconsLoaded) return;
     const canvas = canvasRef.current;
 
-    // Canvas values
-    const cw = canvas.width / 1000;
-    const ch = canvas.height / 1000;
-
     // Get context
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -165,10 +164,13 @@ export function useStoryMaker({
     // ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const redrawCanvas = () => {
+      // Scaling factors
+      const { cw, ch } = getScaling(canvas);
+
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Areas
+      // Draw Areas (Unify w usemapmaler into separate function)
       if (mapAreas) {
         mapAreas.forEach((area) => {
           if (area.canvasStyles) {
@@ -248,10 +250,16 @@ export function useStoryMaker({
       }
     };
 
-    // Draw contents
-    redrawCanvas();
+    // Listen for resize events
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Force redraw on any size change
+      requestAnimationFrame(() => {
+        redrawCanvas();
+      });
+    });
 
     const handleMouseMove = (e: MouseEvent) => {
+      const { cw, ch } = getScaling(canvas); // inefficient?
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
@@ -269,6 +277,7 @@ export function useStoryMaker({
     // 240818 Join mapAreas and mapObjects click events
     const handleMouseDown = (e: MouseEvent) => {
       // Check areas
+      const { cw, ch } = getScaling(canvas); // inefficient?
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (clickedArea && !(clickedArea.length == 0)) {
         const { title, id, type } = clickedArea[0];
@@ -319,6 +328,13 @@ export function useStoryMaker({
       }
     };
 
+    // Initialize
+    // Draw contents
+    redrawCanvas();
+
+    // Redraw on resize
+    resizeObserver.observe(canvas);
+
     // Add event listeners
     // 250530 to do Eventually should be hooked up to a sonner or sidebar infobox
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -336,6 +352,7 @@ export function useStoryMaker({
     iconsLoaded,
     story,
     storyIndex,
+    fullscreen,
   ]);
 
   // Cleanup image cache when component unmounts

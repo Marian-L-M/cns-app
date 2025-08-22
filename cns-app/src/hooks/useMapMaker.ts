@@ -5,6 +5,7 @@ import {
   getValueFirstOfEachObjectType,
   getValueFirstOfEachStyleType,
 } from "@/lib/utils";
+import { getScaling } from "@/lib/draw/utils";
 
 export function useMapMaker({ data, settings, fullscreen }: MapModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -72,15 +73,9 @@ export function useMapMaker({ data, settings, fullscreen }: MapModuleProps) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Get current scaling factors
-    const getScaling = () => ({
-      cw: canvas.width / 1000,
-      ch: canvas.height / 1000,
-    });
-
-    // Get relevant styles
     const redrawCanvas = () => {
-      const { cw, ch } = getScaling();
+      // Scaling factors
+      const { cw, ch } = getScaling(canvas);
 
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -156,7 +151,7 @@ export function useMapMaker({ data, settings, fullscreen }: MapModuleProps) {
     // Hover actions
     // 240814 Split hover actions into floating label (Currenlty statusbar)
     const handleMouseMove = (e: MouseEvent) => {
-      const { cw, ch } = getScaling();
+      const { cw, ch } = getScaling(canvas); // inefficient?
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
@@ -173,7 +168,7 @@ export function useMapMaker({ data, settings, fullscreen }: MapModuleProps) {
     // 240814 Split click actions to show infobox
     // 240818 Join mapAreas and mapObjects click events
     const handleMouseDown = (e: MouseEvent) => {
-      const { cw, ch } = getScaling();
+      const { cw, ch } = getScaling(canvas); // inefficient?
       // Check areas
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (clickedArea && !(clickedArea.length == 0)) {
