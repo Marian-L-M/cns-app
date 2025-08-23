@@ -141,7 +141,7 @@ export function useMapMaker({ data, settings, fullscreen }: MapModuleProps) {
     };
 
     // Listen for resize events
-    const resizeObserver = new ResizeObserver((entries) => {
+    const resizeObserver = new ResizeObserver(() => {
       // Force redraw on any size change
       requestAnimationFrame(() => {
         redrawCanvas();

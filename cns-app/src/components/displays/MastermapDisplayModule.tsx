@@ -24,7 +24,7 @@ interface MasterMapProps {
 export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
   const [fullscreen, setFullscreen] = useState(false);
   const { parentMap, childMaps } = masterMap;
-  const { canvasRef } = useMasterMapMaker({ childMaps });
+  const { canvasRef } = useMasterMapMaker({ childMaps, fullscreen });
   const tooltipCtx = useContext(CursorContext);
 
   // let windowSize: number = 1024;
@@ -101,6 +101,16 @@ export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
         />
         <MouseToolTip cursorContext={tooltipCtx} />
       </div>
+      {/* disable fullscreen */}
+      {fullscreen && (
+        <div
+          className="absolute z-0 top-0 left-0 w-full h-full"
+          id="disable-fullscreen"
+          onClick={() => {
+            setFullscreen(false);
+          }}
+        ></div>
+      )}
     </div>
   );
 }
