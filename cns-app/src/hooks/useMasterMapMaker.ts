@@ -6,6 +6,8 @@ import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
 import { Map } from "@prisma/client";
 import { CursorContext } from "@/store/cursorContext";
 import { getScaling } from "@/lib/draw/utils";
+import { getValueFirstOfEachStyleType } from "@/lib/utils";
+import { drawMasterMapArea } from "@/lib/map/drawMap";
 
 interface MapWithRectangularArea
   extends HierarchyConnection,
@@ -42,19 +44,10 @@ export function useMasterMapMaker({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw Areas
-      // 240811 Unify draw functions or keep together for future expansion?
-      // 250318 Unify with map maker check hover, click - should all be one function
       if (childMaps) {
         childMaps.forEach((map) => {
-          ctx.lineWidth = 4;
-          ctx.fillStyle = "rgba(256, 256, 256, 0.2)";
-          ctx.strokeStyle = "white";
-          drawRectangularMetaArea(ctx, map, cw, ch);
-          ctx.font = "16px mono";
-          ctx.stroke();
-          ctx.fill();
-          ctx.fillStyle = "white";
-          ctx.fillText(map.title, map.x * cw + 4, (map.y + map.wy) * ch - 4);
+          const styles = getValueFirstOfEachStyleType(map.canvasStyles);
+          drawMasterMapArea(ctx, map, styles, cw, ch);
         });
       }
     };
