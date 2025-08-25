@@ -23,7 +23,10 @@ export default function MapTable({ maps }: Props) {
     <div className="grid w-full items-center gap-6 grid-cols-4 p-4">
       {maps ? (
         maps.map((mapObject) => (
-          <Card className="hover:bg-indigo-300/10" key={mapObject.id}>
+          <Card
+            className="hover:bg-indigo-300/10 self-stretch"
+            key={mapObject.id}
+          >
             <CardHeader>
               <CardTitle>{mapObject.title}</CardTitle>
             </CardHeader>

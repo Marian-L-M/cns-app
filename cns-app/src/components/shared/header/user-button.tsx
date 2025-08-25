@@ -45,14 +45,12 @@ export default async function UserButton() {
     <div className="flex gap-2 items-center">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="flex items-center">
-            <Button
-              variant={"ghost"}
-              className="relative w-8 h-8 rounded-full ml-2 flex items-center justify-center bg-gray-200"
-            >
-              {firstInitial}
-            </Button>
-          </div>
+          <Button
+            variant={"ghost"}
+            className="relative w-6 h-6 p-1 text-xs aspect-1/1 rounded-full ml-2 flex items-center justify-center bg-gray-800 text-white hover:bg-gray-600 hover:text-slate-200"
+          >
+            {firstInitial}
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">

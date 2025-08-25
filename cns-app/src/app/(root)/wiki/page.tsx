@@ -4,8 +4,6 @@ import Link from "next/link";
 
 import prisma from "@/../prisma/db";
 import { TabsList } from "@radix-ui/react-tabs";
-
-import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function Wiki() {
@@ -37,29 +35,17 @@ export default async function Wiki() {
           <TabsTrigger value="revisions">Revisions</TabsTrigger>
         </TabsList>
         <TabsContent className="flex flex-col gap-8" value="read">
-          <div
-            className="top-content flex justify-between align-bottom"
-            id="top-content"
-          >
-            <div id="title-container">
-              <h1 className="text-4xl">Wiki</h1>
+          <div className="grid grid-cols-8 gap-x-8 gap-y-4" id="intro-content">
+            <div className="title-container col-span-8">
+              <h2 className=" text-xl" id="section-title-1">
+                Featured
+              </h2>
             </div>
-            <div
-              className="flex flex-col justify-end gap-4 text-sm"
-              id="wiki-meta"
-            >
-              <div className="flex gap-8 justify-between" id="meta-top"></div>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 gap-x-8 gap-y-12" id="intro-content">
-            <h2 className="col-span-4 text-3xl" id="section-title-1">
-              Featured Articles
-            </h2>
             {/* Featured Articles start */}
             {featuredArticles &&
               featuredArticles.map((article) => (
                 <div
-                  className="col-span-2 aspect-video relative"
+                  className="col-span-3 aspect-video relative"
                   key={`featured-article-${article.id}`}
                 >
                   <div className="relative w-full h-full flex flex-col gap-1 justify-end z-10 text-white bg-black bg-opacity-25 p-8 rounded-xl">
@@ -96,7 +82,7 @@ export default async function Wiki() {
             {/* Start split card */}
             {featuredCharacters && (
               <div
-                className="relative col-span-2 flex flex-wrap gap-4"
+                className="relative col-span-3 flex flex-wrap gap-4"
                 id="wiki-split-card-container-1"
               >
                 <h4 className="text-2xl w-full" id="container-title-1">

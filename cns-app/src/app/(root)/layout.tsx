@@ -1,11 +1,10 @@
-import { Map, ScrollText, BookMarked, ListStart } from "lucide-react";
+import { Map, ScrollText, BookMarked, ListStart, User2 } from "lucide-react";
 import { cookies } from "next/headers";
 
 import Footer from "@/components/footer";
 import Header from "@/components/shared/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
-import { CustomTrigger } from "@/components/ui/sidebar/custom-trigger";
 
 export default async function RootLayout({
   children,
@@ -67,6 +66,11 @@ export default async function RootLayout({
         { title: "Manage", url: "/maps/" },
       ],
     },
+    {
+      title: "Authors",
+      url: "/authors",
+      icon: User2,
+    },
   ];
 
   return (
@@ -77,10 +81,6 @@ export default async function RootLayout({
       >
         <Header />
         <div className="h-full w-full flex" id="content-wrapper">
-          {/* Better handle this system side than css */}
-          <div className="md:hidden" id="mobile-sidebar">
-            <CustomTrigger />
-          </div>
           <AppSidebar menuItems={mainMenuItems} />
           <main className="w-full h-full p-4 overflow-y-scroll">
             {children}
