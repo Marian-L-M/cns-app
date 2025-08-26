@@ -1,23 +1,16 @@
-import { SquareChevronRight } from "lucide-react";
-import Image from "next/image";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-
 import prisma from "@/../prisma/db";
 import { TabsList } from "@radix-ui/react-tabs";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import FeaturedCards from "./FeaturedCards";
 
 export default async function Wiki() {
   const newArticles = await prisma?.wiki.findMany({
     orderBy: [{ createdAt: "desc" }],
-    take: 5,
-  });
-  const featuredCharacters = await prisma?.wiki.findMany({
-    where: {
-      type: "CHARACTER",
-    },
-    orderBy: [{ createdAt: "desc" }],
     take: 2,
   });
+
   const featuredArticles = await prisma?.wiki.findMany({
     where: {
       featured: true,
@@ -26,103 +19,41 @@ export default async function Wiki() {
     take: 2,
   });
 
+  const articlesCount = await prisma.wiki.count();
+  const skip = Math.floor(Math.random() * articlesCount);
+  const randomArticles = await prisma.wiki.findMany({
+    take: 4,
+    skip: skip,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <div className="flex flex-col gap-20 w-full">
       <Tabs defaultValue="read" className="w-full">
-        <TabsList className="absolute top-0 left-0 -translate-y-full">
+        {/* <TabsList className="absolute top-0 left-0 -translate-y-full">
           <TabsTrigger value="read">Read</TabsTrigger>
           <TabsTrigger value="discussion">Discussion</TabsTrigger>
           <TabsTrigger value="revisions">Revisions</TabsTrigger>
-        </TabsList>
+        </TabsList> */}
         <TabsContent className="flex flex-col gap-8" value="read">
-          <div className="grid grid-cols-8 gap-x-8 gap-y-4" id="intro-content">
+          <div className="grid grid-cols-8 gap-4" id="intro-content">
             <div className="title-container col-span-8">
-              <h2 className=" text-xl" id="section-title-1">
+              <h2 className=" text-2xl" id="section-title-1">
                 Featured
               </h2>
             </div>
-            {/* Featured Articles start */}
-            {featuredArticles &&
-              featuredArticles.map((article) => (
-                <div
-                  className="col-span-3 aspect-video relative"
-                  key={`featured-article-${article.id}`}
-                >
-                  <div className="relative w-full h-full flex flex-col gap-1 justify-end z-10 text-white bg-black bg-opacity-25 p-8 rounded-xl">
-                    <h4 className="text-2xl">{article.title}</h4>
-                    <p>{article.description}</p>
-                    <Link
-                      href={`/wiki/${article.id}`}
-                      className="flex gap-1 self-end mt-4 hover:opacity-70"
-                    >
-                      <SquareChevronRight /> View More
-                    </Link>
-                  </div>
-
-                  {article.thumbUrl ? (
-                    <Image
-                      width={600}
-                      height={400}
-                      src={article.thumbUrl}
-                      alt="featured wiki"
-                      className="absolute top-0 left-0 w-full h-full z-0 rounded-xl"
-                    />
-                  ) : (
-                    <Image
-                      width={400}
-                      height={600}
-                      src={"/wiki/placeholder-2.jpg"}
-                      alt="featured article placeholder"
-                      className="absolute top-0 left-0 w-full h-full z-0 rounded-xl object-cover"
-                    />
-                  )}
-                </div>
-              ))}
-            {/* Featured Articles end */}
-            {/* Start split card */}
-            {featuredCharacters && (
-              <div
-                className="relative col-span-3 flex flex-wrap gap-4"
-                id="wiki-split-card-container-1"
-              >
-                <h4 className="text-2xl w-full" id="container-title-1">
-                  Split Card Container
-                </h4>
-                {featuredCharacters.map((character) => (
-                  <div
-                    className="flex-1 relative aspect-[2/3]"
-                    key={`featured-character-${character.id}`}
-                  >
-                    <div className="flex h-full w-full flex-col relative gap-1 justify-end z-10 text-white bg-black bg-opacity-25 p-8 rounded-xl">
-                      <h4 className="text-2xl">{character.title}</h4>
-                      <p>{character.description}</p>
-                      <Link
-                        href={`/wiki/${character.id}`}
-                        className="flex gap-1 self-end mt-4 hover:opacity-70"
-                      >
-                        <SquareChevronRight /> View More
-                      </Link>
-                    </div>
-                    {character.thumbUrl ? (
-                      <Image
-                        width={400}
-                        height={600}
-                        src={character.thumbUrl}
-                        alt={character.title}
-                        className="absolute top-0 left-0 w-full h-full z-0 rounded-xl object-cover"
-                      />
-                    ) : (
-                      <Image
-                        width={400}
-                        height={600}
-                        src={"/wiki/person-1.jpg"}
-                        alt="character placeholder"
-                        className="absolute top-0 left-0 w-full h-full z-0 rounded-xl object-cover"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
+            {/* Featured Articles */}
+            {featuredArticles && (
+              <FeaturedCards
+                articles={featuredArticles}
+                title={"Featured Articles"}
+              />
+            )}
+            {/* New Articles */}
+            {newArticles && (
+              <FeaturedCards articles={newArticles} title={"New Articles"} />
             )}
 
             {/* End Split Card */}
@@ -130,18 +61,18 @@ export default async function Wiki() {
               className="col-span-2 flex flex-col gap-4"
               id="wiki-bars-container"
             >
-              <h4 className="text-2xl w-full" id="bars-container-1">
-                News bars Container
+              <h4 className="text-xl w-full" id="bars-container-1">
+                Explore
               </h4>
-              {newArticles &&
-                newArticles.map((article) => (
+              {randomArticles &&
+                randomArticles.map((article) => (
                   <Link
                     href={`/wiki/${article.id}`}
-                    className="flex w-full items-center gap-4 self-end hover:opacity-70 border-2 border-slate-800 rounded-md p-4"
+                    className="flex w-full items-center gap-2 self-end hover:opacity-70 border border-grey-100 rounded-md px-4 py-2"
                     key={`news-bar-${article.id}`}
                   >
-                    <SquareChevronRight className="text-2xl" />
-                    <h4 className="text-2xl">{article.title}</h4>
+                    <ChevronRight className="text-md" />
+                    <h4 className="text-md">{article.title}</h4>
                   </Link>
                 ))}
             </div>

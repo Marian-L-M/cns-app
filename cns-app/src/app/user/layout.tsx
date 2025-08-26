@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import Footer from "@/components/footer";
+import Footer from "@/components/shared/footer";
 import Header from "@/components/shared/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";

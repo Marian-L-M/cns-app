@@ -1,7 +1,7 @@
 import { Map, ScrollText, BookMarked, ListStart, User2 } from "lucide-react";
 import { cookies } from "next/headers";
 
-import Footer from "@/components/footer";
+import Footer from "@/components/shared/footer";
 import Header from "@/components/shared/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
@@ -76,13 +76,13 @@ export default async function RootLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <div
-        className="w-screen h-screen flex flex-col justify-between"
+        className="w-screen h-screen flex flex-col justify-between pt-12"
         id="app-wrapper"
       >
         <Header />
         <div className="h-full w-full flex" id="content-wrapper">
           <AppSidebar menuItems={mainMenuItems} />
-          <main className="w-full h-full p-4 overflow-y-scroll">
+          <main className="w-full max-w-[1600px] h-full p-4 mx-auto overflow-y-scroll">
             {children}
           </main>
         </div>
