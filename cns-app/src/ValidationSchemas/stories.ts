@@ -12,7 +12,6 @@ export const StoriesSchema = z.object({
   status: z.string().min(1, "Status").max(10).optional(),
   assignedToMapID: z.number().int().optional(),
   featured: z.boolean().default(false),
-  authors: z.array(z.string()),
 });
 
 export const SubstoryNodeType = z.enum(["SQUARE", "CIRCLE", "DIAMOND", "ICON"]);

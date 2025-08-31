@@ -35,7 +35,18 @@ export default async function EditStory({ params, searchParams }: Props) {
   const story = await prisma?.story.findUnique({
     where: { id },
     include: {
-      authors: true,
+      userStories: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      },
       assignedToMap: true,
     },
   });
@@ -65,7 +76,7 @@ export default async function EditStory({ params, searchParams }: Props) {
   }
 
   // Check if current user has permission to edit
-  const session = await requireOwnerOrAdmin({ authors: story.authors });
+  const session = await requireOwnerOrAdmin({ userStories: story.userStories });
 
   // to do 250617 Implement tab structure
 

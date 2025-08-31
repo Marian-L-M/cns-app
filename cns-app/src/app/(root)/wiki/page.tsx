@@ -39,29 +39,69 @@ export default async function Wiki() {
         </TabsList> */}
         <TabsContent className="flex flex-col gap-8" value="read">
           <div className="grid grid-cols-8 gap-4" id="intro-content">
-            <div className="title-container col-span-8">
-              <h2 className=" text-2xl" id="section-title-1">
-                Featured
+            <div className="col-span-6 flex flex-wrap gap-4" id="main-contents">
+              <h2 className="w-full text-2xl font-bold ">
+                Eternity of Magic Wiki
               </h2>
+              <div className="w-full flex flex-col gap-2 col-span-8 p-4 border border-gray-200 rounded-xl">
+                <div className="w-full flex flex-col gap-2">
+                  <h3 className="text-lg font-semibold  bg-slate-100 px-2 py-1">
+                    Welcome to the Eternity of Magic Wiki
+                  </h3>
+                  <p>
+                    Learn more about whats going on in the world of Kamolin.
+                  </p>
+                </div>
+              </div>
+              {/* Featured Articles */}
+              {featuredArticles && (
+                <FeaturedCards
+                  articles={featuredArticles}
+                  title={"Featured Articles"}
+                />
+              )}
+              {/* New Articles */}
+              {newArticles && (
+                <FeaturedCards articles={newArticles} title={"New Articles"} />
+              )}
+              <div className="flex-1 flex flex-col gap-4 p-4 border border-gray-200 rounded-xl self-stretch">
+                <h4 className="text-lg  font-semibold  bg-slate-100 px-2 py-1">
+                  Did you know?
+                </h4>
+                <p className="text-sm">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Officia natus eligendi corporis tempora quibusdam architecto,
+                  rerum minus dignissimos vero provident perspiciatis in sint
+                  veniam minima rem eaque. Tempora odio quis rerum quaerat
+                  nesciunt laborum amet ut sapiente magni velit eius neque,
+                  nostrum, in provident nemo unde ipsam qui assumenda?
+                </p>
+                <p className="text-sm">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Officia natus eligendi corporis tempora quibusdam architecto,
+                  rerum minus dignissimos vero provident perspiciatis in sint
+                  veniam minima rem eaque. Tempora odio quis rerum quaerat
+                  nesciunt laborum amet ut sapiente magni velit eius neque,
+                  nostrum, in provident nemo unde ipsam qui assumenda?
+                </p>
+                <p className="text-sm">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Officia natus eligendi corporis tempora quibusdam architecto,
+                  rerum minus dignissimos vero provident perspiciatis in sint
+                  veniam minima rem eaque. Tempora odio quis rerum quaerat
+                  nesciunt laborum amet ut sapiente magni velit eius neque,
+                  nostrum, in provident nemo unde ipsam qui assumenda?
+                </p>
+              </div>
             </div>
-            {/* Featured Articles */}
-            {featuredArticles && (
-              <FeaturedCards
-                articles={featuredArticles}
-                title={"Featured Articles"}
-              />
-            )}
-            {/* New Articles */}
-            {newArticles && (
-              <FeaturedCards articles={newArticles} title={"New Articles"} />
-            )}
-
-            {/* End Split Card */}
             <div
-              className="col-span-2 flex flex-col gap-4"
+              className="col-span-2 flex flex-col gap-2 p-4 border border-gray-200 rounded-xl self-stretch"
               id="wiki-bars-container"
             >
-              <h4 className="text-xl w-full" id="bars-container-1">
+              <h4
+                className="text-xl font-semibold bg-slate-100 px-2 py-1"
+                id="bars-container-1"
+              >
                 Explore
               </h4>
               {randomArticles &&
@@ -71,8 +111,8 @@ export default async function Wiki() {
                     className="flex w-full items-center gap-2 self-end hover:opacity-70 border border-grey-100 rounded-md px-4 py-2"
                     key={`news-bar-${article.id}`}
                   >
-                    <ChevronRight className="text-md" />
-                    <h4 className="text-md">{article.title}</h4>
+                    <ChevronRight className="text-sm" />
+                    <h4 className="text-sm">{article.title}</h4>
                   </Link>
                 ))}
             </div>

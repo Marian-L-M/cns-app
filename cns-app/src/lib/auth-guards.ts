@@ -21,19 +21,27 @@ export async function requireAuthorOrAdmin() {
   return session;
 }
 
-export async function requireOwnerOrAdmin({ authors }: any) {
+export async function requireOwnerOrAdmin({
+  userStories,
+}: {
+  userStories: Array<{ userId: string; role: string; user: { id: string } }>;
+}) {
   const session = await auth();
 
-  const isAdmin = session?.user?.role === "ADMIN";
-  const isEditor = session?.user?.role === "AUTHOR";
-  const isOwner = authors.some(
-    (author: any) => author.id === session?.user?.id
-  );
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
 
-  if (!isAdmin && !isEditor) {
+  const isAdmin = session.user.role === "ADMIN";
+
+  // Check if user is owner or editor of this content
+  const userRelation = userStories.find((us) => us.userId === session.user.id);
+
+  const isOwner = userRelation?.role === "OWNER";
+  const isEditor = userRelation?.role === "EDITOR";
+
+  if (!isAdmin && !isOwner && !isEditor) {
     redirect("/unauthorized");
-  } else if (!isAdmin && !isOwner) {
-    redirect("/unauthorized/editor");
   }
 
   return session;

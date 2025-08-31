@@ -21,6 +21,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,7 +44,13 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
 type StoryFormData = z.infer<typeof StoriesSchema>;
 
 interface Props {
-  story?: Story;
+  story?: Story & {
+    userStories: Array<{
+      userId: string;
+      role: string;
+      user: { id: string; name: string; email: string };
+    }>;
+  };
   substories?: Story[];
   user: {
     id: string;
@@ -80,7 +87,6 @@ export default function StoryForm({ story, substories, user }: Props) {
       featured: story?.featured || false,
       rating: story?.rating || 0,
       assignedToMapID: story?.assignedToMapID || 0,
-      authors: story?.authors?.map((author) => author.id) || [user.id],
     },
   });
 
@@ -150,6 +156,7 @@ export default function StoryForm({ story, substories, user }: Props) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
+                    <FormMessage />
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -208,6 +215,7 @@ export default function StoryForm({ story, substories, user }: Props) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Story Time</FormLabel>
+                    <FormMessage />
                     <FormControl>
                       <Input
                         type="number"
@@ -271,6 +279,7 @@ export default function StoryForm({ story, substories, user }: Props) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
+                  <FormMessage />
                   <FormControl>
                     <Input type="text" placeholder="" {...field} />
                   </FormControl>
@@ -285,6 +294,7 @@ export default function StoryForm({ story, substories, user }: Props) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tags</FormLabel>
+                  <FormMessage />
                   <FormControl>
                     <div>
                       {(field.value || []).map((tag, index) => (
@@ -335,6 +345,7 @@ export default function StoryForm({ story, substories, user }: Props) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Featured</FormLabel>
+                  <FormMessage />
                   <FormControl>
                     <div className="flex items-center space-x-2">
                       <Checkbox
@@ -353,63 +364,6 @@ export default function StoryForm({ story, substories, user }: Props) {
                 </FormItem>
               )}
             />
-            {/* Authors array field -- To do: Replace with search input */}
-            {user.role == "ADMIN" && (
-              <FormField
-                control={form.control}
-                name="authors"
-                defaultValue={
-                  story?.authors
-                    ? story?.authors?.map((author) => author.id)
-                    : [user.id]
-                }
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Author</FormLabel>
-                    <FormControl>
-                      <div>
-                        {(field.value || []).map((author, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center space-x-2 mb-2"
-                          >
-                            <Input
-                              value={author}
-                              onChange={(e) => {
-                                const newAuthors = [...(field.value || [])];
-                                newAuthors[index] = e.target.value;
-                                field.onChange(newAuthors);
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const newAuthors = [...(field.value || [])];
-                                newAuthors.splice(index, 1);
-                                field.onChange(newAuthors);
-                              }}
-                            >
-                              Remove
-                            </Button>
-                          </div>
-                        ))}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            field.onChange([...(field.value || []), ""]);
-                          }}
-                        >
-                          Add Author
-                        </Button>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            )}
             <div className="w-1/3" id="map-container">
               <FormField
                 control={form.control}
@@ -418,6 +372,7 @@ export default function StoryForm({ story, substories, user }: Props) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Map</FormLabel>
+                    <FormMessage />
                     <FormControl>
                       <div className="flex flex-row gap-2">
                         <div className="w-2/3">
@@ -470,6 +425,42 @@ export default function StoryForm({ story, substories, user }: Props) {
               <Button variant={"default"}>Add</Button>
             </Link>
           </div>
+        </section>
+      )}
+      {story && (
+        <section className="rounded-md border w-full p-4 flex flex-col gap-4">
+          <h5 className="font-bold">Collaborators</h5>
+          <div className="space-y-2">
+            {story.userStories?.map((userStory) => (
+              <div
+                key={userStory.id}
+                className="flex items-center justify-between p-2 border rounded"
+              >
+                <div>
+                  <span className="font-medium">{userStory.user.name}</span>
+                  <span className="ml-2 text-sm text-gray-500">
+                    ({userStory.role})
+                  </span>
+                </div>
+                {/* 250831  TO DO: Add collaboration  capabilities*/}
+                {/* {userStory.role === "EDITOR" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    // onClick={() => removeCollaborator(userStory.id)}
+                  >
+                    Remove
+                  </Button>
+                )} */}
+              </div>
+            ))}
+          </div>
+          {/* <Button
+            variant="outline"
+            // onClick={() => setShowAddCollaborator(true)}
+          >
+            Add Collaborator
+          </Button> */}
         </section>
       )}
     </div>

@@ -25,14 +25,10 @@ export default async function RootLayout({
       url: "/wiki",
       icon: BookMarked,
       subLinks: [
+        { title: "Archive", url: "/wiki/archive" },
         { title: "Featured", url: "/wiki/featured" },
         { title: "Search", url: "/wiki/search" },
-        { title: "Categories", url: "/wiki/categories" },
-        { title: "Random", url: "" },
-      ],
-      options: [
-        { title: "Add", url: "/wiki/new" },
-        { title: "Manage", url: "/wiki/" },
+        { title: "Random", url: "/wiki/random" },
       ],
     },
     {
@@ -82,7 +78,7 @@ export default async function RootLayout({
         <Header />
         <div className="h-full w-full flex" id="content-wrapper">
           <AppSidebar menuItems={mainMenuItems} />
-          <main className="w-full max-w-[1600px] h-full p-4 mx-auto overflow-y-scroll">
+          <main className="w-full max-w-[1680px] h-full px-8 py-4 overflow-y-scroll">
             {children}
           </main>
         </div>

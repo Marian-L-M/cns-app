@@ -10,11 +10,11 @@ interface Props {
 
 export default function FeaturedCards({ articles, title }: Props) {
   return (
-    <div className="flex flex-col gap-4 col-span-2">
-      <h3 className="text-xl">{title}</h3>
+    <div className="flex flex-col gap-4 flex-1  p-4 border border-gray-200 rounded-xl self-stretch">
+      <h3 className="text-xl font-semibold  bg-slate-100 px-2 py-1">{title}</h3>
       {articles.map((article) => (
         <div
-          className="rounded-xl overflow-hidden border border-gray-200"
+          className="rounded-xl overflow-hidden border border-gray-200 "
           key={`featured-article-${article.id}`}
         >
           <div className="img-container relative w-full h-36">
