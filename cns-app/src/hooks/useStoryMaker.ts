@@ -38,7 +38,10 @@ export function useStoryMaker({
 }: StoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const statusCtx = useContext(StatusContext);
-  const { mapAreas, mapObjects } = mapData;
+
+  // Add defensive checks
+  const { mapAreas = [], mapObjects = [] } = mapData || {};
+
   const [mapAreaLoaded, setMapAreaLoaded] = useState(false);
   const [mapObjectLoaded, setMapObjectLoaded] = useState(false);
   const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
@@ -47,12 +50,11 @@ export function useStoryMaker({
   const [iconsLoaded, setIconsLoaded] = useState(false);
 
   // Initialize data for canvas draw
-  // 250725 -> Clean up - make more efficient
   useEffect(() => {
     if (!mapAreas || !mapObjects) return;
     setMapAreaLoaded(true);
     setMapObjectLoaded(true);
-  }, []);
+  }, [mapAreas, mapObjects]);
 
   // Pre-load all images
   useEffect(() => {

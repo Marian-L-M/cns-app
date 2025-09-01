@@ -30,7 +30,7 @@ export default async function StoriesOverviewPage({
   // Create a fully resolved object rather than the promise that contains it.
   const searchParams = await Promise.resolve(rawSearchParams);
 
-  const pageSize = 2;
+  const pageSize = 10;
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
   const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
   const statuses = Object.values(Status);

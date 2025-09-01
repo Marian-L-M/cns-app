@@ -1,10 +1,11 @@
 "use client";
 import axios from "axios";
+import dynamic from "next/dynamic";
 import { Palette, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { SketchPicker, ColorResult } from "react-color";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -54,6 +55,11 @@ import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import StyleEditListModule from "../displays/StyleEditListModule";
 import StyleItemForm from "../forms/StyleItemForm";
+
+import "easymde/dist/easymde.min.css";
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 interface EditorProps {
   story: Story;
@@ -301,7 +307,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                         </FormItem>
                       )}
                     />
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name={`description`}
                       defaultValue={editableSubStory.description}
@@ -312,6 +318,14 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                             <Input placeholder="Description..." {...field} />
                           </FormControl>
                         </FormItem>
+                      )}
+                    /> */}
+                    <Controller
+                      name="description"
+                      defaultValue={editableSubStory.description}
+                      control={form.control}
+                      render={({ field }) => (
+                        <SimpleMDE placeholder="Description" {...field} />
                       )}
                     />
                     <FormField

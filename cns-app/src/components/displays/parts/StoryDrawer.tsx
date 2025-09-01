@@ -8,6 +8,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import ReactMarkDown from "react-markdown";
 
 interface Props {
   drawerOpen: boolean;
@@ -55,7 +56,11 @@ export default function StoryDrawer({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{storyData?.title}</DrawerTitle>
-          <DrawerDescription>{storyData?.description}</DrawerDescription>
+          <DrawerDescription>
+            <ReactMarkDown className={"prose dark:prose-invert"}>
+              {storyData?.description}
+            </ReactMarkDown>
+          </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 py-4 px-8">
           <div className="flex gap-4" id="story-progress">

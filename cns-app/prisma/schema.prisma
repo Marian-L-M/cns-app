@@ -32,6 +32,69 @@ enum ContentRole {
   EDITOR
 }
 
+model AdminSettings {
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  order       Int               @default(1)
+  category    AdminSettingsType @default(OTHER)
+  subCategory String?           @default("")
+  type        String            @default("") @db.Text
+  value       String            @default("")
+}
+
+enum AdminSettingsType {
+  USER
+  PAGE
+  DESIGN
+  OTHER
+}
+
+enum WikiType {
+  GENERAL
+  STORY
+  AREA
+  CHARACTER
+  OBJECT
+  HISTORY
+  SCIENCE
+  EXPLANATION
+  OTHER
+}
+
+enum WikiInfoboxType {
+  IMAGE
+  COLLECTION
+  TEXT
+  TITLE
+}
+
+enum CanvasIconType {
+  label
+  font
+  imageSize
+  imageOpacity
+  fontFillStyle
+  svgFillStyle
+  svgStrokeStyle
+}
+
+enum MapObjectType {
+  LOCATION
+  HISTORY
+  NATURAL
+  EVENT
+  OTHER
+}
+
+enum MapAreaType {
+  GEOGRAPHY
+  POLITICAL
+  ABSTRACT
+  INTERACTIVE
+  OTHER
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id") @db.Uuid
@@ -76,28 +139,13 @@ model User {
   role        Role         @default(USER)
   RelatedUser UserProfile? @relation("RelatedUser")
 
-  // Major issue: Many to many not set up properly - Only one (of type) per user
-  // Story          Story?              @relation(fields: [storyId], references: [id])
-  // storyId        Int?
-  Map            Map?                @relation(fields: [mapId], references: [id])
-  mapId          Int?
-  MapHierarchy   MapHierarchyMaster? @relation(fields: [mapHierarchyId], references: [id])
-  mapHierarchyId Int?
-  SubStory       SubStory?           @relation(fields: [subStoryId], references: [id])
-  subStoryId     Int?
-  Wiki           Wiki?               @relation(fields: [wikiId], references: [id])
-  wikiId         Int?
-
-  userStories UserStory[]
+  userStories      UserStory[]
+  userMaps         UserMap[]
+  userMapHierarchy UserMapHierarchy[]
+  userWikis        UserWiki[]
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt
-
-  // @@index([storyId])
-  @@index([mapId])
-  @@index([mapHierarchyId])
-  @@index([subStoryId])
-  @@index([wikiId])
 }
 
 model VerificationToken {
@@ -129,34 +177,7 @@ model UserProfile {
   @@index([userId])
 }
 
-model Story {
-  id          Int      @id @default(autoincrement())
-  slug        String?  @unique(map: "stroy_slug_idx")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  imageUrl    String
-  storyTime   Int      @default(0)
-
-  category String?
-  tags     String[]
-  featured Boolean  @default(false)
-
-  userStories UserStory[]
-
-  status          Status     @default(UPCOMING)
-  // authors         User[]
-  subStories      SubStory[]
-  assignedToMapID Int?
-  assignedToMap   Map?       @relation(fields: [assignedToMapID], references: [id], onDelete: SetNull, onUpdate: Cascade)
-
-  rating Int @default(0)
-
-  @@index([assignedToMapID])
-}
-
-// Story - User Junction table
+// User Junction tables
 model UserStory {
   id      Int         @id @default(autoincrement())
   userId  String      @db.Uuid
@@ -173,6 +194,60 @@ model UserStory {
   @@index([userId])
   @@index([storyId])
   @@map("user_stories")
+}
+
+model UserMap {
+  id     Int         @id @default(autoincrement())
+  userId String      @db.Uuid
+  mapId  Int
+  role   ContentRole @default(OWNER)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  map  Map  @relation(fields: [mapId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, mapId])
+  @@index([userId])
+  @@index([mapId])
+  @@map("user_maps")
+}
+
+model UserMapHierarchy {
+  id             Int         @id @default(autoincrement())
+  userId         String      @db.Uuid
+  mapHierarchyId Int
+  role           ContentRole @default(OWNER)
+
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mapHierarchy MapHierarchyMaster @relation(fields: [mapHierarchyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, mapHierarchyId])
+  @@index([userId])
+  @@index([mapHierarchyId])
+  @@map("user_map_hierarchies")
+}
+
+model UserWiki {
+  id     Int         @id @default(autoincrement())
+  userId String      @db.Uuid
+  wikiId Int
+  role   ContentRole @default(OWNER)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wiki Wiki @relation(fields: [wikiId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, wikiId])
+  @@index([userId])
+  @@index([wikiId])
+  @@map("user_wikis")
 }
 
 // In the long term maps need to have parent-child maps to accommodate zoom levels and global maps
@@ -197,8 +272,9 @@ model Map {
   assignedStories Story[]
   objects         GlobalObject[]
   area            GlobalArea[]
-  authors         User[]
   canvasStyles    CanvasStyleItem[]
+
+  userMaps UserMap[]
 
   parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
   childInHierarchies  MapHierarchyChild[]  @relation("ChildMap")
@@ -213,7 +289,8 @@ model MapHierarchyMaster {
   parentMapId Int
   parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id], onUpdate: Cascade)
   childMaps   MapHierarchyChild[]
-  authors     User[]
+
+  UserMapHierarchies UserMapHierarchy[]
 
   @@index([parentMapId])
 }
@@ -240,6 +317,32 @@ model MapHierarchyChild {
   @@index([childMapId])
 }
 
+model Story {
+  id          Int      @id @default(autoincrement())
+  slug        String?  @unique(map: "stroy_slug_idx")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  imageUrl    String
+  storyTime   Int      @default(0)
+
+  category String?
+  tags     String[]
+  featured Boolean  @default(false)
+
+  userStories UserStory[]
+
+  status          Status     @default(UPCOMING)
+  subStories      SubStory[]
+  assignedToMapID Int?
+  assignedToMap   Map?       @relation(fields: [assignedToMapID], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  rating Int @default(0)
+
+  @@index([assignedToMapID])
+}
+
 model SubStory {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
@@ -251,7 +354,6 @@ model SubStory {
   story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   storyId     Int
 
-  authors      User[]
   canvasStyles CanvasStyleItem[]
 
   @@index([storyId])
@@ -315,10 +417,11 @@ model Wiki {
   tags     String[]
   featured Boolean  @default(false)
 
-  objects      GlobalObject[]
-  area         GlobalArea[]
-  type         WikiType          @default(GENERAL)
-  authors      User[]
+  objects GlobalObject[]
+  area    GlobalArea[]
+  type    WikiType       @default(GENERAL)
+
+  userWikis    UserWiki[]
   infoboxItems WikiInfoboxItem[]
 }
 
@@ -364,67 +467,4 @@ model CanvasStyleItem {
   @@index([globalAreaId])
   @@index([mapHierarchyChildId])
   @@index([subStoryId])
-}
-
-model AdminSettings {
-  id          Int               @id @default(autoincrement())
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  order       Int               @default(1)
-  category    AdminSettingsType @default(OTHER)
-  subCategory String?           @default("")
-  type        String            @default("") @db.Text
-  value       String            @default("")
-}
-
-enum AdminSettingsType {
-  USER
-  PAGE
-  DESIGN
-  OTHER
-}
-
-enum WikiType {
-  GENERAL
-  STORY
-  AREA
-  CHARACTER
-  OBJECT
-  HISTORY
-  SCIENCE
-  EXPLANATION
-  OTHER
-}
-
-enum WikiInfoboxType {
-  IMAGE
-  COLLECTION
-  TEXT
-  TITLE
-}
-
-enum CanvasIconType {
-  label
-  font
-  imageSize
-  imageOpacity
-  fontFillStyle
-  svgFillStyle
-  svgStrokeStyle
-}
-
-enum MapObjectType {
-  LOCATION
-  HISTORY
-  NATURAL
-  EVENT
-  OTHER
-}
-
-enum MapAreaType {
-  GEOGRAPHY
-  POLITICAL
-  ABSTRACT
-  INTERACTIVE
-  OTHER
 }

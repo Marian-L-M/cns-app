@@ -1,9 +1,19 @@
 import { SubStorySchema } from "@/ValidationSchemas/stories";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
+import { auth } from "@/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized - User not authenticated" },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const validation = SubStorySchema.safeParse(body);
 

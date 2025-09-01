@@ -16,7 +16,18 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
   const story = await prisma.story.findUnique({
     where: { id: id },
     include: {
-      authors: true,
+      userStories: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -36,8 +47,8 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
     return <div>Map not found</div>;
   }
 
-  // Check if current user has permission to edit
-  const session = await requireOwnerOrAdmin({ authors: story.authors });
+  // Check if current user has permission to edit current story
+  const session = await requireOwnerOrAdmin({ userStories: story.userStories });
 
   return (
     <div className="w-full" id="substory-detail-page">
