@@ -7,20 +7,20 @@ interface MapFetchProps {
   setMapName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export async function fetchMapAuthorId(mapId: string | number) {
-  const id = typeof mapId == "string" ? parseInt(mapId) : mapId;
+// export async function fetchMapAuthorId(mapId: string | number) {
+//   const id = typeof mapId == "string" ? parseInt(mapId) : mapId;
 
-  const map = await prisma.map.findUnique({
-    where: { id: id },
-    include: {
-      authors: true,
-    },
-  });
+//   const map = await prisma.map.findUnique({
+//     where: { id: id },
+//     include: {
+//       authors: true,
+//     },
+//   });
 
-  const authors = map?.authors;
+//   const authors = map?.authors;
 
-  return { authors };
-}
+//   return { authors };
+// }
 
 export async function fetchMapData(mapId: string | number) {
   const id = typeof mapId == "string" ? parseInt(mapId) : mapId;
@@ -60,7 +60,6 @@ export async function fetchMasterMap(masterMapId: number) {
   const masterMap = await prisma.mapHierarchyMaster.findUnique({
     where: { id: masterMapId },
     include: {
-      authors: true,
       parentMap: true,
       childMaps: {
         include: {

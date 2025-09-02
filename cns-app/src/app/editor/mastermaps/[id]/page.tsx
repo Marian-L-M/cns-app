@@ -1,7 +1,7 @@
 import MasterMapEditor from "@/components/editors/MasterMapEditor";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
-import { fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
+import prisma from "@/../prisma/db";
 
 interface MapPageProps {
   params: { id: string };
@@ -9,21 +9,40 @@ interface MapPageProps {
 
 export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
-  const { id } = resolvedParams;
+  const id = parseInt(resolvedParams.id);
 
-  // 250623 Still seems like a dirty way of handling this
-  if (isNaN(parseInt(id))) {
-    return <div className="text-destructive">Invalid Mastermap id</div>;
-  }
-
-  const masterMap = await fetchMasterMap(parseInt(id));
-  const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
+  // const masterMap = await fetchMasterMap(parseInt(id));
+  const masterMap = await prisma?.mapHierarchyMaster.findUnique({
+    where: { id },
+    include: {
+      parentMap: true,
+      childMaps: {
+        include: {
+          childMap: true,
+          canvasStyles: true,
+        },
+      },
+      userMapHierarchies: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
   if (!masterMap) {
     return <div className="text-destructive">No Mastermaps found</div>;
-  } else if (!session) {
-    return <div className="text-destructive">No user data found found</div>;
   }
+
+  const session = await requireOwnerOrAdmin({
+    userJunction: masterMap.userMapHierarchies,
+  });
 
   return (
     <CursorContextProvider>

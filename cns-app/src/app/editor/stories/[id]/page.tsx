@@ -41,7 +41,6 @@ export default async function EditStory({ params, searchParams }: Props) {
             select: {
               id: true,
               name: true,
-              email: true,
               role: true,
             },
           },
@@ -76,9 +75,9 @@ export default async function EditStory({ params, searchParams }: Props) {
   }
 
   // Check if current user has permission to edit
-  const session = await requireOwnerOrAdmin({ userStories: story.userStories });
-
-  // to do 250617 Implement tab structure
+  const session = await requireOwnerOrAdmin({
+    userJunction: story.userStories,
+  });
 
   return (
     <div className="w-full flex flex-col gap-4" id="story-editor-module">

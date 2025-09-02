@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import Footer from "@/components/shared/footer";
 import Header from "@/components/shared/header";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
 
 export default async function RootLayout({
@@ -12,7 +12,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
 
   const mainMenuItems = [
     {
@@ -78,9 +78,11 @@ export default async function RootLayout({
         <Header />
         <div className="h-full w-full flex" id="content-wrapper">
           <AppSidebar menuItems={mainMenuItems} />
-          <main className="w-full max-w-[1680px] h-full px-8 py-4 overflow-y-scroll">
-            {children}
-          </main>
+          <SidebarInset>
+            <main className="w-full max-w-[1680px] h-full px-8 py-4 overflow-y-scroll">
+              {children}
+            </main>
+          </SidebarInset>
         </div>
         <Footer />
       </div>

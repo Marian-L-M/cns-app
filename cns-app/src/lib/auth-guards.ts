@@ -22,9 +22,9 @@ export async function requireAuthorOrAdmin() {
 }
 
 export async function requireOwnerOrAdmin({
-  userStories,
+  userJunction,
 }: {
-  userStories: Array<{ userId: string; role: string; user: { id: string } }>;
+  userJunction: Array<{ userId: string; role: string; user: { id: string } }>;
 }) {
   const session = await auth();
 
@@ -32,10 +32,11 @@ export async function requireOwnerOrAdmin({
     redirect("/login");
   }
 
+  const sessionId = session.user.id;
   const isAdmin = session.user.role === "ADMIN";
 
   // Check if user is owner or editor of this content
-  const userRelation = userStories.find((us) => us.userId === session.user.id);
+  const userRelation = userJunction.find((us) => us.userId === sessionId);
 
   const isOwner = userRelation?.role === "OWNER";
   const isEditor = userRelation?.role === "EDITOR";

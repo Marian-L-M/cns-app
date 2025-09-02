@@ -19,8 +19,8 @@ const VALID_TABS = ["setup", "areas", "objects"];
 export default async function EditMapPage({ params, searchParams }: Props) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  const id = parseInt(resolvedParams.id);
   const modal = resolvedSearchParams.modal;
+  const id = parseInt(resolvedParams.id);
 
   let data: {
     map: MapType | null;
@@ -37,8 +37,18 @@ export default async function EditMapPage({ params, searchParams }: Props) {
   const map = await prisma.map.findUnique({
     where: { id: id },
     include: {
-      authors: true,
       canvasStyles: true,
+      userMaps: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -61,7 +71,7 @@ export default async function EditMapPage({ params, searchParams }: Props) {
   }
 
   // Check if current user has permission to edit
-  const session = await requireOwnerOrAdmin({ authors: map.authors });
+  const session = await requireOwnerOrAdmin({ userJunction: map.userMaps });
 
   return (
     <div className="w-full flex flex-col gap-4">

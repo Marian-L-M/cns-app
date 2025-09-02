@@ -16,6 +16,7 @@ import {
   MapHierarchyChild,
   MapHierarchyMaster,
   User,
+  UserMapHierarchy,
 } from "@prisma/client";
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
 
@@ -59,7 +60,7 @@ interface MasterMapWithChildren {
   parentMapId: number;
   parentMap: Map;
   childMaps: MapHierarchyChildEditable[];
-  authors: User[];
+  userMapHierarchies: UserMapHierarchy[];
 }
 
 interface MasterMapProps {
@@ -96,7 +97,6 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
     defaultValues: {
       title: MasterMap?.title || "",
       parentMapId: MasterMap?.parentMapId || 0,
-      authors: MasterMap?.authors?.map((author) => author.id) || [user.id],
     },
   });
 
@@ -106,8 +106,6 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
       setError("");
       if (MasterMap) {
         await axios.patch(`/api/mastermaps/${MasterMap.id}`, values);
-        // router.push(`/editor/mastermaps/${MasterMap?.id}`);
-        // router.refresh();
         toast.success("Mastermap updated succesfully");
         setIsSubmitting(false);
       } else {
@@ -122,7 +120,6 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
       toast.error("Mastermap update failed", {
         className: "error",
         description: `ERROR! ${error}`,
-        // Add error message
       });
       setIsSubmitting(false);
     }
@@ -211,7 +208,7 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
                       <FormItem>
                         <FormLabel>Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Wiki Title..." {...field} />
+                          <Input placeholder="Master Map Title..." {...field} />
                         </FormControl>
                       </FormItem>
                     )}
@@ -253,64 +250,30 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
                   )}
                 />
               </div>
-              <div className="w-full" id="author-container">
-                <FormField
-                  control={form.control}
-                  name="authors"
-                  defaultValue={
-                    MasterMap?.authors
-                      ? MasterMap?.authors?.map((author) => author.id)
-                      : [user.id]
-                  }
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Author</FormLabel>
-                      <FormControl>
+              {MasterMap && (
+                <section className="rounded-md border w-full p-4 flex flex-col gap-4">
+                  <h5 className="font-bold">Collaborators</h5>
+                  <div className="space-y-2">
+                    {MasterMap.userMapHierarchies?.map((userHierarchy) => (
+                      <div
+                        key={userHierarchy.id}
+                        className="flex items-center justify-between p-2 border rounded"
+                      >
                         <div>
-                          {(field.value || []).map((author, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center space-x-2 mb-2"
-                            >
-                              <Input
-                                value={author}
-                                onChange={(e) => {
-                                  const newAuthors = [...(field.value || [])];
-                                  newAuthors[index] = e.target.value;
-                                  field.onChange(newAuthors);
-                                }}
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const newAuthors = [...(field.value || [])];
-                                  newAuthors.splice(index, 1);
-                                  field.onChange(newAuthors);
-                                }}
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          ))}
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => {
-                              field.onChange([...(field.value || []), ""]);
-                            }}
-                          >
-                            Add Author
-                          </Button>
+                          <span className="font-medium">
+                            {userHierarchy.user.name}
+                          </span>
+                          <span className="ml-2 text-sm text-gray-500">
+                            ({userHierarchy.role})
+                          </span>
                         </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
               <Button type="submit" disabled={isSubmitting}>
-                {MasterMap ? "Update MasterMap" : "Submit MasterMap"}
+                {MasterMap ? "Update Parent Map" : "Set Parent Map"}
               </Button>
             </form>
           </Form>

@@ -15,7 +15,6 @@ export const mapSchema = z.object({
   category: z.string().min(1, "Cateogry is required").max(255),
   tags: z.array(z.string().max(128)).optional(),
   featured: z.boolean().default(false),
-  authors: z.array(z.string()),
 });
 
 export const ChildMapSchema = z.object({
@@ -31,5 +30,4 @@ export const MasterMapSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   parentMapId: z.number().int().positive("Parent map is required"),
   childMaps: z.array(ChildMapSchema).optional(),
-  authors: z.array(z.string()),
 });

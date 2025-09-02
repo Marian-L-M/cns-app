@@ -44,7 +44,7 @@ export function AppSidebar({ menuItems = [] }: sidebarDataProps) {
   return (
     <Sidebar
       collapsible="icon"
-      variant="inset"
+      variant="sidebar"
       className="bg-gray-800 text-white"
     >
       <SidebarHeader>

@@ -69,7 +69,7 @@ export default function MapForm({ map, user }: Props) {
       category: map?.category || "",
       tags: map?.tags || [],
       featured: map?.featured || false,
-      authors: map?.authors?.map((author) => author.id) || [user.id],
+      // authors: map?.authors?.map((author) => author.id) || [user.id],
     },
   });
 
@@ -403,62 +403,25 @@ export default function MapForm({ map, user }: Props) {
               </FormItem>
             )}
           />
-          {/* Authors array field -- To do: Replace with search input */}
-          {user.role == "ADMIN" && (
-            <FormField
-              control={form.control}
-              name="authors"
-              defaultValue={
-                map?.authors
-                  ? map?.authors?.map((author) => author.id)
-                  : [user.id]
-              }
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Author</FormLabel>
-                  <FormControl>
+          {map && (
+            <section className="rounded-md border w-full p-4 flex flex-col gap-4">
+              <h5 className="font-bold">Collaborators</h5>
+              <div className="space-y-2">
+                {map.userMaps?.map((userMap) => (
+                  <div
+                    key={userMap.id}
+                    className="flex items-center justify-between p-2 border rounded"
+                  >
                     <div>
-                      {(field.value || []).map((author, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-2 mb-2"
-                        >
-                          <Input
-                            value={author}
-                            onChange={(e) => {
-                              const newAuthors = [...(field.value || [])];
-                              newAuthors[index] = e.target.value;
-                              field.onChange(newAuthors);
-                            }}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newAuthors = [...(field.value || [])];
-                              newAuthors.splice(index, 1);
-                              field.onChange(newAuthors);
-                            }}
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          field.onChange([...(field.value || []), ""]);
-                        }}
-                      >
-                        Add Author
-                      </Button>
+                      <span className="font-medium">{userMap.user.name}</span>
+                      <span className="ml-2 text-sm text-gray-500">
+                        ({userMap.role})
+                      </span>
                     </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                  </div>
+                ))}
+              </div>
+            </section>
           )}
           <Button type="submit" disabled={isSubmitting}>
             {map ? "Update Map" : "Submit Map"}

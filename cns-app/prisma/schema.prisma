@@ -290,7 +290,7 @@ model MapHierarchyMaster {
   parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id], onUpdate: Cascade)
   childMaps   MapHierarchyChild[]
 
-  UserMapHierarchies UserMapHierarchy[]
+  userMapHierarchies UserMapHierarchy[]
 
   @@index([parentMapId])
 }

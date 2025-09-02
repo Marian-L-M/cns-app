@@ -1,7 +1,7 @@
 import ChildMapEditor from "@/components/editors/ChildMapEditor";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
-import { fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
+import prisma from "@/../prisma/db";
 
 interface MapPageProps {
   params: { id: string };
@@ -9,18 +9,39 @@ interface MapPageProps {
 
 export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
-  const { id } = resolvedParams;
+  const id = parseInt(resolvedParams.id);
 
-  const masterMap = await fetchMasterMap(
-    typeof id == "string" ? parseInt(id) : id
-  );
-  const session = await requireOwnerOrAdmin({ authors: masterMap?.authors });
+  const masterMap = await prisma?.mapHierarchyMaster.findUnique({
+    where: { id },
+    include: {
+      parentMap: true,
+      childMaps: {
+        include: {
+          childMap: true,
+          canvasStyles: true,
+        },
+      },
+      userMapHierarchies: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
   if (!masterMap) {
     return <div className="text-destructive">No maps found</div>;
-  } else if (!session) {
-    return <div className="text-destructive">No user data found found</div>;
   }
+
+  const session = await requireOwnerOrAdmin({
+    userJunction: masterMap.userMapHierarchies,
+  });
 
   return (
     <CursorContextProvider>
