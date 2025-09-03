@@ -27,7 +27,16 @@ export default async function WikiPage({ params }: WikiPageProps) {
   const wiki = await prisma.wiki.findUnique({
     where: { id: id },
     include: {
-      authors: true,
+      userWikis: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              RelatedUser: true,
+            },
+          },
+        },
+      },
     },
   });
 

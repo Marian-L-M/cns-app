@@ -1,34 +1,59 @@
 import { wikiSchema } from "@/ValidationSchemas/wiki";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
+import { auth } from "@/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized - User not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const currentUserId = session.user.id;
     const body = await request.json();
     const validation = wikiSchema.safeParse(body);
+
     if (!validation.success) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
 
-    // Map author ids back to user objects
-    const { authors, ...fields } = body;
-    const updateData: any = { ...fields };
+    // Create wiki and user junction for owner
+    const result = await prisma.$transaction(async (tx) => {
+      const newWiki = await tx.wiki.create({
+        data: body,
+      });
 
-    // Handle authors field if it exists
-    if (authors !== undefined) {
-      if (Array.isArray(authors)) {
-        updateData.authors = {
-          connect: authors.map((authorId: string) => ({
-            id: authorId,
-          })),
-        };
-      }
-    }
+      await tx.userWiki.create({
+        data: {
+          userId: currentUserId,
+          wikiId: newWiki.id,
+          role: "OWNER",
+        },
+      });
 
-    const newWiki = await prisma.wiki.create({
-      data: { ...updateData },
+      return await tx.wiki.findUnique({
+        where: { id: newWiki.id },
+        include: {
+          userWikis: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
     });
-    return NextResponse.json(newWiki, { status: 201 });
+
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Error creating Wiki", error);
     return NextResponse.json(

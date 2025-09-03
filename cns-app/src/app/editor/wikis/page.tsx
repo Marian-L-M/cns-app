@@ -16,14 +16,20 @@ import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 export default async function MasterMapPage() {
   const wikis = await prisma.wiki.findMany({
     include: {
-      authors: {
-        select: {
-          id: true,
-          name: true,
+      userWikis: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },
   });
+
+  console.log(wikis);
 
   const session = await requireAuthorOrAdmin();
 
@@ -66,11 +72,11 @@ export default async function MasterMapPage() {
                       ? wiki.tags.map((tag) => tag).join(", ")
                       : "No tags"}
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {wiki.authors?.length > 0
                       ? wiki.authors.map((author) => author.name).join(", ")
                       : "No Authors"}
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

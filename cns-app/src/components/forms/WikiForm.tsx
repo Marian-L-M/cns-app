@@ -101,7 +101,6 @@ export default function WikiForm({ wiki, user, infobox }: Props) {
       type: wiki?.type || "GENERAL",
       tags: wiki?.tags || [],
       featured: wiki?.featured || false,
-      authors: wiki?.authors?.map((author) => author.id) || [user.id],
     },
   });
 
@@ -392,73 +391,6 @@ export default function WikiForm({ wiki, user, infobox }: Props) {
                         )}
                       />
                     </div>
-                    <div className="authors">
-                      <h4 className="font-bold">Wiki Body</h4>
-                      {/* Authors array field -- To do: Replace with search input */}
-                      {user.role == "ADMIN" && (
-                        <FormField
-                          control={form.control}
-                          name="authors"
-                          defaultValue={
-                            wiki?.authors
-                              ? wiki?.authors?.map((author) => author.id)
-                              : [user.id]
-                          }
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Author</FormLabel>
-                              <FormControl>
-                                <div>
-                                  {(field.value || []).map((author, index) => (
-                                    <div
-                                      key={index}
-                                      className="flex items-center space-x-2 mb-2"
-                                    >
-                                      <Input
-                                        value={author}
-                                        onChange={(e) => {
-                                          const newAuthors = [
-                                            ...(field.value || []),
-                                          ];
-                                          newAuthors[index] = e.target.value;
-                                          field.onChange(newAuthors);
-                                        }}
-                                      />
-                                      <Button
-                                        type="button"
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={() => {
-                                          const newAuthors = [
-                                            ...(field.value || []),
-                                          ];
-                                          newAuthors.splice(index, 1);
-                                          field.onChange(newAuthors);
-                                        }}
-                                      >
-                                        <Trash />
-                                      </Button>
-                                    </div>
-                                  ))}
-                                  <Button
-                                    type="button"
-                                    variant="destructive"
-                                    onClick={() => {
-                                      field.onChange([
-                                        ...(field.value || []),
-                                        "",
-                                      ]);
-                                    }}
-                                  >
-                                    Add Author
-                                  </Button>
-                                </div>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                    </div>
                     <Button type="submit" disabled={isSubmitting}>
                       {wiki ? "Update Wiki" : "Submit Wiki"}
                     </Button>
@@ -469,9 +401,10 @@ export default function WikiForm({ wiki, user, infobox }: Props) {
           </Form>
         </div>
         {/* Infobox */}
-        <div className="col-span-3">
+        <div className="col-span-3 flex flex-col gap-8">
           {wiki ? (
             <div className="w-full flex flex-col gap-4">
+              <h4 className="text-lg font-bold">Infobox</h4>
               <Button
                 className="self-end"
                 variant="default"
@@ -495,6 +428,26 @@ export default function WikiForm({ wiki, user, infobox }: Props) {
             </div>
           ) : (
             <p>Save wiki to add infobox</p>
+          )}
+          {wiki && (
+            <div className="rounded-md w-full flex flex-col gap-4">
+              <h5 className="font-bold">Collaborators</h5>
+              <div className="space-y-2">
+                {wiki.userWikis?.map((userWiki) => (
+                  <div
+                    key={userWiki.id}
+                    className="flex items-center justify-between p-2 border rounded"
+                  >
+                    <div>
+                      <span className="font-medium">{userWiki.user.name}</span>
+                      <span className="ml-2 text-sm text-gray-500">
+                        ({userWiki.role})
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>

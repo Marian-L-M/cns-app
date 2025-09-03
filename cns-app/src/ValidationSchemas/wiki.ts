@@ -16,7 +16,6 @@ export const wikiSchema = z.object({
   tags: z.array(z.string().max(128)).optional(),
   type: z.nativeEnum(WikiType).default("GENERAL"),
   featured: z.boolean().default(false),
-  authors: z.array(z.string()),
 });
 
 export const WikiInfoboxItemSchema = z.object({

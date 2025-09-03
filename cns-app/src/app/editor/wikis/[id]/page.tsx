@@ -17,7 +17,17 @@ export default async function EditWikiPage({ params }: Props) {
   const wiki = await prisma.wiki.findUnique({
     where: { id: id },
     include: {
-      authors: true,
+      userWikis: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -31,7 +41,9 @@ export default async function EditWikiPage({ params }: Props) {
   });
 
   // Check if current user has permission to edit
-  const session = await requireOwnerOrAdmin({ authors: wiki.authors });
+  const session = await requireOwnerOrAdmin({
+    userJunction: wiki.userWikis,
+  });
 
   return <WikiForm wiki={wiki} user={session.user} infobox={infobox} />;
 }
