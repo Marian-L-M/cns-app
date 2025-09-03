@@ -11,7 +11,6 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
-  // const masterMap = await fetchMasterMap(parseInt(id));
   const masterMap = await prisma?.mapHierarchyMaster.findUnique({
     where: { id },
     include: {

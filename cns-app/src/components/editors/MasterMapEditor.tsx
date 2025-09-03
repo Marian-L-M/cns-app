@@ -47,37 +47,7 @@ export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
 };
 
-interface MapWithRectangularArea
-  extends HierarchyConnection,
-    Map,
-    PointRectangularArea {}
-
-interface MasterMapWithChildren {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  title: string;
-  parentMapId: number;
-  parentMap: Map;
-  childMaps: MapHierarchyChildEditable[];
-  userMapHierarchies: UserMapHierarchy[];
-}
-
-interface MasterMapProps {
-  MasterMap?: MasterMapWithChildren;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
-}
-
-interface MapHierarchyChildEditable extends MapHierarchyChild {
-  title: string;
-}
-
-export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
+export default function MasterMapEditor({ MasterMap, user }: any) {
   const childMaps = MasterMap?.childMaps || [];
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -289,11 +259,11 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
                     key={`chilmdap-${map.id}`}
                     className="w-full flex justify-between items-center gap-2 "
                   >
-                    <h5>{map.title}</h5>
+                    <h5>{map.childMap?.title}</h5>
                     <div className="btn-row flex justify-evenly gap-2 text-xs">
                       <Button variant={"secondary"} asChild>
                         <Link
-                          href={`/editor/mastermaps/${MasterMap.id}/childmaps/${map.hierarchyChildId}`}
+                          href={`/editor/mastermaps/${MasterMap.id}/childmaps/${map.id}`}
                         >
                           <Edit />
                         </Link>
@@ -311,7 +281,7 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               This will delete the childmap relation for [
-                              {map.title}]
+                              {map.childMap?.title}]
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -319,7 +289,7 @@ export default function MasterMapEditor({ MasterMap, user }: MasterMapProps) {
                             <AlertDialogAction
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               onClick={() => {
-                                handleDeleteChildMap(map.hierarchyChildId);
+                                handleDeleteChildMap(map.id);
                               }}
                             >
                               Delete

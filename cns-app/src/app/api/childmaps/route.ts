@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import prisma from "../../../../prisma/db";
+import prisma from "@/../prisma/db";
 import { ChildMapSchema } from "@/ValidationSchemas/maps";
 
 export async function POST(request: NextRequest) {

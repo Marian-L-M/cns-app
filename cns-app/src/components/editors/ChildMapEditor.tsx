@@ -137,15 +137,21 @@ export default function ChildMapEditor({
       setError("");
       if (ChildMap) {
         await axios.patch(`/api/childmaps/${ChildMap.id}`, values);
-        router.push(`/editor/mastermaps/${ChildMap.hierarchyId}`);
+        router.push(
+          `/editor/mastermaps/${MasterMap.id}/childmaps/${ChildMap.id}`
+        );
         router.refresh();
         toast.success("Childmap updated succesfully");
+        setIsSubmitting(false);
       } else {
         const response = await axios.post(`/api/childmaps`, values);
         const NewChildMap = response.data;
-        router.push(`/editor/mastermaps/${NewChildMap.hierarchyId}`);
+        router.push(
+          `/editor/mastermaps/${MasterMap.id}/childmaps/${NewChildMap.id}`
+        );
         router.refresh();
         toast.success("Childmap created succesfully");
+        setIsSubmitting(false);
       }
     } catch (error) {
       setError("Unknown error occurred");

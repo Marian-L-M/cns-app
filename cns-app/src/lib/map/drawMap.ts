@@ -30,7 +30,7 @@ export function drawMasterMapArea(
   const fontSize = parseInt(styles.fontSize) || 16;
   const fontColor = styles.fontColor || "#ffffff";
   const fontType = styles.fontType || "mono";
-  const title = map.title || map.mapTitle || "";
+  const title = map.title || map.childMap?.title || map.mapTitle || "";
 
   ctx.lineWidth = lineWidth;
   ctx.fillStyle = fillStyle;

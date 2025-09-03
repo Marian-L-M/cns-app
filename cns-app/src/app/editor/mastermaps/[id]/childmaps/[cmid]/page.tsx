@@ -1,6 +1,5 @@
 import ChildMapEditor from "@/components/editors/ChildMapEditor";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
-import { fetchHierarchyChild, fetchMasterMap } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
 import prisma from "@/../prisma/db";
 
@@ -10,16 +9,15 @@ interface MapPageProps {
 
 export default async function MasterMapEditorPage({ params }: MapPageProps) {
   const resolvedParams = await params;
-  const { cmid } = resolvedParams;
   const id = parseInt(resolvedParams.id);
-  // const cmid = parseInt(resolvedParams.cmid);
+  const cmid = parseInt(resolvedParams.cmid);
 
-  const childMap = await fetchHierarchyChild(cmid);
   const masterMap = await prisma?.mapHierarchyMaster.findUnique({
     where: { id },
     include: {
       parentMap: true,
       childMaps: {
+        where: { id: cmid },
         include: {
           childMap: true,
           canvasStyles: true,
@@ -49,7 +47,7 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
 
   return (
     <CursorContextProvider>
-      <ChildMapEditor MasterMap={masterMap} ChildMap={childMap} />
+      <ChildMapEditor MasterMap={masterMap} ChildMap={masterMap.childMaps[0]} />
     </CursorContextProvider>
   );
 }
