@@ -7,6 +7,7 @@ import {
   PageSettingsList,
   ToggleMasterMapSettingsList,
   AllSettingsList,
+  ToggleWikiSettingsList,
 } from "@/lib/constants/settings";
 
 import { Pen } from "lucide-react";
@@ -41,10 +42,16 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
     switch (filter) {
       case "top":
         return ToggleMasterMapSettingsList;
+      case "wiki":
+        return ToggleWikiSettingsList;
       default:
         return PageSettingsList;
     }
   };
+
+  const filteredSettings = AdminSettings.filter(
+    (setting) => setting.subCategory === filter
+  );
 
   return (
     <div className="w-full">
@@ -80,7 +87,7 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
         />
         {/* Settings list */}
         <div className="p-4 border border-slate-200 rounded-md flex flex-col gap-2">
-          {AdminSettings.map((setting) => (
+          {filteredSettings.map((setting) => (
             <div
               className="flex justify-between gap-2"
               key={`${setting.type}- ${setting.value.substring(0, 10)}`}

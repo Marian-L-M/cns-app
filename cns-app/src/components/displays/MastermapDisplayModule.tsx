@@ -27,11 +27,6 @@ export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
   const { canvasRef } = useMasterMapMaker({ childMaps, fullscreen });
   const tooltipCtx = useContext(CursorContext);
 
-  // let windowSize: number = 1024;
-  // if (typeof window !== "undefined") {
-  //   windowSize = window.innerWidth;
-  // }
-
   const containerRef = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState<number>(896);
 

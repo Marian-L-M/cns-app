@@ -9,6 +9,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -110,6 +111,7 @@ export default function AdminSettingsItemForm({
       setIsSubmitting(false);
     }
   }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent className="sm:max-w-[600px]">
@@ -155,6 +157,9 @@ export default function AdminSettingsItemForm({
                 />
               </div>
               <div className="w-full">
+                {/* ================= */}
+                {/* TOP PAGE SETTINGS */}
+                {/* ================= */}
                 {/* Mastermap search dialog */}
                 {type == "mastermapId" && (
                   <FormField
@@ -191,8 +196,31 @@ export default function AdminSettingsItemForm({
                     )}
                   />
                 )}
+                {/* ================= */}
+                {/* Wiki PAGE SETTINGS */}
+                {/* ================= */}
+                {(type == "setFeaturedWikis" ||
+                  type == "setExploreWikis" ||
+                  type == "setNewWikis") && (
+                  <FormField
+                    control={form.control}
+                    name="value"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Set number of posts to display</FormLabel>
+                        <FormMessage />
+                        <FormDescription>
+                          Delete or zero to hide section
+                        </FormDescription>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
                 {/* Text editor */}
-                {type == "text" && (
+                {(type == "mainText" || type == "text") && (
                   <div className="flex flex-col gap-4">
                     <h5 className="">Text</h5>
                     <Controller

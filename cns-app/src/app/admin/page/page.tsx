@@ -19,9 +19,15 @@ export default async function adminPageSettings() {
 
   return (
     <div>
-      <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-bold">Page settings</h2>
+      <section className="flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-xl font-bold">Page settings</h2>
+          <p className="text-sm">
+            Note: Set order to group and prioritize your settings
+          </p>
+        </div>
         <AdminSettingsList AdminSettings={settings} filter={"top"} />
+        <AdminSettingsList AdminSettings={settings} filter={"wiki"} />
       </section>
     </div>
   );

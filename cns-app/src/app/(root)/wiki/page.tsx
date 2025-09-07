@@ -1,33 +1,52 @@
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
 import prisma from "@/../prisma/db";
-import { TabsList } from "@radix-ui/react-tabs";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import FeaturedCards from "./FeaturedCards";
+import WikiCardContainer from "@/components/wiki/WikiCardContainer";
+import { AdminSettings } from "@prisma/client";
+import ReactMarkDown from "react-markdown";
 
 export default async function Wiki() {
-  const newArticles = await prisma?.wiki.findMany({
-    orderBy: [{ createdAt: "desc" }],
-    take: 2,
-  });
-
-  const featuredArticles = await prisma?.wiki.findMany({
+  const settings = await prisma.adminSettings.findMany({
     where: {
-      featured: true,
+      category: "PAGE",
+      subCategory: "wiki",
     },
-    orderBy: [{ createdAt: "desc" }],
-    take: 2,
+    orderBy: {
+      order: "asc",
+    },
   });
 
-  const articlesCount = await prisma.wiki.count();
-  const skip = Math.floor(Math.random() * articlesCount);
-  const randomArticles = await prisma.wiki.findMany({
-    take: 4,
-    skip: skip,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  // Configuration types
+  const contentTypes = ["text", "mainText", "mainTitle", "subTitle"];
+
+  // Group content items by order number
+  const groupedContent = settings
+    .filter((item) => contentTypes.includes(item.type))
+    .reduce((acc, item): any => {
+      if (!acc[item.order]) {
+        acc[item.order] = [];
+      }
+      acc[item.order].push(item);
+      return acc;
+    }, {});
+
+  // Configuration items
+  // First block
+  const mainTextGroup = groupedContent["1"];
+  const mainTitle = mainTextGroup.find((item) => item.type === "mainTitle");
+  const mainText = mainTextGroup.find((item) => item.type === "mainText");
+  const mainSubTitle = mainTextGroup.find((item) => item.type === "subTitle");
+  const mainOtherText = mainTextGroup.find((item) => item.type === "text");
+
+  // Free text blocks
+  const otherTextGroups = Object.fromEntries(
+    Object.entries(groupedContent).filter(([key, value]) => key !== "1")
+  );
+
+  const newWiki = settings.find((item) => item.type === "setNewWikis");
+  const featuredWiki = settings.find(
+    (item) => item.type === "setFeaturedWikis"
+  );
+  const exploreWiki = settings.find((item) => item.type === "setExploreWikis");
 
   return (
     <div className="flex flex-col gap-20 w-full">
@@ -38,84 +57,100 @@ export default async function Wiki() {
           <TabsTrigger value="revisions">Revisions</TabsTrigger>
         </TabsList> */}
         <TabsContent className="flex flex-col gap-8" value="read">
-          <div className="grid grid-cols-8 gap-4" id="intro-content">
-            <div className="col-span-6 flex flex-wrap gap-4" id="main-contents">
-              <h2 className="w-full text-2xl font-bold ">
-                Eternity of Magic Wiki
-              </h2>
-              <div className="w-full flex flex-col gap-2 col-span-8 p-4 border border-gray-200 rounded-xl">
-                <div className="w-full flex flex-col gap-2">
-                  <h3 className="text-lg font-semibold  bg-slate-100 px-2 py-1">
-                    Welcome to the Eternity of Magic Wiki
-                  </h3>
-                  <p>
-                    Learn more about whats going on in the world of Kamolin.
-                  </p>
+          <div className="w-full flex flex-row gap-4">
+            {/* Contents Container */}
+            <div className="flex-[3] p-2 border rounded-md border-slate-200 flex flex-wrap gap-4">
+              {/* Title */}
+              {mainTextGroup && (
+                <div
+                  className="w-full flex p-4 flex-col gap-2 border border-slate-200 rounded-md"
+                  id="title-container"
+                >
+                  <h1 className="w-full text-2xl font-bold ">
+                    {mainTitle.value}
+                  </h1>
+                  <p className="text-md">{mainText.value}</p>
+                  {(mainSubTitle || mainOtherText) && (
+                    <div className="w-full flex flex-col gap-2">
+                      <h3 className="text-xl font-semibold  bg-slate-100 px-2 py-1">
+                        {mainSubTitle.value}
+                      </h3>
+                      <ReactMarkDown
+                        className={"prose dark:prose-invert text-md"}
+                      >
+                        {mainText.value}
+                      </ReactMarkDown>
+                    </div>
+                  )}
                 </div>
-              </div>
-              {/* Featured Articles */}
-              {featuredArticles && (
-                <FeaturedCards
-                  articles={featuredArticles}
-                  title={"Featured Articles"}
-                />
               )}
-              {/* New Articles */}
-              {newArticles && (
-                <FeaturedCards articles={newArticles} title={"New Articles"} />
-              )}
-              <div className="flex-1 flex flex-col gap-4 p-4 border border-gray-200 rounded-xl self-stretch">
-                <h4 className="text-lg  font-semibold  bg-slate-100 px-2 py-1">
-                  Did you know?
-                </h4>
-                <p className="text-sm">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Officia natus eligendi corporis tempora quibusdam architecto,
-                  rerum minus dignissimos vero provident perspiciatis in sint
-                  veniam minima rem eaque. Tempora odio quis rerum quaerat
-                  nesciunt laborum amet ut sapiente magni velit eius neque,
-                  nostrum, in provident nemo unde ipsam qui assumenda?
-                </p>
-                <p className="text-sm">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Officia natus eligendi corporis tempora quibusdam architecto,
-                  rerum minus dignissimos vero provident perspiciatis in sint
-                  veniam minima rem eaque. Tempora odio quis rerum quaerat
-                  nesciunt laborum amet ut sapiente magni velit eius neque,
-                  nostrum, in provident nemo unde ipsam qui assumenda?
-                </p>
-                <p className="text-sm">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Officia natus eligendi corporis tempora quibusdam architecto,
-                  rerum minus dignissimos vero provident perspiciatis in sint
-                  veniam minima rem eaque. Tempora odio quis rerum quaerat
-                  nesciunt laborum amet ut sapiente magni velit eius neque,
-                  nostrum, in provident nemo unde ipsam qui assumenda?
-                </p>
-              </div>
-            </div>
-            <div
-              className="col-span-2 flex flex-col gap-2 p-4 border border-gray-200 rounded-xl self-stretch"
-              id="wiki-bars-container"
-            >
-              <h4
-                className="text-xl font-semibold bg-slate-100 px-2 py-1"
-                id="bars-container-1"
-              >
-                Explore
-              </h4>
-              {randomArticles &&
-                randomArticles.map((article) => (
-                  <Link
-                    href={`/wiki/${article.id}`}
-                    className="flex w-full items-center gap-2 self-end hover:opacity-70 border border-grey-100 rounded-md px-4 py-2"
-                    key={`news-bar-${article.id}`}
+              {/* Contents */}
+              {/* To do order with css */}
+              <div className="w-full grid grid-cols-3 gap-4">
+                {newWiki && (
+                  <div className={`w-full`} style={{ order: newWiki?.order }}>
+                    {/* New Wiki Section */}
+                    <WikiCardContainer
+                      type={newWiki.type}
+                      amount={parseInt(newWiki.value)}
+                    />
+                  </div>
+                )}
+                {/* Featured Wiki Section */}
+                {featuredWiki && (
+                  <div
+                    className={`w-full`}
+                    style={{ order: featuredWiki.order }}
                   >
-                    <ChevronRight className="text-sm" />
-                    <h4 className="text-sm">{article.title}</h4>
-                  </Link>
-                ))}
+                    <WikiCardContainer
+                      type={featuredWiki.type}
+                      amount={parseInt(featuredWiki.value)}
+                    />
+                  </div>
+                )}
+                {/* Render grouped content sections */}
+                {Object.keys(groupedContent)
+                  .filter((orderNumber) => orderNumber !== "1") // Skip the main text group as it's rendered above
+                  .sort((a, b) => parseInt(a) - parseInt(b))
+                  .map((orderNumber) => {
+                    const group = groupedContent[orderNumber];
+                    const groupMainTitle = group.find(
+                      (item) => item.type === "mainTitle"
+                    );
+                    const groupMainText = group.find(
+                      (item) => item.type === "mainText"
+                    );
+                    const groupSubTitle = group.find(
+                      (item) => item.type === "subTitle"
+                    );
+                    const groupOtherText = group.find(
+                      (item) => item.type === "text"
+                    );
+
+                    return (
+                      <div
+                        key={orderNumber}
+                        className="w-full flex flex-col gap-4 p-4 border border-gray-200 rounded-xl self-stretch"
+                        style={{ order: parseInt(orderNumber) }}
+                      >
+                        {groupMainTitle && renderContentItem(groupMainTitle)}
+                        {groupSubTitle && renderContentItem(groupSubTitle)}
+                        {groupMainText && renderContentItem(groupMainText)}
+                        {groupOtherText && renderContentItem(groupOtherText)}
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
+            {/* Explore/random wikis */}
+            {exploreWiki && (
+              <div className="flex-1 ">
+                <WikiCardContainer
+                  type={exploreWiki.type}
+                  amount={parseInt(exploreWiki.value)}
+                />
+              </div>
+            )}
           </div>
         </TabsContent>
         <TabsContent value="discussion">Discuss contents</TabsContent>
@@ -125,5 +160,35 @@ export default async function Wiki() {
   );
 }
 
-// Inspiration
-// https://dribbble.com/shots/8659974-Wikipedia-redesign
+// Helper function to render content based on type
+function renderContentItem(item: AdminSettings) {
+  switch (item.type) {
+    case "mainTitle":
+      return (
+        <h2 key={item.id} className="text-2xl font-bold">
+          {item.value}
+        </h2>
+      );
+    case "subTitle":
+      return (
+        <h3
+          key={item.id}
+          className="text-xl font-semibold bg-slate-100 px-2 py-1"
+        >
+          {item.value}
+        </h3>
+      );
+    case "mainText":
+    case "text":
+      return (
+        <ReactMarkDown
+          key={item.id}
+          className="prose dark:prose-invert text-md"
+        >
+          {item.value}
+        </ReactMarkDown>
+      );
+    default:
+      return null;
+  }
+}
