@@ -13,7 +13,8 @@ import prisma from "@/../prisma/db";
 import { Button } from "@/components/ui/button";
 import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 
-export default async function MasterMapPage() {
+export default async function WikiEditorPage() {
+  // To do
   const wikis = await prisma.wiki.findMany({
     include: {
       userWikis: {

@@ -1,16 +1,16 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
-import { Status, Wiki, WikiType } from "@prisma/client";
+import { Wiki, WikiType } from "@prisma/client";
 
 import prisma from "@/../prisma/db";
 import Image from "next/image";
 import { truncateText } from "@/lib/textUtils";
 import WikiFilter from "../WikiFilter";
 import TypeFilter from "../TypeFilter";
-
-// import { SearchParams } from "./page";
+import { Button } from "@/components/ui/button";
+import SearchInput from "../SearchInput";
 
 export const metadata = {
   title: `Featured Wikis`,
@@ -20,12 +20,8 @@ export interface SearchParams {
   author: string;
   type: string;
   page: string;
+  title: string;
   orderBy: keyof Wiki;
-}
-
-interface Props {
-  wikis: Wiki[];
-  searchParams: SearchParams;
 }
 
 export default async function featuredWikiPage({
@@ -38,13 +34,29 @@ export default async function featuredWikiPage({
   const pageSize = 12;
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
   const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
-  const author = searchParams.author ? searchParams.author : undefined;
-  const type: WikiType = searchParams.type ? searchParams.type : undefined;
+  const title = searchParams.title ? searchParams.title : "";
+  const authorName = searchParams.author ? searchParams.author : undefined;
+  const type = searchParams.type ? searchParams.type : undefined;
 
-  const wikis = await prisma.wiki.findMany({
+  const authorList = await prisma.user.findMany({
+    where: {
+      role: "AUTHOR",
+    },
+    select: {
+      id: true,
+      RelatedUser: true,
+    },
+  });
+
+  const settings = {
     where: {
       featured: true,
-      type: type,
+      ...(type && { type: type as WikiType }),
+      userWikis: {},
+      title: {
+        contains: title,
+        mode: "insensitive",
+      },
     },
     orderBy: {
       [orderBy]: "desc",
@@ -52,51 +64,62 @@ export default async function featuredWikiPage({
     take: pageSize,
     skip: (page - 1) * pageSize,
     include: {
-      authors: {
-        select: {
-          id: true,
-          RelatedUser: true,
+      userWikis: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              role: true,
+              RelatedUser: true,
+            },
+          },
         },
       },
     },
-  });
+  };
 
-  // Flatten authors
-  const featuredAuthors = wikis
-    .flatMap((wiki) => wiki.authors)
-    .filter((author) => author.RelatedUser !== null)
-    .filter(
-      (author, index, array) =>
-        array.findIndex((a) => a.id === author.id) === index
-    );
+  let wikis: Wiki[] = [];
 
-  const filteredWikis = author
-    ? wikis.filter((wiki) =>
-        wiki.authors.some(
-          (wikiAuthor) =>
-            wikiAuthor.RelatedUser?.displayName?.toLowerCase() ===
-            author.toLowerCase()
-        )
-      )
-    : wikis;
+  if (authorName) {
+    const author = await prisma.userProfile.findFirst({
+      where: {
+        displayName: {
+          equals: authorName,
+          mode: "insensitive",
+        },
+      },
+    });
+    if (author) {
+      const authorId = author.userId;
+      settings.where.userWikis = {
+        some: {
+          userId: authorId,
+        },
+      };
+      wikis = await prisma.wiki.findMany(settings);
+    }
+  } else {
+    wikis = await prisma.wiki.findMany(settings);
+  }
 
-  // For reordering -> delete?
-  //   const createQueryObject = (orderBy: string) => ({
-  //     orderBy,
-  //     ...(searchParams.author && { author: searchParams.author }),
-  //     ...(searchParams.page && { page: searchParams.page }),
-  //   });
+  // 20250908 To do: dropdown labels do not update on reset
 
   return (
     <div className="w-full flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Featured Wikis</h1>
       <div className="w-full flex flex-col gap-4 border rounded-md p-4">
-        <WikiFilter authors={featuredAuthors} />
-        <TypeFilter />
+        <div className="flex gap-4 items-center">
+          <WikiFilter authors={authorList} />
+          <TypeFilter />
+          <SearchInput />
+        </div>
+        <Link href="/wiki/featured">
+          <Button>Reset</Button>
+        </Link>
       </div>
       <div className="rounded-md grid grid-cols-12 gap-4 border  p-4">
-        {filteredWikis ? (
-          filteredWikis.map((wiki) => (
+        {wikis &&
+          wikis.map((wiki) => (
             <div
               className="col-span-2 flex flex-col justify-between gap-2 rounded-xl overflow-hidden border border-gray-200  "
               key={`wiki-${wiki.id}`}
@@ -133,10 +156,8 @@ export default async function featuredWikiPage({
                 View More <ChevronRight />
               </Link>
             </div>
-          ))
-        ) : (
-          <h1>No featured wikis</h1>
-        )}
+          ))}
+        {wikis.length == 0 && <h2>No wikis found</h2>}
       </div>
     </div>
   );
