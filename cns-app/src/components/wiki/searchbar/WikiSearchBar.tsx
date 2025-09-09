@@ -1,9 +1,9 @@
 import TypeFilter from "@/components/wiki/searchbar/TypeFilter";
 import AuthorFilter from "@/components/wiki/searchbar/AuthorFilter";
-import SearchInput from "../../inputs/SearchInput";
 import Link from "next/link";
 import { Button } from "../../ui/button";
 import { User } from "@prisma/client";
+import SearchInput from "./SearchInput";
 
 interface Props {
   authorList: User[];

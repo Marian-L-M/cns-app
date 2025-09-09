@@ -54,8 +54,7 @@ export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
   // Didn't update usermastermapmaker yet
   return (
     <div
-      ref={containerRef}
-      className={` flex flex-col col-span-4 gap-2 ${
+      className={` w-full flex flex-col gap-2 ${
         fullscreen
           ? "fixed top-0 left-0 w-full h-full z-20 bg-black bg-opacity-80 p-10 flex flex-row items-center justify-center"
           : ""
@@ -79,7 +78,11 @@ export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
         />
         {fullscreen ? "Exit fullscreen" : "Fullscreen"}
       </div>
-      <div className="relative z-10 w-fit max-w-full max-h-full" id="map-base">
+      <div
+        className="relative z-10 w-fit max-w-full max-h-full"
+        ref={containerRef}
+        id="map-base"
+      >
         <canvas
           ref={canvasRef}
           width={windowSize.width}

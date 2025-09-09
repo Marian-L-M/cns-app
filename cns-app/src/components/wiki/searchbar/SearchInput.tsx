@@ -45,7 +45,7 @@ export default function SearchInput() {
         placeholder="Search by wiki title"
         className="px-2 py-2 text-zinc-800 bg-slate-50 rounded-md  w-[200px] border border-slate-100"
       />
-      {/* <Button variant={"secondary"}>Search</Button> */}
+      <Button variant={"secondary"}>Search</Button>
     </form>
   );
 }

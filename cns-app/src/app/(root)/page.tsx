@@ -29,7 +29,6 @@ export default async function Home() {
     (item) => item.type === "subTitle" || item.type === "text"
   );
 
-  console.log(mainText);
   if (!masterMapId) {
     // Text only mode
     return (
@@ -61,7 +60,9 @@ export default async function Home() {
         )}
         {masterMap && (
           <CursorContextProvider>
-            <MastermapDisplayModule masterMap={masterMap} />
+            <div className="col-span-4">
+              <MastermapDisplayModule masterMap={masterMap} />
+            </div>
           </CursorContextProvider>
         )}
         <div
@@ -96,7 +97,7 @@ function ContentList({ contents }: { contents: AdminSettings[] }) {
 
 function TitleSection({ mainTitle, mainText }: titleProps) {
   return (
-    <div className="col-span-4  flex flex-col gap-2">
+    <div className="col-span-6  flex flex-col gap-2">
       {mainTitle && <h1 className="text-2xl ">{mainTitle.value}</h1>}
       {mainText && (
         <div className="w-full">
