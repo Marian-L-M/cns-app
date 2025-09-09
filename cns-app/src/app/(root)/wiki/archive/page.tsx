@@ -5,7 +5,7 @@ import WikiSearchBar from "@/components/wiki/searchbar/WikiSearchBar";
 import WikiTable from "../WikiTable";
 
 export const metadata = {
-  title: `Featured Wikis`,
+  title: `Wiki Archive`,
 };
 
 export interface SearchParams {
@@ -16,7 +16,7 @@ export interface SearchParams {
   orderBy: keyof Wiki;
 }
 
-export default async function featuredWikiPage({
+export default async function wikiArchivePage({
   searchParams: rawSearchParams,
 }: {
   searchParams: SearchParams;
@@ -42,7 +42,6 @@ export default async function featuredWikiPage({
 
   const settings = {
     where: {
-      featured: true,
       ...(type && { type: type as WikiType }),
       userWikis: {},
       title: {
@@ -96,7 +95,7 @@ export default async function featuredWikiPage({
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Featured Wikis</h1>
+      <h1 className="text-2xl font-bold">Wiki Archive</h1>
       <WikiSearchBar authorList={authorList} />
       <WikiTable wikis={wikis} />
     </div>

@@ -8,28 +8,31 @@ import {
   SelectItem,
   SelectSeparator,
   SelectTrigger,
+  SelectLabel,
   SelectValue,
 } from "@/components/ui/select";
-import { SelectLabel } from "@radix-ui/react-select";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { WikiType } from "@prisma/client";
 
 export default function TypeFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [value, setValue] = useState<string | undefined>();
+  const [value, setValue] = useState<string>("");
 
+  // Sync internal state with URL params
+  useEffect(() => {
+    const typeParam = searchParams.get("type");
+    setValue(typeParam || "");
+  }, [searchParams]);
+
+  // Clear dropdown
   const handleClear = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Reset the select value
-    setValue(undefined);
-
-    // Update URL by removing the type parameter
+    // Set search params while preseving existent
     const params = new URLSearchParams();
-
-    // Preserve other search params except type
     searchParams.forEach((value, key) => {
       if (key !== "type") {
         params.append(key, value);
@@ -67,17 +70,12 @@ export default function TypeFilter() {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {/* 250830 To do: make dynamic */}
           <SelectLabel>Types</SelectLabel>
-          <SelectItem value={"GENERAL"}>General</SelectItem>
-          <SelectItem value={"STORY"}>Story</SelectItem>
-          <SelectItem value={"AREA"}>Area</SelectItem>
-          <SelectItem value={"CHARACTER"}>Character</SelectItem>
-          <SelectItem value={"OBJECT"}>Object</SelectItem>
-          <SelectItem value={"HISTORY"}>History</SelectItem>
-          <SelectItem value={"SCIENCE"}>Science</SelectItem>
-          <SelectItem value={"EXPLANATION"}>Explanation</SelectItem>
-          <SelectItem value={"OTHER"}>Other</SelectItem>
+          {Object.values(WikiType).map((type) => (
+            <SelectItem key={type} value={type}>
+              {type.charAt(0) + type.slice(1).toLowerCase()}
+            </SelectItem>
+          ))}
           <SelectSeparator />
           <Button
             className="w-full px-2"

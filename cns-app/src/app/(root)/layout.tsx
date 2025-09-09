@@ -27,8 +27,6 @@ export default async function RootLayout({
       subLinks: [
         { title: "Archive", url: "/wiki/archive" },
         { title: "Featured", url: "/wiki/featured" },
-        { title: "Search", url: "/wiki/search" },
-        { title: "Random", url: "/wiki/random" },
       ],
     },
     {

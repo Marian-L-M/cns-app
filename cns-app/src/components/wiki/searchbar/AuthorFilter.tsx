@@ -6,23 +6,50 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { UserProfile } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   id: string;
   RelatedUser: UserProfile;
 }
 
-export default function WikiFilter({ authors }: { authors: Props[] }) {
+export default function AuthorFilter({ authors }: { authors: Props[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [value, setValue] = useState<string>("");
+
+  // Sync internal state with URL params
+  useEffect(() => {
+    const authorParam = searchParams.get("author");
+    setValue(authorParam || "");
+  }, [searchParams]);
+
+  // Clear dropdown
+  const handleClear = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Set search params while preseving existent
+    const params = new URLSearchParams();
+    searchParams.forEach((value, key) => {
+      if (key !== "author") {
+        params.append(key, value);
+      }
+    });
+
+    const query = params.size ? `?${params.toString()}` : "";
+    router.push(`${window.location.pathname}${query}`);
+  };
 
   return (
     <Select
-      defaultValue={searchParams.get("author") || ""}
+      value={value}
       onValueChange={(author) => {
         const params = new URLSearchParams();
 
@@ -54,6 +81,15 @@ export default function WikiFilter({ authors }: { authors: Props[] }) {
               {author.RelatedUser.displayName}
             </SelectItem>
           ))}
+          <SelectSeparator />
+          <Button
+            className="w-full px-2"
+            variant={"secondary"}
+            size={"sm"}
+            onClick={handleClear}
+          >
+            Clear
+          </Button>
         </SelectGroup>
       </SelectContent>
     </Select>
