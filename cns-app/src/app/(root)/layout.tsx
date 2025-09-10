@@ -35,13 +35,7 @@ export default async function RootLayout({
       icon: ScrollText,
       subLinks: [
         { title: "Featured", url: "/stories/featured" },
-        { title: "Search", url: "/stories/search" },
-        { title: "Categories", url: "/stories/categories" },
-        { title: "Random", url: "" },
-      ],
-      options: [
-        { title: "Add", url: "/stories/new" },
-        { title: "Manage", url: "/stories/" },
+        { title: "Archive", url: "/stories/archive" },
       ],
     },
     {
@@ -54,11 +48,6 @@ export default async function RootLayout({
         { title: "Search", url: "/maps/search" },
         { title: "Categories", url: "/maps/categories" },
         { title: "Random", url: "" },
-      ],
-      options: [
-        { title: "Add", url: "/maps/new" },
-        { title: "MasterMaps", url: "/maps/mastermaps" },
-        { title: "Manage", url: "/maps/" },
       ],
     },
     {
@@ -78,12 +67,12 @@ export default async function RootLayout({
         <div className="h-full w-full flex" id="content-wrapper">
           <AppSidebar menuItems={mainMenuItems} />
           <SidebarInset>
-            <main className="w-full max-w-[1680px] h-full px-8 py-4 overflow-y-scroll">
+            <main className="w-full h-full px-8 py-4 overflow-y-scroll">
               {children}
             </main>
+            <Footer />
           </SidebarInset>
         </div>
-        <Footer />
       </div>
     </SidebarProvider>
   );
