@@ -16,7 +16,7 @@ export default function InfoboxRow({ infoboxItem }: Props) {
       {infoboxItem.type == "TITLE" && (
         // Type Title
         <div className="w-full">
-          <h2 className="text-xl w-full bg-gray-200 text-center mb-2">
+          <h2 className="text-lg w-full bg-gray-200 text-center mb-2">
             {infoboxItem.title}
           </h2>
         </div>
@@ -45,7 +45,7 @@ export default function InfoboxRow({ infoboxItem }: Props) {
               {infoboxItem.title}
             </h3>
           )}
-          <p>{infoboxItem.description}</p>
+          <p className="text-sm">{infoboxItem.description}</p>
         </div>
       )}
       {infoboxItem.type === "COLLECTION" && (

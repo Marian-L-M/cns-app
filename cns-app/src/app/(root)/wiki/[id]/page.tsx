@@ -7,6 +7,7 @@ import prisma from "@/../prisma/db";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InfoboxDisplayModule from "@/components/displays/InfoboxDisplayModule";
+import AuthorDisplayModule from "@/components/displays/AuthorDisplayModule";
 
 interface WikiPageProps {
   params: { id: string };
@@ -44,6 +45,9 @@ export default async function WikiPage({ params }: WikiPageProps) {
     return <p className="text-destructive">Wiki Not Found</p>;
   }
 
+  const authors = wiki.userWikis;
+  console.log(authors);
+
   const infobox = await prisma.wikiInfoboxItem.findMany({
     where: { wikiId: id },
     orderBy: { order: "asc" },
@@ -63,19 +67,19 @@ export default async function WikiPage({ params }: WikiPageProps) {
   return (
     <div className="flex flex-col gap-20 w-full">
       <Tabs defaultValue="article" className="w-full">
-        <TabsList className="absolute top-0 left-0 -translate-y-full">
+        {/* <TabsList className="">
           <TabsTrigger value="article">Article</TabsTrigger>
           <TabsTrigger value="discussion">Discussion</TabsTrigger>
           <TabsTrigger value="revisions">Revisions</TabsTrigger>
-        </TabsList>
+        </TabsList> */}
         <TabsContent className="flex flex-col gap-8 px-6 py-4" value="article">
-          <div className="max-w-7xl flex flex-col gap-8">
+          <div className="w-full flex flex-col gap-8">
             <div
               className="top-content flex justify-between align-bottom"
               id="top-content"
             >
               <div id="title-container">
-                <h1 className="text-2xl">{wiki.title}</h1>
+                <h1 className="text-xl">{wiki.title}</h1>
                 {/* <p>Subtitle</p> */}
               </div>
               <div
@@ -90,28 +94,29 @@ export default async function WikiPage({ params }: WikiPageProps) {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-12 gap-4 max-w-7xl">
+            <div className="w-full grid grid-cols-12 gap-4">
               <div className="col-span-9" id="left-col">
                 <div className="flex flex-col gap-4" id="content-col">
                   <ReactMarkDown
-                    className={"prose lg:prose-xl dark:prose-invert"}
+                    className={"prose lg:prose-md dark:prose-invert"}
                   >
                     {wiki.description}
                   </ReactMarkDown>
                   <div className="flex flex-col gap-10 " id="main-content">
                     <ReactMarkDown
-                      className={"prose lg:prose-xl dark:prose-invert"}
+                      className={"prose lg:prose-md dark:prose-invert"}
                     >
                       {wiki.wikiText}
                     </ReactMarkDown>
                   </div>
                 </div>
               </div>
-              {infobox.length > 0 && (
-                <div className="col-span-3" id="right-col">
+              <div className="col-span-3 flex flex-col gap-8" id="right-col">
+                {infobox.length > 0 && (
                   <InfoboxDisplayModule infobox={infobox} />
-                </div>
-              )}
+                )}
+                <AuthorDisplayModule authors={authors} />
+              </div>
             </div>
           </div>
         </TabsContent>
