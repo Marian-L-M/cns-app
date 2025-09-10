@@ -33,7 +33,7 @@ export default async function WikiPage({ params }: WikiPageProps) {
           user: {
             select: {
               id: true,
-              RelatedUser: true,
+              userProfile: true,
             },
           },
         },

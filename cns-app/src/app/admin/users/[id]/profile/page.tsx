@@ -17,7 +17,7 @@ export default async function userProfilePage({ params }: Props) {
   const user = await prisma?.user.findUnique({
     where: { id: resolvedParams.id },
     include: {
-      RelatedUser: true,
+      userProfile: true,
     },
   });
 

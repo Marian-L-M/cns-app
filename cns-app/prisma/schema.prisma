@@ -32,17 +32,6 @@ enum ContentRole {
   EDITOR
 }
 
-model AdminSettings {
-  id          Int               @id @default(autoincrement())
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  order       Int               @default(1)
-  category    AdminSettingsType @default(OTHER)
-  subCategory String?           @default("")
-  type        String            @default("") @db.Text
-  value       String            @default("")
-}
-
 enum AdminSettingsType {
   USER
   PAGE
@@ -95,6 +84,17 @@ enum MapAreaType {
   OTHER
 }
 
+model AdminSettings {
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  order       Int               @default(1)
+  category    AdminSettingsType @default(OTHER)
+  subCategory String?           @default("")
+  type        String            @default("") @db.Text
+  value       String            @default("")
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id") @db.Uuid
@@ -137,7 +137,7 @@ model User {
   sessions      Session[]
 
   role        Role         @default(USER)
-  RelatedUser UserProfile? @relation("RelatedUser")
+  userProfile UserProfile? @relation("userProfile")
 
   userStories      UserStory[]
   userMaps         UserMap[]
@@ -172,7 +172,7 @@ model UserProfile {
   socials   Json[]  @default([]) @db.Json
 
   userId      String @unique
-  RelatedUser User   @relation("RelatedUser", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  relatedUser User   @relation("userProfile", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId])
 }

@@ -36,7 +36,7 @@ export default async function featuredWikiPage({
     },
     select: {
       id: true,
-      RelatedUser: true,
+      userProfile: true,
     },
   });
 
@@ -62,7 +62,7 @@ export default async function featuredWikiPage({
             select: {
               id: true,
               role: true,
-              RelatedUser: true,
+              userProfile: true,
             },
           },
         },

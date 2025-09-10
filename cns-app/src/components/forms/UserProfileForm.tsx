@@ -40,7 +40,7 @@ export default function UserProfileForm({ user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const profile: UserProfile = user.RelatedUser;
+  const profile: UserProfile = user.userProfile;
 
   const form = useForm<UserProfileFormData>({
     resolver: zodResolver(userProfileSchema),

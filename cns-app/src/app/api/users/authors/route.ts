@@ -11,13 +11,13 @@ export async function GET(request: NextRequest) {
       },
       select: {
         id: true,
-        RelatedUser: true,
+        userProfile: true,
       },
     });
 
     // filter out authors without a public profile
     const publicAuthors = authors.filter(
-      (author) => author.RelatedUser !== null
+      (author) => author.userProfile !== null
     );
 
     return NextResponse.json(publicAuthors, { status: 200 });

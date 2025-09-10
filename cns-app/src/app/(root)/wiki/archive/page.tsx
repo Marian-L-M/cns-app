@@ -36,7 +36,7 @@ export default async function wikiArchivePage({
     },
     select: {
       id: true,
-      RelatedUser: true,
+      userProfile: true,
     },
   });
 
@@ -61,7 +61,7 @@ export default async function wikiArchivePage({
             select: {
               id: true,
               role: true,
-              RelatedUser: true,
+              userProfile: true,
             },
           },
         },

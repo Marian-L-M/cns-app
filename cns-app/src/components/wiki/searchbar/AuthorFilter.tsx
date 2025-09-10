@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   id: string;
-  RelatedUser: UserProfile;
+  userProfile: UserProfile;
 }
 
 export default function AuthorFilter({ authors }: { authors: Props[] }) {
@@ -76,9 +76,9 @@ export default function AuthorFilter({ authors }: { authors: Props[] }) {
           {authors.map((author) => (
             <SelectItem
               key={`author-${author.id}`}
-              value={author.RelatedUser.displayName}
+              value={author.userProfile.displayName}
             >
-              {author.RelatedUser.displayName}
+              {author.userProfile.displayName}
             </SelectItem>
           ))}
           <SelectSeparator />

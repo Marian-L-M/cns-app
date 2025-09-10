@@ -22,7 +22,7 @@ export default function AuthorDisplayModule({ authors }: props) {
       <div className="flex flex-col gap-4">
         {authors.map((author) => (
           <div key={`author-${author.userId}`} className="w-full">
-            {author.user.relatedUser.displayName}
+            {/* {author.user.userProfile.displayName} */}
           </div>
         ))}
       </div>
