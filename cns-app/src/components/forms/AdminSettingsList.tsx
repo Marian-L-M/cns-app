@@ -8,6 +8,7 @@ import {
   ToggleMasterMapSettingsList,
   AllSettingsList,
   ToggleWikiSettingsList,
+  ToggleStorySettingsList,
 } from "@/lib/constants/settings";
 
 import { Pen } from "lucide-react";
@@ -44,6 +45,8 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
         return ToggleMasterMapSettingsList;
       case "wiki":
         return ToggleWikiSettingsList;
+      case "story":
+        return ToggleStorySettingsList;
       default:
         return PageSettingsList;
     }

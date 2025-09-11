@@ -29,6 +29,8 @@ import dynamic from "next/dynamic";
 import "easymde/dist/easymde.min.css";
 import { fetchMastermapName } from "@/lib/fetchMapData";
 import MastermapSearchDialog from "../ui/dialog/mastermapSearchDialog";
+import StorySearchDialog from "../ui/dialog/storySearchDialog";
+import { fetchStoryName } from "@/lib/fetchStoryData";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -53,10 +55,10 @@ export default function AdminSettingsItemForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const [selectedMastermapId, setSelectedMastermapId] = useState<
-    number | undefined
-  >(adminSettingsItem?.id ?? undefined);
-  const [mastermapName, setMastermapName] = useState<string>("");
+  const [selectedId, setSelectedId] = useState<number | undefined>(
+    adminSettingsItem?.id ?? undefined
+  );
+  const [displayName, setDisplayName] = useState<string>("");
 
   const form = useForm<AdminSettings>({
     resolver: zodResolver(AdminSettingsSchema),
@@ -82,13 +84,26 @@ export default function AdminSettingsItemForm({
 
   // Fetch mastermap name when mastermap id changes
   useEffect(() => {
-    // Update Mastermap Name
-    fetchMastermapName({ selectedMastermapId, setMastermapName });
-    // Update form
-    if (selectedMastermapId && type == "mastermapId") {
-      form.setValue("value", selectedMastermapId.toString());
+    // Update display name
+    if (type == "mastermapId") {
+      fetchMastermapName({
+        selectedMastermapId: selectedId,
+        setMastermapName: setDisplayName,
+      });
+    } else if (type == "storyId") {
+      fetchStoryName({
+        selectedStoryId: selectedId,
+        setStoryName: setDisplayName,
+      });
     }
-  }, [selectedMastermapId, form]);
+    // Update form
+    if (
+      selectedId &&
+      (type == "mastermapId" || (selectedId && type == "storyId"))
+    ) {
+      form.setValue("value", selectedId.toString());
+    }
+  }, [selectedId, form]);
 
   async function onSubmit(values: AdminSettings) {
     try {
@@ -161,17 +176,17 @@ export default function AdminSettingsItemForm({
                 {/* TOP PAGE SETTINGS */}
                 {/* ================= */}
                 {/* Mastermap search dialog */}
-                {type == "mastermapId" && (
+                {(type == "mastermapId" || type == "storyId") && (
                   <FormField
                     control={form.control}
                     name="value"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mastermap</FormLabel>
+                        <FormLabel>Select id</FormLabel>
                         <FormMessage />
                         <FormControl>
                           <div className="flex flex-row gap-2">
-                            {mastermapName && (
+                            {displayName && (
                               <div className="w-2/3">
                                 <Input
                                   type="hidden"
@@ -180,15 +195,22 @@ export default function AdminSettingsItemForm({
                                 />
                                 <div className="p-2 border rounded-md h-10 flex items-center">
                                   <p className="truncate text-sm">
-                                    {mastermapName}
+                                    {displayName}
                                   </p>
                                 </div>
                               </div>
                             )}
                             <div className="w-1/3">
-                              <MastermapSearchDialog
-                                setSelectedMastermapId={setSelectedMastermapId}
-                              />
+                              {type == "mastermapId" && (
+                                <MastermapSearchDialog
+                                  setSelectedId={setSelectedId}
+                                />
+                              )}
+                              {type == "storyId" && (
+                                <StorySearchDialog
+                                  setSelectedId={setSelectedId}
+                                />
+                              )}
                             </div>
                           </div>
                         </FormControl>
@@ -201,7 +223,11 @@ export default function AdminSettingsItemForm({
                 {/* ================= */}
                 {(type == "setFeaturedWikis" ||
                   type == "setExploreWikis" ||
-                  type == "setNewWikis") && (
+                  type == "setNewWikis" ||
+                  type == "setStoryList" ||
+                  type == "setStoryCards" ||
+                  type == "setExploreStories" ||
+                  type == "setNewStories") && (
                   <FormField
                     control={form.control}
                     name="value"

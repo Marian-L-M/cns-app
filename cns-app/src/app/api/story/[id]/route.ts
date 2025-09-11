@@ -6,6 +6,33 @@ interface Props {
   params: { id: string };
 }
 
+export async function GET(request: NextRequest, { params }: Props) {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
+  if (isNaN(id)) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
+
+  try {
+    const story = await prisma.story.findUnique({
+      where: { id: id },
+    });
+
+    if (!story) {
+      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(story, { status: 200 });
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const validation = StoriesSchema.safeParse(body);

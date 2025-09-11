@@ -28,6 +28,7 @@ export default async function adminPageSettings() {
         </div>
         <AdminSettingsList AdminSettings={settings} filter={"top"} />
         <AdminSettingsList AdminSettings={settings} filter={"wiki"} />
+        <AdminSettingsList AdminSettings={settings} filter={"story"} />
       </section>
     </div>
   );

@@ -17,6 +17,15 @@ export const ToggleWikiSettingsList = {
   ...PageSettingsList,
 } as const;
 
+export const ToggleStorySettingsList = {
+  storyId: "Set main story",
+  setStoryList: "Set story list",
+  setStoryCards: "Set story cards",
+  setNewStories: "Set new story section",
+  setExploreStories: "Set explore section",
+  ...PageSettingsList,
+} as const;
+
 export const AllSettingsList = {
   ...ToggleMasterMapSettingsList,
 } as const;

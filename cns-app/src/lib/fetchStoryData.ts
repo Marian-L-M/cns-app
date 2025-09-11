@@ -1,5 +1,6 @@
 // Move to utils folder and polish concept
 import prisma from "@/../prisma/db";
+import axios from "axios";
 
 /**
  * Accepts a story id to return all related substories
@@ -12,4 +13,29 @@ export async function fetchSubStoryData(storyId: number) {
   });
 
   return { subStory };
+}
+
+interface StoryFetchProps {
+  selectedStoryId: number | undefined;
+  setStoryName: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export async function fetchStoryName({
+  selectedStoryId,
+  setStoryName,
+}: StoryFetchProps) {
+  if (!selectedStoryId) {
+    setStoryName("");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`/api/story/${selectedStoryId}`);
+    if (response.data && response.data.title) {
+      setStoryName(response.data.title);
+    }
+  } catch (error) {
+    console.error("Error fetching mastermap data:", error);
+    setStoryName("");
+  }
 }

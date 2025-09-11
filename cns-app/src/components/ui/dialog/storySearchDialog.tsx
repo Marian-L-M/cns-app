@@ -1,5 +1,5 @@
 "use client";
-import { MapHierarchyMaster } from "@prisma/client";
+import { Story } from "@prisma/client";
 import { Suspense, useState } from "react";
 import useSWR from "swr";
 import {
@@ -12,15 +12,15 @@ import {
 } from "./dialog";
 import { Button } from "../button";
 
-interface MastermapSearchDialogProps {
+interface StorySearchDialogProps {
   setSelectedId: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-interface MastermapDataProps {
+interface StoryDataProps {
   data:
     | {
         message: string;
-        mastermaps: MapHierarchyMaster[];
+        stories: Story[];
       }
     | undefined;
   setSelectedId: React.Dispatch<React.SetStateAction<number | undefined>>;
@@ -37,7 +37,7 @@ const fetchPosts = async (url: string) => {
   return response.json();
 };
 
-function MastermapSearchDialog({ setSelectedId }: MastermapSearchDialogProps) {
+function StorySearchDialog({ setSelectedId }: StorySearchDialogProps) {
   const [open, setOpen] = useState(false);
 
   const closeDialog = () => {
@@ -48,13 +48,13 @@ function MastermapSearchDialog({ setSelectedId }: MastermapSearchDialogProps) {
     <div className="flex-2">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="secondary">Search Mastermaps...</Button>
+          <Button variant="secondary">Search Stories...</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Search Mastermaps</DialogTitle>
+            <DialogTitle>Search Stories</DialogTitle>
             <DialogDescription>
-              Search for Mastermap title or keywords
+              Search for Story title or keywords
             </DialogDescription>
           </DialogHeader>
           <Suspense fallback={<div>Loading...</div>}>
@@ -66,22 +66,22 @@ function MastermapSearchDialog({ setSelectedId }: MastermapSearchDialogProps) {
   );
 }
 
-export default MastermapSearchDialog;
+export default StorySearchDialog;
 
 // Components
 // 250226 To do type declaration is dirty
 function SearchBlock({
   setSelectedId,
   onClose,
-}: MastermapSearchDialogProps & { onClose: () => void }) {
+}: StorySearchDialogProps & { onClose: () => void }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [encodedSearchQuery, setEncodedSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
 
   const { data, isLoading } = useSWR<{
     message: string;
-    mastermaps: Array<MapHierarchyMaster>;
-  }>(`/api/search/mastermaps?q=${encodedSearchQuery}`, fetchPosts);
+    stories: Array<Story>;
+  }>(`/api/search/stories?q=${encodedSearchQuery}`, fetchPosts);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +104,7 @@ function SearchBlock({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search Mastermaps..."
+            placeholder="Search stories..."
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
           <Button
@@ -146,22 +146,22 @@ function SearchBlock({
   );
 }
 
-function DataList({ data, setSelectedId, onSelect }: MastermapDataProps) {
-  if (!data?.mastermaps) {
+function DataList({ data, setSelectedId, onSelect }: StoryDataProps) {
+  if (!data?.stories) {
     return null;
   }
   return (
     <div className="flex flex-col items-center w-full gap-2">
-      {data.mastermaps.map((mastermap) => (
+      {data.stories.map((story) => (
         <button
           className="py-1 px-2 flex flex-row w-full border border-slate-200 rounded-sm hover:bg-slate-100 hover:text-slate-500 cursor-pointer"
-          key={mastermap.id}
+          key={story.id}
           onClick={() => {
-            setSelectedId(mastermap.id);
+            setSelectedId(story.id);
             onSelect();
           }}
         >
-          {mastermap.title}
+          {story.title}
         </button>
       ))}
     </div>
