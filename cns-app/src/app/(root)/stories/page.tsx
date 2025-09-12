@@ -9,20 +9,16 @@ import { buttonVariants } from "@/components/ui/button";
 
 import DataTable from "./DataTable";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import StatusContextProvider from "@/store/statusContext";
+import StoryDisplayModule from "@/components/displays/StoryDisplayModule";
+import { fetchMapData } from "@/lib/fetchMapData";
 
 export const metadata = {
   title: `Stories`,
 };
 
-// export interface SearchParams {
-//   status: Status;
-//   page: string;
-//   orderBy: keyof Story;
-// }
-
 interface titleProps {
-  mainTitle: AdminSettings;
-  mainText: AdminSettings;
+  numberSortedTextGroup: AdminSettings[];
 }
 
 export default async function Stories() {
@@ -36,14 +32,36 @@ export default async function Stories() {
     },
   });
 
+  // Configuration types
+  const contentTypes = ["text", "mainText", "mainTitle", "subTitle"];
+
+  // Group content items by order number
+  const groupedContent = settings
+    .filter((item) => contentTypes.includes(item.type))
+    .reduce((acc, item): any => {
+      if (!acc[item.order]) {
+        acc[item.order] = [];
+      }
+      acc[item.order].push(item);
+      return acc;
+    }, {});
+
   const storyId = settings.find((item) => item.type === "storyId");
-  const mainTitle = settings.find((item) => item.type === "mainTitle");
-  const mainText = settings.find((item) => item.type === "mainText");
-  const contents = settings.filter(
-    (item) => item.type === "subTitle" || item.type === "text"
+  const mainTextGroup = groupedContent["1"];
+
+  // Free text blocks
+  const otherTextGroups = Object.fromEntries(
+    Object.entries(groupedContent).filter(([key, value]) => key !== "1")
   );
 
-  console.log(settings);
+  // Custom sections
+  const storyList = settings.find((item) => item.type === "setStoryList");
+  const storyCards = settings.find((item) => item.type === "setStoryCards");
+  const newStories = settings.find((item) => item.type === "setNewStories");
+  const exploreStories = settings.find(
+    (item) => item.type === "setExploreStories"
+  );
+
   return (
     <div className="flex flex-col gap-20 w-full">
       <Tabs defaultValue="read" className="w-full">
@@ -53,128 +71,179 @@ export default async function Stories() {
           <TabsTrigger value="revisions">Revisions</TabsTrigger>
         </TabsList> */}
         <TabsContent className="flex flex-col gap-8" value="read">
-          {!storyId ? (
-            <div
-              id="top-content"
-              className="w-full flex flex-col gap-4 max-w-screen-2xl mx-auto relative"
-            >
-              {(mainTitle || mainText) && (
-                <TitleSection mainTitle={mainTitle} mainText={mainText} />
-              )}
-              <div
-                id="content-container"
-                className=" border border-slate-100 rounded-md p-2"
-              >
-                <ContentList contents={contents} />
-              </div>
-            </div>
-          ) : (
-            <div
-              id="top-content"
-              className="w-ful grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
-            >
-              {(mainTitle || mainText) && (
-                <TitleSection mainTitle={mainTitle} mainText={mainText} />
-              )}
-              {/* Story display module */}
-
-              <div
-                id="content-container"
-                className="col-span-2 row-span-2  border border-slate-100 rounded-md py-2 px-4"
-              >
-                <ContentList contents={contents} />
-              </div>
-            </div>
-          )}
+          <div
+            id="top-content"
+            className="w-full grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
+          >
+            {!storyId ? (
+              <>
+                {mainTextGroup && (
+                  <TitleSection numberSortedTextGroup={mainTextGroup} />
+                )}
+                <div
+                  id="content-container"
+                  className="col-span-6 border border-slate-100 rounded-md p-2"
+                >
+                  <ContentList contents={otherTextGroups} />
+                </div>
+              </>
+            ) : (
+              <>
+                {mainTextGroup && (
+                  <TitleSection numberSortedTextGroup={mainTextGroup} />
+                )}
+                <StoryDisplay storyId={storyId} />
+                <div
+                  id="content-container"
+                  className="col-span-2 row-span-2  border border-slate-100 rounded-md py-2 px-4"
+                >
+                  <ContentList contents={otherTextGroups} />
+                </div>
+              </>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-// export default async function Stories({
-//   searchParams: rawSearchParams,
-// }: {
-//   searchParams: SearchParams;
-// }) {
-//   // Create a fully resolved object rather than the promise that contains it.
-//   const searchParams = await Promise.resolve(rawSearchParams);
-
-//   const pageSize = 2;
-//   const page = searchParams.page ? parseInt(searchParams.page) : 1;
-//   const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
-//   const statuses = Object.values(Status);
-
-//   const status = statuses.includes(searchParams.status)
-//     ? searchParams.status
-//     : undefined;
-
-//   let where = {};
-
-//   if (status) {
-//     where = {
-//       status,
-//     };
-//   } else {
-//     where = {
-//       NOT: [{ status: "COMPLETED" as Status }],
-//     };
-//   }
-//   const itemCount = await prisma.story.count({ where });
-//   const stories = await prisma.story.findMany({
-//     where,
-//     orderBy: {
-//       [orderBy]: "desc",
-//     },
-//     take: pageSize,
-//     skip: (page - 1) * pageSize,
-//   });
-
-//   return (
-//     <div className="w-full h-full bg-white">
-//       <div className="flex gap-2">
-//         <StatusFilter />
-//       </div>
-//       <DataTable stories={stories} searchParams={searchParams} />
-//       <Pagination
-//         itemCount={itemCount}
-//         pageSize={pageSize}
-//         currentPage={page}
-//       />
-//     </div>
-//   );
-// }
-
-function ContentList({ contents }: { contents: AdminSettings[] }) {
+// Content blocks
+function ContentList({
+  contents,
+}: {
+  contents: Record<string, AdminSettings[]>;
+}) {
   return (
-    <div className="flex flex-col gap-2 w-full">
-      {contents.map((content, index) => (
-        <div key={`content-${content.type}-${content.order}-${index}`}>
-          {content.type === "subTitle" && (
-            <h3 className="text-lg font-semibold">{content.value}</h3>
-          )}
-          {content.type === "text" && (
-            <ReactMarkDown className={"prose dark:prose-invert text-sm"}>
-              {content.value}
-            </ReactMarkDown>
-          )}
+    <div className="flex flex-col gap-4 w-full">
+      {Object.entries(contents).map(([order, contentGroup]) => (
+        <div key={`group-${order}`} className="flex flex-col gap-2">
+          {contentGroup.map((content, index) => (
+            <div key={`content-${content.type}-${content.order}-${index}`}>
+              <RenderContentItem item={content} />
+            </div>
+          ))}
         </div>
       ))}
     </div>
   );
 }
 
-function TitleSection({ mainTitle, mainText }: titleProps) {
+function RenderContentItem({ item }: { item: AdminSettings }) {
+  switch (item.type) {
+    case "mainTitle":
+      return (
+        <h2 key={item.id} className="text-2xl font-bold">
+          {item.value}
+        </h2>
+      );
+    case "subTitle":
+      return (
+        <h3
+          key={item.id}
+          className="text-xl font-semibold bg-slate-100 px-2 py-1"
+        >
+          {item.value}
+        </h3>
+      );
+    case "mainText":
+    case "text":
+      return (
+        <ReactMarkDown
+          key={item.id}
+          className="prose dark:prose-invert text-md"
+        >
+          {item.value}
+        </ReactMarkDown>
+      );
+    default:
+      return null;
+  }
+}
+
+function TitleSection({ numberSortedTextGroup }: titleProps) {
+  const mainTitle = numberSortedTextGroup.find(
+    (item) => item.type === "mainTitle"
+  );
+  const mainText = numberSortedTextGroup.find(
+    (item) => item.type === "mainText"
+  );
+  const mainSubTitle = numberSortedTextGroup.find(
+    (item) => item.type === "subTitle"
+  );
+  const mainOtherText = numberSortedTextGroup.find(
+    (item) => item.type === "text"
+  );
+
   return (
-    <div className="col-span-6  flex flex-col gap-2">
-      {mainTitle && <h1 className="text-2xl ">{mainTitle.value}</h1>}
-      {mainText && (
-        <div className="w-full">
-          <ReactMarkDown className={"prose dark:prose-invert text-sm"}>
-            {mainText.value}
+    <div
+      className="col-span-6 p-4 flex flex-col gap-2 border border-slate-200 rounded-md"
+      id="title-container"
+    >
+      <h1 className="w-full text-2xl font-bold ">{mainTitle?.value}</h1>
+      <p className="text-md">{mainText?.value}</p>
+      {(mainSubTitle || mainOtherText) && (
+        <div className="w-full flex flex-col gap-2">
+          <h3 className="text-xl font-semibold  bg-slate-100 px-2 py-1">
+            {mainSubTitle?.value}
+          </h3>
+          <ReactMarkDown className={"prose dark:prose-invert text-md"}>
+            {mainText?.value}
           </ReactMarkDown>
         </div>
       )}
+    </div>
+  );
+}
+
+async function StoryDisplay({ storyId }: { storyId: AdminSettings }) {
+  const idNum = parseInt(storyId.value);
+  let mapData: {
+    map: MapType | null;
+    mapAreas: GlobalAreaType[];
+    mapObjects: GlobalObjectType[];
+  } = { map: null, mapAreas: [], mapObjects: [] };
+  let error: string | null = null;
+  if (!storyId.value || isNaN(idNum)) {
+    return <div className="text-destructive">Invalid story ID</div>;
+  }
+
+  const story = await prisma.story.findUnique({
+    where: { id: idNum },
+    include: {
+      subStories: true,
+      assignedToMap: {
+        include: {
+          objects: true,
+          area: true,
+          canvasStyles: true,
+        },
+      },
+    },
+  });
+
+  if (!story) {
+    return <div className="text-destructive">Story not found</div>;
+  }
+
+  // fetch mapdata
+  try {
+    // 240819 This is stupid - remove and work with include instead
+    // mapData return an object of map/mapArea/mapObject. Just have a map object instead with areas and objects included.
+    mapData = await fetchMapData(story.assignedToMapID?.toString() || "");
+
+    if (!mapData.map) {
+      error = "Map not found";
+    }
+  } catch (err) {
+    error = "Failed to fetch data";
+  }
+
+  return (
+    <div className="col-span-4 relative">
+      <StatusContextProvider>
+        <StoryDisplayModule mapData={mapData} story={story.subStories} />
+      </StatusContextProvider>
     </div>
   );
 }

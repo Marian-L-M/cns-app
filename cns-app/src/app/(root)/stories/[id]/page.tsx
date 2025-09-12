@@ -35,11 +35,9 @@ export default async function ViewStory({
     where: { storyId: story.id },
   });
 
-  console.log(substories);
-
   // fetch mapdata
   try {
-    // 240819 This is stupid - change fetchMapData to always expect an integer
+    // 240819 This is stupid - remove and work with include instead
     mapData = await fetchMapData(story.assignedToMapID?.toString() || "");
 
     if (!mapData.map) {

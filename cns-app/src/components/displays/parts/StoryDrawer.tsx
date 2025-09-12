@@ -56,11 +56,9 @@ export default function StoryDrawer({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{storyData?.title}</DrawerTitle>
-          <DrawerDescription>
-            <ReactMarkDown className={"prose dark:prose-invert"}>
-              {storyData?.description}
-            </ReactMarkDown>
-          </DrawerDescription>
+          <ReactMarkDown className={"prose dark:prose-invert"}>
+            {storyData?.description}
+          </ReactMarkDown>
         </DrawerHeader>
         <div className="flex flex-col gap-4 py-4 px-8">
           <div className="flex gap-4" id="story-progress">
@@ -84,7 +82,7 @@ export default function StoryDrawer({
             </Button>
             <div id="story-node-text">
               <h4>{storyData?.nodes?.[storyIndex].name}</h4>
-              <p>{storyData?.nodes?.[storyIndex].description}</p>
+              <div>{storyData?.nodes?.[storyIndex].description}</div>
             </div>
             <Button
               onClick={() => changeStoryNodeIndex(1)}
