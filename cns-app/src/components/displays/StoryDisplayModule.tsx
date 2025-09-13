@@ -19,7 +19,7 @@ interface StoryModuleProps {
 }
 
 export default function StoryDisplayModule({
-  mapData,
+  mapData, // to do: map data structure is not smart - just work with include on a map object instead of a flattened object
   story, // naming issue story has not been renamed to substory
 }: StoryModuleProps) {
   const [fullscreen, setFullscreen] = useState(false);

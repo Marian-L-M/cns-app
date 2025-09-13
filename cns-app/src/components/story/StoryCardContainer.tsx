@@ -60,7 +60,7 @@ export default async function StoryCardContainer({ amount, type }: Props) {
           key={`featured-article-${article.id}`}
         >
           <div className="img-container relative w-full h-36">
-            <Link href={`/wiki/${article.id}`}>
+            <Link href={`/stories/${article.id}`}>
               {article.imageUrl ? (
                 <Image
                   src={article.imageUrl}

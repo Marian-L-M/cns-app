@@ -1,11 +1,6 @@
-import Link from "next/link";
 import ReactMarkDown from "react-markdown";
-import { Story, Status, AdminSettings } from "@prisma/client";
+import { AdminSettings } from "@prisma/client";
 import prisma from "@/../prisma/db";
-
-import StatusFilter from "@/components/filters/StatusFilter";
-import Pagination from "@/components/ui/pagination";
-import { buttonVariants } from "@/components/ui/button";
 
 import DataTable from "./DataTable";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -50,11 +45,6 @@ export default async function Stories() {
   const storyId = settings.find((item) => item.type === "storyId");
   const mainTextGroup = groupedContent["1"];
 
-  // Free text blocks
-  const otherTextGroups = Object.fromEntries(
-    Object.entries(groupedContent).filter(([key, value]) => key !== "1")
-  );
-
   // Custom sections
   const storyList = settings.find((item) => item.type === "setStoryList");
   const featuredStories = settings.find(
@@ -76,39 +66,33 @@ export default async function Stories() {
         <TabsContent className="flex flex-col gap-8" value="read">
           <div
             id="top-content"
-            className="w-full grid grid-cols-6 gap-4 mx-auto relative"
+            className="w-full grid grid-cols-8 gap-4 mx-auto relative"
           >
             {/* General contents */}
             {!storyId ? (
               <>
                 {mainTextGroup && (
-                  <TitleSection numberSortedTextGroup={mainTextGroup} />
+                  <div className="col-span-8">
+                    <TitleSection numberSortedTextGroup={mainTextGroup} />
+                  </div>
                 )}
-                <div
-                  id="content-container"
-                  className="col-span-6 border border-slate-100 rounded-md p-2"
-                >
-                  <ContentList contents={otherTextGroups} />
-                </div>
               </>
             ) : (
               <>
                 {mainTextGroup && (
-                  <TitleSection numberSortedTextGroup={mainTextGroup} />
+                  <div className="col-span-8">
+                    <TitleSection numberSortedTextGroup={mainTextGroup} />
+                  </div>
                 )}
-                <StoryDisplay storyId={storyId} />
-                <div
-                  id="content-container"
-                  className="col-span-2 h-fit  border border-slate-100 rounded-md py-2 px-4"
-                >
-                  <ContentList contents={otherTextGroups} />
+                <div className="col-span-6">
+                  <StoryDisplay storyId={storyId} />
                 </div>
               </>
             )}
             {/* Special contents */}
             {/* Cards */}
             {newStories && (
-              <div className="col-span-2">
+              <div className="col-span-2" style={{ order: newStories.order }}>
                 <StoryCardContainer
                   type={newStories.type}
                   amount={parseInt(newStories.value)}
@@ -116,7 +100,10 @@ export default async function Stories() {
               </div>
             )}
             {featuredStories && (
-              <div className="col-span-2">
+              <div
+                className="col-span-2"
+                style={{ order: featuredStories.order }}
+              >
                 <StoryCardContainer
                   type={featuredStories.type}
                   amount={parseInt(featuredStories.value)}
@@ -124,20 +111,51 @@ export default async function Stories() {
               </div>
             )}
             {exploreStories && (
-              <div className="col-span-2">
+              <div
+                className="col-span-2"
+                style={{ order: exploreStories.order }}
+              >
                 <StoryCardContainer
                   type={exploreStories.type}
                   amount={parseInt(exploreStories.value)}
                 />
               </div>
             )}
+            {/* Render grouped content sections */}
+            {Object.keys(groupedContent)
+              .filter((orderNumber) => orderNumber !== "1") // Skip the main text group as it's rendered above
+              .sort((a, b) => parseInt(a) - parseInt(b))
+              .map((orderNumber) => {
+                const group = groupedContent[orderNumber];
+                const groupMainTitle = group.find(
+                  (item) => item.type === "mainTitle"
+                );
+                const groupMainText = group.find(
+                  (item) => item.type === "mainText"
+                );
+                const groupSubTitle = group.find(
+                  (item) => item.type === "subTitle"
+                );
+                const groupOtherText = group.find(
+                  (item) => item.type === "text"
+                );
+
+                return (
+                  <div
+                    key={orderNumber}
+                    className="col-span-2 flex flex-col gap-4 p-4 border border-gray-200 rounded-xl self-stretch"
+                    style={{ order: parseInt(orderNumber) }}
+                  >
+                    {groupMainTitle && renderContentItem(groupMainTitle)}
+                    {groupSubTitle && renderContentItem(groupSubTitle)}
+                    {groupMainText && renderContentItem(groupMainText)}
+                    {groupOtherText && renderContentItem(groupOtherText)}
+                  </div>
+                );
+              })}
             {/* List */}
             {storyList && (
-              <div className="col-span-6">
-                {/* <StoryCardContainer
-                  type={storyList.type}
-                  amount={parseInt(storyList.value)}
-                /> */}
+              <div className="col-span-8" style={{ order: storyList.order }}>
                 <DataTable take={parseInt(storyList.value)} />
               </div>
             )}
@@ -149,58 +167,6 @@ export default async function Stories() {
 }
 
 // Content blocks
-function ContentList({
-  contents,
-}: {
-  contents: Record<string, AdminSettings[]>;
-}) {
-  return (
-    <div className="flex flex-col gap-4 w-full">
-      {Object.entries(contents).map(([order, contentGroup]) => (
-        <div key={`group-${order}`} className="flex flex-col gap-2">
-          {contentGroup.map((content, index) => (
-            <div key={`content-${content.type}-${content.order}-${index}`}>
-              <RenderContentItem item={content} />
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function RenderContentItem({ item }: { item: AdminSettings }) {
-  switch (item.type) {
-    case "mainTitle":
-      return (
-        <h2 key={item.id} className="text-2xl font-bold">
-          {item.value}
-        </h2>
-      );
-    case "subTitle":
-      return (
-        <h3
-          key={item.id}
-          className="text-xl font-semibold bg-slate-100 px-2 py-1"
-        >
-          {item.value}
-        </h3>
-      );
-    case "mainText":
-    case "text":
-      return (
-        <ReactMarkDown
-          key={item.id}
-          className="prose dark:prose-invert text-md"
-        >
-          {item.value}
-        </ReactMarkDown>
-      );
-    default:
-      return null;
-  }
-}
-
 function TitleSection({ numberSortedTextGroup }: titleProps) {
   const mainTitle = numberSortedTextGroup.find(
     (item) => item.type === "mainTitle"
@@ -217,7 +183,7 @@ function TitleSection({ numberSortedTextGroup }: titleProps) {
 
   return (
     <div
-      className="col-span-6 p-4 flex flex-col gap-2 border border-slate-200 rounded-md"
+      className="w-full p-4 flex flex-col gap-2 border border-slate-200 rounded-md"
       id="title-container"
     >
       <h1 className="w-full text-2xl font-bold ">{mainTitle?.value}</h1>
@@ -280,10 +246,43 @@ async function StoryDisplay({ storyId }: { storyId: AdminSettings }) {
   }
 
   return (
-    <div className="col-span-4 relative">
+    <div className="w-full relative">
       <StatusContextProvider>
         <StoryDisplayModule mapData={mapData} story={story.subStories} />
       </StatusContextProvider>
     </div>
   );
+}
+
+// to do: Unify with wiki components
+function renderContentItem(item: AdminSettings) {
+  switch (item.type) {
+    case "mainTitle":
+      return (
+        <h2 key={item.id} className="text-2xl font-bold">
+          {item.value}
+        </h2>
+      );
+    case "subTitle":
+      return (
+        <h3
+          key={item.id}
+          className="text-xl font-semibold bg-slate-100 px-2 py-1"
+        >
+          {item.value}
+        </h3>
+      );
+    case "mainText":
+    case "text":
+      return (
+        <ReactMarkDown
+          key={item.id}
+          className="prose dark:prose-invert text-md"
+        >
+          {item.value}
+        </ReactMarkDown>
+      );
+    default:
+      return null;
+  }
 }
