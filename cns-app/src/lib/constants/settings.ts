@@ -20,9 +20,9 @@ export const ToggleWikiSettingsList = {
 export const ToggleStorySettingsList = {
   storyId: "Set main story",
   setStoryList: "Set story list",
-  setStoryCards: "Set story cards",
   setNewStories: "Set new story section",
   setExploreStories: "Set explore section",
+  setFeaturedStories: "Set featured section",
   ...PageSettingsList,
 } as const;
 

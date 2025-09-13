@@ -222,10 +222,10 @@ export default function AdminSettingsItemForm({
                 {/* Wiki PAGE SETTINGS */}
                 {/* ================= */}
                 {(type == "setFeaturedWikis" ||
+                  type == "setFeaturedStories" ||
                   type == "setExploreWikis" ||
                   type == "setNewWikis" ||
                   type == "setStoryList" ||
-                  type == "setStoryCards" ||
                   type == "setExploreStories" ||
                   type == "setNewStories") && (
                   <FormField

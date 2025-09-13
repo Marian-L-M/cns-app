@@ -12,6 +12,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import StatusContextProvider from "@/store/statusContext";
 import StoryDisplayModule from "@/components/displays/StoryDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
+import StoryCardContainer from "@/components/story/StoryCardContainer";
 
 export const metadata = {
   title: `Stories`,
@@ -56,7 +57,9 @@ export default async function Stories() {
 
   // Custom sections
   const storyList = settings.find((item) => item.type === "setStoryList");
-  const storyCards = settings.find((item) => item.type === "setStoryCards");
+  const featuredStories = settings.find(
+    (item) => item.type === "setFeaturedStories"
+  );
   const newStories = settings.find((item) => item.type === "setNewStories");
   const exploreStories = settings.find(
     (item) => item.type === "setExploreStories"
@@ -73,8 +76,9 @@ export default async function Stories() {
         <TabsContent className="flex flex-col gap-8" value="read">
           <div
             id="top-content"
-            className="w-full grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative"
+            className="w-full grid grid-cols-6 gap-4 mx-auto relative"
           >
+            {/* General contents */}
             {!storyId ? (
               <>
                 {mainTextGroup && (
@@ -95,11 +99,47 @@ export default async function Stories() {
                 <StoryDisplay storyId={storyId} />
                 <div
                   id="content-container"
-                  className="col-span-2 row-span-2  border border-slate-100 rounded-md py-2 px-4"
+                  className="col-span-2 h-fit  border border-slate-100 rounded-md py-2 px-4"
                 >
                   <ContentList contents={otherTextGroups} />
                 </div>
               </>
+            )}
+            {/* Special contents */}
+            {/* Cards */}
+            {newStories && (
+              <div className="col-span-2">
+                <StoryCardContainer
+                  type={newStories.type}
+                  amount={parseInt(newStories.value)}
+                />
+              </div>
+            )}
+            {featuredStories && (
+              <div className="col-span-2">
+                <StoryCardContainer
+                  type={featuredStories.type}
+                  amount={parseInt(featuredStories.value)}
+                />
+              </div>
+            )}
+            {exploreStories && (
+              <div className="col-span-2">
+                <StoryCardContainer
+                  type={exploreStories.type}
+                  amount={parseInt(exploreStories.value)}
+                />
+              </div>
+            )}
+            {/* List */}
+            {storyList && (
+              <div className="col-span-6">
+                {/* <StoryCardContainer
+                  type={storyList.type}
+                  amount={parseInt(storyList.value)}
+                /> */}
+                <DataTable take={parseInt(storyList.value)} />
+              </div>
             )}
           </div>
         </TabsContent>

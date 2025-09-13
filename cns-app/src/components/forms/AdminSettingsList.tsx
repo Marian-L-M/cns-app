@@ -62,7 +62,7 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
       <div className="w-full flex flex-col gap-4">
         <div className="w-full gap-2 flex items-center justify-between">
           <h4 className="text-lg capitalize">{filter}</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap  justify-end gap-2">
             {Object.entries(activeSettingsSelection(filter)).map(
               ([key, label]) => (
                 <Button

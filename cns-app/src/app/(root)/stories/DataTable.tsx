@@ -14,74 +14,36 @@ import {
 } from "@/components/ui/table";
 import StoryRating from "@/components/story/StoryRating";
 import StoryStatusBadge from "@/components/story/StoryStatusBadge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import prisma from "@/../prisma/db";
 
-import { SearchParams } from "./page";
+// import { SearchParams } from "./page";
 
 interface Props {
-  stories: Story[];
-  searchParams: SearchParams;
+  // stories: Story[];
+  take: number;
+  // searchParams?: SearchParams;
+  searchParams?: any;
 }
 
-export default function DataTable({ stories, searchParams }: Props) {
+export default async function DataTable({ take, searchParams }: Props) {
   // Create simple query objects to avoid serialization errors
-  const createQueryObject = (orderBy: string) => ({
-    orderBy,
-    ...(searchParams.status && { status: searchParams.status }),
-    ...(searchParams.page && { page: searchParams.page }),
+  const stories = await prisma?.story.findMany({
+    orderBy: [{ createdAt: "desc" }],
+    take: take,
   });
 
   return (
-    <div className="w-full mt-5">
+    <div className="w-full">
       <div className="rounded-md sm:border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>
-                <Link href={{ query: createQueryObject("title") }}>Title</Link>
-                {"title" === searchParams.orderBy && (
-                  <ArrowDown className="inline p-1" />
-                )}
-              </TableHead>
-              <TableHead>Description</TableHead>
+              <TableHead>Title</TableHead>
               <TableHead>Category</TableHead>
-              <TableHead>
-                <div className="flex justify-center">
-                  <Link href={{ query: createQueryObject("status") }}>
-                    Status
-                  </Link>
-                  {"status" === searchParams.orderBy && (
-                    <ArrowDown className="inline p-1" />
-                  )}
-                </div>
-              </TableHead>
-              <TableHead>
-                <div className="flex justify-center">
-                  <Link href={{ query: createQueryObject("rating") }}>
-                    Rating
-                  </Link>
-                  {"rating" === searchParams.orderBy && (
-                    <ArrowDown className="inline p-1" />
-                  )}
-                </div>
-              </TableHead>
-              <TableHead>
-                <Link href={{ query: createQueryObject("createdAt") }}>
-                  Created At
-                </Link>
-                {"createdAt" === searchParams.orderBy && (
-                  <ArrowDown className="inline p-1" />
-                )}
-              </TableHead>
-              <TableHead>
-                {" "}
-                <Link href={{ query: createQueryObject("updatedAt") }}>
-                  Updated At
-                </Link>
-                {"updatedAt" === searchParams.orderBy && (
-                  <ArrowDown className="inline p-1" />
-                )}
-              </TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Published</TableHead>
+              <TableHead>Updated</TableHead>
               <TableHead>...</TableHead>
             </TableRow>
           </TableHeader>
@@ -92,16 +54,10 @@ export default function DataTable({ stories, searchParams }: Props) {
                     <TableCell>
                       <Link href={`/stories/${story.id}`}>{story.title}</Link>
                     </TableCell>
-                    <TableCell>{story.description}</TableCell>
                     <TableCell>{story.category}</TableCell>
                     <TableCell>
                       <div className="flex justify-center">
                         <StoryStatusBadge status={story.status} />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-center">
-                        <StoryRating rating={story.rating} />
                       </div>
                     </TableCell>
                     <TableCell>
@@ -122,7 +78,15 @@ export default function DataTable({ stories, searchParams }: Props) {
                         minute: "2-digit",
                       })}
                     </TableCell>
-                    <TableCell></TableCell>
+                    <TableCell>
+                      <Button
+                        variant={"outline"}
+                        className="text-xs px-4 py-2"
+                        asChild
+                      >
+                        <Link href={`/stories/${story.id}`}>View</Link>
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               : null}

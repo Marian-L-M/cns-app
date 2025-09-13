@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 const menuList = [
   { title: "Overview", url: "/admin" },
+  { title: "General", url: "/admin/general" },
   { title: "Users", url: "/admin/users" },
   { title: "Page", url: "/admin/page" },
 ];
