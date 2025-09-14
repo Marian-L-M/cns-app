@@ -3,6 +3,8 @@ import { Wiki, WikiType } from "@prisma/client";
 import prisma from "@/../prisma/db";
 import WikiSearchBar from "@/components/wiki/searchbar/WikiSearchBar";
 import WikiTable from "../WikiTable";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: `Featured Wikis`,
@@ -97,7 +99,13 @@ export default async function featuredWikiPage({
   return (
     <div className="w-full flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Featured Wikis</h1>
-      <WikiSearchBar authorList={authorList} />
+      <div className="w-full flex flex-col gap-4 border rounded-md p-4">
+        <WikiSearchBar authorList={authorList} />
+
+        <Link href="/wiki/featured">
+          <Button>Reset</Button>
+        </Link>
+      </div>
       <WikiTable wikis={wikis} />
     </div>
   );

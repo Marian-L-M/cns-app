@@ -1,24 +1,25 @@
 import React from "react";
-import { Wiki, WikiType } from "@prisma/client";
 import prisma from "@/../prisma/db";
 import WikiSearchBar from "@/components/wiki/searchbar/WikiSearchBar";
-import WikiTable from "../WikiTable";
+import StoryCardTable from "../StoyCardTable";
+import { Status, Story } from "@prisma/client";
+import StorySearchBar from "@/components/story/searchbar/StorySearchBar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  title: `Wiki Archive`,
+  title: `Featured Stories`,
 };
 
 export interface SearchParams {
   author: string;
-  type: string;
+  status: string;
   page: string;
   title: string;
-  orderBy: keyof Wiki;
+  orderBy: Date;
 }
 
-export default async function wikiArchivePage({
+export default async function featuredStoryPage({
   searchParams: rawSearchParams,
 }: {
   searchParams: SearchParams;
@@ -30,7 +31,7 @@ export default async function wikiArchivePage({
   const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
   const title = searchParams.title ? searchParams.title : "";
   const authorName = searchParams.author ? searchParams.author : undefined;
-  const type = searchParams.type ? searchParams.type : undefined;
+  const status = searchParams.status ? searchParams.status : undefined;
 
   const authorList = await prisma.user.findMany({
     where: {
@@ -44,20 +45,18 @@ export default async function wikiArchivePage({
 
   const settings = {
     where: {
-      ...(type && { type: type as WikiType }),
-      userWikis: {},
+      featured: true,
+      ...(status && { status: status as Status }),
+      userStories: {},
       title: {
         contains: title,
         mode: "insensitive",
       },
     },
-    orderBy: {
-      [orderBy]: "desc",
-    },
     take: pageSize,
     skip: (page - 1) * pageSize,
     include: {
-      userWikis: {
+      userStories: {
         include: {
           user: {
             select: {
@@ -71,7 +70,7 @@ export default async function wikiArchivePage({
     },
   };
 
-  let wikis: Wiki[] = [];
+  let stories: Story[] = [];
 
   if (authorName) {
     const author = await prisma.userProfile.findFirst({
@@ -84,27 +83,27 @@ export default async function wikiArchivePage({
     });
     if (author) {
       const authorId = author.userId;
-      settings.where.userWikis = {
+      settings.where.userStories = {
         some: {
           userId: authorId,
         },
       };
-      wikis = await prisma.wiki.findMany(settings);
+      stories = await prisma.story.findMany(settings);
     }
   } else {
-    wikis = await prisma.wiki.findMany(settings);
+    stories = await prisma.story.findMany(settings);
   }
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Wiki Archive</h1>
+      <h1 className="text-2xl font-bold">Featured Stories</h1>
       <div className="w-full flex flex-col gap-4 border rounded-md p-4">
-        <WikiSearchBar authorList={authorList} />
-        <Link href="/wiki/archive">
+        <StorySearchBar authorList={authorList} />
+        <Link href="/stories/featured">
           <Button>Reset</Button>
         </Link>
       </div>
-      <WikiTable wikis={wikis} />
+      <StoryCardTable stories={stories} />
     </div>
   );
 }

@@ -1,19 +1,19 @@
-import TypeFilter from "@/components/wiki/searchbar/TypeFilter";
-import AuthorFilter from "@/components/wiki/searchbar/AuthorFilter";
+import AuthorFilter from "@/components/story/searchbar/AuthorFilter";
 import Link from "next/link";
-import { Button } from "../../ui/button";
+import { Button } from "@/components/ui/button";
 import { User } from "@prisma/client";
 import SearchInput from "./SearchInput";
+import StatusFilter from "./StatusFilter";
 
 interface Props {
   authorList: User[];
 }
 
-export default function WikiSearchBar({ authorList }: Props) {
+export default function StorySearchBar({ authorList }: Props) {
   return (
     <div className="flex gap-4 items-center">
       <AuthorFilter authors={authorList} />
-      <TypeFilter />
+      <StatusFilter />
       <SearchInput />
     </div>
   );
