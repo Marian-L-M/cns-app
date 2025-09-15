@@ -9,10 +9,19 @@ import {
   AllSettingsList,
   ToggleWikiSettingsList,
   ToggleStorySettingsList,
+  ToggleMapSettingsList,
 } from "@/lib/constants/settings";
 
-import { Pen } from "lucide-react";
+import { Pen, PlusCircleIcon } from "lucide-react";
 import DeleteButton from "../buttons/DeleteButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 interface Props {
   AdminSettings: AdminSettings[];
@@ -22,6 +31,7 @@ interface Props {
 export default function AdminSettingsList({ AdminSettings, filter }: Props) {
   // Settings items
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentSettingsItem, setCurrentSettingsItem] = useState<
     AdminSettings | undefined
   >(undefined);
@@ -37,6 +47,7 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
       setCurrentSettingsItem(undefined);
     }
     setIsDialogOpen(true);
+    setIsDropdownOpen(false);
   };
 
   const activeSettingsSelection = (filter: string) => {
@@ -47,6 +58,8 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
         return ToggleWikiSettingsList;
       case "story":
         return ToggleStorySettingsList;
+      case "map":
+        return ToggleMapSettingsList;
       default:
         return PageSettingsList;
     }
@@ -63,21 +76,31 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
         <div className="w-full gap-2 flex items-center justify-between">
           <h4 className="text-lg capitalize">{filter}</h4>
           <div className="flex flex-wrap  justify-end gap-2">
-            {Object.entries(activeSettingsSelection(filter)).map(
-              ([key, label]) => (
-                <Button
-                  key={key}
-                  type="button"
-                  variant={"outline"}
-                  onClick={() => {
-                    setCurrentSettingsType(key);
-                    showSettingsForm();
-                  }}
-                >
-                  {label}
-                </Button>
-              )
-            )}
+            <DropdownMenu
+              open={isDropdownOpen}
+              onOpenChange={setIsDropdownOpen}
+            >
+              <DropdownMenuTrigger>
+                <PlusCircleIcon />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Add settings item</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {Object.entries(activeSettingsSelection(filter)).map(
+                  ([key, label]) => (
+                    <DropdownMenuItem
+                      key={key}
+                      onClick={() => {
+                        setCurrentSettingsType(key);
+                        showSettingsForm();
+                      }}
+                    >
+                      {label}
+                    </DropdownMenuItem>
+                  )
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         <AdminSettingsItemForm

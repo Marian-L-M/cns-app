@@ -1,28 +1,40 @@
 export const PageSettingsList = {
-  mainTitle: "Add Main Title",
-  mainText: "Add Main Text",
-  subTitle: "Add Subtitle",
-  text: "Add Text",
+  mainTitle: "Main Title",
+  mainText: "Main Text",
+  subTitle: "Subtitle",
+  text: "Text",
 } as const;
 
 export const ToggleMasterMapSettingsList = {
-  mastermapId: "Set Mastermap",
+  mastermapId: "Mastermap",
   ...PageSettingsList,
 } as const;
 
 export const ToggleWikiSettingsList = {
-  setFeaturedWikis: "Set featured section",
-  setExploreWikis: "Set explore section",
-  setNewWikis: "Set new section",
+  setFeaturedWikis: "Featured section",
+  setExploreWikis: "Explore section",
+  setNewWikis: "New section",
   ...PageSettingsList,
 } as const;
 
 export const ToggleStorySettingsList = {
-  storyId: "Set main story",
-  setStoryList: "Set story list",
-  setNewStories: "Set new story section",
-  setExploreStories: "Set explore section",
-  setFeaturedStories: "Set featured section",
+  storyId: "Main story",
+  setStoryList: "Story list",
+  setNewStories: "New story section",
+  setExploreStories: "Explore section",
+  setFeaturedStories: "Featured section",
+  ...PageSettingsList,
+} as const;
+
+export const ToggleMapSettingsList = {
+  mapId: "Map",
+  mastermapId: "Master Map",
+  setNewMaps: "New Map Section",
+  setNewMasterMaps: "New Mastermap section",
+  setExploreMaps: "Explore maps",
+  setFeaturedMaps: "Featured maps",
+  setExploreMasterMaps: "Explore Mastermaps",
+  setFeaturedMasterMaps: "Featured Mastermaps",
   ...PageSettingsList,
 } as const;
 

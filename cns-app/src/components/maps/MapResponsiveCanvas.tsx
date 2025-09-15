@@ -44,7 +44,6 @@ export default function MapResponsiveCanvas({
 
   return (
     <div
-      ref={containerRef}
       className={` flex flex-col gap-2 ${
         fullscreen
           ? "fixed top-0 left-0 w-full h-full z-20 bg-black bg-opacity-80 p-10 flex flex-row items-center justify-center"
@@ -69,12 +68,16 @@ export default function MapResponsiveCanvas({
         />
         {fullscreen ? "Exit fullscreen" : "Fullscreen"}
       </div>
-      <div className="relative z-10 w-fit max-w-full max-h-full" id="map-base">
+      <div
+        ref={containerRef}
+        className="relative z-10 w-fit max-w-full max-h-full"
+        id="map-base"
+      >
         <canvas
           ref={canvasRef}
           width={windowSize.width}
           height={windowSize.height}
-          className="border border-grey relative z-10"
+          className="border border-grey relative z-10 w-full"
         />
         {map?.mapUrl && (
           <Image

@@ -92,10 +92,12 @@ export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
         <Image
           priority={true}
           className="absolute top-0 left-0 z-1 pointer-events-none"
-          src={`${parentMap.mapUrl || "/maps/placeholder.jpg"}`}
+          src={parentMap.mapUrl}
           alt={`${parentMap.title} - map`}
-          width="1024"
-          height="1024"
+          style={{ objectFit: "contain" }}
+          fill={true}
+          // width="1024"
+          // height="1024"
         />
         <MouseToolTip cursorContext={tooltipCtx} />
       </div>

@@ -59,11 +59,11 @@ export default async function Home() {
           <TitleSection mainTitle={mainTitle} mainText={mainText} />
         )}
         {masterMap && (
-          <CursorContextProvider>
-            <div className="col-span-4">
+          <div className="col-span-4">
+            <CursorContextProvider>
               <MastermapDisplayModule masterMap={masterMap} />
-            </div>
-          </CursorContextProvider>
+            </CursorContextProvider>
+          </div>
         )}
         <div
           id="content-container"

@@ -27,10 +27,11 @@ import { Button } from "../ui/button";
 import dynamic from "next/dynamic";
 
 import "easymde/dist/easymde.min.css";
-import { fetchMastermapName } from "@/lib/fetchMapData";
+import { fetchMapName, fetchMastermapName } from "@/lib/fetchMapData";
 import MastermapSearchDialog from "../ui/dialog/mastermapSearchDialog";
 import StorySearchDialog from "../ui/dialog/storySearchDialog";
 import { fetchStoryName } from "@/lib/fetchStoryData";
+import MapSearchDialog from "../ui/dialog/mapSearchDialog";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -95,11 +96,17 @@ export default function AdminSettingsItemForm({
         selectedStoryId: selectedId,
         setStoryName: setDisplayName,
       });
+    } else if (type == "mapId") {
+      fetchMapName({
+        selectedMapId: selectedId,
+        setMapName: setDisplayName,
+      });
     }
     // Update form
     if (
-      selectedId &&
-      (type == "mastermapId" || (selectedId && type == "storyId"))
+      (selectedId && type == "mastermapId") ||
+      (selectedId && type == "storyId") ||
+      (selectedId && type == "mapId")
     ) {
       form.setValue("value", selectedId.toString());
     }
@@ -176,7 +183,9 @@ export default function AdminSettingsItemForm({
                 {/* TOP PAGE SETTINGS */}
                 {/* ================= */}
                 {/* Mastermap search dialog */}
-                {(type == "mastermapId" || type == "storyId") && (
+                {(type == "mastermapId" ||
+                  type == "storyId" ||
+                  type == "mapId") && (
                   <FormField
                     control={form.control}
                     name="value"
@@ -211,6 +220,11 @@ export default function AdminSettingsItemForm({
                                   setSelectedId={setSelectedId}
                                 />
                               )}
+                              {type == "mapId" && (
+                                <MapSearchDialog
+                                  setSelectedMapId={setSelectedId}
+                                />
+                              )}
                             </div>
                           </div>
                         </FormControl>
@@ -225,6 +239,12 @@ export default function AdminSettingsItemForm({
                   type == "setFeaturedStories" ||
                   type == "setExploreWikis" ||
                   type == "setNewWikis" ||
+                  type == "setNewMaps" ||
+                  type == "setNewMasterMaps" ||
+                  type == "setExploreMaps" ||
+                  type == "setFeaturedMaps" ||
+                  type == "setExploreMasterMaps" ||
+                  type == "setFeaturedMasterMaps" ||
                   type == "setStoryList" ||
                   type == "setExploreStories" ||
                   type == "setNewStories") && (
