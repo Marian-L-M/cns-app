@@ -1,4 +1,4 @@
-import { LucideIcon, User2Icon, BarChartHorizontal } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,7 +12,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -112,34 +111,6 @@ export function AppSidebar({ menuItems = [] }: sidebarDataProps) {
                   )}
                 </SidebarMenuItem>
               ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        {/* Admin content */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Admin</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <span className="flex justify-between p-2 gap-2 hover:bg-slate-600">
-                    <Link href={`/dashboard`} className="flex gap-2 flex-1">
-                      <BarChartHorizontal size={18} />
-                      <span>Dashboard</span>
-                    </Link>
-                  </span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <span className="flex justify-between p-2 gap-2 hover:bg-slate-600">
-                    <Link href={`/users`} className="flex gap-2 flex-1">
-                      <User2Icon size={18} />
-                      <span>Users</span>
-                    </Link>
-                  </span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

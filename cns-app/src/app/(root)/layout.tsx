@@ -43,11 +43,9 @@ export default async function RootLayout({
       url: "/maps",
       icon: Map,
       subLinks: [
-        { title: "Archive", url: "/maps/archive" },
-        { title: "Featured", url: "/maps/featured" },
-        { title: "Search", url: "/maps/search" },
-        { title: "Categories", url: "/maps/categories" },
-        { title: "Random", url: "" },
+        { title: "Mastermaps", url: "/mastermaps" },
+        { title: "Map Archive", url: "/maps/archive" },
+        { title: "Featured maps", url: "/maps/featured" },
       ],
     },
     {
