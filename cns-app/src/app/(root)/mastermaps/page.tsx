@@ -1,61 +1,59 @@
 import Link from "next/link";
-import { SessionProvider } from "next-auth/react";
-
-import { auth } from "@/auth";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import prisma from "@/../prisma/db";
+import MasterMapSearchBar from "@/components/mastermaps/searchbar/MasterMapSearchBar";
+import { Button } from "@/components/ui/button";
+import MasterMapCardContainer from "@/components/mastermaps/MasterMapCardTable";
 
-export default async function MasterMapPage() {
-  const masterMaps = await prisma.mapHierarchyMaster.findMany({
+export const metadata = {
+  title: `Mastermaps`,
+};
+
+export interface SearchParams {
+  page: string;
+  title: string;
+  orderBy: Date;
+}
+
+export default async function MasterMapPage({
+  searchParams: rawSearchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const searchParams = await Promise.resolve(rawSearchParams);
+
+  const pageSize = 12;
+  const page = searchParams.page ? parseInt(searchParams.page) : 1;
+  const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
+  const title = searchParams.title ? searchParams.title : "";
+
+  const settings = {
+    where: {
+      title: {
+        contains: title,
+        mode: "insensitive",
+      },
+    },
+    take: pageSize,
+    skip: (page - 1) * pageSize,
     include: {
       parentMap: true,
       childMaps: true,
+      userMapHierarchies: true,
     },
-  });
+  };
 
-  const session = await auth();
+  const masterMaps = await prisma.mapHierarchyMaster.findMany(settings);
 
   return (
-    <SessionProvider session={session}>
-      <div className="w-full mt-5">
-        <div className="rounded-md sm:border">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-secondary hover:bg-secondary">
-                <TableHead className="font-medium">Title</TableHead>
-                <TableHead className="font-medium">Parent</TableHead>
-                <TableHead className="font-medium">Children</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {masterMaps.map((map) => (
-                <TableRow key={map.id} data-href="/">
-                  <TableCell>
-                    <Link href={`/maps/mastermaps/${map.id}`}>{map.title}</Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={`/maps/${map.parentMapId}`}>
-                      {map.parentMap?.title || map.parentMapId}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {map.childMaps.length > 0
-                      ? map.childMaps.map((child) => child.id).join(", ")
-                      : "No children"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+    <div className="w-full flex flex-col gap-4">
+      <h1 className="text-2xl font-bold">Mastermaps</h1>
+      <div className="w-full flex flex-col gap-4 border rounded-md p-4">
+        <MasterMapSearchBar />
+        <Link href="/mastermaps">
+          <Button>Reset</Button>
+        </Link>
       </div>
-    </SessionProvider>
+      <MasterMapCardContainer masterMaps={masterMaps} />
+    </div>
   );
 }

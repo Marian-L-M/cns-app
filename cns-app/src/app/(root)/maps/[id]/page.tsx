@@ -1,5 +1,5 @@
+import ReactMarkDown from "react-markdown";
 import MapDisplayModule from "@/components/displays/MapDisplayModule";
-import MapModule from "@/components/maps/MapModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
 
@@ -39,7 +39,9 @@ export default async function MapPage({ params }: MapPageProps) {
       </div>
       <div className="col-span-3 flex flex-col gap-4">
         <h2 className="text-2xl">{data.map.title}</h2>
-        <div id="description">{data.map.description}</div>
+        <ReactMarkDown className={"prose dark:prose-invert text-md"}>
+          {data.map.description}
+        </ReactMarkDown>
       </div>
     </div>
   );

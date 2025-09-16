@@ -1,6 +1,4 @@
 import AuthorFilter from "@/components/story/searchbar/AuthorFilter";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { User } from "@prisma/client";
 import SearchInput from "./SearchInput";
 import StatusFilter from "./StatusFilter";

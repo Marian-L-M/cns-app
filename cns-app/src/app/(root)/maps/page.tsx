@@ -1,5 +1,3 @@
-// import { getLatestMaps } from "@/lib/actions/map.actions";
-// import MapTable from "./MapTable";
 import ReactMarkDown from "react-markdown";
 import { AdminSettings } from "@prisma/client";
 import prisma from "@/../prisma/db";
@@ -19,17 +17,6 @@ export const metadata = {
 interface titleProps {
   numberSortedTextGroup: AdminSettings[];
 }
-
-// export default async function Maps() {
-//   const maps = await getLatestMaps(9);
-
-//   return (
-//     <div>
-//       <h1>Maps</h1>
-//       <MapTable maps={maps} />
-//     </div>
-//   );
-// }
 
 export default async function Maps() {
   const settings = await prisma.adminSettings.findMany({
@@ -264,7 +251,10 @@ async function MapDisplay({ mapId }: { mapId: AdminSettings }) {
   }
 
   return (
-    <div className="w-full relative">
+    <div className="flex flex-col gap-4 w-full relative">
+      <h3 className="text-xl font-semibold bg-slate-100 px-2 py-1">
+        {data.map.title}
+      </h3>
       <StatusContextProvider>
         <MapDisplayModule data={data} />
       </StatusContextProvider>
@@ -280,9 +270,14 @@ async function MasterMapDisplay({
   const masterMap = await fetchMasterMap(parseInt(masterMapId.value));
 
   return (
-    <CursorContextProvider>
-      <MastermapDisplayModule masterMap={masterMap} />
-    </CursorContextProvider>
+    <div className="flex flex-col gap-4">
+      <h3 className="text-xl font-semibold bg-slate-100 px-2 py-1">
+        {masterMap?.title}
+      </h3>
+      <CursorContextProvider>
+        <MastermapDisplayModule masterMap={masterMap} />
+      </CursorContextProvider>
+    </div>
   );
 }
 

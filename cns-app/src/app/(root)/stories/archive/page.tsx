@@ -1,6 +1,5 @@
 import React from "react";
 import prisma from "@/../prisma/db";
-import WikiSearchBar from "@/components/wiki/searchbar/WikiSearchBar";
 import StoryCardTable from "../StoyCardTable";
 import { Status, Story } from "@prisma/client";
 import StorySearchBar from "@/components/story/searchbar/StorySearchBar";
