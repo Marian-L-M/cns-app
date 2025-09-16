@@ -1,23 +1,18 @@
 "use client";
 import axios from "axios";
+import dynamic from "next/dynamic";
 import { Edit, Plus, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Map,
-  MapHierarchyChild,
-  MapHierarchyMaster,
-  User,
-  UserMapHierarchy,
-} from "@prisma/client";
+import { MapHierarchyMaster } from "@prisma/client";
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +23,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,6 +38,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { fetchMapName } from "@/lib/fetchMapData";
+
+import "easymde/dist/easymde.min.css";
+import { Card, CardContent } from "../ui/card";
+import { UploadButton } from "@/lib/uploadthing/utils";
+import { Checkbox } from "../ui/checkbox";
+const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
@@ -67,6 +71,8 @@ export default function MasterMapEditor({ MasterMap, user }: any) {
     defaultValues: {
       title: MasterMap?.title || "",
       parentMapId: MasterMap?.parentMapId || 0,
+      description: MasterMap?.description || "",
+      featured: MasterMap?.featured || false,
     },
   });
 
@@ -134,6 +140,9 @@ export default function MasterMapEditor({ MasterMap, user }: any) {
       form.setValue("parentMapId", selectedParentMapId);
     }
   }, [selectedParentMapId]);
+
+  const thumbImg = form.watch("imageUrl");
+  const bannerImg = form.watch("bannerUrl");
 
   return (
     <div className="w-full" id="map-editor-module">
@@ -219,6 +228,139 @@ export default function MasterMapEditor({ MasterMap, user }: any) {
                     </FormItem>
                   )}
                 />
+              </div>
+              <div className="w-full">
+                <h5 className="font-bold">Description</h5>
+                <Controller
+                  name="description"
+                  defaultValue={MasterMap?.description}
+                  control={form.control}
+                  render={({ field }) => (
+                    <SimpleMdeEditor
+                      placeholder="Mastermap description"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="featured"
+                defaultValue={MasterMap?.featured}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Featured</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="featured"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <label
+                          htmlFor="featured"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Is featured?
+                        </label>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {/* Thumbnail image */}
+              <div className="upload-field">
+                <h5 className="font-bold">Thumbnail Image</h5>
+                <Card>
+                  <CardContent className="space-y-2 mt-2">
+                    {thumbImg && (
+                      <Image
+                        src={thumbImg}
+                        alt="thumbnail image"
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                    )}
+
+                    {!thumbImg && (
+                      <UploadButton
+                        endpoint="imageUploader"
+                        onClientUploadComplete={(res: { url: string }[]) => {
+                          form.setValue("imageUrl", res[0].url);
+                        }}
+                        onUploadError={(error: Error) => {
+                          toast.error("Thumbnail image upload failed", {
+                            className: "error",
+                            description: `ERROR! ${error.message}`,
+                          });
+                        }}
+                      />
+                    )}
+                    <FormField
+                      control={form.control}
+                      name="imageUrl"
+                      defaultValue={MasterMap?.imageUrl}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Thumbnail" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+              {/* Banner Image */}
+              <div className="upload-field">
+                <h5 className="font-bold">Banner Image</h5>
+                <Card>
+                  <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
+                    {/* Image upload */}
+                    {bannerImg && (
+                      <Image
+                        src={bannerImg}
+                        alt="map image"
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                    )}
+
+                    {!bannerImg && (
+                      <UploadButton
+                        endpoint="imageUploader"
+                        onClientUploadComplete={(res: { url: string }[]) => {
+                          form.setValue("bannerUrl", res[0].url);
+                        }}
+                        onUploadError={(error: Error) => {
+                          toast.error("Map image upload failed", {
+                            className: "error",
+                            description: `ERROR! ${error.message}`,
+                          });
+                        }}
+                      />
+                    )}
+                    <FormField
+                      control={form.control}
+                      name="bannerUrl"
+                      defaultValue={MasterMap?.bannerUrl}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Mastermap page banner"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
               </div>
               {MasterMap && (
                 <section className="rounded-md border w-full p-4 flex flex-col gap-4">

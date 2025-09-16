@@ -32,8 +32,8 @@ export const ToggleMapSettingsList = {
   setNewMaps: "New Map Section",
   setNewMasterMaps: "New Mastermap section",
   setExploreMaps: "Explore maps",
-  setFeaturedMaps: "Featured maps",
   setExploreMasterMaps: "Explore Mastermaps",
+  setFeaturedMaps: "Featured maps",
   setFeaturedMasterMaps: "Featured Mastermaps",
   ...PageSettingsList,
 } as const;

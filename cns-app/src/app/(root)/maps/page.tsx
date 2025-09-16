@@ -9,6 +9,8 @@ import StatusContextProvider from "@/store/statusContext";
 import MapDisplayModule from "@/components/displays/MapDisplayModule";
 import CursorContextProvider from "@/store/cursorContext";
 import MastermapDisplayModule from "@/components/displays/MastermapDisplayModule";
+import MapCardContainer from "@/components/maps/MapCardContainer";
+import MasterMapCardContainer from "@/components/maps/MasterMapCardContainer";
 
 export const metadata = {
   title: `Maps`,
@@ -62,11 +64,11 @@ export default async function Maps() {
   const featuredMaps = settings.find((item) => item.type === "setFeaturedMaps");
   const newMaps = settings.find((item) => item.type === "setNewMaps");
   const exploreMaps = settings.find((item) => item.type === "setExploreMaps");
-  const featuredMasterMaps = settings.find(
-    (item) => item.type === "setFeaturedMasterMaps"
-  );
   const newMasterMaps = settings.find(
     (item) => item.type === "setNewMasterMaps"
+  );
+  const featuredMasterMaps = settings.find(
+    (item) => item.type === "setFeaturedMasterMaps"
   );
   const exploreMasterMaps = settings.find(
     (item) => item.type === "setExploreMasterMaps"
@@ -85,10 +87,11 @@ export default async function Maps() {
             id="top-content"
             className="w-full grid grid-cols-8 gap-4 mx-auto relative"
           >
-            {/* General contents */}
+            {/* Title */}
             <div className="col-span-8">
               <TitleSection numberSortedTextGroup={mainTextGroup} />
             </div>
+            {/* Displays */}
             {mapId && (
               <div className="col-span-6" style={{ order: mapId.order }}>
                 <MapDisplay mapId={mapId} />
@@ -99,29 +102,65 @@ export default async function Maps() {
                 <MasterMapDisplay masterMapId={mastermapId} />
               </div>
             )}
-            {/* 
-            {featuredStories && (
-              <div
-                className="col-span-2"
-                style={{ order: featuredStories.order }}
-              >
-                <StoryCardContainer
-                  type={featuredStories.type}
-                  amount={parseInt(featuredStories.value)}
+            {/* Maps */}
+            {featuredMaps && (
+              <div className="col-span-2" style={{ order: featuredMaps.order }}>
+                <MapCardContainer
+                  type={featuredMaps.type}
+                  amount={parseInt(featuredMaps.value)}
                 />
               </div>
             )}
-            {exploreStories && (
-              <div
-                className="col-span-2"
-                style={{ order: exploreStories.order }}
-              >
-                <StoryCardContainer
-                  type={exploreStories.type}
-                  amount={parseInt(exploreStories.value)}
+            {newMaps && (
+              <div className="col-span-2" style={{ order: newMaps.order }}>
+                <MapCardContainer
+                  type={newMaps.type}
+                  amount={parseInt(newMaps.value)}
                 />
               </div>
-            )} */}
+            )}
+            {exploreMaps && (
+              <div className="col-span-2" style={{ order: exploreMaps.order }}>
+                <MapCardContainer
+                  type={exploreMaps.type}
+                  amount={parseInt(exploreMaps.value)}
+                />
+              </div>
+            )}
+            {/* Mastermaps */}
+            {newMasterMaps && (
+              <div
+                className="col-span-2"
+                style={{ order: newMasterMaps.order }}
+              >
+                <MasterMapCardContainer
+                  type={newMasterMaps.type}
+                  amount={parseInt(newMasterMaps.value)}
+                />
+              </div>
+            )}
+            {featuredMasterMaps && (
+              <div
+                className="col-span-2"
+                style={{ order: featuredMasterMaps.order }}
+              >
+                <MasterMapCardContainer
+                  type={featuredMasterMaps.type}
+                  amount={parseInt(featuredMasterMaps.value)}
+                />
+              </div>
+            )}
+            {exploreMasterMaps && (
+              <div
+                className="col-span-2"
+                style={{ order: exploreMasterMaps.order }}
+              >
+                <MasterMapCardContainer
+                  type={exploreMasterMaps.type}
+                  amount={parseInt(exploreMasterMaps.value)}
+                />
+              </div>
+            )}
             {/* Render grouped content sections */}
             {Object.keys(groupedContent)
               .filter((orderNumber) => orderNumber !== "1") // Skip the main text group as it's rendered above

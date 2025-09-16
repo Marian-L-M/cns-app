@@ -281,10 +281,14 @@ model Map {
 }
 
 model MapHierarchyMaster {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @default("") @db.Text
+  imageUrl    String   @default("")
+  bannerUrl   String   @default("")
+  featured    Boolean  @default(false)
 
   parentMapId Int
   parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id], onUpdate: Cascade)
