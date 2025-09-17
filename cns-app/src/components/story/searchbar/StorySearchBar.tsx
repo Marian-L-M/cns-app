@@ -1,6 +1,6 @@
 import AuthorFilter from "@/components/templates/searchbar/AuthorFilter";
-import { User } from "@prisma/client";
 import SearchInput from "@/components/templates/searchbar/SearchInput";
+import { User } from "@prisma/client";
 import StatusFilter from "./StatusFilter";
 
 interface Props {
