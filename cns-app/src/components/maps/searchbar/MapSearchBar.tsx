@@ -1,17 +1,15 @@
 import AuthorFilter from "@/components/templates/searchbar/AuthorFilter";
-import { User } from "@prisma/client";
 import SearchInput from "@/components/templates/searchbar/SearchInput";
-import StatusFilter from "./StatusFilter";
+import { User } from "@prisma/client";
 
 interface Props {
   authorList: User[];
 }
 
-export default function StorySearchBar({ authorList }: Props) {
+export default function MapSearchBar({ authorList }: Props) {
   return (
     <div className="flex gap-4 items-center">
       <AuthorFilter authors={authorList} />
-      <StatusFilter />
       <SearchInput />
     </div>
   );

@@ -1,18 +1,17 @@
 import React from "react";
 import prisma from "@/../prisma/db";
-import StoryCardTable from "../StoyCardTable";
-import { Status, Story } from "@prisma/client";
-import StorySearchBar from "@/components/story/searchbar/StorySearchBar";
+import { Map } from "@prisma/client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import MapSearchBar from "@/components/maps/searchbar/MapSearchBar";
+import MapCardTable from "@/components/maps/MapCardTable";
 
 export const metadata = {
-  title: `Stories Archive`,
+  title: `Maps Archive`,
 };
 
 export interface SearchParams {
   author: string;
-  status: string;
   page: string;
   title: string;
   orderBy: Date;
@@ -30,7 +29,6 @@ export default async function storyArchivePage({
   const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
   const title = searchParams.title ? searchParams.title : "";
   const authorName = searchParams.author ? searchParams.author : undefined;
-  const status = searchParams.status ? searchParams.status : undefined;
 
   const authorList = await prisma.user.findMany({
     where: {
@@ -44,8 +42,7 @@ export default async function storyArchivePage({
 
   const settings = {
     where: {
-      ...(status && { status: status as Status }),
-      userStories: {},
+      userMaps: {},
       title: {
         contains: title,
         mode: "insensitive",
@@ -54,7 +51,7 @@ export default async function storyArchivePage({
     take: pageSize,
     skip: (page - 1) * pageSize,
     include: {
-      userStories: {
+      userMaps: {
         include: {
           user: {
             select: {
@@ -68,7 +65,7 @@ export default async function storyArchivePage({
     },
   };
 
-  let stories: Story[] = [];
+  let maps: Map[] = [];
 
   if (authorName) {
     const author = await prisma.userProfile.findFirst({
@@ -81,27 +78,27 @@ export default async function storyArchivePage({
     });
     if (author) {
       const authorId = author.userId;
-      settings.where.userStories = {
+      settings.where.userMaps = {
         some: {
           userId: authorId,
         },
       };
-      stories = await prisma.story.findMany(settings);
+      maps = await prisma.map.findMany(settings);
     }
   } else {
-    stories = await prisma.story.findMany(settings);
+    maps = await prisma.map.findMany(settings);
   }
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Story archive</h1>
+      <h1 className="text-2xl font-bold">Maps Archive</h1>
       <div className="w-full flex flex-col gap-4 border rounded-md p-4">
-        <StorySearchBar authorList={authorList} />
-        <Link href="/stories/archive">
+        <MapSearchBar authorList={authorList} />
+        <Link href="/maps/archive">
           <Button>Reset</Button>
         </Link>
       </div>
-      <StoryCardTable stories={stories} />
+      <MapCardTable maps={maps} />
     </div>
   );
 }

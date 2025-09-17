@@ -8,7 +8,7 @@ import MapDisplayModule from "@/components/displays/MapDisplayModule";
 import CursorContextProvider from "@/store/cursorContext";
 import MastermapDisplayModule from "@/components/displays/MastermapDisplayModule";
 import MapCardContainer from "@/components/maps/MapCardContainer";
-import MasterMapCardContainer from "@/components/maps/MasterMapCardContainer";
+import MasterMapCardContainer from "@/components/mastermaps/MasterMapCardContainer";
 
 export const metadata = {
   title: `Maps`,
