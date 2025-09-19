@@ -161,3 +161,10 @@ type CanvasStyleItemType =
 type LineStyleItemType = "lineArrow" | "lineType" | "strokeStyle" | "lineWidth";
 type ObjectStyleItemType = "size" | "opacity";
 type SubstoryNodeType = "square" | "Circle" | "diamond" | "icon";
+
+// User
+type Social = {
+  platform: SocialPlatform;
+  label: string;
+  url: string;
+};

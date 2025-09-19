@@ -12,13 +12,31 @@ export const userSchema = z.object({
     .or(z.literal("")),
 });
 
+export const socialSchema = z.object({
+  platform: z.enum([
+    "twitter",
+    "instagram",
+    "facebook",
+    "tiktok",
+    "deviantart",
+    "reddit",
+    "youtube",
+    "discord",
+    "github",
+    "website",
+    "other",
+  ]),
+  label: z.string().optional(),
+  url: z.string().url("Please enter a valid URL"),
+});
+
 export const userProfileSchema = z.object({
   displayName: z.string().min(3, "Name must be at least 3 characters"),
   profileCatch: z.string().max(511).optional(),
   profileDescription: z.string().max(65535).optional(),
   thumbnail: z.string().optional(),
   banner: z.string().optional(),
-  socials: z.any().nullable().optional(),
+  socials: z.array(socialSchema).default([]),
   userId: z.string().min(1, "Map ID is required"),
 });
 

@@ -17,10 +17,10 @@ const usernMenuItems = [
     title: "Profile",
     url: "/user/profile",
   },
-  {
-    title: "Works",
-    url: "/user/works",
-  },
+  // {
+  //   title: "Works",
+  //   url: "/user/works",
+  // },
   {
     title: "Settings",
     url: "/user/settings",

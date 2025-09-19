@@ -16,12 +16,12 @@ export default function Menu() {
   return (
     <div className="flex justify-end gap-3 w-full">
       <nav className="hidden md:flex py-1 px-8 w-full max-w-xs gap-1 items-center justify-end">
-        <Button asChild variant={`ghost`} className="p-1 text-xs">
+        {/* <Button asChild variant={`ghost`} className="p-1 text-xs">
           <Link href={`/support`}>Support</Link>
         </Button>
         <Button asChild variant={`ghost`} className="p-1 text-xs">
           <Link href={`/discussions`}>Discuss</Link>
-        </Button>
+        </Button> */}
         <UserButton />
       </nav>
       <nav className="md:hidden">
@@ -34,12 +34,12 @@ export default function Menu() {
             <Button asChild>
               <Link href={`/sign-in`}>Sign In</Link>
             </Button>
-            <Button asChild variant={`ghost`}>
+            {/* <Button asChild variant={`ghost`}>
               <Link href={`/discussions`}>Discuss</Link>
             </Button>
             <Button asChild variant={`ghost`}>
               <Link href={`/support`}>Support</Link>
-            </Button>
+            </Button> */}
             <SheetDescription></SheetDescription>
           </SheetContent>
         </Sheet>

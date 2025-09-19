@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { UploadButton } from "@/lib/uploadthing/utils";
 
 import "easymde/dist/easymde.min.css";
+import SocialsForm from "./SocialsForm";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -64,16 +65,20 @@ export default function UserProfileForm({ user }: Props) {
       setError("");
       if (profile) {
         await axios.patch(`/api/profile/${profile.id}`, values);
+        toast.success("Profile updated succesfully");
       } else {
         await axios.post(`/api/profile/`, values);
+        toast.success("Profile created succesfully");
       }
       setIsSubmitting(false);
       router.push(`/admin/users/${user.id}/profile`);
       router.refresh();
     } catch (error) {
-      setError("Unknown error occurred");
+      toast.error("Profile update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
       setIsSubmitting(false);
-      console.log(error);
     }
   }
   return (
@@ -216,6 +221,7 @@ export default function UserProfileForm({ user }: Props) {
               </CardContent>
             </Card>
           </div>
+          <SocialsForm socialIcons={profile?.socials || []} />
           <Button type="submit" disabled={isSubmitting}>
             {user ? "Update User" : "Submit User"}
           </Button>
