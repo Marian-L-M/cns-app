@@ -21,6 +21,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { APP_NAME } from "@/lib/constants";
+import { AdminSettings } from "@prisma/client";
 
 interface menuItemSublink {
   title: string;
@@ -35,11 +36,15 @@ interface menuItem extends menuItemSublink {
 
 interface sidebarDataProps {
   menuItems: menuItem[];
+  settings?: AdminSettings[];
 }
 
 // interface menuItemList :
 
-export function AppSidebar({ menuItems = [] }: sidebarDataProps) {
+export function AppSidebar({ menuItems = [], settings }: sidebarDataProps) {
+  const logo = settings?.find((item) => item.type === "logo");
+  const name = settings?.find((item) => item.type === "name");
+
   return (
     <Sidebar
       collapsible="icon"
@@ -52,15 +57,19 @@ export function AppSidebar({ menuItems = [] }: sidebarDataProps) {
           className="gap-2 py-2 w-full flex items-center"
           id="logo-wrapper"
         >
-          <Image
-            id="logo"
-            src="/ui/logo.png"
-            alt={`${APP_NAME} logo`}
-            height={32}
-            width={32}
-            priority
-          />
-          <span className="text-xs">{APP_NAME}</span>
+          {logo && (
+            <Image
+              id="logo"
+              src={logo.value}
+              alt={`${APP_NAME} logo`}
+              height={32}
+              width={32}
+              priority
+            />
+          )}
+          <span className="text-xs">
+            {name?.value ? name?.value : APP_NAME}
+          </span>
         </Link>
       </SidebarHeader>
       <SidebarContent>

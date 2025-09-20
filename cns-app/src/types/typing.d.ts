@@ -6,6 +6,7 @@ type MenuListItem = {
 
 interface MenuListProps {
   menuList: MenuListItem[];
+  settings?: AdminSettings[];
 }
 
 // For Drawing

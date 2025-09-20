@@ -5,6 +5,7 @@ import Footer from "@/components/shared/footer";
 import Header from "@/components/shared/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
+import prisma from "@/../prisma/db";
 
 export default async function RootLayout({
   children,
@@ -55,6 +56,16 @@ export default async function RootLayout({
     },
   ];
 
+  const settings = await prisma.adminSettings.findMany({
+    where: {
+      category: "GLOBAL",
+      subCategory: "header",
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <div
@@ -63,7 +74,7 @@ export default async function RootLayout({
       >
         <Header />
         <div className="h-full w-full flex" id="content-wrapper">
-          <AppSidebar menuItems={mainMenuItems} />
+          <AppSidebar menuItems={mainMenuItems} settings={settings} />
           <SidebarInset>
             <main className="w-full h-full px-8 py-4 overflow-y-scroll">
               {children}

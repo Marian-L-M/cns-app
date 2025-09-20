@@ -1,5 +1,6 @@
 import EditorHeader from "@/components/shared/editor-header";
 import { Toaster } from "@/components/ui/sonner";
+import prisma from "@/../prisma/db";
 
 const menuList = [
   { title: "Overview", url: "/admin" },
@@ -8,15 +9,24 @@ const menuList = [
   { title: "Page", url: "/admin/page" },
 ];
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await prisma.adminSettings.findMany({
+    where: {
+      category: "GLOBAL",
+      subCategory: "header",
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
   return (
     <>
       <div className="flex w-full flex-col gap-4">
-        <EditorHeader menuList={menuList} />
+        <EditorHeader menuList={menuList} settings={settings} />
         <div className="container mx-auto">
           <div className="flex items-center h-16 px-4">
             {/* <MainNav className="mx-6" /> */}
