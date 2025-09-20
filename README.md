@@ -32,6 +32,14 @@ https://nextjs.org/docs/app/api-reference/file-conventions
 19. Bug when submitting wiki
 20. Json fields infobox and styles should actually be relational tables (Only two groups overall: StylesObject & Infoboxitem everything else to be handled by relation to the parent object)
 21. drawMetaNodes -> same name two functions (Map nodes and story nodes)
+22. Editor redraw to usecallback instead of useeffect?
+23. make Inactive users unable to login ✅
+24. Add socials functionality for user
+25. Unify api route writing patterns (Its atrocious)
+26. Get collaborator functionality working
+27. Overlapping areas/object and stories -> Stories should trigger first
+28. Childmap submissions: filter out parent map and already selected
+29. Admin page settings - submitting id items with the same setting leads to error
 
 ## General
 
@@ -67,98 +75,75 @@ https://nextjs.org/docs/app/api-reference/file-conventions
 28. Dictionary , Dramatis Personae
 29. Conjoined storypoint issue
 
-- System message banner (floating not blocked)
-- Map hover banner (floating not blocked)
+30. System message banner (floating not blocked)
+31. Map hover banner (floating not blocked)
+32. storytime conversion.
+33. Story/wiki/map banners
+34. Admin settings add meta value to e.g. control width/col span
 
 ### Users
 
-- Create private routes for editing and commenting
-- Add editor role
-- Protect sbumission routes with auth?
-- Verification mail
-
-# All Editors
-
-- Add style object
-- Full screen mode
-- Support standard aspect ratios (Or get it from image object) 1:2 3:4 1:1 4:3 2:1
+1. Create private routes for editing and commenting
+2. Add editor role
+3. Protect sbumission routes with auth?
+4. Verification mail
 
 ## Dashboard
 
-- Rethink page structure
-- Create Dashboard display concept
-- Create admin dashboard to control what is displayed on dashboard
-- Create analytics
+1. Create Dashboard display concept
+2. Create admin dashboard to control what is displayed on dashboard
+3. Create analytics
 
 ## Stories
 
-- Multi Map Story
-- Story display module, hide areas and objects on click
+1. Multi Map Story
+2. Story display module, hide areas and objects on click
 
 ## Map Editor
 
-- [x] Add mastermap flag and master array to maps
-- [x] Add Map editor tool (adding areas by clicking on map)
-      -- [x] Draw area tool
-      -- Add image selector +alpha -> ai integration?
-      -- [x] Add information to map (Submit like an object)
-      -- Join with existing maps
-- Unify thumbnail and image name
-- Enable upload for images
-- Dynamic wiki integration
-- [] Area editor
-  -- [x] Reposition nodes
-  -- [x] Explicit delete
-  -- [] Tooltips
-  -- [] Ui fix
-  -- [] Transparent colors
-- [] Object editor
-  -- Change icon size (Has a lot of implecations for e.g. hover states)
-  -- Fix object hover effects
-  -- Default icon menu (Structure & search)
-- Map Cetegory enumeration
-- Priority true to map images
+1. Unify thumbnail and image name
+2. Enable upload toggle for different approaches
+3. Dynamic wiki integration
+4. Area editor
+   -- [] Tooltips
+   -- [] Ui fix
+5. Map Cetegory enumeration
+6. Priority true to map images
 
 ## MasterMap
 
-- [] add style object to mastermaps
-- Nice to have: Nested mastermaps
-- Preload images for hover
-- Create child maps functionality is broken
+1. Nice to have: Nested mastermaps
+2. Preload images for hover
 
 ## Wiki
 
-- [x] Wiki edit screen
-- Create Wiki Dashboard and Dashboard editing too
-- Need remove wiki button
-- Editor and Reader search logic + editor prefiltering according to permission
+1. Need remove wiki button
+2. Editor and Reader search logic + editor prefiltering according to permission
 
 ## Admin
 
-- set available map icons
-- set wiki screen
-- set landing page
-- manage users
+1. set available map icons
+2. set wiki screen
 
 ## Timelines & History
 
-- Create a timeline tool -> Hook up to year not node(?)
-- Timeline slide
-- Through the times functionality
-- Integrate with Wiki
-- Display date or other directional indicator on story timeline (E.g. an arrow in the line)
+1. Create a timeline tool -> Hook up to year not node(?)
+2. Timeline slide
+3. Through the times functionality
+4. Integrate with Wiki
+5. Display date or other directional indicator on story timeline (E.g. an arrow in the line)
 
 ## DB
 
-- Production docker compose Neon/Vercel -> adjust docker compose (additional production files + vercel environment variables)
+1. Production docker compose Neon/Vercel -> adjust docker compose (additional production files + vercel environment variables)
 
 ## Auth
 
-- Check if API routes can be accessed without auth
-- Check if no page was forgotten in editor and admin
+1. Check if API routes can be accessed without auth
+2. Check if no page was forgotten in editor and admin
 
 # Setup
 
 ## .env
 
-- uploadthing -> Create a wrapper for upload component to make it replaceable
+1. uploadthing -> Create a wrapper for upload component to make it replaceable

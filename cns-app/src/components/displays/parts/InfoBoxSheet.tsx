@@ -8,12 +8,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-// import InfoBox from "@/components/wiki/InfoBox";
 import Link from "next/link";
-import prisma from "../../../../prisma/db";
 import InfoboxDisplayModule from "../InfoboxDisplayModule";
-import InfoboxRow from "./InfoboxRow";
-import { fetchInfobox } from "@/lib/fetchWikiData";
 
 interface Props {
   sheetOpen: boolean;
