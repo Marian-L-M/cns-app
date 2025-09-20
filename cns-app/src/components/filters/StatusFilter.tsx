@@ -1,5 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
+
 import {
   Select,
   SelectContent,
@@ -7,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
 
 const statuses: { label: string; value?: string }[] = [
   { label: "Open / Started" },
@@ -16,7 +17,7 @@ const statuses: { label: string; value?: string }[] = [
   { label: "Completed", value: "COMPLETED" },
 ];
 
-const StatusFilter = () => {
+export default function StatusFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -46,6 +47,4 @@ const StatusFilter = () => {
       </SelectContent>
     </Select>
   );
-};
-
-export default StatusFilter;
+}

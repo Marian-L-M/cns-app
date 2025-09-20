@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 
 interface Props {
@@ -16,6 +16,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
+  console.log("id" + id);
   const globalArea = await prisma.globalArea.findUnique({
     where: { id: id },
   });

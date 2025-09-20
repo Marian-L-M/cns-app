@@ -11,18 +11,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
-  const duplicate = await prisma.user.findUnique({
-    where: {
-      username: body.username,
-    },
-  });
+  // const duplicate = await prisma.user.findUnique({
+  //   where: {
+  //     name: body.name,
+  //   },
+  // });
 
-  if (duplicate) {
-    return NextResponse.json(
-      { message: "Duplicate Username" },
-      { status: 409 }
-    );
-  }
+  // if (duplicate) {
+  //   return NextResponse.json(
+  //     { message: "Duplicate Username" },
+  //     { status: 409 }
+  //   );
+  // }
 
   const hashPassword = await bcrypt.hash(body.password, 10);
   body.password = hashPassword;

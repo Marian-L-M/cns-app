@@ -1,12 +1,11 @@
-import { ContextType, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { draw, drawEditNodes, drawMetaNode } from "@/lib/mapEditorUtils";
 import { EditorContext } from "@/store/mapEditorContext";
-
-interface areaNode {
-  id: number;
-  x: number;
-  y: number;
-}
+import { mapObjectDefaultIcon } from "@/lib/constants/objectIcons";
+import {
+  getValueFirstOfEachObjectType,
+  getValueFirstOfEachStyleType,
+} from "@/lib/utils";
 
 interface IconBounds {
   left: number;
@@ -16,15 +15,16 @@ interface IconBounds {
 }
 
 // Rewrite useMapEditor as a relay between useAreaEditor and useObjectEditor
-export const useMapEditor = ({
+export function useMapEditor({
   globalArea,
   globalObject,
   editorMode,
-}: any = {}) => {
-  // 2025011 Todo implement area editormode logic
-  // if (globalArea && editorMode == "area") {
+}: any = {}) {
   if (globalArea || editorMode == "area") {
-    const { canvasRef } = useAreaEditor(globalArea?.nodes, globalArea?.styles);
+    const { canvasRef } = useAreaEditor(
+      globalArea?.nodes,
+      globalArea?.canvasStyles
+    );
     return { canvasRef };
   } else if (globalObject || editorMode == "object") {
     const { canvasRef } = useObjectEditor(globalObject);
@@ -32,33 +32,33 @@ export const useMapEditor = ({
   }
   const canvasRef = useRef(null);
   return { canvasRef };
-};
+}
 
+// 250801 -> Structure is stupid , model it to the same as global object
 function useAreaEditor(nodes?: areaNode[], styles?: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [isActiveFlag, setIsActiveFlag] = useState(false);
 
-  // 20240926 Next actions
-  // 1. Draw object by clicking on map
-  // 2. Add object function (preset forms)
-  // 3. Object list - with names and colors
-  // 4. Activated object form list
-  // 5. Activated object on click
-  // 6. Work on object nodes click on node to remove, drag to reposition
+  if (styles) {
+    const filteredStyle = getValueFirstOfEachStyleType(styles);
 
-  // 241007 Next actions
-  // If an area objects exists without nodes, it will break the map maker module
-
-  // Initialize context
-  useEffect(() => {
-    if (!nodes) return;
-    editorCtx.updateNodeList(nodes); // Working, but in Prisma Schema declared as JSON not list of objects
-    editorCtx.pickObjectColor(styles.fillStyle);
-    editorCtx.pickLineColor(styles.strokeStyle);
-    editorCtx.pickLineWidth(styles.lineWidth);
-  }, []);
+    // Initialize context
+    useEffect(() => {
+      if (!nodes) return;
+      editorCtx.updateNodeList(nodes);
+      if (filteredStyle.fillStyle) {
+        editorCtx.pickObjectColor(filteredStyle.fillStyle);
+      }
+      if (filteredStyle.strokeStyle) {
+        editorCtx.pickLineColor(filteredStyle.strokeStyle);
+      }
+      if (filteredStyle.lineWidth) {
+        editorCtx.pickLineWidth(parseInt(filteredStyle.lineWidth));
+      }
+    }, [styles]);
+  }
 
   // Draw logic
   useEffect(() => {
@@ -167,17 +167,22 @@ function useObjectEditor(globalObject: any) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [iconBounds, setIconBounds] = useState<IconBounds | null>(null);
-  const thumbSize = 40;
-  const thumbRadius = thumbSize / 2; // this is kind of stupid
 
-  // Initialize context
+  // Style settings
+  const styles = getValueFirstOfEachObjectType(globalObject.canvasStyles);
+  const thumbSize = parseInt(styles.size) || 40;
+  const thumbRadius = thumbSize / 2;
+  const opacity = parseInt(styles.opacity) / 100;
+
   useEffect(() => {
     if (globalObject) {
       editorCtx.updateGlobalObjectSettings({
         x: globalObject.x,
         y: globalObject.y,
-        url: globalObject.thumbUrl,
+        url: globalObject.iconUrl,
         name: globalObject.title,
+        size: thumbSize || 40,
+        opacity: opacity || 100,
       });
       // 20250107 Issue: This will break on small computers due to lack of cw/ch
       // Doesn't matter for alpha as it breaks anyway on small computers
@@ -191,14 +196,18 @@ function useObjectEditor(globalObject: any) {
       const objectInitializer = {
         x: 100,
         y: 100,
-        url: "objects/icons/dummy.svg",
+        url: mapObjectDefaultIcon.url,
         name: "dummy",
+        size: thumbSize | 40,
+        opacity: opacity | 100,
       };
       editorCtx.updateGlobalObjectSettings({
         x: objectInitializer.x,
         y: objectInitializer.y,
         url: objectInitializer.url,
         name: objectInitializer.name,
+        size: thumbSize | 40,
+        opacity: opacity | 100,
       });
       setIconBounds({
         left: objectInitializer.x - thumbRadius,
@@ -256,6 +265,8 @@ function useObjectEditor(globalObject: any) {
           url: gos.url,
           x: gos.x,
           y: gos.y,
+          size: thumbSize || 40,
+          opacity: opacity || 100,
         });
 
         const newBounds = {
@@ -281,7 +292,7 @@ function useObjectEditor(globalObject: any) {
     // Mouse actions
     canvas.addEventListener("mousedown", mouseDownHandler);
     if (iconBounds) {
-      redrawCanvas(canvas, isEditing, gos, thumbSize, iconBounds);
+      redrawCanvas(canvas, isEditing, gos, thumbSize, opacity, iconBounds);
     }
 
     // Keyboard actions
@@ -291,7 +302,7 @@ function useObjectEditor(globalObject: any) {
       window.removeEventListener("keydown", keyboardHandler);
       canvas.removeEventListener("mousedown", mouseDownHandler);
     };
-  }, [editorCtx, isEditing, iconBounds, thumbSize]);
+  }, [editorCtx, isEditing, iconBounds]);
 
   return { canvasRef };
 }
@@ -301,6 +312,7 @@ export function redrawCanvas(
   isEditing: Boolean,
   globalObject: GlobalObjectType,
   thumbSize: number,
+  opacity: number,
   iconBounds: IconBounds
 ) {
   const ctx = canvas.getContext("2d");
@@ -310,7 +322,7 @@ export function redrawCanvas(
   const ch = canvas.height / 1000;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawIcon(thumbSize, ctx, globalObject, cw, ch);
+  drawIcon(thumbSize, opacity, ctx, globalObject, cw, ch);
   if (isEditing && iconBounds) {
     drawEditMarker(ctx, iconBounds);
   }
@@ -318,6 +330,7 @@ export function redrawCanvas(
 
 export function drawIcon(
   thumbSize: number,
+  opacity: number,
   ctx: CanvasRenderingContext2D,
   globalObject: GlobalObjectType,
   cw: number,
@@ -330,8 +343,10 @@ export function drawIcon(
     console.error("Error loading icon:", e);
   };
 
-  icon.src = `/${globalObject.url}`;
+  icon.src = globalObject.url || mapObjectDefaultIcon.url;
   icon.onload = () => {
+    ctx.save();
+    ctx.globalAlpha = opacity;
     ctx.drawImage(
       icon,
       globalObject.x * cw - thumbDiamater,
@@ -339,6 +354,7 @@ export function drawIcon(
       thumbSize,
       thumbSize
     );
+    ctx.restore();
   };
 }
 

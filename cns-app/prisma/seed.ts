@@ -1,26 +1,22 @@
-// import { PrismaClient } from "@prisma/client";
-// import { entries } from "../data/entries";
-// const prisma = new PrismaClient();
+import { PrismaClient } from "@prisma/client";
+import sampleData from "./sample-data";
 
-// async function main() {
-//   await prisma.user.create({
-//     data: {
-//       email: `testemail@gmail.com`,
-//       role: "ADMIN",
-//       password: "pumpers123",
-//     },
-//   });
+const prisma = new PrismaClient();
+async function main() {
+  await prisma.account.deleteMany();
+  await prisma.session.deleteMany();
+  await prisma.verificationToken.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.user.createMany({
+    data: sampleData.users,
+  });
+}
 
-//   await prisma.entry.createMany({
-//     data: entries,
-//   });
-// }
-
-// main()
-//   .catch((e) => {
-//     console.error(e);
-//     process.exit(1);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

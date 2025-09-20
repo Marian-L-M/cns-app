@@ -8,7 +8,7 @@ interface StoryProps {
   description: string;
 }
 
-function StoryBox(props: StoryProps) {
+export default function StoryBox(props: StoryProps) {
   const statusCtx = useContext(StatusContext);
   const { title, id, type, description } = props;
 
@@ -22,5 +22,3 @@ function StoryBox(props: StoryProps) {
     </div>
   );
 }
-
-export default StoryBox;

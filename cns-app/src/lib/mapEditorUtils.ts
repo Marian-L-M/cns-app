@@ -1,15 +1,12 @@
-interface areaNode {
-  id: number;
-  x: number;
-  y: number;
-}
+// To do Move to draw live
+// Draw functions are double
 
-export const draw = (
+export function draw(
   ctx: CanvasRenderingContext2D,
   area: areaNode[],
   cw: number,
   ch: number
-) => {
+) {
   // current drawArea function is nonsensical (nested nodes structure used in mapmaker -> Find better way to unify)
   ctx.beginPath();
   ctx.moveTo(area[0].x * cw, area[0].y * ch);
@@ -20,16 +17,16 @@ export const draw = (
   ctx.closePath;
   ctx.stroke();
   ctx.fill();
-};
+}
 
-export const drawEditNodes = (
+export function drawEditNodes(
   ctx: CanvasRenderingContext2D,
   area: areaNode[],
   cw: number,
   ch: number,
   activeNode?: number | null,
   diameter?: number
-) => {
+) {
   const offset = diameter ? diameter : 10;
   area.forEach((node, index) => {
     ctx.beginPath();
@@ -49,15 +46,15 @@ export const drawEditNodes = (
     ctx.stroke();
     ctx.fill();
   });
-};
+}
 
-export const drawMetaNode = (
+export function drawMetaNode(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   cw: number,
   ch: number
-) => {
+) {
   const offset = 10;
   ctx.beginPath();
   ctx.moveTo(x * cw - offset, y * ch - offset);
@@ -66,4 +63,4 @@ export const drawMetaNode = (
   ctx.lineTo(x * cw - offset, y * ch + offset);
   ctx.lineTo(x * cw - offset, y * ch - offset);
   ctx.closePath;
-};
+}

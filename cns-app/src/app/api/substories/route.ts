@@ -1,17 +1,27 @@
-import { storyObjectsSchema } from "../../../ValidationSchemas/stories";
+import { SubStorySchema } from "@/ValidationSchemas/stories";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../prisma/db";
+import prisma from "@/../prisma/db";
+import { auth } from "@/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized - User not authenticated" },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
-    const validation = storyObjectsSchema.safeParse(body);
+    const validation = SubStorySchema.safeParse(body);
 
     if (!validation.success) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
 
-    const newSubstory = await prisma.story.create({
+    const newSubstory = await prisma.subStory.create({
       data: { ...body },
     });
     return NextResponse.json(newSubstory, { status: 201 });

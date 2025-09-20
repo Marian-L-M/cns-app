@@ -1,3 +1,15 @@
+// For Navigation
+type MenuListItem = {
+  title: string;
+  url: string;
+};
+
+interface MenuListProps {
+  menuList: MenuListItem[];
+  settings?: AdminSettings[];
+}
+
+// For Drawing
 type Draw = {
   ctx: CanvasRenderingContext2D;
   currentPoint: Point;
@@ -12,20 +24,13 @@ type GlobalStoryType = z.infer<typeof storyObjectsSchema>;
 
 // For passing Map data to MapModule
 interface MapModuleProps {
-  // id: string;
   data: {
     map: Map;
     mapObjects: GlobalObjectType[];
     mapAreas: GlobalAreaType[];
   };
-}
-interface StoryModuleProps {
-  data: {
-    map: Map;
-    mapObjects: GlobalObjectType[];
-    mapAreas: GlobalAreaType[];
-  };
-  story: story[];
+  settings?: string;
+  fullscreen?: boolean;
 }
 
 // For Drawing Map area from nodes
@@ -35,6 +40,19 @@ type DrawMapArea = {
   nodes: Point[];
   fillStyle: string;
   strokeStyle: string;
+};
+
+type HierarchyConnection = {
+  hierarchyChildId: number;
+  hierarchyParentId: number;
+  mapTitle: string;
+};
+
+type PointRectangularArea = {
+  x: number;
+  y: number;
+  wx: number;
+  wy: number;
 };
 
 type DrawMapObject = {
@@ -58,6 +76,12 @@ type StoryClickStatus = {
   id: number;
 };
 
+type TooltipStatus = {
+  id: number;
+  title: string;
+  imageUrl: string;
+};
+
 // Node for drawing map area
 type Point = { x: number; y: number };
 
@@ -69,15 +93,29 @@ interface story {
   description: string;
   nodes: JsonValue;
   objectTime: number;
-  entryId: number;
+  storyId: number;
+  canvasStyles?: CanvasStyleItem[];
 }
 
-interface storyNode {
+type StoryNode = {
   id: number;
+  x: number;
+  y: number;
   name: string;
   description: string;
-  timeStart: number;
-  timeEnd: number;
+  timeStart?: number;
+  timeEnd?: number;
+  iconType?: string; // Individual icon overwrite Circle, Rectangle, diamond etc.
+  iconUrl?: string;
+  iconSize?: number;
+  iconColor?: string;
+  label: boolean;
+  labelColor?: string;
+  fontColor?: string;
+};
+
+interface areaNode {
+  id: number;
   x: number;
   y: number;
 }
@@ -112,3 +150,22 @@ type TextType = {
 };
 
 type InfoBoxItem = ImageType | CollectionType | TextType;
+
+// Styles
+type CanvasStyleItemType =
+  | "fontSize"
+  | "fontColor"
+  | "fontType"
+  | "lineWidth"
+  | "fillStyle"
+  | "strokeStyle";
+type LineStyleItemType = "lineArrow" | "lineType" | "strokeStyle" | "lineWidth";
+type ObjectStyleItemType = "size" | "opacity";
+type SubstoryNodeType = "square" | "Circle" | "diamond" | "icon";
+
+// User
+type Social = {
+  platform: SocialPlatform;
+  label: string;
+  url: string;
+};

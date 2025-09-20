@@ -1,14 +1,41 @@
-import prisma from "../../prisma/db";
+// Move to utils folder and polish concept
+import prisma from "@/../prisma/db";
+import axios from "axios";
 
 /**
- * Accepts an entry id to return all related stories
- * @param {number} entryId - The ID of the entry to fetch related stories for.
- * @returns {Promise<{ story: Array<any> }>} A promise resolving to an object containing an array of stories.
+ * Accepts a story id to return all related substories
+ * @param {number} storyId - The ID of the story(former entry) to fetch related stories for.
+ * @returns {Promise<{ story: Array<any> }>} A promise resolving to an object containing an array of substories.
  */
-export const fetchStoryData = async (entryId: number) => {
-  const story = await prisma.story.findMany({
-    where: { entryId: entryId },
+export async function fetchSubStoryData(storyId: number) {
+  const subStory = await prisma.subStory.findMany({
+    where: { storyId: storyId },
   });
 
-  return { story };
-};
+  return { subStory };
+}
+
+interface StoryFetchProps {
+  selectedStoryId: number | undefined;
+  setStoryName: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export async function fetchStoryName({
+  selectedStoryId,
+  setStoryName,
+}: StoryFetchProps) {
+  if (!selectedStoryId) {
+    setStoryName("");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`/api/story/${selectedStoryId}`);
+    if (response.data && response.data.title) {
+      setStoryName(response.data.title);
+    }
+  } catch (error) {
+    console.error("Error fetching mastermap data:", error);
+    setStoryName("");
+  }
+}

@@ -10,6 +10,8 @@ interface areaNode {
 interface globalObject {
   name: string;
   url: string;
+  size: number;
+  opacity: number;
   x: number;
   y: number;
 }
@@ -32,7 +34,7 @@ interface MapEditorContextProviderProps {
 }
 
 export const EditorContext = createContext<MapEditorStyleContextType>({
-  objectColor: "red",
+  objectColor: "grey",
   pickObjectColor: () => {},
   objectLineColor: "black",
   pickLineColor: () => {},
@@ -43,6 +45,8 @@ export const EditorContext = createContext<MapEditorStyleContextType>({
   globalObjectSettings: {
     name: "",
     url: "",
+    size: 40,
+    opacity: 100,
     x: 0,
     y: 0,
   },
@@ -60,6 +64,8 @@ export default function EditorContextProvider({
     useState<globalObject>({
       name: "",
       url: "",
+      size: 40,
+      opacity: 100,
       x: 0,
       y: 0,
     });

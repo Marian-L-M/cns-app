@@ -9,47 +9,16 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
-}
-
-model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
-  role      Role     @default(USER)
-  name      String?  @db.VarChar(255)
-  username  String?  @unique @db.VarChar(255)
-  image     String?  
-  password  String
-  likes     Entry[]
 }
 
 enum Role {
   ADMIN
   AUTHOR
   USER
-}
-
-model Entry {
-  id          Int @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String @db.VarChar(255)
-  description String @db.Text
-  imageUrl    String
-  category    String
-  rating      Int @default(0)
-  storyTime   Int @default(0)
-  status      Status @default(UPCOMING)
-  users       User[]
-  stories      Story[]
-  assignedToMapID Int?
-  assignedToMap Map? @relation(fields:[assignedToMapID], references: [id])
-
-  @@index([assignedToMapID])
+  INACTIVE
 }
 
 enum Status {
@@ -58,98 +27,16 @@ enum Status {
   UPCOMING
 }
 
-// In the long term maps need to have parent-child maps to accommodate zoom levels and global maps
-model Map {
-  id          Int @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  imageUrl    String
-  x           Int
-  y           Int
-  wx          Int
-  wy          Int
-  mapScale    Int
-  mapTime     Int
-  mapUrl      String
-  assignedEntries       Entry[]
-  objects     GlobalObject[]
-  area        GlobalArea[]
+enum ContentRole {
+  OWNER
+  EDITOR
 }
 
-
-// 250131 Blew up database - Nodes needs to be a list of objects though
-model Story {
-  id          Int @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  nodes       Json[]
-  objectTime  Int
-  entry         Entry      @relation(fields: [entryId], references: [id])
-  entryId       Int
-
-  @@index([entryId])
-}
-
-model GlobalObject {
-  id          Int @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  imageUrl    String
-  thumbUrl    String
-  infobox     Json?
-  x           Int
-  y           Int
-  objectTime  Int
-  map         Map      @relation(fields: [mapId], references: [id])
-  mapId       Int
-  wiki         Wiki      @relation(fields: [wikiId], references: [id])
-  wikiId       Int
-  type        MapObjectType @default(LOCATION)
-
-  @@index([mapId])
-  @@index([wikiId])
-}
-
-model GlobalArea {
-  id          Int @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(255)
-  description String @db.Text
-  imageUrl    String
-  infobox     Json?
-  nodes       Json?
-  styles      Json?
-  objectTime  Int
-  map         Map      @relation(fields: [mapId], references: [id])
-  mapId       Int
-  wiki         Wiki      @relation(fields: [wikiId], references: [id])
-  wikiId       Int
-  type        MapAreaType @default(GEOGRAPHY)
-
-  @@index([mapId])
-  @@index([wikiId])
-}
-
-model Wiki {
-  id          Int @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  featured    Boolean    @default(false)
-  thumbUrl    String @default("")
-  title       String   @db.VarChar(255)
-  description String @db.Text
-  wikiText    String @db.Text @default("")
-  infobox     Json?
-  objects     GlobalObject[]
-  area        GlobalArea[]
-  type        WikiType @default(GENERAL)
+enum AdminSettingsType {
+  USER
+  PAGE
+  DESIGN
+  OTHER
 }
 
 enum WikiType {
@@ -164,15 +51,424 @@ enum WikiType {
   OTHER
 }
 
+enum WikiInfoboxType {
+  IMAGE
+  COLLECTION
+  TEXT
+  TITLE
+}
+
+enum CanvasIconType {
+  label
+  font
+  imageSize
+  imageOpacity
+  fontFillStyle
+  svgFillStyle
+  svgStrokeStyle
+}
+
 enum MapObjectType {
   LOCATION
   HISTORY
   NATURAL
   EVENT
+  OTHER
 }
 
 enum MapAreaType {
   GEOGRAPHY
+  POLITICAL
   ABSTRACT
   INTERACTIVE
+  OTHER
+}
+
+model AdminSettings {
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  order       Int               @default(1)
+  category    AdminSettingsType @default(OTHER)
+  subCategory String?           @default("")
+  type        String            @default("") @db.Text
+  value       String            @default("")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @default("NO_NAME")
+  email         String    @unique(map: "user_email_idx")
+  emailVerified DateTime? @map("email_verified")
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
+
+  role        Role         @default(USER)
+  userProfile UserProfile? @relation("userProfile")
+
+  userStories      UserStory[]
+  userMaps         UserMap[]
+  userMapHierarchy UserMapHierarchy[]
+  userWikis        UserWiki[]
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model UserProfile {
+  id        Int      @id @default(autoincrement())
+  slug      String?  @unique(map: "profile_slug_idx")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  displayName        String  @unique @db.VarChar(255)
+  profileCatch       String? @db.Text
+  profileDescription String? @db.Text
+
+  banner    String?
+  thumbnail String?
+  socials   Json[]  @default([]) @db.Json
+
+  userId      String @unique
+  relatedUser User   @relation("userProfile", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId])
+}
+
+// User Junction tables
+model UserStory {
+  id      Int         @id @default(autoincrement())
+  userId  String      @db.Uuid
+  storyId Int
+  role    ContentRole @default(OWNER)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, storyId])
+  @@index([userId])
+  @@index([storyId])
+  @@map("user_stories")
+}
+
+model UserMap {
+  id     Int         @id @default(autoincrement())
+  userId String      @db.Uuid
+  mapId  Int
+  role   ContentRole @default(OWNER)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  map  Map  @relation(fields: [mapId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, mapId])
+  @@index([userId])
+  @@index([mapId])
+  @@map("user_maps")
+}
+
+model UserMapHierarchy {
+  id             Int         @id @default(autoincrement())
+  userId         String      @db.Uuid
+  mapHierarchyId Int
+  role           ContentRole @default(OWNER)
+
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mapHierarchy MapHierarchyMaster @relation(fields: [mapHierarchyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, mapHierarchyId])
+  @@index([userId])
+  @@index([mapHierarchyId])
+  @@map("user_map_hierarchies")
+}
+
+model UserWiki {
+  id     Int         @id @default(autoincrement())
+  userId String      @db.Uuid
+  wikiId Int
+  role   ContentRole @default(OWNER)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wiki Wiki @relation(fields: [wikiId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, wikiId])
+  @@index([userId])
+  @@index([wikiId])
+  @@map("user_wikis")
+}
+
+// In the long term maps need to have parent-child maps to accommodate zoom levels and global maps
+model Map {
+  id                Int      @id @default(autoincrement())
+  slug              String?  @unique(map: "map_slug_idx")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  title             String   @db.VarChar(255)
+  description       String   @db.Text
+  imageUrl          String
+  mapTime           Int
+  mapUrl            String
+  mapWidth          Int      @default(1000)
+  mapHeight         Int      @default(1000)
+  canvasAspectRatio Float    @default(1)
+
+  category String
+  tags     String[]
+  featured Boolean  @default(false)
+
+  assignedStories Story[]
+  objects         GlobalObject[]
+  area            GlobalArea[]
+  canvasStyles    CanvasStyleItem[]
+
+  userMaps UserMap[]
+
+  parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
+  childInHierarchies  MapHierarchyChild[]  @relation("ChildMap")
+}
+
+model MapHierarchyMaster {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @default("") @db.Text
+  imageUrl    String   @default("")
+  bannerUrl   String   @default("")
+  featured    Boolean  @default(false)
+
+  parentMapId Int
+  parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id], onUpdate: Cascade)
+  childMaps   MapHierarchyChild[]
+
+  userMapHierarchies UserMapHierarchy[]
+
+  @@index([parentMapId])
+}
+
+model MapHierarchyChild {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hierarchyId Int
+  hierarchy   MapHierarchyMaster @relation(fields: [hierarchyId], references: [id])
+  childMapId  Int
+  childMap    Map                @relation("ChildMap", fields: [childMapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  x  Int @default(0)
+  y  Int @default(0)
+  wx Int @default(0)
+  wy Int @default(0)
+
+  canvasStyles CanvasStyleItem[]
+
+  @@unique([hierarchyId, childMapId])
+  @@index([hierarchyId])
+  @@index([childMapId])
+}
+
+model Story {
+  id          Int      @id @default(autoincrement())
+  slug        String?  @unique(map: "stroy_slug_idx")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  imageUrl    String
+  storyTime   Int      @default(0)
+
+  category String?
+  tags     String[]
+  featured Boolean  @default(false)
+
+  userStories UserStory[]
+
+  status          Status     @default(UPCOMING)
+  subStories      SubStory[]
+  assignedToMapID Int?
+  assignedToMap   Map?       @relation(fields: [assignedToMapID], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  rating Int @default(0)
+
+  @@index([assignedToMapID])
+}
+
+model SubStory {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  nodes       Json[]
+  objectTime  Int
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  storyId     Int
+
+  canvasStyles CanvasStyleItem[]
+
+  @@index([storyId])
+}
+
+model GlobalObject {
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  title       String        @db.VarChar(255)
+  description String        @db.Text
+  thumbUrl    String        @default("")
+  iconUrl     String        @default("")
+  x           Int
+  y           Int
+  objectTime  Int
+  map         Map           @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mapId       Int
+  wiki        Wiki?         @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  wikiId      Int?
+  type        MapObjectType @default(LOCATION)
+
+  canvasStyles CanvasStyleItem[]
+
+  @@index([mapId])
+  @@index([wikiId])
+}
+
+model GlobalArea {
+  id          Int         @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  title       String      @db.VarChar(255)
+  description String      @db.Text
+  imageUrl    String
+  nodes       Json?
+  objectTime  Int
+  map         Map         @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mapId       Int
+  wiki        Wiki?       @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  wikiId      Int?
+  type        MapAreaType @default(GEOGRAPHY)
+
+  canvasStyles CanvasStyleItem[]
+
+  @@index([mapId])
+  @@index([wikiId])
+}
+
+model Wiki {
+  id          Int      @id @default(autoincrement())
+  slug        String?  @unique(map: "wiki_slug_idx")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  thumbUrl    String   @default("")
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  wikiText    String   @default("") @db.Text
+
+  category String?
+  tags     String[]
+  featured Boolean  @default(false)
+
+  objects GlobalObject[]
+  area    GlobalArea[]
+  type    WikiType       @default(GENERAL)
+
+  userWikis    UserWiki[]
+  infoboxItems WikiInfoboxItem[]
+}
+
+model WikiInfoboxItem {
+  id        Int             @id @default(autoincrement())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  type      WikiInfoboxType @default(TEXT)
+  order     Int
+
+  title       String @default("") @db.VarChar(255)
+  description String @default("") @db.Text
+  imageUrl    String @default("") @db.VarChar(2048)
+  caption     String @default("") @db.VarChar(255)
+  collections Json[] @default([]) @db.Json
+
+  wiki   Wiki @relation(fields: [wikiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  wikiId Int
+
+  @@index([wikiId])
+}
+
+model CanvasStyleItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  type      String   @default("")
+  value     String   @default("")
+
+  map                 Map?               @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mapId               Int?
+  globalObject        GlobalObject?      @relation(fields: [globalObjectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  globalObjectId      Int?
+  globalArea          GlobalArea?        @relation(fields: [globalAreaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  globalAreaId        Int?
+  mapHierarchyChild   MapHierarchyChild? @relation(fields: [mapHierarchyChildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mapHierarchyChildId Int?
+  subStory            SubStory?          @relation(fields: [subStoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subStoryId          Int?
+
+  @@index([mapId])
+  @@index([globalObjectId])
+  @@index([globalAreaId])
+  @@index([mapHierarchyChildId])
+  @@index([subStoryId])
 }

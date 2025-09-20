@@ -1,6 +1,6 @@
-import { storyObjectsSchema } from "@/ValidationSchemas/stories";
+import { SubStorySchema } from "@/ValidationSchemas/stories";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 
 interface Props {
   params: { sid: string };
@@ -8,7 +8,7 @@ interface Props {
 
 export async function PATCH(request: NextRequest, { params }: Props) {
   const body = await request.json();
-  const validation = storyObjectsSchema.safeParse(body);
+  const validation = SubStorySchema.safeParse(body);
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.sid);
 
@@ -16,7 +16,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json(validation.error.format(), { status: 400 });
   }
 
-  const substory = await prisma.story.findUnique({
+  const substory = await prisma.subStory.findUnique({
     where: { id: id },
   });
 
@@ -24,7 +24,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Substory not found" }, { status: 404 });
   }
 
-  const updateSubstory = await prisma.story.update({
+  const updateSubstory = await prisma.subStory.update({
     where: { id: substory.id },
     data: {
       ...body,
@@ -38,7 +38,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.sid);
 
-  const substory = await prisma.story.findUnique({
+  const substory = await prisma.subStory.findUnique({
     where: { id: id },
   });
 
@@ -46,7 +46,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Substory not found" }, { status: 404 });
   }
 
-  await prisma.story.delete({
+  await prisma.subStory.delete({
     where: { id: substory.id },
   });
 

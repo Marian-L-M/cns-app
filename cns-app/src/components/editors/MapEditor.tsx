@@ -1,14 +1,15 @@
+// Marked for deletion -> superflous
 import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
 
-interface areaNode {
+interface AreaNode {
   id: number;
   x: number;
   y: number;
 }
 
 interface Props {
-  id: number;
+  mapId: number;
   area?:
     | {
         id: number;
@@ -18,7 +19,7 @@ interface Props {
         description: string;
         imageUrl: string;
         infobox: {};
-        nodes?: areaNode[];
+        nodes?: AreaNode[];
         styles: {};
         objectTime: number;
         mapId: number;
@@ -30,24 +31,18 @@ interface Props {
   editorMode?: string;
 }
 
-const MapEditor = ({ id, area, object, editorMode }: Props) => {
+export default function MapEditor({ mapId, area, object, editorMode }: Props) {
   return (
     <EditorContextProvider>
       <MapEditorModule
-        mapId={id}
+        mapId={mapId}
         globalArea={area}
         globalObject={object}
         editorMode={editorMode}
       />
     </EditorContextProvider>
   );
-};
-
-export default MapEditor;
-
-// 241024 To do
-// Split MapEditor into two:
-// Map Area Editor and Map Object Editor
+}
 
 // 250109 The whole editor -> mapeditormodule -> usemapeditor structure is a mess
 // Fix structure and inconsiten naming pattern

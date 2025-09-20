@@ -1,12 +1,14 @@
 "use client";
-import { useMapMaker } from "@/hooks/useMapMaker";
+import { useContext } from "react";
 import Image from "next/image";
-import { FC, useContext } from "react";
-import { StatusContext } from "@/store/statusContext";
-import StatusBar from "../ui/maps/statusBar";
 import Link from "next/link";
 
-const MapModule: FC<MapModuleProps> = ({ data }) => {
+import { StatusContext } from "@/store/statusContext";
+
+import StatusBar from "@/components/ui/maps/statusBar";
+import { useMapMaker } from "@/hooks/useMapMaker";
+
+export default function MapModule({ data }: MapModuleProps) {
   const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
@@ -19,6 +21,9 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
   }
 
   // 240925 Make map resizable
+
+  // To do: unify with normal module and object module
+  // Area form should not be here to begin with
   return (
     <div className="w-full">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
@@ -45,19 +50,19 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
             // 240808 TODO: get placeholder image if map is not found
             priority={true}
             className="absolute top-0 left-0 z-1 pointer-events-none"
-            src={`/${map?.mapUrl || "maps/placeholder.jpg"}`}
+            src={map?.mapUrl}
             alt="Map of Kamolin"
             width="1024"
             height="1024"
           />
         </div>
         <div className="col-span-2 flex flex-col gap-4" id="area-list">
-          <h4>Areas</h4>
+          <h4 className="text-xl">Areas</h4>
           <div className="flex flex-col gap-4" id="area-container">
             {mapAreas.map((area) => (
               <Link
                 key={area.id}
-                href={`/maps/${data.map.id}/edit/areas/${area.id}`}
+                href={`editor/maps/${data.map.id}/areas/${area.id}`}
                 className="flex gap-2 p-4 bg-slate-800 text-white rounded-lg hover:opacity-90"
               >
                 <h6>{area.title}</h6>
@@ -68,6 +73,4 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
       </div>
     </div>
   );
-};
-
-export default MapModule;
+}

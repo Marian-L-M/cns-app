@@ -1,106 +1,272 @@
-import { useEffect, useRef, useContext } from "react";
-import { drawAreas } from "@/lib/map/drawMap";
+import { useEffect, useRef, useContext, useState } from "react";
+
 import {
   checkClick,
   checkHover,
   checkObjectClick,
   checkStoryNodeClick,
-} from "@/lib/map/mouseActions";
+} from "@/lib/mouseActions";
+import { Map as MapType } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
+import {
+  drawArrowLine,
+  drawStoryLabel,
+  drawStoryNode,
+} from "@/lib/draw/drawStory";
+import {
+  getValueFirstOfEachObjectType,
+  getValueFirstOfEachStyleType,
+} from "@/lib/utils";
+import { getScaling } from "@/lib/draw/utils";
 
-export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
+interface StoryModuleProps {
+  mapData: {
+    map: MapType;
+    mapObjects: GlobalObjectType[];
+    mapAreas: GlobalAreaType[];
+  };
+  story: story[];
+  storyIndex: number;
+  fullscreen?: boolean;
+}
+
+export function useStoryMaker({
+  mapData,
+  story, // To do: 250807 refactor -> this is substories
+  storyIndex,
+  fullscreen,
+}: StoryModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { mapAreas, mapObjects } = data;
   const statusCtx = useContext(StatusContext);
+
+  // Add defensive checks
+  const { mapAreas = [], mapObjects = [] } = mapData || {};
+
+  const [mapAreaLoaded, setMapAreaLoaded] = useState(false);
+  const [mapObjectLoaded, setMapObjectLoaded] = useState(false);
+  const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
+  const iconCache = useRef<Map<string, HTMLImageElement>>(new Map());
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [iconsLoaded, setIconsLoaded] = useState(false);
+
+  // Initialize data for canvas draw
+  useEffect(() => {
+    if (!mapAreas || !mapObjects) return;
+    setMapAreaLoaded(true);
+    setMapObjectLoaded(true);
+  }, [mapAreas, mapObjects]);
+
+  // Pre-load all images
+  useEffect(() => {
+    if (
+      !mapObjects ||
+      mapObjects.length === 0 ||
+      !story ||
+      story.length === 0
+    ) {
+      setImagesLoaded(true);
+      setIconsLoaded(true);
+      return;
+    }
+
+    const loadImages = async () => {
+      const imagePromises = mapObjects.map((object) => {
+        return new Promise<void>((resolve, reject) => {
+          // Check if image is already cached
+          if (imageCache.current.has(object.iconUrl)) {
+            resolve();
+            return;
+          }
+
+          const img = new Image();
+          img.onload = () => {
+            imageCache.current.set(object.iconUrl, img);
+            resolve();
+          };
+          img.onerror = reject;
+          img.src = object.iconUrl;
+        });
+      });
+
+      try {
+        await Promise.all(imagePromises);
+        setImagesLoaded(true);
+      } catch (error) {
+        console.error("Failed to load some images:", error);
+        setImagesLoaded(true); // Continue anyway
+      }
+    };
+
+    const loadIcons = async () => {
+      // Check if any story nodes have iconUrl, abort if none has
+      const allNodesWithImages: StoryNode[] = [];
+
+      // Iterate through each substory and collect nodes with iconUrl
+      story.forEach((substory) => {
+        const nodesWithImages = substory.nodes.filter(
+          (node) => node?.iconUrl && node.iconUrl.trim() !== ""
+        );
+        allNodesWithImages.push(...nodesWithImages);
+      });
+
+      if (allNodesWithImages.length === 0) {
+        setIconsLoaded(true);
+        return;
+      }
+
+      // Create promises for loading each unique icon
+      const uniqueIconUrls = [
+        ...new Set(allNodesWithImages.map((node) => node.iconUrl)),
+      ];
+
+      const iconPromises = uniqueIconUrls.map((iconUrl) => {
+        return new Promise<void>((resolve, reject) => {
+          // Check if image is already cached
+          if (iconCache.current.has(iconUrl)) {
+            resolve();
+            return;
+          }
+
+          const img = new Image();
+          img.onload = () => {
+            iconCache.current.set(iconUrl, img);
+            resolve();
+          };
+          img.onerror = reject;
+          img.src = iconUrl;
+        });
+      });
+
+      try {
+        await Promise.all(iconPromises);
+        setIconsLoaded(true);
+      } catch (error) {
+        console.error("Failed to load some story node icons:", error);
+        setIconsLoaded(true); // Continue anyway
+      }
+    };
+
+    loadImages();
+    loadIcons();
+  }, [mapObjects, story]);
 
   useEffect(() => {
     // Set canvas
     if (!canvasRef.current) return;
+    if (!mapData || !mapData.mapAreas || !mapData.mapObjects) return;
+    if (!imagesLoaded) return;
+    if (!iconsLoaded) return;
     const canvas = canvasRef.current;
-
-    // Canvas values
-    const cw = canvas.width / 1000;
-    const ch = canvas.height / 1000;
 
     // Get context
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Areas
-    // 240811 Unify draw functions or keep together for future expansion?
-    if (mapAreas) {
-      mapAreas.forEach((area) => {
-        const styles = area.styles;
-        ctx.lineWidth = styles.lineWidth || 4;
-        ctx.fillStyle = styles.fillStyle || "rgba(256, 256, 256, 0.2)";
-        ctx.strokeStyle = styles.strokeStyle || "black";
-        drawAreas(ctx, area, cw, ch);
-      });
-    }
+    const redrawCanvas = () => {
+      // Scaling factors
+      const { cw, ch } = getScaling(canvas);
 
-    // TO DO 240816 Draw Objects
-    // Draw Objects
-    if (mapObjects) {
-      mapObjects.forEach((object) => {
-        const thumbSize = 40;
-        const image = new Image(); // Using optional size for image
-        image.src = `/${object.thumbUrl}`;
-        image.onload = () => {
-          ctx.drawImage(
-            image,
-            object.x * cw - thumbSize / 2,
-            object.y * ch - thumbSize / 2,
-            thumbSize,
-            thumbSize
-          );
-        };
-      });
-    }
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Story Nodes
-    // 240822 Nodes are drawn behind theimage by default, overwriting seems pretty painful, so might be smarter to split the canvas (into 3: image canvas, drawing/interaction canvas, animation canvas) in future iterations.
-    if (story) {
-      story.forEach((storyObject) => {
-        let previousNode: Point;
-
-        storyObject.nodes.forEach((node: storyNode) => {
-          // Draw Story Line
-          if (previousNode) {
-            ctx.beginPath();
+      // Draw Areas (Unify w usemapmaler into separate function)
+      if (mapAreas) {
+        mapAreas.forEach((area) => {
+          if (area.canvasStyles) {
+            const filteredStyle = getValueFirstOfEachStyleType(
+              area.canvasStyles
+            );
+            ctx.lineWidth = parseInt(filteredStyle.lineWidth) || 4;
+            ctx.fillStyle = filteredStyle.fillStyle || "rgb(255, 255, 255)";
+            ctx.strokeStyle = filteredStyle.strokeStyle || "black";
+          } else {
+            // ugly solution
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 2;
-            ctx.moveTo(previousNode.x * cw, previousNode.y * ch);
-            ctx.lineTo(node.x * cw, node.y * ch);
-            ctx.closePath;
-            ctx.stroke();
           }
-          previousNode = { x: node.x, y: node.y };
-        });
-        storyObject.nodes.forEach((node: storyNode) => {
-          // Draw Current Story node
-          ctx.fillStyle = "red";
+
+          // drawAreas(ctx, area, cw, ch);
           ctx.beginPath();
-          ctx.moveTo((node.x - 5) * cw, (node.y - 5) * ch);
-          ctx.lineTo((node.x + 5) * cw, (node.y - 5) * ch);
-          ctx.lineTo((node.x + 5) * cw, (node.y + 5) * ch);
-          ctx.lineTo((node.x - 5) * cw, (node.y + 5) * ch);
+          ctx.moveTo(area.nodes[0].x * cw, area.nodes[0].y * ch);
+          for (var i = 1; i < area.nodes.length; i++) {
+            const point = {
+              x: area.nodes[i].x * cw,
+              y: area.nodes[i].y * ch,
+            };
+            ctx.lineTo(point.x, point.y);
+          }
           ctx.closePath();
           ctx.stroke();
           ctx.fill();
         });
-      });
-    }
+      }
+      // Draw objects w preloaded images
+      if (mapObjects) {
+        mapObjects.forEach((object) => {
+          const cachedImage = imageCache.current.get(object.iconUrl);
 
-    // Hover actions
-    //240814 Split hover actions into floating label (Currenlty statusbar)
-    canvas.onmousemove = (e) => {
+          // Style settings
+          const styles = getValueFirstOfEachObjectType(object.canvasStyles);
+          const thumbSize = parseInt(styles.size) | 40;
+          const thumbRadius = thumbSize / 2;
+          const opacity = parseInt(styles.opacity) / 100;
+
+          if (cachedImage) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.drawImage(
+              cachedImage,
+              object.x * cw - thumbRadius,
+              object.y * ch - thumbRadius,
+              thumbSize,
+              thumbSize
+            );
+            ctx.restore();
+          }
+        });
+      }
+
+      // Draw story
+      if (story) {
+        story.forEach((storyObject) => {
+          drawArrowLine(ctx, storyObject, cw, ch);
+
+          storyObject.nodes.forEach((node: StoryNode) => {
+            drawStoryNode(
+              ctx,
+              node,
+              cw,
+              ch,
+              iconCache,
+              storyObject.nodes[storyIndex]?.id
+            );
+            if (node.label) {
+              drawStoryLabel(ctx, node, cw, ch);
+            }
+          });
+        });
+      }
+    };
+
+    // Listen for resize events
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Force redraw on any size change
+      requestAnimationFrame(() => {
+        redrawCanvas();
+      });
+    });
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const { cw, ch } = getScaling(canvas); // inefficient?
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
-      checkHover(e, canvas, mapAreas, ctx, cw, ch);
+      checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
       const { title, id, type } = hoverArea[0];
+      // 250630 to do remove
       statusCtx.showStatusBar({
         title: title,
         id: id,
@@ -111,8 +277,9 @@ export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
     // Click actions
     // 240814 Split click actions to show infobox
     // 240818 Join mapAreas and mapObjects click events
-    canvas.onmousedown = (e) => {
+    const handleMouseDown = (e: MouseEvent) => {
       // Check areas
+      const { cw, ch } = getScaling(canvas); // inefficient?
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (clickedArea && !(clickedArea.length == 0)) {
         const { title, id, type } = clickedArea[0];
@@ -121,6 +288,7 @@ export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
           id: id,
           type: type,
         });
+        return;
       }
 
       // Check objects
@@ -150,6 +318,7 @@ export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
         cw,
         ch
       );
+
       if (clickedStoryNodes && !(clickedStoryNodes.length == 0)) {
         const { title, id, type, description } = clickedStoryNodes[0];
         statusCtx.showStoryBox({
@@ -160,7 +329,40 @@ export const useStoryMaker = ({ data, story }: StoryModuleProps) => {
         });
       }
     };
+
+    // Initialize
+    // Draw contents
+    redrawCanvas();
+
+    // Redraw on resize
+    resizeObserver.observe(canvas);
+
+    // Add event listeners
+    // 250530 to do Eventually should be hooked up to a sonner or sidebar infobox
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mousedown", handleMouseDown);
+
+    // Cleanup function
+    return () => {
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [
+    mapAreaLoaded,
+    mapObjectLoaded,
+    imagesLoaded,
+    iconsLoaded,
+    story,
+    storyIndex,
+    fullscreen,
+  ]);
+
+  // Cleanup image cache when component unmounts
+  useEffect(() => {
+    return () => {
+      imageCache.current.clear();
+    };
   }, []);
 
   return { canvasRef };
-};
+}

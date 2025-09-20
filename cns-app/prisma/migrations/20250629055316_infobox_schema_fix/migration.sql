@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "WikiInfoboxItem" ALTER COLUMN "title" SET DEFAULT '',
+ALTER COLUMN "title" SET DATA TYPE TEXT,
+ALTER COLUMN "imageUrl" SET DEFAULT '',
+ALTER COLUMN "caption" SET DEFAULT '';

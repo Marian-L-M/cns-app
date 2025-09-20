@@ -1,9 +1,12 @@
-import { useContext } from "react";
-import { StatusContext } from "@/store/statusContext";
-import Link from "next/link";
-import InfoBoxContents from "./infoBoxContents";
+// 250620 To do: Delete -> Reuse actual wiki infobox instead
 import { SquareX } from "lucide-react";
-import { Button } from "../button";
+import Link from "next/link";
+import { useContext } from "react";
+
+import { Button } from "@/components/ui/button";
+import { StatusContext } from "@/store/statusContext";
+
+import InfoBoxContents from "./infoBoxContents";
 
 interface StatusProps {
   title: string;
@@ -17,7 +20,7 @@ interface StatusProps {
   }>;
 }
 
-function InfoBox(props: StatusProps) {
+export default function InfoBox(props: StatusProps) {
   const statusCtx = useContext(StatusContext);
   const { title, id, type, infoData } = props;
   const activeInfoData = infoData.find((active) => active.id === id);
@@ -43,5 +46,3 @@ function InfoBox(props: StatusProps) {
     </div>
   );
 }
-
-export default InfoBox;

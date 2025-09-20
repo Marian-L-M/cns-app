@@ -1,12 +1,13 @@
 "use client";
-import { useMapMaker } from "@/hooks/useMapMaker";
 import Image from "next/image";
-import { FC, useContext } from "react";
-import { StatusContext } from "@/store/statusContext";
-import StatusBar from "../ui/maps/statusBar";
-import InfoBox from "../ui/maps/infoBox";
+import { useContext } from "react";
 
-const MapModule: FC<MapModuleProps> = ({ data }) => {
+import StatusBar from "@/components/ui/maps/statusBar";
+import InfoBox from "@/components/ui/maps/infoBox";
+import { useMapMaker } from "@/hooks/useMapMaker";
+import { StatusContext } from "@/store/statusContext";
+
+export default function MapModule({ data }: MapModuleProps) {
   const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
@@ -27,6 +28,7 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
   }
 
   // 240925 Make map resizable
+  // 250517 - Marked for deletion - replace with MapDisplayModule
   return (
     <div className="w-full">
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
@@ -52,7 +54,7 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
             // 240808 TODO: get placeholder image if map is not found
             priority={true}
             className="absolute top-0 left-0 z-1 pointer-events-none"
-            src={`/${map?.mapUrl || "maps/placeholder.jpg"}`}
+            src={map?.mapUrl}
             alt="Map of Kamolin"
             width="1024"
             height="1024"
@@ -71,6 +73,4 @@ const MapModule: FC<MapModuleProps> = ({ data }) => {
       </div>
     </div>
   );
-};
-
-export default MapModule;
+}

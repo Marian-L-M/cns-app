@@ -1,41 +1,14 @@
 "use client";
-import { useMapEditor } from "@/hooks/useMapEditor";
-import { Button } from "../ui/button";
-import ColorPicker from "../ui/colorPicker/ColorPicker";
-import { Menu, Palette } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { useMapEditor } from "@/hooks/useMapEditor";
+import { CanvasStyleItem, GlobalObject } from "@prisma/client";
 
-import { useContext, useEffect, useState } from "react";
-import { EditorContext } from "@/store/mapEditorContext";
-import { z } from "zod";
-import { GlobalArea, GlobalObject } from "@prisma/client";
-import axios from "axios";
-import {
-  GlobalAreasSchema,
-  GlobalObjectsSchema,
-} from "@/ValidationSchemas/global";
-import { useRouter } from "next/navigation";
-import LineWidthPicker from "../ui/lineWidthPicker/LineWidthPicker";
-import LineColorPicker from "../ui/colorPicker/LineColorPicker";
-
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../ui/input";
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import IconPicker from "../ui/iconPicker/IconPicker";
-import WikiSearchDialog from "../ui/dialog/wikiSearchDialog";
+import GlobalObjectForm from "../forms/ObjectForm";
+import GlobalAreaForm from "../forms/AreaForm";
 
 interface Props {
-  mapId: number;
+  map: MapType;
   globalObject?: GlobalObject;
   globalArea?:
     | {
@@ -45,53 +18,62 @@ interface Props {
         title: string;
         description: string;
         imageUrl: string;
-        infobox: {};
         nodes?: areaNode[];
-        styles: {};
         objectTime: number;
         mapId: number;
         wikiId: number;
         type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+        canvasStyles: CanvasStyleItem[];
       }
     | undefined;
   editorMode?: string;
 }
 
-interface WikiFetchProps {
-  selectedWikiId: number | undefined;
-  setWikiName: React.Dispatch<React.SetStateAction<string>>;
-}
-
-export type GlobalAreaFormData = z.infer<typeof GlobalAreasSchema> & {
-  globalArea: GlobalArea;
-};
-
-interface areaNode {
-  id: number;
-  x: number;
-  y: number;
-}
-
-export type GlobalObjectFormData = z.infer<typeof GlobalObjectsSchema> & {
-  globalObject: GlobalObject;
-};
-
-function MapEditorModule({
-  mapId,
+export default function MapEditorModule({
+  map,
   globalArea,
   globalObject,
   editorMode,
 }: Props) {
-  //250111 TODO - Editormode should be state
+  //250111 TODO - Editormode should be state or context?
   const { canvasRef } = useMapEditor({ globalArea, globalObject, editorMode });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({
+    width: 1024,
+    height: 1024,
+  });
 
-  let windowSize: number = 1024;
-  if (typeof window !== "undefined") {
-    windowSize = window.innerWidth;
-  }
+  // To do -> Turn into custom hook
+  // Handle map size
+  useEffect(() => {
+    // Function to update the container size
+    const updateSize = () => {
+      if (containerRef.current) {
+        const { width } = containerRef.current.getBoundingClientRect();
+        // Set the height equal to width for a square canvas, or adjust as needed
+        setContainerSize({
+          width: Math.min(width, 1024),
+          height: Math.min(width, 1024),
+        });
+      }
+    };
+
+    // Initial size update
+    updateSize();
+
+    // Add resize event listener
+    window.addEventListener("resize", updateSize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   return (
     <div className="w-full" id="map-editor-module">
+      <div>
+        <h1>Width: {containerSize.width}</h1>
+        <h1>Height:{containerSize.height}</h1>
+      </div>
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
         <div
           className="relative z-10 max-w-screen-lg col-span-4 bg-black"
@@ -99,535 +81,28 @@ function MapEditorModule({
         >
           <canvas
             ref={canvasRef}
-            width={windowSize > 1024 ? 1024 : windowSize}
-            height={windowSize > 1024 ? 1024 : windowSize}
+            width={containerSize.width}
+            height={containerSize.height}
             className="border border-grey relative z-10 w-full"
           />
-          <Image
-            priority={true}
-            className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
-            src={`/maps/kamolin-map.jpg`} // make dynamic
-            alt="Map of Kamolin"
-            width="1024"
-            height="1024"
-          />
+          {map?.mapUrl && (
+            <Image
+              priority={true}
+              className="absolute top-0 left-0 z-1 pointer-events-none opacity-70"
+              src={map.mapUrl}
+              alt="Map of Kamolin"
+              width={containerSize.width}
+              height={containerSize.height}
+            />
+          )}
         </div>
         {(globalArea || editorMode === "area") && (
-          <AreaForm mapId={mapId} globalArea={globalArea} />
+          <GlobalAreaForm map={map} globalArea={globalArea} />
         )}
         {(globalObject || editorMode === "object") && (
-          <ObjectForm mapId={mapId} globalObject={globalObject} />
+          <GlobalObjectForm map={map} globalObject={globalObject} />
         )}
       </div>
     </div>
   );
-}
-
-export default MapEditorModule;
-
-// 241127 To do:
-// Split form into area and object form
-// Rewiring Area
-// Create object form
-
-function AreaForm({ mapId, globalArea }: Props) {
-  // const { styles } = useMapEditor(globalArea);
-  const editorCtx = useContext(EditorContext);
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
-    globalArea?.wikiId
-  );
-  const [wikiName, setWikiName] = useState<string>("");
-
-  // Intialize styles (250112 - Structure inefficient)
-  const styles = {
-    fillStyle: editorCtx.objectColor,
-    lineWidth: editorCtx.objectLineWidth,
-    strokeStyle: editorCtx.objectLineWidth,
-  };
-
-  // Set form data
-  const form = useForm<GlobalAreaFormData>({
-    resolver: zodResolver(GlobalAreasSchema),
-    defaultValues: {
-      title: globalArea?.title || "",
-      description: globalArea?.description || "",
-      imageUrl: globalArea?.imageUrl || "",
-      mapId: mapId,
-      wikiId: globalArea?.wikiId || 0,
-      type:
-        (globalArea?.type as "GEOGRAPHY" | "POLITICAL" | "OTHER") ||
-        "GEOGRAPHY",
-      infobox: null,
-      nodes: globalArea?.nodes || [],
-      styles: {
-        fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
-        lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
-        strokeStyle: styles?.strokeStyle || "black",
-      },
-      objectTime: globalArea?.objectTime || 1000,
-    },
-  });
-
-  // Keep form values synchronized with context
-  useEffect(() => {
-    form.setValue("nodes", editorCtx.nodeList);
-    form.setValue("styles", {
-      fillStyle: styles?.fillStyle || "rgba(0, 0, 0, 0.5)",
-      lineWidth: typeof styles?.lineWidth === "number" ? styles.lineWidth : 5,
-      strokeStyle: styles?.strokeStyle || "black",
-    });
-  }, [editorCtx.nodeList, form, styles]);
-
-  // Fetch wiki name when wikiId changes
-  useEffect(() => {
-    // Update Wiki Name
-    fetchWikiName({ selectedWikiId, setWikiName });
-
-    // Update form
-    if (selectedWikiId) {
-      form.setValue("wikiId", selectedWikiId);
-    }
-  }, [selectedWikiId]);
-
-  async function onSubmit(values: GlobalAreaFormData) {
-    if (editorCtx.nodeList.length < 1) {
-      alert("Please draw nodes on the map before submitting");
-      return;
-    }
-
-    // Set submission values to lates canvas values
-    const submissionValues = {
-      ...values,
-      styles: {
-        fillStyle: editorCtx.objectColor || "rgba(0, 0, 0, 0.5)",
-        strokeStyle: editorCtx.objectLineColor || "black",
-        lineWidth:
-          typeof editorCtx.objectLineWidth === "number" ? styles?.lineWidth : 5,
-      },
-      nodes: editorCtx.nodeList,
-      // wikiId: selectedWikiId,
-    };
-
-    try {
-      setIsSubmitting(true);
-      setError("");
-      console.log("Submitting data:", submissionValues);
-
-      if (globalArea) {
-        await axios.patch(`/api/globalarea/${globalArea.id}`, submissionValues);
-      } else {
-        await axios.post("/api/globalarea", submissionValues);
-      }
-
-      setIsSubmitting(false);
-      router.push(`/maps/${mapId}/edit/areas`);
-      router.refresh();
-    } catch (error) {
-      handleError(error);
-    }
-  }
-
-  const handleError = (error: unknown) => {
-    if (error instanceof z.ZodError) {
-      setError(
-        "Validation error: " + error.errors.map((e) => e.message).join(", ")
-      );
-      console.error("Validation error:", error.errors);
-    } else if (axios.isAxiosError(error)) {
-      setError(
-        `Server error: ${error.response?.data?.message || error.message}`
-      );
-      console.error("Server response:", error.response?.data);
-    } else {
-      setError("An unexpected error occurred");
-      console.error("Unknown error:", error);
-    }
-    setIsSubmitting(false);
-  };
-
-  return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="relative z-20 col-span-2 flex flex-col gap-4"
-        id="sidebar"
-      >
-        <div className="w-full flex flex-col gap-4" id="form-top">
-          <div className="w-full" id="title-container">
-            <FormField
-              control={form.control}
-              name="title"
-              defaultValue={globalArea?.title}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Area Title..." {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="description-container">
-            <h5 className="">Description</h5>
-            <Controller
-              name="description"
-              defaultValue={globalArea?.description}
-              control={form.control}
-              render={({ field }) => (
-                <SimpleMDE placeholder="Area description" {...field} />
-              )}
-            />
-          </div>
-          <div className="w-full" id="wiki-container">
-            <FormField
-              control={form.control}
-              name="wikiId"
-              defaultValue={globalArea?.wikiId}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wiki</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-row gap-2">
-                      <div className="w-2/3">
-                        <Input type="hidden" placeholder="WikiId" {...field} />
-                        {wikiName && (
-                          <div className="p-2 border rounded-md h-10 flex items-center">
-                            <p className="truncate text-sm">{wikiName}</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="w-1/3">
-                        <WikiSearchDialog
-                          setSelectedWikiId={setSelectedWikiId}
-                        />
-                      </div>
-                    </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="thumbnail-container">
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              defaultValue={globalArea?.imageUrl}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Area Thumbnail" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="timestamp-container">
-            <FormField
-              control={form.control}
-              name="objectTime"
-              defaultValue={globalArea?.objectTime}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Area Timestamp</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Area Timestamp"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      value={field.value || ""}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="type-container">
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Type..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="GEOGRAPHY">Geography</SelectItem>
-                      <SelectItem value="POLITICAL">Political</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-        {/* Move pickers into an overlay over the map editor */}
-        <div className="flex justify-between gap-1" id="color-pickers">
-          <ColorPicker
-            label={"Fill Style"}
-            icon={<Palette className="text-slate-300" />}
-            editorContext={"objectColor"}
-          />
-          <LineColorPicker
-            label={"Line Style"}
-            icon={<Palette className="text-slate-300" />}
-            editorContext={"lineColor"}
-          />
-          <LineWidthPicker icon={<Menu className="text-slate-300" />} />
-        </div>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
-      </form>
-    </Form>
-  );
-}
-
-function ObjectForm({ mapId, globalObject, editorMode }: Props) {
-  const editorCtx = useContext(EditorContext);
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  const [selectedWikiId, setSelectedWikiId] = useState<number | undefined>(
-    globalObject?.wikiId
-  );
-  const [wikiName, setWikiName] = useState<string>("");
-
-  const form = useForm<GlobalObjectFormData>({
-    resolver: zodResolver(GlobalObjectsSchema),
-    defaultValues: {
-      title: globalObject?.title || "",
-      description: globalObject?.description || "",
-      imageUrl: globalObject?.imageUrl || "",
-      thumbUrl: globalObject?.thumbUrl || "",
-      mapId: mapId,
-      wikiId: globalObject?.wikiId || 0,
-      x: globalObject?.x || 100,
-      y: globalObject?.y || 100,
-    },
-  });
-
-  // Keep form values synchronized with context
-  useEffect(() => {
-    form.setValue("thumbUrl", editorCtx.globalObjectSettings.url);
-    form.setValue("x", editorCtx.globalObjectSettings.x);
-    form.setValue("y", editorCtx.globalObjectSettings.y);
-  }, [editorCtx.globalObjectSettings]);
-
-  // Fetch wiki name when wikiId changes
-  useEffect(() => {
-    // Update Wiki Name
-    fetchWikiName({ selectedWikiId, setWikiName });
-
-    // Update form
-    if (selectedWikiId) {
-      form.setValue("wikiId", selectedWikiId);
-    }
-  }, [selectedWikiId]);
-
-  async function onSubmit(values: GlobalObjectFormData) {
-    const submissionValues = {
-      ...values,
-      mapId: mapId,
-    };
-
-    try {
-      setIsSubmitting(true);
-      setError("");
-      console.log("Submitting data:", submissionValues);
-
-      if (globalObject) {
-        await axios.patch(
-          `/api/globalobject/${globalObject.id}`,
-          submissionValues
-        );
-      } else {
-        await axios.post("/api/globalobject", submissionValues);
-      }
-
-      setIsSubmitting(false);
-      router.push(`/maps/${mapId}/edit/objects`);
-      router.refresh();
-    } catch (error) {
-      handleError(error);
-    }
-  }
-
-  const handleError = (error: unknown) => {
-    if (error instanceof z.ZodError) {
-      setError(
-        "Validation error: " + error.errors.map((e) => e.message).join(", ")
-      );
-      console.error("Validation error:", error.errors);
-    } else if (axios.isAxiosError(error)) {
-      setError(
-        `Server error: ${error.response?.data?.message || error.message}`
-      );
-      console.error("Server response:", error.response?.data);
-    } else {
-      setError("An unexpected error occurred");
-      console.error("Unknown error:", error);
-    }
-    setIsSubmitting(false);
-  };
-
-  return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="relative z-20 col-span-2 flex flex-col gap-4 text-black"
-        id="sidebar"
-      >
-        <div className="w-full flex flex-col gap-4" id="form-top">
-          <div className="w-full" id="title-container">
-            <FormField
-              control={form.control}
-              name="title"
-              defaultValue={globalObject?.title}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Object Title..." {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="description-container">
-            <h5 className="">Description</h5>
-            <Controller
-              name="description"
-              defaultValue={globalObject?.description}
-              control={form.control}
-              render={({ field }) => (
-                <SimpleMDE placeholder="Object description" {...field} />
-              )}
-            />
-          </div>
-          <div className="w-full" id="wiki-container">
-            <FormField
-              control={form.control}
-              name="wikiId"
-              defaultValue={globalObject?.wikiId}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wiki</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-row gap-2">
-                      <div className="w-2/3">
-                        <Input type="hidden" placeholder="WikiId" {...field} />
-                        {wikiName && (
-                          <div className="p-2 border rounded-md h-10 flex items-center">
-                            <p className="truncate text-sm">{wikiName}</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="w-1/3">
-                        <WikiSearchDialog
-                          setSelectedWikiId={setSelectedWikiId}
-                        />
-                      </div>
-                    </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="image-container">
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              defaultValue={globalObject?.imageUrl}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Object Image" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="w-full" id="thumbnail-container">
-            <FormField
-              control={form.control}
-              name="thumbUrl"
-              defaultValue={globalObject?.thumbUrl}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Object Thumbnail" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="w-full" id="icon-container">
-            <h5 className="">Map Icon</h5>
-            <IconPicker />
-          </div>
-        </div>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
-      </form>
-    </Form>
-  );
-}
-
-// 20241004 Next actions
-// Map editor is designed to be a popup module on top of the map.
-
-// 20241007 Next actions
-
-// For now: One area - one popup
-// 2. Create API endpoint for GlobalArea (post)
-// 1. Create API endpoint for GlobalArea (patch)
-// 3. Create API endpoint for GlobalArea (delete)
-// 4. Change Mapeditor module to a form
-
-// 20241023 Next actions
-// 1. Add opacity to the fill style
-// 2. Clean up the map editor module
-// 3. Change map editor to popup + list of global areas
-// 4. Add global objects functionality
-
-// 20241217 Solution to editor module not showing the other icons
-// Grey out normal map in the back with the edior only rendering the current object (Two canvas elements)
-// Would reduce rerendering stress
-
-// Fetch wiki name with wiki id and set the name in wiki
-async function fetchWikiName({ selectedWikiId, setWikiName }: WikiFetchProps) {
-  if (!selectedWikiId) {
-    setWikiName("");
-    return;
-  }
-
-  try {
-    const response = await axios.get(`/api/wiki/${selectedWikiId}`);
-    if (response.data && response.data.title) {
-      setWikiName(response.data.title);
-    }
-  } catch (error) {
-    console.error("Error fetching wiki data:", error);
-    setWikiName("");
-  }
 }
