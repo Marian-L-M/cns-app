@@ -245,6 +245,29 @@ export default function StoryForm({ story, substories, user }: Props) {
 
                   {!thumbImg && (
                     <UploadButton
+                      appearance={{
+                        button: {
+                          background: "#3b82f6",
+                          color: "white",
+                          borderRadius: "8px",
+                          padding: "12px 24px",
+                          fontSize: "16px",
+                          fontWeight: "600",
+                          border: "none",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                        },
+                        container: {
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "8px",
+                        },
+                        allowedContent: {
+                          color: "#6b7280",
+                          fontSize: "14px",
+                        },
+                      }}
                       endpoint="imageUploader"
                       onClientUploadComplete={(res: { url: string }[]) => {
                         form.setValue("imageUrl", res[0].url);

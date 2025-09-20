@@ -149,6 +149,29 @@ export default function UserProfileForm({ user }: Props) {
 
                 {!thumbUrl && (
                   <UploadButton
+                    appearance={{
+                      button: {
+                        background: "#3b82f6",
+                        color: "white",
+                        borderRadius: "8px",
+                        padding: "12px 24px",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                      },
+                      container: {
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "8px",
+                      },
+                      allowedContent: {
+                        color: "#6b7280",
+                        fontSize: "14px",
+                      },
+                    }}
                     endpoint="imageUploader"
                     onClientUploadComplete={(res: { url: string }[]) => {
                       form.setValue("thumbnail", res[0].url);
@@ -194,6 +217,29 @@ export default function UserProfileForm({ user }: Props) {
 
                 {!bannerUrl && (
                   <UploadButton
+                    appearance={{
+                      button: {
+                        background: "#3b82f6",
+                        color: "white",
+                        borderRadius: "8px",
+                        padding: "12px 24px",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                      },
+                      container: {
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "8px",
+                      },
+                      allowedContent: {
+                        color: "#6b7280",
+                        fontSize: "14px",
+                      },
+                    }}
                     endpoint="imageUploader"
                     onClientUploadComplete={(res: { url: string }[]) => {
                       form.setValue("banner", res[0].url);
