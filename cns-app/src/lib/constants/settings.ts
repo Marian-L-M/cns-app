@@ -41,3 +41,8 @@ export const ToggleMapSettingsList = {
 export const AllSettingsList = {
   ...ToggleMasterMapSettingsList,
 } as const;
+
+export const ToggleGlobalSettingsList = {
+  logo: "System display logo",
+  name: "System display name",
+} as const;
