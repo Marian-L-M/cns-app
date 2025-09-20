@@ -11,6 +11,13 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      ".js": [".tsx", ".ts", ".js"],
+      ".jsx": [".tsx", ".jsx"],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
