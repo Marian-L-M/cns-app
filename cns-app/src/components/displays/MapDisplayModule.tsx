@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useMapMaker } from "@/hooks/useMapMaker";
 import { StatusContext } from "@/store/statusContext";
 import MapResponsiveCanvas from "@/components/maps/MapResponsiveCanvas";
-import InfoBoxSheet from "./parts/InfoboxSheet";
+import InfoboxSheet from "./parts/InfoboxSheet";
 
 export default function MapDisplayModule({ data, settings }: MapModuleProps) {
   const [fullscreen, setFullscreen] = useState(false);
@@ -48,7 +48,7 @@ export default function MapDisplayModule({ data, settings }: MapModuleProps) {
       />
       {/* Infobox Sheet */}
       {infoData && (
-        <InfoBoxSheet
+        <InfoboxSheet
           sheetOpen={sheetOpen}
           setSheetOpen={setSheetOpen}
           infoData={infoData}

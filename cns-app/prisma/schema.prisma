@@ -33,6 +33,7 @@ enum ContentRole {
 }
 
 enum AdminSettingsType {
+  GLOBAL
   USER
   PAGE
   DESIGN
