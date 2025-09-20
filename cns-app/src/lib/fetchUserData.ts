@@ -9,3 +9,10 @@ export async function fetchUserProfile(userId: string | undefined) {
 
   return { userProfile };
 }
+
+export async function fetchUser(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  return { user };
+}

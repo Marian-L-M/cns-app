@@ -114,6 +114,7 @@ export default function UserProfileForm({ user }: Props) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Profile Title</FormLabel>
+                <FormMessage />
                 <FormControl>
                   <Input placeholder="Profile title" {...field} />
                 </FormControl>
@@ -223,7 +224,7 @@ export default function UserProfileForm({ user }: Props) {
           </div>
           <SocialsForm socialIcons={profile?.socials || []} />
           <Button type="submit" disabled={isSubmitting}>
-            {user ? "Update User" : "Submit User"}
+            {profile ? "Update Profile" : "Submit Profile"}
           </Button>
         </form>
       </Form>

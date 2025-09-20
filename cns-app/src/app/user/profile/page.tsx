@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 
 import { auth } from "@/auth";
-import { fetchUserProfile } from "@/lib/fetchUserData";
+import { fetchUser } from "@/lib/fetchUserData";
 
-import UserProfileSettingsForm from "./profile-form";
+import UserProfileForm from "@/components/forms/UserProfileForm";
 
 export const metadata: Metadata = {
   title: "User Profile",
@@ -12,13 +12,17 @@ export const metadata: Metadata = {
 
 export default async function UserProfileSettingsPage() {
   const session = await auth();
-  const profile = await fetchUserProfile(session?.user?.id);
+  if (!session?.user?.id) {
+    <div className="max-w-4xl mt-16 mx-auto space-y-4">
+      <h1>No user found</h1>
+    </div>;
+  }
+  const { user } = await fetchUser(session?.user?.id);
 
   return (
     <SessionProvider session={session}>
-      <div className="max-w-3xl mx-auto space-y-4">
-        <h2 className="h2-bold text-center">Profile</h2>
-        <UserProfileSettingsForm profile={profile} />
+      <div className="max-w-4xl  mt-16 mx-auto space-y-4">
+        <UserProfileForm user={user} />
       </div>
     </SessionProvider>
   );
