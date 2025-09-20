@@ -26,8 +26,8 @@ export default async function UserProfileDisplay({ id }: Params) {
   console.log(profile.socials);
   return (
     <div className="w-full flex flex-col items-center gap-4">
-      <div className="w-full h-64 relative">
-        {profile.banner && (
+      {profile.banner && (
+        <div className="w-full h-64 relative">
           <Image
             src={profile.banner}
             alt={`${profile.displayName}-banner`}
@@ -35,17 +35,17 @@ export default async function UserProfileDisplay({ id }: Params) {
             className="relative"
             style={{ objectFit: "cover" }}
           />
-        )}
-        {profile.thumbnail && (
-          <Image
-            src={profile.thumbnail}
-            alt={`${profile.displayName}-thumbnail`}
-            width={240}
-            height={240}
-            className="rounded-full absolute right-12 bottom-0 translate-y-1/2 bg-white border-4 border-white"
-          />
-        )}
-      </div>
+          {profile.thumbnail && (
+            <Image
+              src={profile.thumbnail}
+              alt={`${profile.displayName}-thumbnail`}
+              width={240}
+              height={240}
+              className="rounded-full absolute right-12 bottom-0 translate-y-1/2 bg-white border-4 border-white"
+            />
+          )}
+        </div>
+      )}
       {/* Profile contents */}
       <div className="flex flex-col gap-8 w-full max-w-3xl ">
         <div className="flex flex-wrap gap-4" id="socials-container">
@@ -53,7 +53,7 @@ export default async function UserProfileDisplay({ id }: Params) {
             <Link
               href={social.url}
               key={`social-icon-${index}`}
-              className="w-8 rounded-full aspect-square flex items-center justify-center bg-gray-100"
+              className="w-6 rounded-full aspect-square flex items-center justify-center bg-gray-100"
             >
               <SocialIcon social={social} />
             </Link>
