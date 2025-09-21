@@ -17,7 +17,6 @@ export function convertToPlainObject<T>(value: T): T {
 }
 
 // Format error
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function formatError(error: any) {
   if (error.name === "ZodError") {
     // Zod errors
