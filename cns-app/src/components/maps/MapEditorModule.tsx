@@ -70,10 +70,6 @@ export default function MapEditorModule({
 
   return (
     <div className="w-full" id="map-editor-module">
-      <div>
-        <h1>Width: {containerSize.width}</h1>
-        <h1>Height:{containerSize.height}</h1>
-      </div>
       <div className="grid grid-cols-6 gap-4 max-w-screen-2xl mx-auto relative">
         <div
           className="relative z-10 max-w-screen-lg col-span-4 bg-black"

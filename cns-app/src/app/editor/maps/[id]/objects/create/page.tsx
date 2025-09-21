@@ -18,8 +18,8 @@ export default async function AddMapObject({ params }: Props) {
   }
 
   // Check if current user has permission to edit
-  const mapAuthors = await fetchMapAuthorId(id);
-  const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
+  const mapData = await fetchMapAuthorId(id);
+  const session = await requireOwnerOrAdmin({ userJunction: mapData.userMaps });
 
   const { map, mapObjects } = await fetchMapData(id);
 

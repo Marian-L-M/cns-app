@@ -18,8 +18,8 @@ export default async function NewMapAreaEditor({ params }: MapAreaEditorProps) {
   }
 
   // Check if current user has permission to edit
-  const mapAuthors = await fetchMapAuthorId(id);
-  const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
+  const mapData = await fetchMapAuthorId(id);
+  const session = await requireOwnerOrAdmin({ userJunction: mapData.userMaps });
 
   const { map } = await fetchMapData(id);
 

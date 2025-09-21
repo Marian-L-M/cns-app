@@ -26,8 +26,8 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
   }
 
   // Check if current user has permission to edit
-  const mapAuthors = await fetchMapAuthorId(id);
-  const session = await requireOwnerOrAdmin({ authors: mapAuthors.authors });
+  const mapData = await fetchMapAuthorId(id);
+  const session = await requireOwnerOrAdmin({ userJunction: mapData.userMaps });
 
   // Get corresponding area and map
   const area = await prisma.globalArea.findUnique({

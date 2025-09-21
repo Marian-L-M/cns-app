@@ -7,20 +7,24 @@ interface MapFetchProps {
   setMapName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-// export async function fetchMapAuthorId(mapId: string | number) {
-//   const id = typeof mapId == "string" ? parseInt(mapId) : mapId;
+export async function fetchMapAuthorId(mapId: string | number) {
+  const id = typeof mapId == "string" ? parseInt(mapId) : mapId;
 
-//   const map = await prisma.map.findUnique({
-//     where: { id: id },
-//     include: {
-//       authors: true,
-//     },
-//   });
+  const map = await prisma.map.findUnique({
+    where: { id: id },
+    include: {
+      userMaps: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
 
-//   const authors = map?.authors;
+  const userMaps = map?.userMaps;
 
-//   return { authors };
-// }
+  return { userMaps };
+}
 
 export async function fetchMapData(mapId: string | number) {
   const id = typeof mapId == "string" ? parseInt(mapId) : mapId;
