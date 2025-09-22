@@ -5,7 +5,6 @@ export async function GET(request: NextRequest) {
   try {
     const query = request.nextUrl.searchParams.get("q");
     const limit = parseInt(request.nextUrl.searchParams.get("limit") || "10");
-    console.log("Search query", query, "with limit", limit);
 
     if (typeof query !== "string") {
       throw new Error("Invalid request");

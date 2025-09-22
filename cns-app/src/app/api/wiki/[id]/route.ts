@@ -4,7 +4,7 @@ import prisma from "@/../prisma/db";
 import { auth } from "@/auth";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 export async function GET(request: NextRequest, { params }: Props) {
   const resolvedParams = await params;
@@ -59,7 +59,6 @@ export async function PATCH(request: NextRequest, { params }: Props) {
         { status: 401 }
       );
     }
-    const currentUserId = session.user.id;
 
     const body = await request.json();
     const validation = wikiSchema.safeParse(body);

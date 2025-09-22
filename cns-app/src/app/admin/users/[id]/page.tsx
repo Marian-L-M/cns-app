@@ -3,7 +3,7 @@ import prisma from "@/../prisma/db";
 import UserAdminForm from "@/app/admin/users/UserAdminForm";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export const metadata = {

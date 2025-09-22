@@ -5,10 +5,10 @@ import EditorContextProvider from "@/store/mapEditorContext";
 import MapAreaEditorModule from "@/components/maps/MapAreaEditorModule";
 
 interface MapAreaEditorProps {
-  params: {
+  params: Promise<{
     id: string;
     areaId: string;
-  };
+  }>;
   searchParams: {};
 }
 

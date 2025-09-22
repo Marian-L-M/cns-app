@@ -1,25 +1,15 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { z } from "zod";
 
 import { fetchMapData } from "@/lib/fetchMapData";
 import prisma from "@/../prisma/db";
-import { StoriesSchema } from "@/ValidationSchemas/stories";
-import StoryCanvasModule from "@/components/maps/StoryCanvasModule";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import StatusContextProvider from "@/store/statusContext";
 import StoryDisplayModule from "@/components/displays/StoryDisplayModule";
 
-type Story = z.infer<typeof StoriesSchema>;
-
-interface SubstoryListProps {
-  substories: Story[];
-  id: number;
-}
-
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // To do 250126 - Switch from story mdoule to story editor module (No infobox)

@@ -20,13 +20,12 @@ export interface SearchParams {
 export default async function featuredStoryPage({
   searchParams: rawSearchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
-  const searchParams = await Promise.resolve(rawSearchParams);
+  const searchParams = await rawSearchParams;
 
   const pageSize = 12;
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
-  const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
   const title = searchParams.title ? searchParams.title : "";
   const authorName = searchParams.author ? searchParams.author : undefined;
 

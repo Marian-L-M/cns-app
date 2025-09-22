@@ -1,16 +1,13 @@
-import { ThumbsUp } from "lucide-react";
 import ReactMarkDown from "react-markdown";
-import Link from "next/link";
 
 import prisma from "@/../prisma/db";
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import InfoboxDisplayModule from "@/components/displays/InfoboxDisplayModule";
 import AuthorDisplayModule from "@/components/displays/AuthorDisplayModule";
 
 interface WikiPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // 240919 Working but hacky solution
@@ -126,5 +123,3 @@ export default async function WikiPage({ params }: WikiPageProps) {
     </div>
   );
 }
-
-// Todo 240823 rework database schema to allow name as slug + add content section json fields -> Think about good breakdown

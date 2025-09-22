@@ -4,7 +4,7 @@ import CursorContextProvider from "@/store/cursorContext";
 
 // Todo: Fetiching with both ids seems innefficent
 interface MapPageProps {
-  params: { id: string; cmid: string };
+  params: Promise<{ id: string; cmid: string }>;
 }
 
 export default async function MasterMapEditorPage({ params }: MapPageProps) {

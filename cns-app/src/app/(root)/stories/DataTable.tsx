@@ -1,8 +1,5 @@
-import { ArrowDown } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-
-import { Story } from "@prisma/client";
 
 import {
   Table,
@@ -12,22 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import StoryRating from "@/components/story/StoryRating";
 import StoryStatusBadge from "@/components/story/StoryStatusBadge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import prisma from "@/../prisma/db";
 
-// import { SearchParams } from "./page";
-
 interface Props {
-  // stories: Story[];
   take: number;
-  // searchParams?: SearchParams;
   searchParams?: any;
 }
 
 export default async function DataTable({ take, searchParams }: Props) {
-  // Create simple query objects to avoid serialization errors
   const stories = await prisma?.story.findMany({
     orderBy: [{ createdAt: "desc" }],
     take: take,

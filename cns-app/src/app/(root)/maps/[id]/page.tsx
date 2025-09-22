@@ -4,7 +4,7 @@ import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
 
 interface MapPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function MapPage({ params }: MapPageProps) {

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 import bcrypt from "bcryptjs";
 import { userSchema } from "@/ValidationSchemas/users";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // 250808 To do: Does the delete routes need additionaly protection?

@@ -5,9 +5,7 @@ import EditorContextProvider from "@/store/mapEditorContext";
 import MapObjectEditorModule from "@/components/maps/MapObjectEditorModule";
 
 interface Props {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default async function AddMapObject({ params }: Props) {

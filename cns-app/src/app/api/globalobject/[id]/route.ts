@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "../../../../../prisma/db";
+import prisma from "@/../prisma/db";
 import { GlobalObjectsSchema } from "@/ValidationSchemas/global";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function PATCH(request: NextRequest, { params }: Props) {

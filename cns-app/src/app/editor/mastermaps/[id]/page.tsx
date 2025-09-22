@@ -4,7 +4,7 @@ import CursorContextProvider from "@/store/cursorContext";
 import prisma from "@/../prisma/db";
 
 interface MapPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function MasterMapEditorPage({ params }: MapPageProps) {

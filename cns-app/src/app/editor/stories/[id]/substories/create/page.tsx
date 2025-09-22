@@ -3,10 +3,10 @@ import prisma from "@/../prisma/db";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 
 interface SubstoryProps {
-  params: {
+  params: Promise<{
     id: string;
     sid: string;
-  };
+  }>;
 }
 
 export default async function SubStoryDetailPage({ params }: SubstoryProps) {

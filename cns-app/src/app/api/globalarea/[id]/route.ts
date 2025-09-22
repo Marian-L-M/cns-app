@@ -3,7 +3,7 @@ import prisma from "@/../prisma/db";
 import { GlobalAreasSchema } from "@/ValidationSchemas/global";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function PATCH(request: NextRequest, { params }: Props) {

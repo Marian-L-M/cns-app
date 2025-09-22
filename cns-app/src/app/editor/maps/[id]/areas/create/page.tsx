@@ -3,9 +3,9 @@ import { fetchMapAuthorId, fetchMapData } from "@/lib/fetchMapData";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import MapAreaEditorModule from "@/components/maps/MapAreaEditorModule";
 interface MapAreaEditorProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
   searchParams: {};
 }
 

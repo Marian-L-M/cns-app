@@ -4,11 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import ReactMarkDown from "react-markdown";
 
-interface Params {
+interface Props {
   id: number;
 }
 
-export default async function UserProfileDisplay({ id }: Params) {
+export default async function UserProfileDisplay({ id }: Props) {
   const profile = await prisma.userProfile.findUnique({
     where: {
       id: id,

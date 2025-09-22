@@ -6,7 +6,7 @@ import Link from "next/link";
 import ReactMarkDown from "react-markdown";
 
 interface MapPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function MasterMapPage({ params }: MapPageProps) {
@@ -18,7 +18,6 @@ export default async function MasterMapPage({ params }: MapPageProps) {
   if (!masterMap) {
     return <div className="text-destructive">No Mastermaps found</div>;
   }
-  console.log(masterMap);
 
   return (
     <div className="w-full flex flex-col gap-8  min-h-full py-2">

@@ -3,10 +3,10 @@ import EditorContextProvider from "@/store/mapEditorContext";
 import StoryEditor from "@/components/editors/StoryEditor";
 
 interface substoryProps {
-  params: {
+  params: Promise<{
     id: string;
     sid: string;
-  };
+  }>;
 }
 
 export default async function SubStoryDetailPage({ params }: substoryProps) {
