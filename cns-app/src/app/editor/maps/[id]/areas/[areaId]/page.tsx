@@ -1,8 +1,8 @@
-import MapEditorModule from "@/components/maps/MapEditorModule";
 import { fetchMapAuthorId } from "@/lib/fetchMapData";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import prisma from "@/../prisma/db";
 import EditorContextProvider from "@/store/mapEditorContext";
+import MapAreaEditorModule from "@/components/maps/MapAreaEditorModule";
 
 interface MapAreaEditorProps {
   params: {
@@ -51,7 +51,7 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
 
   return (
     <EditorContextProvider>
-      <MapEditorModule map={map} globalArea={area} />
+      <MapAreaEditorModule map={map} globalArea={area} />
     </EditorContextProvider>
   );
 }

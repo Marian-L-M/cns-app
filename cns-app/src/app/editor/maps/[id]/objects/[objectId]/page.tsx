@@ -2,7 +2,7 @@ import prisma from "@/../prisma/db";
 import { fetchMapAuthorId } from "@/lib/fetchMapData";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import EditorContextProvider from "@/store/mapEditorContext";
-import MapEditorModule from "@/components/maps/MapEditorModule";
+import MapObjectEditorModule from "@/components/maps/MapObjectEditorModule";
 
 interface MapAreaEditorProps {
   params: {
@@ -46,11 +46,8 @@ export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
   }
 
   return (
-    // <div>
-    //   <MapEditor id={id} object={object} />
-    // </div>
     <EditorContextProvider>
-      <MapEditorModule map={map} globalObject={object} />
+      <MapObjectEditorModule map={map} globalObject={object} />
     </EditorContextProvider>
   );
 }

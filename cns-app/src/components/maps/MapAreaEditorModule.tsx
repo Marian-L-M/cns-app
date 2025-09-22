@@ -1,10 +1,9 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { useMapEditor } from "@/hooks/useMapEditor";
+import { useMapAreaEditor } from "@/hooks/useMapEditor";
 import { CanvasStyleItem, GlobalObject } from "@prisma/client";
 
-import GlobalObjectForm from "../forms/ObjectForm";
 import GlobalAreaForm from "../forms/AreaForm";
 
 interface Props {
@@ -29,13 +28,9 @@ interface Props {
   editorMode?: string;
 }
 
-export default function MapEditorModule({
-  map,
-  globalArea,
-  globalObject,
-  editorMode,
-}: Props) {
-  const { canvasRef } = useMapEditor();
+export default function MapAreaEditorModule({ map, globalArea }: Props) {
+  //250111 TODO - Editormode should be state or context?
+  const { canvasRef } = useMapAreaEditor({ globalArea });
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({
     width: 1024,
@@ -91,12 +86,7 @@ export default function MapEditorModule({
             />
           )}
         </div>
-        {(globalArea || editorMode === "area") && (
-          <GlobalAreaForm map={map} globalArea={globalArea} />
-        )}
-        {(globalObject || editorMode === "object") && (
-          <GlobalObjectForm map={map} globalObject={globalObject} />
-        )}
+        <GlobalAreaForm map={map} globalArea={globalArea} />
       </div>
     </div>
   );

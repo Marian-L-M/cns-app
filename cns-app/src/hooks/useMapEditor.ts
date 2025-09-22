@@ -14,51 +14,52 @@ interface IconBounds {
   top: number;
 }
 
-// Rewrite useMapEditor as a relay between useAreaEditor and useObjectEditor
-export function useMapEditor({
-  globalArea,
-  globalObject,
-  editorMode,
-}: any = {}) {
-  if (globalArea || editorMode == "area") {
-    const { canvasRef } = useAreaEditor(
-      globalArea?.nodes,
-      globalArea?.canvasStyles
-    );
-    return { canvasRef };
-  } else if (globalObject || editorMode == "object") {
-    const { canvasRef } = useObjectEditor(globalObject);
-    return { canvasRef };
-  }
+export function useMapEditor() {
   const canvasRef = useRef(null);
   return { canvasRef };
 }
 
-// 250801 -> Structure is stupid , model it to the same as global object
-function useAreaEditor(nodes?: areaNode[], styles?: any) {
+export function useMapAreaEditor({ globalArea }: any = {}) {
+  const { canvasRef } = useAreaEditor(globalArea);
+  return { canvasRef };
+}
+
+export function useMapObjectEditor({ globalObject }: any = {}) {
+  const { canvasRef } = useObjectEditor(globalObject);
+  return { canvasRef };
+}
+
+export function useAreaEditor({ globalArea }: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [isActiveFlag, setIsActiveFlag] = useState(false);
 
-  if (styles) {
-    const filteredStyle = getValueFirstOfEachStyleType(styles);
+  // Style settings
+  const styles = getValueFirstOfEachObjectType(globalArea?.canvasStyles);
+  const thumbSize = parseInt(styles.size) || 40;
+  const thumbRadius = thumbSize / 2;
+  const opacity = parseInt(styles.opacity) / 100;
+  const nodes = globalArea?.nodes;
 
-    // Initialize context
-    useEffect(() => {
-      if (!nodes) return;
-      editorCtx.updateNodeList(nodes);
-      if (filteredStyle.fillStyle) {
-        editorCtx.pickObjectColor(filteredStyle.fillStyle);
-      }
-      if (filteredStyle.strokeStyle) {
-        editorCtx.pickLineColor(filteredStyle.strokeStyle);
-      }
-      if (filteredStyle.lineWidth) {
-        editorCtx.pickLineWidth(parseInt(filteredStyle.lineWidth));
-      }
-    }, [styles]);
-  }
+  // if (styles) {
+  //   const filteredStyle = getValueFirstOfEachStyleType(styles);
+
+  // }
+  //   // Initialize context
+  useEffect(() => {
+    if (!nodes) return;
+    editorCtx.updateNodeList(nodes);
+    if (styles.fillStyle) {
+      editorCtx.pickObjectColor(styles.fillStyle);
+    }
+    if (styles.strokeStyle) {
+      editorCtx.pickLineColor(styles.strokeStyle);
+    }
+    if (styles.lineWidth) {
+      editorCtx.pickLineWidth(parseInt(styles.lineWidth));
+    }
+  }, [styles]);
 
   // Draw logic
   useEffect(() => {
@@ -162,14 +163,14 @@ function useAreaEditor(nodes?: areaNode[], styles?: any) {
   return { canvasRef };
 }
 
-function useObjectEditor(globalObject: any) {
+export function useObjectEditor(globalObject: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [iconBounds, setIconBounds] = useState<IconBounds | null>(null);
 
   // Style settings
-  const styles = getValueFirstOfEachObjectType(globalObject.canvasStyles);
+  const styles = getValueFirstOfEachObjectType(globalObject?.canvasStyles);
   const thumbSize = parseInt(styles.size) || 40;
   const thumbRadius = thumbSize / 2;
   const opacity = parseInt(styles.opacity) / 100;

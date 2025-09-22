@@ -43,6 +43,3 @@ export default function MapEditor({ mapId, area, object, editorMode }: Props) {
     </EditorContextProvider>
   );
 }
-
-// 250109 The whole editor -> mapeditormodule -> usemapeditor structure is a mess
-// Fix structure and inconsiten naming pattern

@@ -1,7 +1,7 @@
-import MapEditorModule from "@/components/maps/MapEditorModule";
 import EditorContextProvider from "@/store/mapEditorContext";
 import { fetchMapAuthorId, fetchMapData } from "@/lib/fetchMapData";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
+import MapAreaEditorModule from "@/components/maps/MapAreaEditorModule";
 interface MapAreaEditorProps {
   params: {
     id: string;
@@ -25,7 +25,7 @@ export default async function NewMapAreaEditor({ params }: MapAreaEditorProps) {
 
   return (
     <EditorContextProvider>
-      <MapEditorModule map={map} editorMode={"area"} />
+      <MapAreaEditorModule map={map} />
     </EditorContextProvider>
   );
 }

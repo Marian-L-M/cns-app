@@ -1,7 +1,8 @@
+import prisma from "@/../prisma/db";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
-import { fetchMapAuthorId, fetchMapData } from "@/lib/fetchMapData";
-import MapEditorModule from "@/components/maps/MapEditorModule";
+import { fetchMapAuthorId } from "@/lib/fetchMapData";
 import EditorContextProvider from "@/store/mapEditorContext";
+import MapObjectEditorModule from "@/components/maps/MapObjectEditorModule";
 
 interface Props {
   params: {
@@ -21,17 +22,13 @@ export default async function AddMapObject({ params }: Props) {
   const mapData = await fetchMapAuthorId(id);
   const session = await requireOwnerOrAdmin({ userJunction: mapData.userMaps });
 
-  const { map, mapObjects } = await fetchMapData(id);
+  const map = await prisma.map.findUnique({
+    where: { id: id },
+  });
 
   return (
     <EditorContextProvider>
-      <MapEditorModule
-        map={map}
-        globalObject={mapObjects}
-        editorMode={"object"}
-      />
+      <MapObjectEditorModule map={map} />
     </EditorContextProvider>
   );
 }
-
-// 250109 Issue: Icon is not rendered on initial selection of thumbnail
