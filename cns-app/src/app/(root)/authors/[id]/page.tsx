@@ -1,7 +1,7 @@
 import UserProfileDisplay from "@/components/displays/UserProfileDisplayModule";
 
 interface Params {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function authorProfilePage({ params }: Params) {
