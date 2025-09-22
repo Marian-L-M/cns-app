@@ -29,36 +29,29 @@ export function useMapObjectEditor({ globalObject }: any = {}) {
   return { canvasRef };
 }
 
-export function useAreaEditor({ globalArea }: any) {
+export function useAreaEditor(globalArea: any) {
   const editorCtx = useContext(EditorContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [isActiveFlag, setIsActiveFlag] = useState(false);
 
   // Style settings
-  const styles = getValueFirstOfEachObjectType(globalArea?.canvasStyles);
-  const thumbSize = parseInt(styles.size) || 40;
-  const thumbRadius = thumbSize / 2;
-  const opacity = parseInt(styles.opacity) / 100;
+  const styles = getValueFirstOfEachStyleType(globalArea?.canvasStyles);
+  const lineWidth = parseInt(styles.lineWidth) || 2;
+  const fillStyle = styles.fillStyle || "grey";
+  const strokeStyle = styles.strokeStyle || "black";
   const nodes = globalArea?.nodes;
 
-  // if (styles) {
-  //   const filteredStyle = getValueFirstOfEachStyleType(styles);
-
-  // }
   //   // Initialize context
   useEffect(() => {
     if (!nodes) return;
     editorCtx.updateNodeList(nodes);
-    if (styles.fillStyle) {
-      editorCtx.pickObjectColor(styles.fillStyle);
-    }
-    if (styles.strokeStyle) {
-      editorCtx.pickLineColor(styles.strokeStyle);
-    }
-    if (styles.lineWidth) {
-      editorCtx.pickLineWidth(parseInt(styles.lineWidth));
-    }
+
+    editorCtx.pickObjectColor(fillStyle);
+
+    editorCtx.pickLineColor(strokeStyle);
+
+    editorCtx.pickLineWidth(lineWidth);
   }, [styles]);
 
   // Draw logic

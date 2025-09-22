@@ -54,6 +54,10 @@ export function getValueFirstOfEachStyleType(
 ): Record<CanvasStyleItemTypeValues, string> {
   const result = {} as Record<CanvasStyleItemTypeValues, string>;
 
+  if (!canvasStyleItems) {
+    return result;
+  }
+
   Object.values(CanvasStyleItemTypeList).forEach((styleType) => {
     const firstItem = canvasStyleItems.find((item) => item.type === styleType);
     if (firstItem) {
