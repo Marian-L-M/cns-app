@@ -1,11 +1,8 @@
 import React from "react";
 import prisma from "@/../prisma/db";
 import Image from "next/image";
-import { Map } from "@prisma/client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import MapSearchBar from "@/components/maps/searchbar/MapSearchBar";
-import MapCardTable from "@/components/maps/MapCardTable";
 
 export const metadata = {
   title: `Authors`,
@@ -18,19 +15,7 @@ export interface SearchParams {
   orderBy: Date;
 }
 
-export default async function authorArchivePage({
-  searchParams: rawSearchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const searchParams = await Promise.resolve(rawSearchParams);
-
-  const pageSize = 12;
-  const page = searchParams.page ? parseInt(searchParams.page) : 1;
-  const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
-  const title = searchParams.title ? searchParams.title : "";
-  const authorName = searchParams.author ? searchParams.author : undefined;
-
+export default async function authorArchivePage() {
   const authorList = await prisma.user.findMany({
     where: {
       role: "AUTHOR",
@@ -44,13 +29,6 @@ export default async function authorArchivePage({
   return (
     <div className="w-full flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Authors</h1>
-      <div className="w-full flex flex-col gap-4 border rounded-md p-4">
-        {/* <MapSearchBar authorList={authorList} /> */}
-        {/* <Link href="/maps/archive">
-          <Button>Reset</Button>
-        </Link> */}
-      </div>
-      {/* <MapCardTable maps={maps} /> */}
       <div className="w-full rounded-md grid grid-cols-5 gap-4 border  p-4">
         {authorList.map((author) => (
           <div
