@@ -3,19 +3,31 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 import MapResponsiveCanvas from "@/components/maps/MapResponsiveCanvas";
 import { useStoryMaker } from "@/hooks/useStoryMaker";
-import { Map } from "@prisma/client";
+import { CanvasStyleItem, Map } from "@prisma/client";
 import { StatusContext } from "@/store/statusContext";
 
 import InfoboxSheet from "./parts/InfoBoxSheet";
 import StoryDrawer from "./parts/StoryDrawer";
 
+interface SubStoryWithStyles {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string;
+  nodes: StoryNode[];
+  objectTime: number;
+  storyId: number;
+  canvasStyles?: CanvasStyleItem[];
+}
+
 interface StoryModuleProps {
   mapData: {
-    map: Map;
+    map: Map | null; // Allow null
     mapObjects: GlobalObjectType[];
     mapAreas: GlobalAreaType[];
   };
-  story: story[];
+  story: SubStoryWithStyles[]; // Use the new interface
 }
 
 export default function StoryDisplayModule({

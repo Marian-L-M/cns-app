@@ -6,8 +6,19 @@ import {
   getValueFirstOfEachStyleType,
 } from "@/lib/utils";
 import { getScaling } from "@/lib/draw/utils";
+import { Map as MapData } from "@prisma/client";
 
-export function useMapMaker({ data, settings, fullscreen }: MapModuleProps) {
+interface Props {
+  data: {
+    map: MapData;
+    mapObjects: GlobalObjectType[];
+    mapAreas: GlobalAreaType[];
+  };
+  settings?: string;
+  fullscreen?: boolean;
+}
+
+export function useMapMaker({ data, settings, fullscreen }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const statusCtx = useContext(StatusContext);
   const { mapAreas, mapObjects } = data;

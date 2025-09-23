@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Map, User } from "@prisma/client";
+import { Map, UserMap } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,21 +36,21 @@ const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
 
 type MapFormData = z.infer<typeof mapSchema>;
 
-type MapWithAuthors = Map & {
-  authors: User[];
+type MapWithUserMaps = Map & {
+  userMaps?: (UserMap & {
+    user: {
+      id: string;
+      name: string;
+      role: string;
+    };
+  })[];
 };
 
 interface Props {
-  map?: MapWithAuthors;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
+  map?: MapWithUserMaps;
 }
 
-export default function MapForm({ map, user }: Props) {
+export default function MapForm({ map }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -69,7 +69,6 @@ export default function MapForm({ map, user }: Props) {
       category: map?.category || "",
       tags: map?.tags || [],
       featured: map?.featured || false,
-      // authors: map?.authors?.map((author) => author.id) || [user.id],
     },
   });
 
@@ -200,49 +199,6 @@ export default function MapForm({ map, user }: Props) {
                       </FormItem>
                     )}
                   />
-                  {/* Image size */}
-                  {/* <FormField
-                    control={form.control}
-                    name="mapWidth"
-                    defaultValue={map?.mapWidth}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Map Image Width</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="100-"
-                            {...field}
-                            min={100}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="mapHeight"
-                    defaultValue={map?.mapHeight}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Map Image Height</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="100-"
-                            {...field}
-                            min={100}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  /> */}
                   <FormField
                     control={form.control}
                     name="canvasAspectRatio"

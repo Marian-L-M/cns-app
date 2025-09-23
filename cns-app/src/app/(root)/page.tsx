@@ -6,8 +6,8 @@ import ReactMarkDown from "react-markdown";
 import { AdminSettings } from "@prisma/client";
 
 interface titleProps {
-  mainTitle: AdminSettings;
-  mainText: AdminSettings;
+  mainTitle?: AdminSettings;
+  mainText?: AdminSettings;
 }
 
 export default async function Home() {

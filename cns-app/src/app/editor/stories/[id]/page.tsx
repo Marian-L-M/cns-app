@@ -79,6 +79,11 @@ export default async function EditStory({ params, searchParams }: Props) {
     userJunction: story.userStories,
   });
 
+  const storyDisplayData = substories.map((substory) => ({
+    ...substory,
+    nodes: substory.nodes as StoryNode[], // Type assertion for JSON field
+  }));
+
   return (
     <div className="w-full flex flex-col gap-4" id="story-editor-module">
       <h1 className="text-2xl">Edit Story</h1>
@@ -90,10 +95,10 @@ export default async function EditStory({ params, searchParams }: Props) {
         </TabsList>
         <TabsContent value="setup">
           <div className="flex gap-4">
+            {/* <StoryForm story={story} substories={substories} /> */}
             <StoryForm
               story={story}
-              substories={substories}
-              user={session.user}
+              substories={substories} // These are SubStory[], not Story[]
             />
           </div>
         </TabsContent>
@@ -101,7 +106,10 @@ export default async function EditStory({ params, searchParams }: Props) {
           <div className="flex gap-4">
             <div className="w-4/5">
               <StatusContextProvider>
-                <StoryDisplayModule mapData={mapData} story={substories} />
+                <StoryDisplayModule
+                  mapData={mapData}
+                  story={storyDisplayData}
+                />
               </StatusContextProvider>
             </div>
             <div className="w-1/5">

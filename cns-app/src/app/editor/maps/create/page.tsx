@@ -4,5 +4,5 @@ import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 export default async function NewMap() {
   const currentSession = await requireAuthorOrAdmin();
 
-  return <MapForm user={currentSession.user} />;
+  return <MapForm />;
 }

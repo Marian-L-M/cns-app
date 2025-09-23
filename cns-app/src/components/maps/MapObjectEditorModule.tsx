@@ -2,9 +2,10 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useMapObjectEditor } from "@/hooks/useMapEditor";
-import { CanvasStyleItem, GlobalObject } from "@prisma/client";
+import { CanvasStyleItem, GlobalObject, MapAreaType } from "@prisma/client";
 
 import GlobalObjectForm from "../forms/ObjectForm";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 interface Props {
   map: MapType;
@@ -17,11 +18,11 @@ interface Props {
         title: string;
         description: string;
         imageUrl: string;
-        nodes?: areaNode[];
+        nodes?: JsonValue;
         objectTime: number;
         mapId: number;
-        wikiId: number;
-        type: "GEOGRAPHY" | "ABSTRACT" | "INTERACTIVE";
+        wikiId: number | null;
+        type: MapAreaType;
         canvasStyles: CanvasStyleItem[];
       }
     | undefined;

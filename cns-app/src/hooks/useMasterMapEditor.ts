@@ -1,13 +1,36 @@
 import { useEffect, useRef } from "react";
-import { Map } from "@prisma/client";
+import { CanvasStyleItem } from "@prisma/client";
 
 import { drawMasterMapArea } from "@/lib/map/drawMap";
 import { getValueFirstOfEachStyleType } from "@/lib/utils";
 
-interface MapWithRectangularArea extends Map, PointRectangularArea {}
+interface ChildMap {
+  canvasAspectRatio: number;
+  canvasStyles: CanvasStyleItem[];
+  category: string;
+  createdAt: Date;
+  description: string;
+  featured: boolean;
+  hierarchyChildId: number;
+  hierarchyParentId: number;
+  id: number;
+  imageUrl: string;
+  mapHeight: number;
+  mapTime: number;
+  mapUrl: string;
+  mapWidth: number;
+  slug: string | null;
+  tags: string[];
+  title: string;
+  updatedAt: Date;
+  wx: number;
+  wy: number;
+  x: number;
+  y: number;
+}
 
 interface MasterMapMakerProps {
-  childMaps: MapWithRectangularArea[]; // Types fucked up, add canvas styles
+  childMaps: ChildMap[];
 }
 
 export function useMasterMapEditor({ childMaps }: MasterMapMakerProps) {

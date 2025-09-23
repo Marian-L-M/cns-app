@@ -91,7 +91,7 @@ interface story {
   updatedAt: Date;
   title: string;
   description: string;
-  nodes: JsonValue;
+  nodes: StoryNode[];
   objectTime: number;
   storyId: number;
   canvasStyles?: CanvasStyleItem[];

@@ -7,9 +7,20 @@ import StatusBar from "@/components/ui/maps/statusBar";
 import { useMapMaker } from "@/hooks/useMapMaker";
 import { StatusContext } from "@/store/statusContext";
 
+import { Map } from "@prisma/client";
+
 // 241107: To do - unify MapObjectModule and MapAreaModule
-export default function MapModule({ id, data }: MapModuleProps) {
-  const { canvasRef } = useMapMaker({ id, data });
+interface Props {
+  id: number;
+  data: {
+    map: Map;
+    mapObjects: GlobalObjectType[];
+    mapAreas: GlobalAreaType[];
+  };
+}
+
+export default function MapModule({ id, data }: Props) {
+  const { canvasRef } = useMapMaker({ data });
   const statusBarCtx = useContext(StatusContext);
   const { map, mapAreas, mapObjects } = data;
 

@@ -4,10 +4,8 @@ export const metadata = {
   title: "Admin",
 };
 
-// Set alerts etc. if pages have not been set up
-
 export default async function AdminOverviewPage() {
   await requireAdmin();
 
-  return <h1>Ello Boss!</h1>;
+  return <h1>Admin dashboard</h1>;
 }

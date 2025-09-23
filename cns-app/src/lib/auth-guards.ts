@@ -1,5 +1,15 @@
 import { auth } from "@/auth";
+import { ContentRole } from "@prisma/client";
 import { redirect } from "next/navigation";
+
+type UserJunctionType = {
+  userId: string;
+  role: ContentRole;
+  user: {
+    id: string;
+    [key: string]: any; // Allow additional user properties
+  };
+}[];
 
 export async function requireAdmin() {
   const session = await auth();
@@ -24,12 +34,16 @@ export async function requireAuthorOrAdmin() {
 export async function requireOwnerOrAdmin({
   userJunction,
 }: {
-  userJunction: Array<{ userId: string; role: string; user: { id: string } }>;
+  userJunction: UserJunctionType | undefined;
 }) {
   const session = await auth();
 
   if (!session?.user?.id) {
     redirect("/login");
+  }
+
+  if (!userJunction) {
+    redirect("/unauthorized");
   }
 
   const sessionId = session.user.id;

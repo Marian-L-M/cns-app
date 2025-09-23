@@ -90,7 +90,7 @@ export default async function EditMapPage({ params, searchParams }: Props) {
               </StatusContextProvider>
             </div>
             <div className="w-sm max-w-full flex-1">
-              <MapForm map={map} user={session.user} />
+              <MapForm map={map} />
             </div>
           </div>
         </TabsContent>

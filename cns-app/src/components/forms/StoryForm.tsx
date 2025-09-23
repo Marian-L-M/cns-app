@@ -9,7 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Story } from "@prisma/client";
+import { Story, SubStory, Map, Role, ContentRole } from "@prisma/client";
 import { StoriesSchema } from "@/ValidationSchemas/stories";
 
 import { Button } from "@/components/ui/button";
@@ -46,18 +46,19 @@ type StoryFormData = z.infer<typeof StoriesSchema>;
 interface Props {
   story?: Story & {
     userStories: Array<{
+      id: number; // Changed from string to number
       userId: string;
-      role: string;
-      user: { id: string; name: string; email: string };
+      storyId: number;
+      role: ContentRole;
+      user: {
+        id: string;
+        name: string;
+        role: Role;
+      };
     }>;
+    assignedToMap?: Map | null;
   };
-  substories?: Story[];
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
+  substories?: SubStory[]; // Changed from Story[] to SubStory[]
 }
 
 interface MapFetchProps {
@@ -65,7 +66,7 @@ interface MapFetchProps {
   setMapName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function StoryForm({ story, substories, user }: Props) {
+export default function StoryForm({ story, substories }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();

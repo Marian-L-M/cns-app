@@ -119,12 +119,10 @@ export default function StyleItemForm({
   // Handle color change from SketchPicker
   const handleColorChange = (color: ColorResult) => {
     const colorValue = color.rgb;
-    setSelectedColor(colorValue);
-    setCurrentStyleValue(colorValue);
-    form.setValue(
-      "value",
-      `rgba(${colorValue.r},${colorValue.g},${colorValue.b},${colorValue.a})`
-    );
+    const rgbaString = `rgba(${colorValue.r},${colorValue.g},${colorValue.b},${colorValue.a})`;
+    setSelectedColor(rgbaString);
+    setCurrentStyleValue(rgbaString);
+    form.setValue("value", rgbaString);
   };
 
   // link form field value to visual inputs

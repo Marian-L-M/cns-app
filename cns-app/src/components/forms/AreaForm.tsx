@@ -39,6 +39,7 @@ import { GlobalAreasSchema, MapAreaTypeList } from "@/ValidationSchemas/global";
 
 import "easymde/dist/easymde.min.css";
 import StyleItemForm from "./StyleItemForm";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
@@ -61,10 +62,11 @@ interface Props {
         title: string;
         description: string;
         imageUrl: string;
-        nodes?: areaNode[];
+        // nodes?: areaNode[];
+        nodes?: JsonValue;
         objectTime: number;
         mapId: number;
-        wikiId: number;
+        wikiId: number | null;
         type: MapAreaType;
         canvasStyles: CanvasStyleItem[];
       }

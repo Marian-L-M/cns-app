@@ -21,7 +21,7 @@ import { getScaling } from "@/lib/draw/utils";
 
 interface StoryModuleProps {
   mapData: {
-    map: MapType;
+    map: MapType | null;
     mapObjects: GlobalObjectType[];
     mapAreas: GlobalAreaType[];
   };
@@ -116,9 +116,14 @@ export function useStoryMaker({
 
       // Create promises for loading each unique icon
       const uniqueIconUrls = [
-        ...new Set(allNodesWithImages.map((node) => node.iconUrl)),
+        ...new Set(
+          allNodesWithImages
+            .map((node) => node.iconUrl)
+            .filter(
+              (url): url is string => url !== undefined && url.trim() !== ""
+            )
+        ),
       ];
-
       const iconPromises = uniqueIconUrls.map((iconUrl) => {
         return new Promise<void>((resolve, reject) => {
           // Check if image is already cached
@@ -154,6 +159,9 @@ export function useStoryMaker({
     // Set canvas
     if (!canvasRef.current) return;
     if (!mapData || !mapData.mapAreas || !mapData.mapObjects) return;
+    if (!mapData.map) {
+      console.warn("Map is null, some functionality may be limited");
+    }
     if (!imagesLoaded) return;
     if (!iconsLoaded) return;
     const canvas = canvasRef.current;

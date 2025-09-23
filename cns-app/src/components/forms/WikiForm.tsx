@@ -32,29 +32,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UploadButton } from "@/lib/uploadthing/utils";
-import {
-  barItemSchema,
-  // infoBoxItemSchema,
-  wikiSchema,
-} from "@/ValidationSchemas/wiki";
-
-// import WikiInfoboxFormField from "./WikiInfoboxForm";
+import { wikiSchema } from "@/ValidationSchemas/wiki";
 
 import "easymde/dist/easymde.min.css";
 import { Checkbox } from "../ui/checkbox";
 import InfoboxItemForm from "./InfoboxItemForm";
 import InfoboxEditListModule from "../displays/InfoboxEditListModule";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog/dialog";
-import { Label } from "../ui/label";
+
 import { Plus, Trash } from "lucide-react";
 import Link from "next/link";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
@@ -65,7 +49,14 @@ const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
 export type WikiFormData = z.infer<typeof wikiSchema>;
 
 interface Props {
-  wiki?: Wiki;
+  wiki?: Wiki & {
+    userWikis: Array<{
+      id: string;
+      userId: string;
+      role: string;
+      user: { id: string; name: string; email: string };
+    }>;
+  };
   user: {
     id: string;
     name: string;

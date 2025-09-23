@@ -6,16 +6,15 @@ import {
   drawStoryLabel,
   drawStoryNode,
 } from "@/lib/draw/drawStory";
-import { getValueFirstOfEachLineType } from "@/lib/utils";
+
+type SubStoryWithNodes = Omit<SubStory, "nodes"> & {
+  nodes: StoryNode[];
+  canvasStyles: CanvasStyleItem[];
+};
 
 interface substoryModuleProps {
-  editableSubStory: SubStory & {
-    nodes: StoryNode[];
-    canvasStyles: CanvasStyleItem[];
-  };
-  setEditableSubStory: React.Dispatch<
-    React.SetStateAction<SubStory & { nodes: StoryNode[] }>
-  >;
+  editableSubStory: SubStoryWithNodes;
+  setEditableSubStory: React.Dispatch<React.SetStateAction<SubStoryWithNodes>>;
   activeSubstoryID?: number;
   setActiveSubstoryID: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
@@ -50,22 +49,24 @@ export function useSubStoryEditor({
 
       const imagePromises = nodesWithImages.map((node) => {
         return new Promise<void>((resolve, reject) => {
+          const iconUrl = node.iconUrl!;
+
           // Check if image is already cached
-          if (imageCache.current.has(node.iconUrl)) {
+          if (imageCache.current.has(iconUrl)) {
             resolve();
             return;
           }
 
           const img = new Image();
           img.onload = () => {
-            imageCache.current.set(node.iconUrl, img);
+            imageCache.current.set(iconUrl, img);
             resolve();
           };
           img.onerror = () => {
-            console.warn(`Failed to load image: ${node.iconUrl}`);
-            reject(new Error(`Failed to load image: ${node.iconUrl}`));
+            console.warn(`Failed to load image: ${iconUrl}`);
+            reject(new Error(`Failed to load image: ${iconUrl}`));
           };
-          img.src = node.iconUrl;
+          img.src = iconUrl;
         });
       });
 
@@ -199,9 +200,7 @@ export function useSubStoryEditor({
 
 const addNode = (
   newNode: StoryNode,
-  setEditableSubStory: React.Dispatch<
-    React.SetStateAction<SubStory & { nodes: StoryNode[] }>
-  >
+  setEditableSubStory: React.Dispatch<React.SetStateAction<SubStoryWithNodes>>
 ) => {
   setEditableSubStory((prev) => ({
     ...prev,
@@ -212,9 +211,7 @@ const addNode = (
 const updateNode = (
   nodeId: number,
   updates: Partial<StoryNode>,
-  setEditableSubStory: React.Dispatch<
-    React.SetStateAction<SubStory & { nodes: StoryNode[] }>
-  >
+  setEditableSubStory: React.Dispatch<React.SetStateAction<SubStoryWithNodes>>
 ) => {
   setEditableSubStory((prev) => ({
     ...prev,
