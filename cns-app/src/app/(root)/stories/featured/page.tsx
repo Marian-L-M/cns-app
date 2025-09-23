@@ -1,8 +1,7 @@
 import React from "react";
 import prisma from "@/../prisma/db";
-import WikiSearchBar from "@/components/wiki/searchbar/WikiSearchBar";
 import StoryCardTable from "../StoyCardTable";
-import { Status, Story } from "@prisma/client";
+import { Prisma, Status, Story } from "@prisma/client";
 import StorySearchBar from "@/components/story/searchbar/StorySearchBar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,6 @@ export default async function featuredStoryPage({
 
   const pageSize = 12;
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
-  const orderBy = searchParams.orderBy ? searchParams.orderBy : "createdAt";
   const title = searchParams.title ? searchParams.title : "";
   const authorName = searchParams.author ? searchParams.author : undefined;
   const status = searchParams.status ? searchParams.status : undefined;
@@ -50,7 +48,7 @@ export default async function featuredStoryPage({
       userStories: {},
       title: {
         contains: title,
-        mode: "insensitive",
+        mode: Prisma.QueryMode.insensitive,
       },
     },
     take: pageSize,
@@ -77,7 +75,7 @@ export default async function featuredStoryPage({
       where: {
         displayName: {
           equals: authorName,
-          mode: "insensitive",
+          mode: Prisma.QueryMode.insensitive,
         },
       },
     });

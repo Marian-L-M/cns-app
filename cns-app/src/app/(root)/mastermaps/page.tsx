@@ -3,6 +3,7 @@ import prisma from "@/../prisma/db";
 import MasterMapSearchBar from "@/components/mastermaps/searchbar/MasterMapSearchBar";
 import { Button } from "@/components/ui/button";
 import MasterMapCardContainer from "@/components/mastermaps/MasterMapCardTable";
+import { Prisma } from "@prisma/client";
 
 export const metadata = {
   title: `Mastermaps`,
@@ -29,7 +30,7 @@ export default async function MasterMapPage({
     where: {
       title: {
         contains: title,
-        mode: "insensitive",
+        mode: Prisma.QueryMode.insensitive,
       },
     },
     take: pageSize,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Wiki, WikiType } from "@prisma/client";
+import { Prisma, Wiki, WikiType } from "@prisma/client";
 import prisma from "@/../prisma/db";
 import WikiSearchBar from "@/components/wiki/searchbar/WikiSearchBar";
 import WikiTable from "../WikiTable";
@@ -48,7 +48,7 @@ export default async function wikiArchivePage({
       userWikis: {},
       title: {
         contains: title,
-        mode: "insensitive",
+        mode: Prisma.QueryMode.insensitive,
       },
     },
     orderBy: {
@@ -78,7 +78,7 @@ export default async function wikiArchivePage({
       where: {
         displayName: {
           equals: authorName,
-          mode: "insensitive",
+          mode: Prisma.QueryMode.insensitive,
         },
       },
     });

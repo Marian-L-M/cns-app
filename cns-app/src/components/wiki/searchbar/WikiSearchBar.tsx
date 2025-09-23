@@ -1,10 +1,26 @@
 import AuthorFilter from "@/components/templates/searchbar/AuthorFilter";
 import SearchInput from "@/components/templates/searchbar/SearchInput";
 import TypeFilter from "@/components/wiki/searchbar/TypeFilter";
-import { User } from "@prisma/client";
+
+type AuthorWithProfile = {
+  id: string;
+  userProfile: {
+    id: number;
+    slug: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    displayName: string;
+    profileCatch: string | null;
+    profileDescription: string | null;
+    banner: string | null;
+    thumbnail: string | null;
+    socials: any[]; // JsonValue[]
+    userId: string;
+  } | null;
+};
 
 interface Props {
-  authorList: User[];
+  authorList: AuthorWithProfile[];
 }
 
 export default function WikiSearchBar({ authorList }: Props) {

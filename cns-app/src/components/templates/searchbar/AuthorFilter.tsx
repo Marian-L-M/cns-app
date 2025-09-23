@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   id: string;
-  userProfile: UserProfile;
+  userProfile: UserProfile | null;
 }
 
 export default function AuthorFilter({ authors }: { authors: Props[] }) {
@@ -73,14 +73,16 @@ export default function AuthorFilter({ authors }: { authors: Props[] }) {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {authors.map((author) => (
-            <SelectItem
-              key={`author-${author.id}`}
-              value={author.userProfile.displayName}
-            >
-              {author.userProfile.displayName}
-            </SelectItem>
-          ))}
+          {authors
+            .filter((author) => author.userProfile) // Only show authors with profile
+            .map((author) => (
+              <SelectItem
+                key={`author-${author.id}`}
+                value={author.userProfile!.displayName}
+              >
+                {author.userProfile!.displayName}
+              </SelectItem>
+            ))}
           <SelectSeparator />
           <Button
             className="w-full px-2"

@@ -1,7 +1,7 @@
 import React from "react";
 import prisma from "@/../prisma/db";
 import StoryCardTable from "../StoyCardTable";
-import { Status, Story } from "@prisma/client";
+import { Prisma, Status, Story } from "@prisma/client";
 import StorySearchBar from "@/components/story/searchbar/StorySearchBar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,7 @@ export default async function storyArchivePage({
       userStories: {},
       title: {
         contains: title,
-        mode: "insensitive",
+        mode: Prisma.QueryMode.insensitive,
       },
     },
     take: pageSize,
@@ -74,7 +74,7 @@ export default async function storyArchivePage({
       where: {
         displayName: {
           equals: authorName,
-          mode: "insensitive",
+          mode: Prisma.QueryMode.insensitive,
         },
       },
     });

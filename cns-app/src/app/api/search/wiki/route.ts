@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
+import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,13 +19,13 @@ export async function GET(request: NextRequest) {
           {
             wikiText: {
               contains: query,
-              mode: "insensitive",
+              mode: Prisma.QueryMode.insensitive,
             },
           },
           {
             title: {
               contains: query,
-              mode: "insensitive",
+              mode: Prisma.QueryMode.insensitive,
             },
           },
         ],

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       where: {
         title: {
           contains: query,
-          mode: "insensitive",
+          mode: Prisma.QueryMode.insensitive,
         },
       },
       take: limit,
