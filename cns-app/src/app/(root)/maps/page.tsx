@@ -35,13 +35,13 @@ export default async function Maps() {
   // Group content items by order number
   const groupedContent = settings
     .filter((item) => contentTypes.includes(item.type))
-    .reduce((acc, item): any => {
+    .reduce((acc, item) => {
       if (!acc[item.order]) {
         acc[item.order] = [];
       }
       acc[item.order].push(item);
       return acc;
-    }, {});
+    }, {} as Record<number, AdminSettings[]>);
 
   const mapId = settings.find((item) => item.type === "mapId");
   const mastermapId = settings.find((item) => item.type === "mastermapId");
@@ -153,7 +153,7 @@ export default async function Maps() {
               .filter((orderNumber) => orderNumber !== "1") // Skip the main text group as it's rendered above
               .sort((a, b) => parseInt(a) - parseInt(b))
               .map((orderNumber) => {
-                const group = groupedContent[orderNumber];
+                const group = groupedContent[parseInt(orderNumber)];
                 const groupMainTitle = group.find(
                   (item) => item.type === "mainTitle"
                 );
@@ -189,16 +189,16 @@ export default async function Maps() {
 
 // Content blocks
 function TitleSection({ numberSortedTextGroup }: titleProps) {
-  const mainTitle = numberSortedTextGroup.find(
+  const mainTitle = numberSortedTextGroup?.find(
     (item) => item.type === "mainTitle"
   );
-  const mainText = numberSortedTextGroup.find(
+  const mainText = numberSortedTextGroup?.find(
     (item) => item.type === "mainText"
   );
-  const mainSubTitle = numberSortedTextGroup.find(
+  const mainSubTitle = numberSortedTextGroup?.find(
     (item) => item.type === "subTitle"
   );
-  const mainOtherText = numberSortedTextGroup.find(
+  const mainOtherText = numberSortedTextGroup?.find(
     (item) => item.type === "text"
   );
 
