@@ -3,19 +3,39 @@ import { useEffect, useRef, useContext } from "react";
 
 import { checkHitbox } from "@/lib/mouseActions";
 import { drawRectangularMetaArea } from "@/lib/map/drawMetaAreas";
-import { Map } from "@prisma/client";
+import { CanvasStyleItem } from "@prisma/client";
 import { CursorContext } from "@/store/cursorContext";
 import { getScaling } from "@/lib/draw/utils";
 import { getValueFirstOfEachStyleType } from "@/lib/utils";
 import { drawMasterMapArea } from "@/lib/map/drawMap";
 
-interface MapWithRectangularArea
-  extends HierarchyConnection,
-    Map,
-    PointRectangularArea {}
+interface ChildMap {
+  canvasAspectRatio: number;
+  canvasStyles: CanvasStyleItem[];
+  category: string;
+  createdAt: Date;
+  description: string;
+  featured: boolean;
+  hierarchyChildId: number;
+  hierarchyParentId: number;
+  id: number;
+  imageUrl: string;
+  mapHeight: number;
+  mapTime: number;
+  mapUrl: string;
+  mapWidth: number;
+  slug: string | null;
+  tags: string[];
+  title: string;
+  updatedAt: Date;
+  wx: number;
+  wy: number;
+  x: number;
+  y: number;
+}
 
 interface MasterMapMakerProps {
-  childMaps: MapWithRectangularArea[];
+  childMaps: ChildMap[];
   fullscreen: boolean;
 }
 

@@ -4,26 +4,58 @@ import { useEffect, useState, useContext, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { useMasterMapMaker } from "@/hooks/useMasterMapMaker";
-import { Map, MapHierarchyMaster } from "@prisma/client";
+import { CanvasStyleItem, Map } from "@prisma/client";
 import { CursorContext } from "@/store/cursorContext";
 import { useWindowSize } from "@/hooks/useWindow";
 import { Switch } from "../ui/switch";
 
-interface MapWithRectangularArea extends Map, PointRectangularArea {}
-interface ParentMap extends Map, MapHierarchyMaster {}
-interface MasterMapProps {
-  mapParent: Map;
+interface ChildMap {
+  canvasAspectRatio: number;
+  canvasStyles: CanvasStyleItem[];
+  category: string;
+  createdAt: Date;
+  description: string;
+  featured: boolean;
+  hierarchyChildId: number;
+  hierarchyParentId: number;
+  id: number;
+  imageUrl: string;
+  mapHeight: number;
+  mapTime: number;
+  mapUrl: string;
+  mapWidth: number;
+  slug: string | null;
+  tags: string[];
+  title: string;
+  updatedAt: Date;
+  wx: number;
+  wy: number;
+  x: number;
+  y: number;
 }
+
+type ParentMap = Map;
+
+interface MasterMapData {
+  parentMap: ParentMap;
+  childMaps: ChildMap[];
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string;
+  bannerUrl: string | null;
+  parentMapId: number;
+}
+
 interface MasterMapProps {
-  masterMap: {
-    parentMap: ParentMap;
-    childMaps: MapWithRectangularArea[]; // To do: Remove MapWithRectangularArea logic -> now handled by maphierarchy child
-  };
+  masterMap: MasterMapData | null;
 }
 
 export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
   const [fullscreen, setFullscreen] = useState(false);
-  const { parentMap, childMaps } = masterMap;
+  const parentMap = masterMap?.parentMap;
+  const childMaps = masterMap?.childMaps || [];
   const { canvasRef } = useMasterMapMaker({ childMaps, fullscreen });
   const tooltipCtx = useContext(CursorContext);
 
@@ -31,7 +63,7 @@ export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
   const [availableWidth, setAvailableWidth] = useState<number>(896);
 
   const windowSize = useWindowSize({
-    aspectRatio: parentMap.canvasAspectRatio,
+    aspectRatio: parentMap?.canvasAspectRatio || 1,
     padding: 40,
     border: 1,
     fullscreen: fullscreen,
@@ -92,8 +124,8 @@ export default function MastermapDisplayModule({ masterMap }: MasterMapProps) {
         <Image
           priority={true}
           className="absolute top-0 left-0 z-1 pointer-events-none"
-          src={parentMap.mapUrl}
-          alt={`${parentMap.title} - map`}
+          src={parentMap?.mapUrl || "placeholder.png"}
+          alt={`${parentMap?.title} - map`}
           style={{ objectFit: "contain" }}
           fill={true}
           // width="1024"
@@ -171,8 +203,7 @@ const MouseTracker = ({ children, offset = { x: 0, y: 0 } }: any) => {
   }
 
   // Style the tracker div
-  // Todo: 250318 Fix style
-  const trackerStyle = {
+  const trackerStyle: React.CSSProperties = {
     transform: `translate(${position.x}px, ${position.y}px)`,
     visibility: isVisible ? "visible" : "hidden",
     position: "fixed",
