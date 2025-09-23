@@ -109,6 +109,7 @@ https://nextjs.org/docs/app/api-reference/file-conventions
    -- [] Ui fix
 5. Map Cetegory enumeration
 6. Priority true to map images
+7. Generate thumbnails/banners from canvas
 
 ## MasterMap
 
