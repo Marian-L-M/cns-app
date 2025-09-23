@@ -1,6 +1,6 @@
 import React from "react";
 import prisma from "@/../prisma/db";
-import { Map } from "@prisma/client";
+import { Map, Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import MapSearchBar from "@/components/maps/searchbar/MapSearchBar";
@@ -17,7 +17,7 @@ export interface SearchParams {
   orderBy: Date;
 }
 
-export default async function storyArchivePage({
+export default async function mapArchivePage({
   searchParams: rawSearchParams,
 }: {
   searchParams: Promise<SearchParams>;
@@ -44,7 +44,7 @@ export default async function storyArchivePage({
       userMaps: {},
       title: {
         contains: title,
-        mode: "insensitive",
+        mode: Prisma.QueryMode.insensitive,
       },
     },
     take: pageSize,
@@ -62,7 +62,7 @@ export default async function storyArchivePage({
         },
       },
     },
-  };
+  } as const;
 
   let maps: Map[] = [];
 
@@ -71,7 +71,7 @@ export default async function storyArchivePage({
       where: {
         displayName: {
           equals: authorName,
-          mode: "insensitive",
+          mode: Prisma.QueryMode.insensitive,
         },
       },
     });
