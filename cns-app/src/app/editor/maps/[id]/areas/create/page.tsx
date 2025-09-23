@@ -6,7 +6,6 @@ interface MapAreaEditorProps {
   params: Promise<{
     id: string;
   }>;
-  searchParams: {};
 }
 
 export default async function NewMapAreaEditor({ params }: MapAreaEditorProps) {

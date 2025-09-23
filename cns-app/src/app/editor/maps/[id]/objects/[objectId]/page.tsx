@@ -9,7 +9,6 @@ interface MapAreaEditorProps {
     id: string;
     objectId: string;
   }>;
-  searchParams: {};
 }
 
 export default async function MapAreaEditor({ params }: MapAreaEditorProps) {
