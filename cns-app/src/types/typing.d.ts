@@ -97,6 +97,8 @@ interface story {
   canvasStyles?: CanvasStyleItem[];
 }
 
+type SubstoryNodeType = "SQUARE" | "CIRCLE" | "DIAMOND" | "ICON";
+
 type StoryNode = {
   id: number;
   x: number;
@@ -105,11 +107,11 @@ type StoryNode = {
   description: string;
   timeStart?: number;
   timeEnd?: number;
-  iconType?: string; // Individual icon overwrite Circle, Rectangle, diamond etc.
+  iconType: SubstoryNodeType; // Individual icon overwrite Circle, Rectangle, diamond etc.
   iconUrl?: string;
   iconSize?: number;
   iconColor?: string;
-  label: boolean;
+  label?: boolean;
   labelColor?: string;
   fontColor?: string;
 };

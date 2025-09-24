@@ -1,6 +1,7 @@
 import prisma from "@/../prisma/db";
 import EditorContextProvider from "@/store/mapEditorContext";
 import StoryEditor from "@/components/editors/StoryEditor";
+import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 
 interface substoryProps {
   params: Promise<{
@@ -16,6 +17,19 @@ export default async function SubStoryDetailPage({ params }: substoryProps) {
 
   const story = await prisma.story.findUnique({
     where: { id: id },
+    include: {
+      userStories: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   const substory = await prisma.subStory.findUnique({
@@ -28,6 +42,12 @@ export default async function SubStoryDetailPage({ params }: substoryProps) {
   if (!story) {
     return <div>Story not found</div>;
   }
+
+  // Check if current user has permission to edit current story
+  const session = await requireOwnerOrAdmin({
+    userJunction: story.userStories,
+  });
+
   if (!story.assignedToMapID) {
     return <div>No associated map</div>;
   }
@@ -44,10 +64,16 @@ export default async function SubStoryDetailPage({ params }: substoryProps) {
     return <div>Map not found</div>;
   }
 
+  // Dirty fix for bad DB schema
+  const subStoryData = {
+    ...substory,
+    nodes: substory.nodes as StoryNode[],
+  };
+
   return (
     <div className="w-full" id="substory-detail-page">
       <EditorContextProvider>
-        <StoryEditor story={story} substory={substory} map={map} />
+        <StoryEditor story={story} substory={subStoryData} map={map} />
       </EditorContextProvider>
     </div>
   );

@@ -22,7 +22,6 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
             select: {
               id: true,
               name: true,
-              email: true,
               role: true,
             },
           },
@@ -48,7 +47,9 @@ export default async function SubStoryDetailPage({ params }: SubstoryProps) {
   }
 
   // Check if current user has permission to edit current story
-  const session = await requireOwnerOrAdmin({ userStories: story.userStories });
+  const session = await requireOwnerOrAdmin({
+    userJunction: story.userStories,
+  });
 
   return (
     <div className="w-full" id="substory-detail-page">
