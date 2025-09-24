@@ -21,13 +21,13 @@ export default async function Wiki() {
   // Group content items by order number
   const groupedContent = settings
     .filter((item) => contentTypes.includes(item.type))
-    .reduce((acc, item): any => {
+    .reduce((acc, item) => {
       if (!acc[item.order]) {
         acc[item.order] = [];
       }
       acc[item.order].push(item);
       return acc;
-    }, {});
+    }, {} as Record<number, AdminSettings[]>);
 
   // Configuration items
   // First block
@@ -113,7 +113,7 @@ export default async function Wiki() {
                   .filter((orderNumber) => orderNumber !== "1") // Skip the main text group as it's rendered above
                   .sort((a, b) => parseInt(a) - parseInt(b))
                   .map((orderNumber) => {
-                    const group = groupedContent[orderNumber];
+                    const group = groupedContent[parseInt(orderNumber)];
                     const groupMainTitle = group.find(
                       (item) => item.type === "mainTitle"
                     );
