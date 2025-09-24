@@ -23,7 +23,6 @@ export default async function UserProfileDisplay({ id }: Props) {
     );
   }
 
-  console.log(profile.socials);
   return (
     <div className="w-full flex flex-col items-center gap-4">
       {profile.banner && (

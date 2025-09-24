@@ -57,16 +57,10 @@ interface Props {
       user: { id: string; name: string; email: string };
     }>;
   };
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-  };
   infobox?: WikiInfoboxItem[];
 }
 
-export default function WikiForm({ wiki, user, infobox }: Props) {
+export default function WikiForm({ wiki, infobox }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentInfoboxItem, setCurrentInfoboxItem] = useState<
     WikiInfoboxItem | undefined

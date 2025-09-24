@@ -23,6 +23,7 @@ export default async function EditWikiPage({ params }: Props) {
             select: {
               id: true,
               name: true,
+              email: true,
               role: true,
             },
           },
@@ -45,7 +46,22 @@ export default async function EditWikiPage({ params }: Props) {
     userJunction: wiki.userWikis,
   });
 
-  return <WikiForm wiki={wiki} user={session.user} infobox={infobox} />;
+  // Dirty fix for db issue
+  const transformedWiki = {
+    ...wiki,
+    userWikis: wiki.userWikis.map((userWiki) => ({
+      id: userWiki.id.toString(),
+      userId: userWiki.userId,
+      role: userWiki.role.toString(),
+      user: {
+        id: userWiki.user.id,
+        name: userWiki.user.name,
+        email: userWiki.user.email,
+      },
+    })),
+  };
+
+  return <WikiForm wiki={transformedWiki} infobox={infobox} />;
 }
 
 // 2240907 Next action: Change description to a text field

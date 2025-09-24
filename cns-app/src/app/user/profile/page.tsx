@@ -13,17 +13,32 @@ export const metadata: Metadata = {
 export default async function UserProfileSettingsPage() {
   const session = await auth();
   if (!session?.user?.id) {
-    <div className="max-w-4xl mt-16 mx-auto space-y-4">
-      <h1>No user found</h1>
-    </div>;
-  }
-  const { user } = await fetchUser(session?.user?.id);
-
-  return (
-    <SessionProvider session={session}>
-      <div className="max-w-4xl  mt-16 mx-auto space-y-4">
-        <UserProfileForm user={user} />
+    return (
+      <div className="max-w-4xl mt-16 mx-auto space-y-4">
+        <h1>No user found</h1>
       </div>
-    </SessionProvider>
-  );
+    );
+  }
+
+  const userId = session?.user.id;
+
+  try {
+    const { user } = await fetchUser(userId);
+
+    return (
+      <SessionProvider session={session}>
+        <div className="max-w-4xl mt-16 mx-auto space-y-4">
+          <UserProfileForm user={user} />
+        </div>
+      </SessionProvider>
+    );
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
+    return (
+      <div className="max-w-4xl mt-16 mx-auto space-y-4">
+        <h1>Error loading profile</h1>
+        <p>Unable to load user profile. Please try again later.</p>
+      </div>
+    );
+  }
 }

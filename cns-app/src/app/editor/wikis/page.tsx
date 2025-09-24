@@ -30,8 +30,6 @@ export default async function WikiEditorPage() {
     },
   });
 
-  console.log(wikis);
-
   const session = await requireAuthorOrAdmin();
 
   return (

@@ -1,5 +1,5 @@
 import prisma from "@/../prisma/db";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import WikiCardContainer from "@/components/wiki/WikiCardContainer";
 import { AdminSettings } from "@prisma/client";
 import ReactMarkDown from "react-markdown";
@@ -66,20 +66,26 @@ export default async function Wiki() {
                   className="w-full flex p-4 flex-col gap-2 border border-slate-200 rounded-md"
                   id="title-container"
                 >
-                  <h1 className="w-full text-2xl font-bold ">
-                    {mainTitle.value}
-                  </h1>
-                  <p className="text-md">{mainText.value}</p>
+                  {mainTitle && (
+                    <h1 className="w-full text-2xl font-bold ">
+                      {mainTitle.value}
+                    </h1>
+                  )}
+                  {mainText && <p className="text-md">{mainText.value}</p>}
                   {(mainSubTitle || mainOtherText) && (
                     <div className="w-full flex flex-col gap-2">
-                      <h3 className="text-xl font-semibold  bg-slate-100 px-2 py-1">
-                        {mainSubTitle.value}
-                      </h3>
-                      <ReactMarkDown
-                        className={"prose dark:prose-invert text-md"}
-                      >
-                        {mainText.value}
-                      </ReactMarkDown>
+                      {mainSubTitle && (
+                        <h3 className="text-xl font-semibold  bg-slate-100 px-2 py-1">
+                          {mainSubTitle.value}
+                        </h3>
+                      )}
+                      {mainOtherText && (
+                        <ReactMarkDown
+                          className={"prose dark:prose-invert text-md"}
+                        >
+                          {mainOtherText.value}
+                        </ReactMarkDown>
+                      )}
                     </div>
                   )}
                 </div>

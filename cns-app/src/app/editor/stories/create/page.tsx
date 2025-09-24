@@ -7,5 +7,5 @@ export default async function NewStory() {
   if (!session) {
     return <h1>Authentication pending</h1>;
   }
-  return <StoryForm user={session.user} />;
+  return <StoryForm />;
 }

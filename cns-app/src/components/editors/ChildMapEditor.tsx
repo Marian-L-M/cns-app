@@ -20,7 +20,13 @@ import { Input } from "@/components/ui/input";
 import MapSearchDialog from "@/components/ui/dialog/mapSearchDialog";
 import { useChildMapMaker } from "@/hooks/useChildMapMaker";
 import { fetchMapName } from "@/lib/fetchMapData";
-import { CanvasStyleItem, Map, MapHierarchyChild } from "@prisma/client";
+import {
+  CanvasStyleItem,
+  Map,
+  MapHierarchyChild,
+  MapHierarchyMaster,
+  UserMapHierarchy,
+} from "@prisma/client";
 import { ChildMapSchema } from "@/ValidationSchemas/maps";
 import { Plus } from "lucide-react";
 import StyleEditListModule from "../displays/StyleEditListModule";
@@ -30,24 +36,23 @@ export type ChildMapFormData = z.infer<typeof ChildMapSchema> & {
   ChildMap: MapHierarchyChild;
 };
 
-interface MasterMapWithChildren {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  title: string;
-  parentMapId: number;
+interface ChildMapWithStyle extends MapHierarchyChild {
+  canvasStyles: CanvasStyleItem[];
+  childMap: Map;
+  wx: number;
+  wy: number;
+  x: number;
+  y: number;
+}
+
+interface MasterMapWithChildren extends MapHierarchyMaster {
+  childMaps: ChildMapWithStyle[];
   parentMap: Map;
-  childMaps: Map[];
+  userMapHierarchies: UserMapHierarchy[];
 }
 
 interface ChildMapEditorProps {
   MasterMap: MasterMapWithChildren;
-  ChildMap?: MapHierarchyChildEditable;
-}
-
-interface MapHierarchyChildEditable extends MapHierarchyChild {
-  mapTitle: string;
-  canvasStyles: CanvasStyleItem[];
 }
 
 interface ChildMapEditorItem {
@@ -61,21 +66,20 @@ interface ChildMapEditorItem {
 
 // 250329 To do: Connect childmap details to state
 // 250404 To do: Two areas cannot be submitted for the same map (which is good), but an alarm text is needed
-export default function ChildMapEditor({
-  MasterMap,
-  ChildMap,
-}: ChildMapEditorProps) {
+export default function ChildMapEditor({ MasterMap }: ChildMapEditorProps) {
+  console.log(MasterMap);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const childMap = MasterMap.childMaps[0];
   const [childMapEditorItem, setChildMapEditorItem] =
     useState<ChildMapEditorItem>({
-      x: ChildMap?.x || 100,
-      y: ChildMap?.y || 100,
-      wx: ChildMap?.wx || 100,
-      wy: ChildMap?.wy || 100,
-      mapTitle: ChildMap?.mapTitle || "",
-      canvasStyles: ChildMap?.canvasStyles || [],
+      x: childMap?.x || 100,
+      y: childMap?.y || 100,
+      wx: childMap?.wx || 100,
+      wy: childMap?.wy || 100,
+      mapTitle: childMap?.childMap.title || "",
+      canvasStyles: childMap?.canvasStyles || [],
     });
 
   // Style items
@@ -90,13 +94,13 @@ export default function ChildMapEditor({
 
   // Re-render canvas when styles change
   useEffect(() => {
-    if (ChildMap) {
+    if (childMap) {
       setChildMapEditorItem((prev) => ({
         ...prev,
-        canvasStyles: ChildMap.canvasStyles || [],
+        canvasStyles: childMap.canvasStyles || [],
       }));
     }
-  }, [ChildMap?.canvasStyles]);
+  }, [childMap?.canvasStyles]);
 
   // Set canvas
   const { canvasRef } = useChildMapMaker({
@@ -114,11 +118,11 @@ export default function ChildMapEditor({
     resolver: zodResolver(ChildMapSchema),
     defaultValues: {
       hierarchyId: MasterMap.id,
-      childMapId: ChildMap?.childMapId || 0, // Naming is very confusing childmapid is not the id of the childmap but the related map object
-      x: ChildMap?.x || 0,
-      y: ChildMap?.y || 0,
-      wx: ChildMap?.wx || 0,
-      wy: ChildMap?.wy || 0,
+      childMapId: childMap?.childMapId || 0, // Naming is very confusing childmapid is not the id of the childmap but the related map object
+      x: childMap?.x || 0,
+      y: childMap?.y || 0,
+      wx: childMap?.wx || 0,
+      wy: childMap?.wy || 0,
     },
   });
 
@@ -135,10 +139,10 @@ export default function ChildMapEditor({
     try {
       setIsSubmitting(true);
       setError("");
-      if (ChildMap) {
-        await axios.patch(`/api/childmaps/${ChildMap.id}`, values);
+      if (childMap) {
+        await axios.patch(`/api/childmaps/${childMap.id}`, values);
         router.push(
-          `/editor/mastermaps/${MasterMap.id}/childmaps/${ChildMap.id}`
+          `/editor/mastermaps/${MasterMap.id}/childmaps/${childMap.id}`
         );
         router.refresh();
         toast.success("Childmap updated succesfully");
@@ -165,7 +169,7 @@ export default function ChildMapEditor({
 
   // Set map & map display name
   const [selectedMapId, setSelectedMapId] = useState<number | undefined>(
-    ChildMap?.childMapId
+    childMap?.childMapId
   );
   const [mapName, setMapName] = useState<string>("");
 
@@ -215,7 +219,7 @@ export default function ChildMapEditor({
                 <FormField
                   control={form.control}
                   name="childMapId"
-                  defaultValue={ChildMap?.childMapId}
+                  defaultValue={childMap?.childMapId}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Map as child map</FormLabel>
@@ -253,7 +257,7 @@ export default function ChildMapEditor({
                     <FormField
                       control={form.control}
                       name="x"
-                      defaultValue={ChildMap?.x}
+                      defaultValue={childMap?.x}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Child Map X</FormLabel>
@@ -279,7 +283,7 @@ export default function ChildMapEditor({
                     <FormField
                       control={form.control}
                       name="y"
-                      defaultValue={ChildMap?.y}
+                      defaultValue={childMap?.y}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Child Map Y</FormLabel>
@@ -306,7 +310,7 @@ export default function ChildMapEditor({
                     <FormField
                       control={form.control}
                       name="wx"
-                      defaultValue={ChildMap?.wx}
+                      defaultValue={childMap?.wx}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Child Map Width</FormLabel>
@@ -332,7 +336,7 @@ export default function ChildMapEditor({
                     <FormField
                       control={form.control}
                       name="wy"
-                      defaultValue={ChildMap?.wy}
+                      defaultValue={childMap?.wy}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Child Map Height</FormLabel>
@@ -358,13 +362,13 @@ export default function ChildMapEditor({
                 </div>
               </div>
               <Button type="submit" disabled={isSubmitting}>
-                {ChildMap ? "Update Childmap" : "Submit Childmap"}
+                {childMap ? "Update Childmap" : "Submit Childmap"}
               </Button>
             </form>
           </Form>
           <div className="w-full">
             {/* Style column */}
-            {ChildMap ? (
+            {childMap ? (
               <div className="w-full flex flex-col gap-4">
                 <div className="w-full gap-2 flex items-center justify-between">
                   <h4 className="text-lg">Styles</h4>
@@ -378,14 +382,14 @@ export default function ChildMapEditor({
                   </Button>
                 </div>
                 <StyleEditListModule
-                  canvasStyles={ChildMap.canvasStyles}
+                  canvasStyles={childMap.canvasStyles}
                   showStyleForm={showStyleForm}
-                  currentPage={`/editor/mastermaps/${MasterMap.id}/childmaps/${ChildMap.id}`}
+                  currentPage={`/editor/mastermaps/${MasterMap.id}/childmaps/${childMap.id}`}
                 />
                 <StyleItemForm
-                  parentId={ChildMap.id}
+                  parentId={childMap.id}
                   parentType="mapHierarchyChild"
-                  parentSlug={`/editor/mastermaps/${MasterMap.id}/childmaps/${ChildMap.id}`}
+                  parentSlug={`/editor/mastermaps/${MasterMap.id}/childmaps/${childMap.id}`}
                   dialogOpen={isDialogOpen}
                   setDialogOpen={setIsDialogOpen}
                   canvasStyleItem={currentStyleItem}

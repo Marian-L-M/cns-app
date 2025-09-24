@@ -47,7 +47,7 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
 
   return (
     <CursorContextProvider>
-      <ChildMapEditor MasterMap={masterMap} ChildMap={masterMap.childMaps[0]} />
+      <ChildMapEditor MasterMap={masterMap} />
     </CursorContextProvider>
   );
 }

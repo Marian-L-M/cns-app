@@ -43,7 +43,6 @@ export default async function WikiPage({ params }: WikiPageProps) {
   }
 
   const authors = wiki.userWikis;
-  console.log(authors);
 
   const infobox = await prisma.wikiInfoboxItem.findMany({
     where: { wikiId: id },
