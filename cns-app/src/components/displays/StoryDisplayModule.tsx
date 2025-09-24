@@ -41,8 +41,10 @@ export default function StoryDisplayModule({
   const isInitialRender = useRef(true);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [infoData, setInfoData] = useState();
-  const [storyData, setStoryData] = useState();
+  const [infoData, setInfoData] = useState<
+    GlobalObjectType | GlobalAreaType | undefined
+  >();
+  const [storyData, setStoryData] = useState<SubStoryWithStyles | undefined>();
   const [storyIndex, setStoryIndex] = useState(0);
 
   // Set Canvas

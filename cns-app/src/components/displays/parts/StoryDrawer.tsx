@@ -3,7 +3,6 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -21,16 +20,6 @@ interface Props {
     storyId: number;
     nodes?: StoryNode[];
   };
-}
-
-interface StoryNode {
-  id: number;
-  name: string;
-  description: string;
-  timeEnd: number;
-  timeStart: number;
-  x: number;
-  y: number;
 }
 
 export default function StoryDrawer({

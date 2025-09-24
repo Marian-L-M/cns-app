@@ -8,6 +8,22 @@ interface Props {
   id: number;
 }
 
+// Type guard to check if a JsonValue is a valid Social object
+function isSocial(social: any): social is Social {
+  return (
+    social &&
+    typeof social === "object" &&
+    typeof social.platform === "string" &&
+    typeof social.label === "string" &&
+    typeof social.url === "string"
+  );
+}
+
+// Type guard to check if JsonValue is an array of Social objects
+function isSocialsArray(socials: any): socials is Social[] {
+  return Array.isArray(socials) && socials.every(isSocial);
+}
+
 export default async function UserProfileDisplay({ id }: Props) {
   const profile = await prisma.userProfile.findUnique({
     where: {
@@ -22,6 +38,10 @@ export default async function UserProfileDisplay({ id }: Props) {
       </div>
     );
   }
+
+  const socials: Social[] = isSocialsArray(profile.socials)
+    ? profile.socials
+    : [];
 
   return (
     <div className="w-full flex flex-col items-center gap-4">
@@ -48,7 +68,7 @@ export default async function UserProfileDisplay({ id }: Props) {
       {/* Profile contents */}
       <div className="flex flex-col gap-8 w-full max-w-3xl ">
         <div className="flex flex-wrap gap-4" id="socials-container">
-          {profile.socials.map((social, index) => (
+          {socials.map((social, index) => (
             <Link
               href={social.url}
               key={`social-icon-${index}`}

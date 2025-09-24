@@ -6,7 +6,7 @@ import { useWindowSize } from "@/hooks/useWindow";
 import { Switch } from "../ui/switch";
 
 interface Props {
-  map: Map;
+  map: Map | null;
   canvasRef: any;
   fullscreen: boolean;
   setFullscreen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +23,7 @@ export default function MapResponsiveCanvas({
   const [availableWidth, setAvailableWidth] = useState<number>(896);
 
   const windowSize = useWindowSize({
-    aspectRatio: map.canvasAspectRatio,
+    aspectRatio: map?.canvasAspectRatio || 1,
     padding: 40,
     border: 1,
     fullscreen: fullscreen,
