@@ -35,6 +35,11 @@ export default async function ViewStory({
     where: { storyId: story.id },
   });
 
+  const storyDisplayData = substories.map((substory) => ({
+    ...substory,
+    nodes: substory.nodes as StoryNode[], // Type assertion for JSON field
+  }));
+
   // fetch mapdata
   try {
     // 240819 This is stupid - remove and work with include instead
@@ -51,7 +56,7 @@ export default async function ViewStory({
     <div className="w-full flex gap-4">
       <div className="col-span-6">
         <StatusContextProvider>
-          <StoryDisplayModule mapData={mapData} story={substories} />
+          <StoryDisplayModule mapData={mapData} story={storyDisplayData} />
         </StatusContextProvider>
       </div>
       <div className="col-span-3 flex flex-col gap-4">

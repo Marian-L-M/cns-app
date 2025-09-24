@@ -34,13 +34,13 @@ export default async function Stories() {
   // Group content items by order number
   const groupedContent = settings
     .filter((item) => contentTypes.includes(item.type))
-    .reduce((acc, item): any => {
+    .reduce((acc, item) => {
       if (!acc[item.order]) {
         acc[item.order] = [];
       }
       acc[item.order].push(item);
       return acc;
-    }, {});
+    }, {} as Record<number, AdminSettings[]>);
 
   const storyId = settings.find((item) => item.type === "storyId");
   const mainTextGroup = groupedContent["1"];
@@ -126,7 +126,7 @@ export default async function Stories() {
               .filter((orderNumber) => orderNumber !== "1") // Skip the main text group as it's rendered above
               .sort((a, b) => parseInt(a) - parseInt(b))
               .map((orderNumber) => {
-                const group = groupedContent[orderNumber];
+                const group = groupedContent[parseInt(orderNumber)];
                 const groupMainTitle = group.find(
                   (item) => item.type === "mainTitle"
                 );
@@ -168,16 +168,16 @@ export default async function Stories() {
 
 // Content blocks
 function TitleSection({ numberSortedTextGroup }: titleProps) {
-  const mainTitle = numberSortedTextGroup.find(
+  const mainTitle = numberSortedTextGroup?.find(
     (item) => item.type === "mainTitle"
   );
-  const mainText = numberSortedTextGroup.find(
+  const mainText = numberSortedTextGroup?.find(
     (item) => item.type === "mainText"
   );
-  const mainSubTitle = numberSortedTextGroup.find(
+  const mainSubTitle = numberSortedTextGroup?.find(
     (item) => item.type === "subTitle"
   );
-  const mainOtherText = numberSortedTextGroup.find(
+  const mainOtherText = numberSortedTextGroup?.find(
     (item) => item.type === "text"
   );
 
@@ -232,6 +232,11 @@ async function StoryDisplay({ storyId }: { storyId: AdminSettings }) {
     return <div className="text-destructive">Story not found</div>;
   }
 
+  const storyDisplayData = story.subStories.map((substory) => ({
+    ...substory,
+    nodes: substory.nodes as StoryNode[], // Type assertion for JSON field
+  }));
+
   // fetch mapdata
   try {
     // 240819 This is stupid - remove and work with include instead
@@ -248,7 +253,7 @@ async function StoryDisplay({ storyId }: { storyId: AdminSettings }) {
   return (
     <div className="w-full relative">
       <StatusContextProvider>
-        <StoryDisplayModule mapData={mapData} story={story.subStories} />
+        <StoryDisplayModule mapData={mapData} story={storyDisplayData} />
       </StatusContextProvider>
     </div>
   );

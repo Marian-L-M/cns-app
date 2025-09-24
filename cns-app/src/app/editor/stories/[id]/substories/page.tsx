@@ -53,8 +53,16 @@ export default async function substoryOverviewPage({ params }: Props) {
   if (!story.subStories) {
     return <div className="text-destructive">No substories found</div>;
   }
+
+  const storyDisplayData = story.subStories.map((substory) => ({
+    ...substory,
+    nodes: substory.nodes as StoryNode[], // Type assertion for JSON field
+  }));
+
   // Check if current user has permission to edit
-  const session = await requireOwnerOrAdmin({ userStories: story.userStories });
+  const session = await requireOwnerOrAdmin({
+    userJunction: story.userStories,
+  });
 
   // fetch mapdata with better error handling
   try {
@@ -95,7 +103,7 @@ export default async function substoryOverviewPage({ params }: Props) {
     <div className="flex gap-4">
       <div className="w-4/5">
         <StatusContextProvider>
-          <StoryDisplayModule mapData={mapData} story={story.subStories} />
+          <StoryDisplayModule mapData={mapData} story={storyDisplayData} />
         </StatusContextProvider>
       </div>
       <div className="w-1/5">
