@@ -5,15 +5,7 @@ export const authConfig = {
   providers: [],
   callbacks: {
     authorized({ request, auth }: any) {
-      const protectedPaths = [
-        /\/maps\/edit/,
-        /\/mastermaps/,
-        /\/stories\/edit/,
-        /\/wiki\/edit/,
-        /\/user\/(.*)/,
-        /\/users/,
-        /\/admin/,
-      ];
+      const protectedPaths = [/\/user/, /\/editor/, /\/admin/];
 
       const { pathname } = request.nextUrl;
 
