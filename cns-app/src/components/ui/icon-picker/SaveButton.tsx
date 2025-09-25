@@ -19,13 +19,11 @@ export default function SaveButton({
     editorCtx.updateGlobalObjectSettings({
       name: selectedIcon.name,
       url: selectedIcon.url,
-      x: editorCtx.globalObjectSettings.x ?? 100,
-      y: editorCtx.globalObjectSettings.y ?? 100,
+      x: editorCtx.globalObjectSettings.x || 100,
+      y: editorCtx.globalObjectSettings.y || 100,
+      size: 40,
+      opacity: 100,
     });
-    console.log("selectedIcon");
-    console.log(selectedIcon);
-    console.log("context");
-    console.log(editorCtx.globalObjectSettings);
     setOpenIconPicker(false);
   };
   return (
