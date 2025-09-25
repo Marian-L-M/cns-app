@@ -428,7 +428,8 @@ export default function InfoboxItemForm({
                                           ) {
                                             collection.bars =
                                               collection.bars.filter(
-                                                (_, idx) => idx !== barIndex
+                                                (_: any, idx: number) =>
+                                                  idx !== barIndex
                                               );
                                           }
                                           form.setValue(

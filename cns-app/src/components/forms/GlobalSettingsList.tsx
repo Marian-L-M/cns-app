@@ -1,8 +1,7 @@
 "use client";
 import { AdminSettings } from "@prisma/client";
 import { Button } from "../ui/button";
-import { act, useState } from "react";
-import AdminSettingsItemForm from "./AdminSettingsItemForm";
+import { useState } from "react";
 import { ToggleGlobalSettingsList } from "@/lib/constants/settings";
 
 import { Pen, PlusCircleIcon } from "lucide-react";
@@ -36,7 +35,9 @@ export default function GlobalSettingsList({ AdminSettings, filter }: Props) {
 
   const showSettingsForm = (SettingsItem?: AdminSettings) => {
     if (SettingsItem) {
-      setCurrentSettingsType(SettingsItem.type);
+      setCurrentSettingsType(
+        SettingsItem.type as (typeof ToggleGlobalSettingsList)[keyof typeof ToggleGlobalSettingsList]
+      );
       setCurrentSettingsItem(SettingsItem);
     } else {
       setCurrentSettingsItem(undefined);
@@ -78,7 +79,11 @@ export default function GlobalSettingsList({ AdminSettings, filter }: Props) {
                     <DropdownMenuItem
                       key={key}
                       onClick={() => {
-                        setCurrentSettingsType(key);
+                        setCurrentSettingsType(
+                          ToggleGlobalSettingsList[
+                            key as keyof typeof ToggleGlobalSettingsList
+                          ]
+                        );
                         showSettingsForm();
                       }}
                     >

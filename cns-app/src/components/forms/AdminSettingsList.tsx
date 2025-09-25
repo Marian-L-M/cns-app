@@ -41,7 +41,9 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
 
   const showSettingsForm = (SettingsItem?: AdminSettings) => {
     if (SettingsItem) {
-      setCurrentSettingsType(SettingsItem.type);
+      setCurrentSettingsType(
+        SettingsItem.type as (typeof AllSettingsList)[keyof typeof AllSettingsList]
+      );
       setCurrentSettingsItem(SettingsItem);
     } else {
       setCurrentSettingsItem(undefined);
@@ -91,7 +93,9 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
                     <DropdownMenuItem
                       key={key}
                       onClick={() => {
-                        setCurrentSettingsType(key);
+                        setCurrentSettingsType(
+                          AllSettingsList[key as keyof typeof AllSettingsList]
+                        );
                         showSettingsForm();
                       }}
                     >
