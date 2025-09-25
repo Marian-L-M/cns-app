@@ -33,15 +33,48 @@ const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
 
 type UserProfileFormData = z.infer<typeof userProfileSchema>;
 
+type UserWithProfile = User & {
+  userProfile: UserProfile | null;
+};
+
+type SocialsType = {
+  platform?:
+    | "discord"
+    | "facebook"
+    | "github"
+    | "instagram"
+    | "reddit"
+    | "tiktok"
+    | "twitter"
+    | "deviantart"
+    | "youtube"
+    | "website"
+    | "other";
+  url?: string;
+  label?: string;
+}[];
+
 interface Props {
-  user: User;
+  user: UserWithProfile;
 }
 
 export default function UserProfileForm({ user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-  const profile: UserProfile = user.userProfile;
+  const profile = user.userProfile;
+
+  //To do fix: Ugly Ai solution
+  const safeSocials = (): SocialsType => {
+    if (!profile?.socials) return [];
+
+    try {
+      // Cast to unknown first, then to your expected type
+      return profile.socials as unknown as SocialsType;
+    } catch {
+      return [];
+    }
+  };
 
   const form = useForm<UserProfileFormData>({
     resolver: zodResolver(userProfileSchema),
@@ -51,7 +84,7 @@ export default function UserProfileForm({ user }: Props) {
       profileDescription: profile?.profileDescription || "",
       banner: profile?.banner || "",
       thumbnail: profile?.thumbnail || "",
-      socials: profile?.socials || [],
+      socials: safeSocials(),
       userId: profile?.userId || user.id,
     },
   });
@@ -268,7 +301,7 @@ export default function UserProfileForm({ user }: Props) {
               </CardContent>
             </Card>
           </div>
-          <SocialsForm socialIcons={profile?.socials || []} />
+          <SocialsForm socialIcons={(profile?.socials || []) as Social[]} />
           <Button type="submit" disabled={isSubmitting}>
             {profile ? "Update Profile" : "Submit Profile"}
           </Button>

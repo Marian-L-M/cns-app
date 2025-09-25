@@ -151,21 +151,21 @@ export async function updateOrCreateUserProfile(userProfile: {
 
     const currentProfile = await prisma.userProfile.findFirst({
       where: {
-        UserId: session?.user?.id,
+        userId: session?.user?.id,
       },
     });
 
     if (!currentProfile) {
       await prisma.userProfile.create({
         data: {
-          UserId: currentUser.id,
+          userId: currentUser.id,
           ...userProfile,
         },
       });
     } else if (currentProfile) {
       await prisma.userProfile.update({
         where: {
-          UserId: currentUser.id,
+          userId: currentUser.id,
         },
         data: {
           ...userProfile,

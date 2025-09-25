@@ -63,7 +63,7 @@ interface Props {
     x: number;
     y: number;
     mapId: number;
-    wikiId: number;
+    wikiId: number | null;
     type: MapObjectType;
     canvasStyles: CanvasStyleItem[];
   };

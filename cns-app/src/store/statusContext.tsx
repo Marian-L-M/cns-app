@@ -36,7 +36,7 @@ export default function StatusContextProvider({
 }: StatusContextProviderProps) {
   const [statusBar, setStatusBar] = useState<ClickStatus | null>(null);
   const [infoBox, setInfoBox] = useState<ClickStatus | null>(null);
-  const [storyBox, setStoryBox] = useState<ClickStatus | null>(null);
+  const [storyBox, setStoryBox] = useState<StoryClickStatus | null>(null);
 
   // Handlers for showing and hiding statuses
   const showStatusBar = (statusData: ClickStatus) => setStatusBar(statusData);
