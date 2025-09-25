@@ -1,17 +1,9 @@
-import {
-  Prisma,
-  User,
-  UserMap,
-  UserMapHierarchy,
-  UserProfile,
-  UserStory,
-  UserWiki,
-} from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { ChevronRight } from "lucide-react";
 
-// Create a type that matches exactly what your query returns
+// to do: Ai slop structure, clean up db
 type UserWikiWithUser = Prisma.UserWikiGetPayload<{
   include: {
     user: {
@@ -23,7 +15,6 @@ type UserWikiWithUser = Prisma.UserWikiGetPayload<{
   };
 }>;
 
-// For future extensibility, you can create similar types for other user junction tables
 type UserMapWithUser = Prisma.UserMapGetPayload<{
   include: {
     user: {

@@ -61,6 +61,11 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
 
+type ExtendedSubStory = Omit<SubStory, "nodes"> & {
+  nodes: StoryNode[];
+  canvasStyles: CanvasStyleItem[];
+};
+
 interface EditorProps {
   story: Story;
   substory?: SubStory & { nodes: StoryNode[]; canvasStyles: CanvasStyleItem[] };
@@ -95,9 +100,9 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const [editableSubStory, setEditableSubStory] = useState<
-    SubStory & { nodes: StoryNode[]; canvasStyles: CanvasStyleItem[] }
-  >(substory || { ...defaultSubstory, storyId: story.id });
+  const [editableSubStory, setEditableSubStory] = useState<ExtendedSubStory>(
+    substory || { ...defaultSubstory, storyId: story.id }
+  );
   const [activeSubstoryID, setActiveSubstoryID] = useState<number | undefined>(
     undefined
   );
@@ -357,7 +362,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                     {editableSubStory &&
                       editableSubStory.nodes?.map((node, number) => (
                         <div
-                          key={node?.id}
+                          key={(node as StoryNode)?.id}
                           className="border-2 border-indigo-500 rounded-md  hover:bg-slate-100 cursor-pointer p-2"
                           id="infobox"
                         >
@@ -827,7 +832,7 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
                                     removeNodeFromSubStory(
                                       editableSubStory,
                                       setEditableSubStory,
-                                      node?.id
+                                      (node as StoryNode).id // Cast to StoryNode to access id
                                     );
                                   }}
                                   variant="destructive"
@@ -895,17 +900,13 @@ export default function StoryEditor({ story, substory, map }: EditorProps) {
 }
 
 export function removeNodeFromSubStory(
-  editableSubStory: SubStory,
-  setEditableSubStory: React.Dispatch<React.SetStateAction<SubStory>>,
+  editableSubStory: ExtendedSubStory,
+  setEditableSubStory: React.Dispatch<React.SetStateAction<ExtendedSubStory>>,
   nodeId: number
 ) {
-  //To do 250310 Fix type issue
-  const updatedSubstory = {
+  const updatedSubstory: ExtendedSubStory = {
     ...editableSubStory,
-    nodes: editableSubStory.nodes.filter((node) => node?.id !== nodeId),
+    nodes: editableSubStory.nodes.filter((node) => node.id !== nodeId),
   };
   setEditableSubStory(updatedSubstory);
-  return;
 }
-
-// 250214 - Todo: Add active node highlighting

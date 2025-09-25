@@ -1,36 +1,32 @@
 import { useEffect, useRef } from "react";
-import { CanvasStyleItem } from "@prisma/client";
+import { CanvasStyleItem, MapHierarchyChild } from "@prisma/client";
 
 import { drawMasterMapArea } from "@/lib/map/drawMap";
 import { getValueFirstOfEachStyleType } from "@/lib/utils";
 
-interface ChildMap {
-  canvasAspectRatio: number;
+type MapHierarchyChildWithRelations = MapHierarchyChild & {
+  childMap: {
+    id: number;
+    title: string;
+    description: string;
+    imageUrl: string;
+    mapUrl: string;
+    mapWidth: number;
+    mapHeight: number;
+    canvasAspectRatio: number;
+    category: string;
+    tags: string[];
+    featured: boolean;
+    mapTime: number;
+    slug: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  };
   canvasStyles: CanvasStyleItem[];
-  category: string;
-  createdAt: Date;
-  description: string;
-  featured: boolean;
-  hierarchyChildId: number;
-  hierarchyParentId: number;
-  id: number;
-  imageUrl: string;
-  mapHeight: number;
-  mapTime: number;
-  mapUrl: string;
-  mapWidth: number;
-  slug: string | null;
-  tags: string[];
-  title: string;
-  updatedAt: Date;
-  wx: number;
-  wy: number;
-  x: number;
-  y: number;
-}
+};
 
 interface MasterMapMakerProps {
-  childMaps: ChildMap[];
+  childMaps: MapHierarchyChildWithRelations[];
 }
 
 export function useMasterMapEditor({ childMaps }: MasterMapMakerProps) {

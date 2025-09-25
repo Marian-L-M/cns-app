@@ -45,7 +45,7 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
 
   return (
     <CursorContextProvider>
-      <MasterMapEditor MasterMap={masterMap} user={session.user} />
+      <MasterMapEditor MasterMap={masterMap} />
     </CursorContextProvider>
   );
 }

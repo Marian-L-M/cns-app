@@ -2,14 +2,34 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useMapObjectEditor } from "@/hooks/useMapEditor";
-import { CanvasStyleItem, GlobalObject, MapAreaType } from "@prisma/client";
+import {
+  CanvasStyleItem,
+  GlobalObject,
+  MapAreaType,
+  MapObjectType,
+} from "@prisma/client";
 
 import GlobalObjectForm from "../forms/ObjectForm";
 import { JsonValue } from "@prisma/client/runtime/library";
 
 interface Props {
   map: MapType;
-  globalObject?: GlobalObject;
+  globalObject?: {
+    id: number;
+    createdAt: Date;
+    updatedAt: Date;
+    title: string;
+    description: string;
+    iconUrl: string;
+    thumbUrl: string;
+    objectTime: number;
+    x: number;
+    y: number;
+    mapId: number;
+    wikiId: number;
+    type: MapObjectType;
+    canvasStyles: CanvasStyleItem[];
+  };
   globalArea?:
     | {
         id: number;

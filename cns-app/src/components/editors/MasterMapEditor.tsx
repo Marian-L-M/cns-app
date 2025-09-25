@@ -12,7 +12,12 @@ import { z } from "zod";
 
 import { useMasterMapEditor } from "@/hooks/useMasterMapEditor";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MapHierarchyMaster } from "@prisma/client";
+import {
+  CanvasStyleItem,
+  Map,
+  MapHierarchyChild,
+  MapHierarchyMaster,
+} from "@prisma/client";
 import { MasterMapSchema } from "@/ValidationSchemas/maps";
 
 import { Button } from "@/components/ui/button";
@@ -47,11 +52,54 @@ const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
 
-export type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
+type MapHierarchyChildWithRelations = MapHierarchyChild & {
+  childMap: {
+    id: number;
+    title: string;
+    description: string;
+    imageUrl: string;
+    mapUrl: string;
+    mapWidth: number;
+    mapHeight: number;
+    canvasAspectRatio: number;
+    category: string;
+    tags: string[];
+    featured: boolean;
+    mapTime: number;
+    slug: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+  canvasStyles: CanvasStyleItem[];
+};
+
+type MapHierarchyMasterWithPayload = MapHierarchyMaster & {
+  childMaps: MapHierarchyChildWithRelations[]; // Use the complete type here
+  parentMap: Map;
+  userMapHierarchies: Array<{
+    id: number;
+    userId: string;
+    mapHierarchyId: number;
+    role: "OWNER" | "EDITOR";
+    createdAt: Date;
+    updatedAt: Date;
+    user: {
+      id: string;
+      name: string;
+      role: "ADMIN" | "AUTHOR" | "USER" | "INACTIVE";
+    };
+  }>;
+};
+
+interface Props {
+  MasterMap?: MapHierarchyMasterWithPayload;
+}
+
+type MasterMapFormData = z.infer<typeof MasterMapSchema> & {
   MasterMap: MapHierarchyMaster;
 };
 
-export default function MasterMapEditor({ MasterMap, user }: any) {
+export default function MasterMapEditor({ MasterMap }: Props) {
   const childMaps = MasterMap?.childMaps || [];
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -36,7 +36,7 @@ export default async function MasterMapPage({ params }: MapPageProps) {
             </ReactMarkDown>
           </div>
           <div className="flex flex-col gap-2" id="submaps">
-            <h4 className="text-lg font-semibold">Childmaps</h4>
+            <h4 className="text-lg font-semibold">Childmaps1</h4>
             {masterMap.childMaps.map((childMap) => (
               <Link
                 key={`childmap-${childMap.id}`}
