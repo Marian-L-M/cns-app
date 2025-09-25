@@ -31,7 +31,7 @@ export default async function Wiki() {
 
   // Configuration items
   // First block
-  const mainTextGroup = groupedContent["1"];
+  const mainTextGroup = groupedContent["1"] || [];
   const mainTitle = mainTextGroup.find((item) => item.type === "mainTitle");
   const mainText = mainTextGroup.find((item) => item.type === "mainText");
   const mainSubTitle = mainTextGroup.find((item) => item.type === "subTitle");

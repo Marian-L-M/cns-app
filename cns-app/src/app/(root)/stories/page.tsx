@@ -43,7 +43,7 @@ export default async function Stories() {
     }, {} as Record<number, AdminSettings[]>);
 
   const storyId = settings.find((item) => item.type === "storyId");
-  const mainTextGroup = groupedContent["1"];
+  const mainTextGroup = groupedContent["1"] || [];
 
   // Custom sections
   const storyList = settings.find((item) => item.type === "setStoryList");

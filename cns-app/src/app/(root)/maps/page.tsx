@@ -45,7 +45,7 @@ export default async function Maps() {
 
   const mapId = settings.find((item) => item.type === "mapId");
   const mastermapId = settings.find((item) => item.type === "mastermapId");
-  const mainTextGroup = groupedContent["1"];
+  const mainTextGroup = groupedContent["1"] || [];
 
   // Custom sections
   const featuredMaps = settings.find((item) => item.type === "setFeaturedMaps");
