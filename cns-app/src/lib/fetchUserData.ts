@@ -15,6 +15,9 @@ export async function fetchUserProfile(userId: string | undefined) {
 export async function fetchUser(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    include: {
+      userProfile: true,
+    },
   });
 
   if (!user) {
