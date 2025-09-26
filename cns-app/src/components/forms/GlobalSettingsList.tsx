@@ -33,13 +33,23 @@ export default function GlobalSettingsList({ AdminSettings, filter }: Props) {
     | ""
   >("");
 
-  const showSettingsForm = (SettingsItem?: AdminSettings) => {
+  const showSettingsForm = (
+    SettingsItem?: AdminSettings,
+    settingsType?: string
+  ) => {
     if (SettingsItem) {
+      // Editing existing item
       setCurrentSettingsType(
         SettingsItem.type as (typeof ToggleGlobalSettingsList)[keyof typeof ToggleGlobalSettingsList]
       );
       setCurrentSettingsItem(SettingsItem);
     } else {
+      // Adding new item
+      if (settingsType) {
+        setCurrentSettingsType(
+          settingsType as (typeof ToggleGlobalSettingsList)[keyof typeof ToggleGlobalSettingsList]
+        );
+      }
       setCurrentSettingsItem(undefined);
     }
     setIsDialogOpen(true);
@@ -84,7 +94,7 @@ export default function GlobalSettingsList({ AdminSettings, filter }: Props) {
                             key as keyof typeof ToggleGlobalSettingsList
                           ]
                         );
-                        showSettingsForm();
+                        showSettingsForm(undefined, key);
                       }}
                     >
                       {label}

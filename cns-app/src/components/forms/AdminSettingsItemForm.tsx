@@ -133,7 +133,6 @@ export default function AdminSettingsItemForm({
       setIsSubmitting(false);
     }
   }
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent className="sm:max-w-[600px]">

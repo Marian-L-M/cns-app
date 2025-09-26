@@ -40,6 +40,9 @@ export const ToggleMapSettingsList = {
 
 export const AllSettingsList = {
   ...ToggleMasterMapSettingsList,
+  ...ToggleWikiSettingsList,
+  ...ToggleStorySettingsList,
+  ...ToggleMapSettingsList,
 } as const;
 
 export const ToggleGlobalSettingsList = {

@@ -39,13 +39,26 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
     (typeof AllSettingsList)[keyof typeof AllSettingsList] | ""
   >("");
 
-  const showSettingsForm = (SettingsItem?: AdminSettings) => {
+  console.log(currentSettingsItem);
+
+  const showSettingsForm = (
+    SettingsItem?: AdminSettings,
+    settingsType?: string
+  ) => {
     if (SettingsItem) {
+      // Editing existing item
       setCurrentSettingsType(
         SettingsItem.type as (typeof AllSettingsList)[keyof typeof AllSettingsList]
       );
       setCurrentSettingsItem(SettingsItem);
     } else {
+      // Adding new item
+      if (settingsType) {
+        console.log(settingsType);
+        setCurrentSettingsType(
+          settingsType as (typeof AllSettingsList)[keyof typeof AllSettingsList]
+        );
+      }
       setCurrentSettingsItem(undefined);
     }
     setIsDialogOpen(true);
@@ -96,7 +109,7 @@ export default function AdminSettingsList({ AdminSettings, filter }: Props) {
                         setCurrentSettingsType(
                           AllSettingsList[key as keyof typeof AllSettingsList]
                         );
-                        showSettingsForm();
+                        showSettingsForm(undefined, key);
                       }}
                     >
                       {label}
