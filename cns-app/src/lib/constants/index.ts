@@ -2,8 +2,12 @@ export const APP_NAME =
   process.env.NEXT_PUBLIC_APP_NAME || "CLOUDS AND SPACESHIPS";
 export const APP_DESCRIPTION =
   process.env.NEXT_PUBLIC_APP_DESCRIPTION || "Imagine Dynamic Map Storytelling";
-export const SERVER_URL =
-  process.env.NEXT_PUBLIC_SERVER_URL || `http://localhost:3000`;
+
+// Updated to use Vercel URL with fallback to localhost for development
+export const SERVER_URL = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : process.env.NEXT_PUBLIC_SERVER_URL;
+
 export const PROJECT_URL = `https://cloudsandspaceships.com`;
 export const PROJECT_NAME = `Clouds and Spaceships`;
 
