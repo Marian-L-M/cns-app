@@ -6,7 +6,7 @@ export const APP_DESCRIPTION =
 // Updated to use Vercel URL with fallback to localhost for development
 export const SERVER_URL = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : process.env.NEXT_PUBLIC_SERVER_URL;
+  : `http://localhost:3000`;
 
 export const PROJECT_URL = `https://cloudsandspaceships.com`;
 export const PROJECT_NAME = `Clouds and Spaceships`;
