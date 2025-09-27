@@ -53,6 +53,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 
 ## Major
 
+1. Object editor items broken
 1. Clean up inconsitent and inaccurate naming practices
 1. Mastermap childmap submission breaks on the second childmap
 1. Invalid form error messages are not set up properly
