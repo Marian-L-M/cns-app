@@ -37,6 +37,10 @@ UPLOADTHING_ID='UPLOADTHING ID'
 
 On local set your APP SERVER URL to http://localhost:XXXX, else to whatever your actual server url is. If you are using vercel, the routing logic should be handle via their inbuild environment variable system.
 
+## Configuration
+
+Set host for image upload and other cdns.
+
 ### For local development
 
 1. Set up a Postgres server using Docker

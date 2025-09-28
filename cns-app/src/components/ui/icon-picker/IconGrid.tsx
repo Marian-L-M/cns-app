@@ -1,6 +1,5 @@
 import { useState } from "react";
 import IconButton from "./IconButton";
-import SaveButton from "./SaveButton";
 
 interface IconButtonProps {
   name: string;
@@ -22,18 +21,15 @@ export default function IconGrid({
   });
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-8 gap-2">
       {iconList.map((icon) => (
         <IconButton
           key={`ib-${icon.name}`}
           icon={icon}
-          setSelectedIcon={setSelectedIcon}
+          selectedIcon={selectedIcon}
+          setOpenIconPicker={setOpenIconPicker}
         />
       ))}
-      <SaveButton
-        selectedIcon={selectedIcon}
-        setOpenIconPicker={setOpenIconPicker}
-      />
     </div>
   );
 }
