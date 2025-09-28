@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import CredentialsSignInForm from "./credentials-signin-form";
 import { redirect } from "next/navigation";
+import prisma from "@/../prisma/db";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -28,6 +29,18 @@ async function signinPage(props: {
   if (session) {
     return redirect(callbackUrl || "/");
   }
+  const settings = await prisma.adminSettings.findMany({
+    where: {
+      category: "GLOBAL",
+      subCategory: "header",
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
+  const logo = settings?.find((item) => item.type === "logo");
+  const name = settings?.find((item) => item.type === "name");
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -35,14 +48,16 @@ async function signinPage(props: {
         <CardHeader className="space-y-4">
           <Link href={`/`} className="flex-center">
             <Image
-              src={`/img/ui/logo.png`}
+              src={logo?.value || ""}
               width={100}
               height={100}
               alt={`${APP_NAME} logo`}
               priority={true}
             />
           </Link>
-          <CardTitle className="text-center">Sign in</CardTitle>
+          <CardTitle className="text-center">
+            {name?.value ? name?.value : APP_NAME}
+          </CardTitle>
           <CardDescription className="text-center">
             Sign in to your account
           </CardDescription>

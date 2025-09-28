@@ -1,5 +1,5 @@
 function signoutPage() {
-  return <h1>Ello sign out</h1>;
+  return <h1>Goodbye!</h1>;
 }
 
 export default signoutPage;
