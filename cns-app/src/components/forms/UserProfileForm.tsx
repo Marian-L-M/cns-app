@@ -1,7 +1,6 @@
 "use client";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -11,7 +10,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User, UserProfile } from "@prisma/client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -23,10 +21,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { userProfileSchema } from "@/ValidationSchemas/users";
 import { Button } from "@/components/ui/button";
-import { UploadButton } from "@/lib/uploadthing/utils";
+import SocialsForm from "./SocialsForm";
+import { UploadComponent } from "../ui/uploader";
 
 import "easymde/dist/easymde.min.css";
-import SocialsForm from "./SocialsForm";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -104,14 +102,15 @@ export default function UserProfileForm({ user }: Props) {
         toast.success("Profile created succesfully");
       }
       setIsSubmitting(false);
-      router.push(`/admin/users/${user.id}/profile`);
+      router.push(`/user/profile`);
       router.refresh();
     } catch (error) {
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
       toast.error("Profile update failed", {
         className: "error",
         description: `ERROR! ${error}`,
       });
-      setIsSubmitting(false);
     }
   }
   return (
@@ -168,138 +167,20 @@ export default function UserProfileForm({ user }: Props) {
           {/* Thumbnail upload */}
           <div className="upload-field">
             <h4>Thumbnail Image</h4>
-            <Card>
-              <CardContent className="space-y-2 mt-2">
-                {thumbUrl && (
-                  <Image
-                    src={thumbUrl}
-                    alt="thumbnail image"
-                    className="object-cover object-center"
-                    width={240}
-                    height={240}
-                  />
-                )}
-
-                {!thumbUrl && (
-                  <UploadButton
-                    appearance={{
-                      button: {
-                        background: "#3b82f6",
-                        color: "white",
-                        borderRadius: "8px",
-                        padding: "12px 24px",
-                        fontSize: "16px",
-                        fontWeight: "600",
-                        border: "none",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                      },
-                      container: {
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "8px",
-                      },
-                      allowedContent: {
-                        color: "#6b7280",
-                        fontSize: "14px",
-                      },
-                    }}
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res: { url: string }[]) => {
-                      form.setValue("thumbnail", res[0].url);
-                    }}
-                    onUploadError={(error: Error) => {
-                      toast.error("Thumbnail image upload failed", {
-                        className: "error",
-                        description: `ERROR! ${error.message}`,
-                      });
-                    }}
-                  />
-                )}
-                <FormField
-                  control={form.control}
-                  name="thumbnail"
-                  defaultValue={profile?.thumbnail || ""}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormMessage />
-                      <FormControl>
-                        <Input placeholder="Thumbnail" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
+            <UploadComponent
+              image={thumbUrl || ""}
+              form={form}
+              fieldName="thumbnail"
+            />
           </div>
           {/* Banner upload field */}
           <div className="upload-field">
             <h4>Banner Image</h4>
-            <Card>
-              <CardContent className="space-y-2 mt-2">
-                {bannerUrl && (
-                  <Image
-                    src={bannerUrl}
-                    alt="banner image"
-                    className="object-cover object-center"
-                    width={240}
-                    height={240}
-                  />
-                )}
-
-                {!bannerUrl && (
-                  <UploadButton
-                    appearance={{
-                      button: {
-                        background: "#3b82f6",
-                        color: "white",
-                        borderRadius: "8px",
-                        padding: "12px 24px",
-                        fontSize: "16px",
-                        fontWeight: "600",
-                        border: "none",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                      },
-                      container: {
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "8px",
-                      },
-                      allowedContent: {
-                        color: "#6b7280",
-                        fontSize: "14px",
-                      },
-                    }}
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res: { url: string }[]) => {
-                      form.setValue("banner", res[0].url);
-                    }}
-                    onUploadError={(error: Error) => {
-                      toast.error("Banner image upload failed", {
-                        className: "error",
-                        description: `ERROR! ${error.message}`,
-                      });
-                    }}
-                  />
-                )}
-                <FormField
-                  control={form.control}
-                  name="banner"
-                  defaultValue={profile?.banner || ""}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormMessage />
-                      <FormControl>
-                        <Input placeholder="banner" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
+            <UploadComponent
+              image={bannerUrl || ""}
+              form={form}
+              fieldName="banner"
+            />
           </div>
           <SocialsForm socialIcons={(profile?.socials || []) as Social[]} />
           <Button type="submit" disabled={isSubmitting}>

@@ -1,7 +1,6 @@
 "use client";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -12,21 +11,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Map, UserMap } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { UploadButton } from "@/lib/uploadthing/utils";
 import { mapSchema } from "@/ValidationSchemas/maps";
 
 import "easymde/dist/easymde.min.css";
+import { UploadComponent } from "../ui/uploader";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -136,165 +133,16 @@ export default function MapForm({ map }: Props) {
           <h3>Images</h3>
           <div className="flex gap-8 mb-8">
             <div className="upload-field">
-              <h4>Map Image</h4>
-              <Card>
-                <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
-                  {/* Image upload */}
-                  {mapImg && (
-                    <Image
-                      src={mapImg}
-                      alt="map image"
-                      className="object-cover object-center"
-                      width={240}
-                      height={240}
-                    />
-                  )}
-
-                  {!mapImg && (
-                    <UploadButton
-                      appearance={{
-                        button: {
-                          background: "#3b82f6",
-                          color: "white",
-                          borderRadius: "8px",
-                          padding: "12px 24px",
-                          fontSize: "16px",
-                          fontWeight: "600",
-                          border: "none",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                        },
-                        container: {
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "8px",
-                        },
-                        allowedContent: {
-                          color: "#6b7280",
-                          fontSize: "14px",
-                        },
-                      }}
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: { url: string }[]) => {
-                        form.setValue("mapUrl", res[0].url);
-                      }}
-                      onUploadError={(error: Error) => {
-                        toast.error("Map image upload failed", {
-                          className: "error",
-                          description: `ERROR! ${error.message}`,
-                        });
-                      }}
-                    />
-                  )}
-                  <FormField
-                    control={form.control}
-                    name="mapUrl"
-                    defaultValue={map?.mapUrl}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input placeholder="Base Map" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="canvasAspectRatio"
-                    defaultValue={map?.canvasAspectRatio}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Canvas Aspect Ratio: {field.value}
-                        </FormLabel>
-                        <FormDescription>
-                          Height unit per width unit
-                        </FormDescription>
-                        <FormControl>
-                          <Input
-                            type="range"
-                            placeholder="0.5-2"
-                            {...field}
-                            min={0.5}
-                            max={2}
-                            step={0.01}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
+              <h4 className=" text-sm font-semibold">Map Image</h4>
+              <UploadComponent image={mapImg} form={form} fieldName="mapUrl" />
             </div>
             <div className="upload-field">
-              <h4>Thumbnail Image</h4>
-              <Card>
-                <CardContent className="space-y-2 mt-2">
-                  {thumbImg && (
-                    <Image
-                      src={thumbImg}
-                      alt="thumbnail image"
-                      className="object-cover object-center"
-                      width={240}
-                      height={240}
-                    />
-                  )}
-
-                  {!thumbImg && (
-                    <UploadButton
-                      appearance={{
-                        button: {
-                          background: "#3b82f6",
-                          color: "white",
-                          borderRadius: "8px",
-                          padding: "12px 24px",
-                          fontSize: "16px",
-                          fontWeight: "600",
-                          border: "none",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                        },
-                        container: {
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "8px",
-                        },
-                        allowedContent: {
-                          color: "#6b7280",
-                          fontSize: "14px",
-                        },
-                      }}
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: { url: string }[]) => {
-                        form.setValue("imageUrl", res[0].url);
-                      }}
-                      onUploadError={(error: Error) => {
-                        toast.error("Thumbnail image upload failed", {
-                          className: "error",
-                          description: `ERROR! ${error.message}`,
-                        });
-                      }}
-                    />
-                  )}
-                  <FormField
-                    control={form.control}
-                    name="imageUrl"
-                    defaultValue={map?.imageUrl}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input placeholder="Thumbnail" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
+              <h4 className=" text-sm font-semibold">Thumbnail Image</h4>
+              <UploadComponent
+                image={thumbImg}
+                form={form}
+                fieldName="imageUrl"
+              />
             </div>
           </div>
           <FormField

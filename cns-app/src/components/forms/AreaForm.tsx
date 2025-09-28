@@ -2,7 +2,6 @@
 import axios from "axios";
 import { Plus } from "lucide-react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,7 +9,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import WikiSearchDialog from "@/components/ui/dialog/wikiSearchDialog";
 import StyleEditListModule from "@/components/displays/StyleEditListModule";
 import {
@@ -32,24 +30,18 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fetchWikiName } from "@/lib/fetchWikiData";
-import { UploadButton } from "@/lib/uploadthing/utils";
 import { CanvasStyleItem, MapAreaType } from "@prisma/client";
 import { EditorContext } from "@/store/mapEditorContext";
 import { GlobalAreasSchema, MapAreaTypeList } from "@/ValidationSchemas/global";
-
-import "easymde/dist/easymde.min.css";
 import StyleItemForm from "./StyleItemForm";
 import { JsonValue } from "@prisma/client/runtime/library";
+import { UploadComponent } from "../ui/uploader";
+
+import "easymde/dist/easymde.min.css";
 
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
-
-interface areaNode {
-  id: number;
-  x: number;
-  y: number;
-}
 
 interface Props {
   map: MapType;
@@ -158,35 +150,26 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
 
       if (globalArea?.id) {
         await axios.patch(`/api/globalarea/${globalArea.id}`, submissionValues);
+        router.push(`/editor/maps/${map.id}/areas/${globalArea.id}`);
+        router.refresh();
+        toast.success("Area updated succesfully");
       } else {
-        await axios.post("/api/globalarea", submissionValues);
+        const response = await axios.post("/api/globalarea", submissionValues);
+        const newArea = response.data;
+        router.push(`/editor/maps/${map.id}/areas/${newArea.id}`);
+        router.refresh();
+        toast.success("Area created succesfully");
       }
-
       setIsSubmitting(false);
-      router.push(`/editor/maps/${map.id}?modal=areas`);
-      router.refresh();
     } catch (error) {
-      handleError(error);
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
+      toast.error("Area update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     }
   }
-
-  const handleError = (error: unknown) => {
-    if (error instanceof z.ZodError) {
-      setError(
-        "Validation error: " + error.errors.map((e) => e.message).join(", ")
-      );
-      console.error("Validation error:", error.errors);
-    } else if (axios.isAxiosError(error)) {
-      setError(
-        `Server error: ${error.response?.data?.message || error.message}`
-      );
-      console.error("Server response:", error.response?.data);
-    } else {
-      setError("An unexpected error occurred");
-      console.error("Unknown error:", error);
-    }
-    setIsSubmitting(false);
-  };
 
   return (
     <div className="flex flex-col gap-8 col-span-2">
@@ -271,72 +254,11 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                   </div>
                   <div className="upload-field">
                     <h4>Thumbnail Image</h4>
-                    <Card>
-                      <CardContent className="space-y-2 mt-2">
-                        {thumbImg && (
-                          <Image
-                            src={thumbImg}
-                            alt="thumbnail image"
-                            className="object-cover object-center"
-                            width={240}
-                            height={240}
-                          />
-                        )}
-
-                        {!thumbImg && (
-                          <UploadButton
-                            appearance={{
-                              button: {
-                                background: "#3b82f6",
-                                color: "white",
-                                borderRadius: "8px",
-                                padding: "12px 24px",
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                border: "none",
-                                cursor: "pointer",
-                                transition: "all 0.2s",
-                              },
-                              container: {
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                gap: "8px",
-                              },
-                              allowedContent: {
-                                color: "#6b7280",
-                                fontSize: "14px",
-                              },
-                            }}
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(
-                              res: { url: string }[]
-                            ) => {
-                              form.setValue("imageUrl", res[0].url);
-                            }}
-                            onUploadError={(error: Error) => {
-                              toast.error("Thumbnail image upload failed", {
-                                className: "error",
-                                description: `ERROR! ${error.message}`,
-                              });
-                            }}
-                          />
-                        )}
-                        <FormField
-                          control={form.control}
-                          name="imageUrl"
-                          defaultValue={map?.imageUrl}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormMessage />
-                              <FormControl>
-                                <Input placeholder="Thumbnail" {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </CardContent>
-                    </Card>
+                    <UploadComponent
+                      image={thumbImg || ""}
+                      form={form}
+                      fieldName="imageUrl"
+                    />
                   </div>
                   <div className="w-full" id="timestamp-container">
                     <FormField

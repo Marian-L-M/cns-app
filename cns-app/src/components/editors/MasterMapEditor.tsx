@@ -28,7 +28,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -45,9 +44,8 @@ import {
 import { fetchMapName } from "@/lib/fetchMapData";
 
 import "easymde/dist/easymde.min.css";
-import { Card, CardContent } from "../ui/card";
-import { UploadButton } from "@/lib/uploadthing/utils";
 import { Checkbox } from "../ui/checkbox";
+import { UploadComponent } from "../ui/uploader";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -130,22 +128,24 @@ export default function MasterMapEditor({ MasterMap }: Props) {
       setError("");
       if (MasterMap) {
         await axios.patch(`/api/mastermaps/${MasterMap.id}`, values);
+        router.push(`/editor/mastermaps/${MasterMap.id}`);
+        router.refresh();
         toast.success("Mastermap updated succesfully");
-        setIsSubmitting(false);
       } else {
         const response = await axios.post(`/api/mastermaps`, values);
         const newMasterMap = response.data;
         router.push(`/editor/mastermaps/${newMasterMap?.id}`);
         router.refresh();
         toast.success("Mastermap created succesfully");
-        setIsSubmitting(false);
       }
+      setIsSubmitting(false);
     } catch (error) {
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
       toast.error("Mastermap update failed", {
         className: "error",
         description: `ERROR! ${error}`,
       });
-      setIsSubmitting(false);
     }
   }
 
@@ -319,142 +319,20 @@ export default function MasterMapEditor({ MasterMap }: Props) {
               {/* Thumbnail image */}
               <div className="upload-field">
                 <h5 className="font-bold">Thumbnail Image</h5>
-                <Card>
-                  <CardContent className="space-y-2 mt-2">
-                    {thumbImg && (
-                      <Image
-                        src={thumbImg}
-                        alt="thumbnail image"
-                        className="object-cover object-center"
-                        width={240}
-                        height={240}
-                      />
-                    )}
-
-                    {!thumbImg && (
-                      <UploadButton
-                        appearance={{
-                          button: {
-                            background: "#3b82f6",
-                            color: "white",
-                            borderRadius: "8px",
-                            padding: "12px 24px",
-                            fontSize: "16px",
-                            fontWeight: "600",
-                            border: "none",
-                            cursor: "pointer",
-                            transition: "all 0.2s",
-                          },
-                          container: {
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            gap: "8px",
-                          },
-                          allowedContent: {
-                            color: "#6b7280",
-                            fontSize: "14px",
-                          },
-                        }}
-                        endpoint="imageUploader"
-                        onClientUploadComplete={(res: { url: string }[]) => {
-                          form.setValue("imageUrl", res[0].url);
-                        }}
-                        onUploadError={(error: Error) => {
-                          toast.error("Thumbnail image upload failed", {
-                            className: "error",
-                            description: `ERROR! ${error.message}`,
-                          });
-                        }}
-                      />
-                    )}
-                    <FormField
-                      control={form.control}
-                      name="imageUrl"
-                      defaultValue={MasterMap?.imageUrl}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input placeholder="Thumbnail" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                </Card>
+                <UploadComponent
+                  image={thumbImg || ""}
+                  form={form}
+                  fieldName="imageUrl"
+                />
               </div>
               {/* Banner Image */}
               <div className="upload-field">
                 <h5 className="font-bold">Banner Image</h5>
-                <Card>
-                  <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
-                    {/* Image upload */}
-                    {bannerImg && (
-                      <Image
-                        src={bannerImg}
-                        alt="map image"
-                        className="object-cover object-center"
-                        width={240}
-                        height={240}
-                      />
-                    )}
-
-                    {!bannerImg && (
-                      <UploadButton
-                        appearance={{
-                          button: {
-                            background: "#3b82f6",
-                            color: "white",
-                            borderRadius: "8px",
-                            padding: "12px 24px",
-                            fontSize: "16px",
-                            fontWeight: "600",
-                            border: "none",
-                            cursor: "pointer",
-                            transition: "all 0.2s",
-                          },
-                          container: {
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            gap: "8px",
-                          },
-                          allowedContent: {
-                            color: "#6b7280",
-                            fontSize: "14px",
-                          },
-                        }}
-                        endpoint="imageUploader"
-                        onClientUploadComplete={(res: { url: string }[]) => {
-                          form.setValue("bannerUrl", res[0].url);
-                        }}
-                        onUploadError={(error: Error) => {
-                          toast.error("Map image upload failed", {
-                            className: "error",
-                            description: `ERROR! ${error.message}`,
-                          });
-                        }}
-                      />
-                    )}
-                    <FormField
-                      control={form.control}
-                      name="bannerUrl"
-                      defaultValue={MasterMap?.bannerUrl}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="Mastermap page banner"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                </Card>
+                <UploadComponent
+                  image={bannerImg || ""}
+                  form={form}
+                  fieldName="bannerUrl"
+                />
               </div>
               {MasterMap && (
                 <section className="rounded-md border w-full p-4 flex flex-col gap-4">

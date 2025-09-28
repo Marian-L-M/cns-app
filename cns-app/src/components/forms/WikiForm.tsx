@@ -1,7 +1,6 @@
 "use client";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -13,7 +12,6 @@ import { Wiki, WikiInfoboxItem } from "@prisma/client";
 import { WikiType } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -31,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UploadButton } from "@/lib/uploadthing/utils";
 import { wikiSchema } from "@/ValidationSchemas/wiki";
 
 import "easymde/dist/easymde.min.css";
@@ -41,6 +38,7 @@ import InfoboxEditListModule from "../displays/InfoboxEditListModule";
 
 import { Plus, Trash } from "lucide-react";
 import Link from "next/link";
+import { UploadComponent } from "../ui/uploader";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -300,71 +298,11 @@ export default function WikiForm({ wiki, infobox }: Props) {
                     </div>
                     <div className="w-full" id="thumbnail-container">
                       <h4>Thumbnail Image</h4>
-                      <Card>
-                        <CardContent className="space-y-2 mt-2">
-                          {thumbImg && (
-                            <Image
-                              src={thumbImg}
-                              alt="thumbnail image"
-                              className="object-cover object-center"
-                              width={240}
-                              height={240}
-                            />
-                          )}
-
-                          {!thumbImg && (
-                            <UploadButton
-                              appearance={{
-                                button: {
-                                  background: "#3b82f6",
-                                  color: "white",
-                                  borderRadius: "8px",
-                                  padding: "12px 24px",
-                                  fontSize: "16px",
-                                  fontWeight: "600",
-                                  border: "none",
-                                  cursor: "pointer",
-                                  transition: "all 0.2s",
-                                },
-                                container: {
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  alignItems: "center",
-                                  gap: "8px",
-                                },
-                                allowedContent: {
-                                  color: "#6b7280",
-                                  fontSize: "14px",
-                                },
-                              }}
-                              endpoint="imageUploader"
-                              onClientUploadComplete={(
-                                res: { url: string }[]
-                              ) => {
-                                form.setValue("thumbUrl", res[0].url);
-                              }}
-                              onUploadError={(error: Error) => {
-                                toast.error("Thumbnail image upload failed", {
-                                  className: "error",
-                                  description: `ERROR! ${error.message}`,
-                                });
-                              }}
-                            />
-                          )}
-                          <FormField
-                            control={form.control}
-                            name="thumbUrl"
-                            defaultValue={wiki?.thumbUrl}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input placeholder="Thumbnail" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </CardContent>
-                      </Card>
+                      <UploadComponent
+                        image={thumbImg || ""}
+                        form={form}
+                        fieldName="thumbUrl"
+                      />
                     </div>
                     <div className="markdown-group">
                       <h4 className="font-bold">Description</h4>

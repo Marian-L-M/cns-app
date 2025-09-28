@@ -1,6 +1,5 @@
 "use client";
 import axios from "axios";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -32,8 +31,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import StyleEditListModule from "../displays/StyleEditListModule";
 import { Plus } from "lucide-react";
 import StyleItemForm from "./StyleItemForm";
-import { Card, CardContent } from "../ui/card";
-import { UploadButton } from "@/lib/uploadthing/utils";
 import { toast } from "sonner";
 import {
   Select,
@@ -42,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { UploadComponent } from "../ui/uploader";
 
 import "easymde/dist/easymde.min.css";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
@@ -144,34 +142,30 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
           `/api/globalobject/${globalObject.id}`,
           submissionValues
         );
+        router.push(`/editor/maps/${map.id}/objects/${globalObject.id}`);
+        router.refresh();
+        toast.success("Object updated succesfully");
       } else {
         await axios.post("/api/globalobject", submissionValues);
+        const response = await axios.post(
+          "/api/globalobject",
+          submissionValues
+        );
+        const newObject = response.data;
+        router.push(`/editor/maps/${map.id}/objects/${newObject.id}`);
+        router.refresh();
+        toast.success("Object created succesfully");
       }
       setIsSubmitting(false);
-      router.push(`/editor/maps/${map.id}?modal=objects`);
-      router.refresh();
     } catch (error) {
-      handleError(error);
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
+      toast.error("Area update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     }
   }
-
-  const handleError = (error: unknown) => {
-    if (error instanceof z.ZodError) {
-      setError(
-        "Validation error: " + error.errors.map((e) => e.message).join(", ")
-      );
-      console.error("Validation error:", error.errors);
-    } else if (axios.isAxiosError(error)) {
-      setError(
-        `Server error: ${error.response?.data?.message || error.message}`
-      );
-      console.error("Server response:", error.response?.data);
-    } else {
-      setError("An unexpected error occurred");
-      console.error("Unknown error:", error);
-    }
-    setIsSubmitting(false);
-  };
 
   return (
     <div className="flex flex-col gap-8 col-span-2">
@@ -288,72 +282,11 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
                   </div>
                   <div className="upload-field">
                     <h4>Thumbnail Image</h4>
-                    <Card>
-                      <CardContent className="space-y-2 mt-2">
-                        {thumbImg && (
-                          <Image
-                            src={thumbImg}
-                            alt="thumbnail image"
-                            className="object-cover object-center"
-                            width={240}
-                            height={240}
-                          />
-                        )}
-
-                        {!thumbImg && (
-                          <UploadButton
-                            appearance={{
-                              button: {
-                                background: "#3b82f6",
-                                color: "white",
-                                borderRadius: "8px",
-                                padding: "12px 24px",
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                border: "none",
-                                cursor: "pointer",
-                                transition: "all 0.2s",
-                              },
-                              container: {
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                gap: "8px",
-                              },
-                              allowedContent: {
-                                color: "#6b7280",
-                                fontSize: "14px",
-                              },
-                            }}
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(
-                              res: { url: string }[]
-                            ) => {
-                              form.setValue("thumbUrl", res[0].url);
-                            }}
-                            onUploadError={(error: Error) => {
-                              toast.error("Thumbnail image upload failed", {
-                                className: "error",
-                                description: `ERROR! ${error.message}`,
-                              });
-                            }}
-                          />
-                        )}
-                        <FormField
-                          control={form.control}
-                          name="thumbUrl"
-                          defaultValue={map?.imageUrl}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormMessage />
-                              <FormControl>
-                                <Input placeholder="Thumbnail" {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </CardContent>
-                    </Card>
+                    <UploadComponent
+                      image={thumbImg || ""}
+                      form={form}
+                      fieldName="thumbUrl"
+                    />
                   </div>
                   <div className="w-full" id="icon-container">
                     <FormField

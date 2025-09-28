@@ -1,18 +1,15 @@
 "use client";
 import axios from "axios";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UploadButton } from "@/lib/uploadthing/utils";
 import { AdminSettings, AdminSettingsType } from "@prisma/client";
 import { AdminSettingsSchema } from "@/ValidationSchemas/admin";
 
 import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +25,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { UploadComponent } from "../ui/uploader";
 
 interface Props {
   category: AdminSettingsType;
@@ -93,6 +91,10 @@ export default function AdminSettingsGlobalForm({
     } catch (error) {
       setError("Unknown error occurred");
       setIsSubmitting(false);
+      toast.error("Settings update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     }
   }
 
@@ -145,72 +147,11 @@ export default function AdminSettingsGlobalForm({
                 {type == "logo" && (
                   <div className="upload-field">
                     <h5 className="font-bold">{type}</h5>
-                    <Card>
-                      <CardContent className="space-y-2 flex flex-col items-center">
-                        {uploadImg && (
-                          <Image
-                            src={uploadImg}
-                            alt="image"
-                            className="object-cover object-center"
-                            width={240}
-                            height={240}
-                          />
-                        )}
-
-                        {!uploadImg && (
-                          <UploadButton
-                            appearance={{
-                              button: {
-                                background: "#3b82f6",
-                                color: "white",
-                                borderRadius: "8px",
-                                padding: "12px 24px",
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                border: "none",
-                                cursor: "pointer",
-                                transition: "all 0.2s",
-                              },
-                              container: {
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                gap: "8px",
-                              },
-                              allowedContent: {
-                                color: "#6b7280",
-                                fontSize: "14px",
-                              },
-                            }}
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(
-                              res: { url: string }[]
-                            ) => {
-                              form.setValue("value", res[0].url);
-                            }}
-                            onUploadError={(error: Error) => {
-                              toast.error("Thumbnail image upload failed", {
-                                className: "error",
-                                description: `ERROR! ${error.message}`,
-                              });
-                            }}
-                          />
-                        )}
-                        <FormField
-                          control={form.control}
-                          name="value"
-                          defaultValue={adminSettingsItem?.value}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Input placeholder="Image" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </CardContent>
-                    </Card>
+                    <UploadComponent
+                      image={uploadImg || ""}
+                      form={form}
+                      fieldName="value"
+                    />
                   </div>
                 )}
                 {/* Text field */}

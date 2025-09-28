@@ -1,6 +1,5 @@
 "use client";
 import { WikiInfoboxItem, WikiInfoboxType } from "@prisma/client";
-import Image from "next/image";
 import {
   Dialog,
   DialogClose,
@@ -9,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../ui/dialog/dialog";
 import { Button, buttonVariants } from "../ui/button";
 import { Label } from "../ui/label";
@@ -27,11 +25,11 @@ import {
 } from "../ui/form";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { UploadButton } from "@/lib/uploadthing/utils";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { UploadComponent } from "../ui/uploader";
 
 interface Props {
   wikiId: number;
@@ -238,68 +236,10 @@ export default function InfoboxItemForm({
                 <div className="w-full">
                   <div className="w-full flex flex-col gap-2">
                     <h4>Thumbnail Image</h4>
-                    {thumbImg && (
-                      <Image
-                        src={thumbImg}
-                        alt="thumbnail image"
-                        className="object-cover object-center"
-                        width={240}
-                        height={240}
-                      />
-                    )}
-                    <div
-                      className="w-36 bg-slate-300 rounded-md p-4 self-center"
-                      id="upload-wrapper"
-                    >
-                      {!thumbImg && (
-                        <UploadButton
-                          appearance={{
-                            button: {
-                              background: "#3b82f6",
-                              color: "white",
-                              borderRadius: "8px",
-                              padding: "12px 24px",
-                              fontSize: "16px",
-                              fontWeight: "600",
-                              border: "none",
-                              cursor: "pointer",
-                              transition: "all 0.2s",
-                            },
-                            container: {
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: "8px",
-                            },
-                            allowedContent: {
-                              color: "#6b7280",
-                              fontSize: "14px",
-                            },
-                          }}
-                          endpoint="imageUploader"
-                          onClientUploadComplete={(res: { url: string }[]) => {
-                            form.setValue("imageUrl", res[0].url);
-                          }}
-                          onUploadError={(error: Error) => {
-                            toast.error("Thumbnail image upload failed", {
-                              className: "error",
-                              description: `ERROR! ${error.message}`,
-                            });
-                          }}
-                        />
-                      )}
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="imageUrl"
-                      defaultValue={infoboxItem?.imageUrl}
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormControl>
-                            <Input placeholder="Thumbnail" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
+                    <UploadComponent
+                      image={thumbImg || ""}
+                      form={form}
+                      fieldName="imageUrl"
                     />
                   </div>
                   <div className="w-full">
