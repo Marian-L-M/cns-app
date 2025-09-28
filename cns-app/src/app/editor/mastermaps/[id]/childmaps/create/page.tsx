@@ -15,12 +15,6 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
     where: { id },
     include: {
       parentMap: true,
-      childMaps: {
-        include: {
-          childMap: true,
-          canvasStyles: true,
-        },
-      },
       userMapHierarchies: {
         include: {
           user: {
@@ -43,6 +37,8 @@ export default async function MasterMapEditorPage({ params }: MapPageProps) {
     userJunction: masterMap.userMapHierarchies,
   });
 
+  // Logic issue
+  // Needs to filter childmap id additionally in query
   return (
     <CursorContextProvider>
       <ChildMapEditor MasterMap={masterMap} />

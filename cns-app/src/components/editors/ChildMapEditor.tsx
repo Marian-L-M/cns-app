@@ -46,7 +46,7 @@ interface ChildMapWithStyle extends MapHierarchyChild {
 }
 
 interface MasterMapWithChildren extends MapHierarchyMaster {
-  childMaps: ChildMapWithStyle[];
+  childMaps?: ChildMapWithStyle[];
   parentMap: Map;
   userMapHierarchies: UserMapHierarchy[];
 }
@@ -67,11 +67,10 @@ interface ChildMapEditorItem {
 // 250329 To do: Connect childmap details to state
 // 250404 To do: Two areas cannot be submitted for the same map (which is good), but an alarm text is needed
 export default function ChildMapEditor({ MasterMap }: ChildMapEditorProps) {
-  console.log(MasterMap);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const childMap = MasterMap.childMaps[0];
+  const childMap = MasterMap.childMaps ? MasterMap.childMaps[0] : undefined;
   const [childMapEditorItem, setChildMapEditorItem] =
     useState<ChildMapEditorItem>({
       x: childMap?.x || 100,
@@ -140,6 +139,7 @@ export default function ChildMapEditor({ MasterMap }: ChildMapEditorProps) {
       setIsSubmitting(true);
       setError("");
       if (childMap) {
+        console.log(childMap);
         await axios.patch(`/api/childmaps/${childMap.id}`, values);
         router.push(
           `/editor/mastermaps/${MasterMap.id}/childmaps/${childMap.id}`
