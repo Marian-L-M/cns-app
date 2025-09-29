@@ -5,7 +5,7 @@ import prisma from "@/../prisma/db";
 
 import StatusFilter from "@/components/filters/StatusFilter";
 import Pagination from "@/components/ui/pagination";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import DataTable from "./DataTable";
 import { requireAuthorOrAdmin } from "@/lib/auth-guards";
@@ -57,18 +57,37 @@ export default async function StoriesOverviewPage({
     },
     take: pageSize,
     skip: (page - 1) * pageSize,
+    include: {
+      userStories: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              role: true,
+              userProfile: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   return (
-    <div className="w-full h-full bg-white">
-      <div className="flex gap-2">
-        <Link
-          href="/editor/stories/create"
-          className={buttonVariants({ variant: "default" })}
-        >
-          New Story
-        </Link>
-        <StatusFilter />
+    <div className="w-full flex flex-col gap-4 mt-5">
+      <div
+        className="flex border-b p-2 border-b-slate-200  justify-between items-center"
+        id="title-row"
+      >
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-semibold">Wikis</h1>
+          <StatusFilter />
+        </div>
+        <div id="actions">
+          <Button asChild>
+            <Link href={"/editor/stories/create"}>Create</Link>
+          </Button>
+        </div>
       </div>
       <DataTable stories={stories} searchParams={searchParams} />
       <Pagination

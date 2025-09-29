@@ -1,8 +1,8 @@
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Check, EllipsisVertical, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-import { Story } from "@prisma/client";
+import { Role, Story, UserProfile, UserStory } from "@prisma/client";
 
 import {
   Table,
@@ -12,24 +12,50 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import StoryRating from "@/components/story/StoryRating";
 import StoryStatusBadge from "@/components/story/StoryStatusBadge";
-import { buttonVariants } from "@/components/ui/button";
 
 import { SearchParams } from "./page";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+export type StoryWithAuthor = Story & {
+  userStories: (UserStory & {
+    user: {
+      id: string;
+      name: string;
+      role: Role;
+      userProfile: UserProfile | null;
+    };
+  })[];
+};
 
 interface Props {
-  stories: Story[];
+  stories: StoryWithAuthor[];
   searchParams: SearchParams;
 }
 
 export default function DataTable({ stories, searchParams }: Props) {
-  // Create simple query objects to avoid serialization errors
   const createQueryObject = (orderBy: string) => ({
     orderBy,
     ...(searchParams.status && { status: searchParams.status }),
     ...(searchParams.page && { page: searchParams.page }),
   });
+
+  const getAuthorDisplayName = (story: StoryWithAuthor): string => {
+    const owner = story.userStories.find(
+      (us) => us.role === "OWNER" || us.role === "EDITOR"
+    );
+    if (owner?.user?.userProfile?.displayName) {
+      return owner.user.userProfile.displayName;
+    }
+    return "Unknown";
+  };
 
   return (
     <div className="w-full mt-5">
@@ -37,16 +63,15 @@ export default function DataTable({ stories, searchParams }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="font-medium">ID</TableHead>
               <TableHead>
                 <Link href={{ query: createQueryObject("title") }}>Title</Link>
                 {"title" === searchParams.orderBy && (
                   <ArrowDown className="inline p-1" />
                 )}
               </TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
               <TableHead>
-                <div className="flex justify-center">
+                <div>
                   <Link href={{ query: createQueryObject("status") }}>
                     Status
                   </Link>
@@ -55,80 +80,52 @@ export default function DataTable({ stories, searchParams }: Props) {
                   )}
                 </div>
               </TableHead>
-              {/* <TableHead>
-                <div className="flex justify-center">
-                  <Link href={{ query: createQueryObject("rating") }}>
-                    Rating
-                  </Link>
-                  {"rating" === searchParams.orderBy && (
-                    <ArrowDown className="inline p-1" />
-                  )}
-                </div>
-              </TableHead> */}
-              <TableHead>
-                <Link href={{ query: createQueryObject("createdAt") }}>
-                  Created At
-                </Link>
-                {"createdAt" === searchParams.orderBy && (
-                  <ArrowDown className="inline p-1" />
-                )}
-              </TableHead>
-              <TableHead>
-                {" "}
-                <Link href={{ query: createQueryObject("updatedAt") }}>
-                  Updated At
-                </Link>
-                {"updatedAt" === searchParams.orderBy && (
-                  <ArrowDown className="inline p-1" />
-                )}
-              </TableHead>
-              <TableHead>...</TableHead>
+              <TableHead>Featured</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Author</TableHead>
+              <TableHead>Options</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {stories
               ? stories.map((story) => (
-                  <TableRow key={story.id} data-href="/">
+                  <TableRow key={story.id}>
+                    <TableCell>{story.id}</TableCell>
+                    <TableCell>{story.title}</TableCell>
                     <TableCell>
-                      <Link href={`/stories/${story.id}`}>{story.title}</Link>
+                      <StoryStatusBadge status={story.status} />
                     </TableCell>
-                    <TableCell>{story.description}</TableCell>
+                    <TableCell>{story.featured ? <Check /> : <X />}</TableCell>
                     <TableCell>{story.category}</TableCell>
+                    <TableCell>{story.storyTime}</TableCell>
+                    <TableCell>{getAuthorDisplayName(story)}</TableCell>
                     <TableCell>
-                      <div className="flex justify-center">
-                        <StoryStatusBadge status={story.status} />
-                      </div>
-                    </TableCell>
-                    {/* <TableCell>
-                      <div className="flex justify-center">
-                        <StoryRating rating={story.rating} />
-                      </div>
-                    </TableCell> */}
-                    <TableCell>
-                      {story.createdAt.toLocaleDateString("ja-JP", {
-                        year: "2-digit",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      {story.updatedAt.toLocaleDateString("ja-JP", {
-                        year: "2-digit",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/editor/stories/${story.id}`}
-                        className={buttonVariants({ variant: "outline" })}
-                      >
-                        Edit
-                      </Link>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <EllipsisVertical />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel>Options</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <Link
+                              href={`/stories/${story.id}`}
+                              className="w-max flex-1"
+                            >
+                              View
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Link
+                              href={`/editor/stories/${story.id}`}
+                              className="w-max flex-1"
+                            >
+                              Edit
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))

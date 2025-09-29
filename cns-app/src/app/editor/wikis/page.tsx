@@ -12,6 +12,27 @@ import {
 import prisma from "@/../prisma/db";
 import { Button } from "@/components/ui/button";
 import { requireAuthorOrAdmin } from "@/lib/auth-guards";
+import { Role, UserProfile, UserWiki, Wiki } from "@prisma/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { EllipsisVertical } from "lucide-react";
+
+export type WikiWithAuthor = Wiki & {
+  userWikis: (UserWiki & {
+    user: {
+      id: string;
+      name: string;
+      role: Role;
+      userProfile: UserProfile | null;
+    };
+  })[];
+};
 
 export default async function WikiEditorPage() {
   // To do
@@ -23,6 +44,8 @@ export default async function WikiEditorPage() {
             select: {
               id: true,
               name: true,
+              role: true,
+              userProfile: true,
             },
           },
         },
@@ -31,6 +54,16 @@ export default async function WikiEditorPage() {
   });
 
   const session = await requireAuthorOrAdmin();
+
+  const getAuthorDisplayName = (wiki: WikiWithAuthor): string => {
+    const owner = wiki.userWikis.find(
+      (us) => us.role === "OWNER" || us.role === "EDITOR"
+    );
+    if (owner?.user?.userProfile?.displayName) {
+      return owner.user.userProfile.displayName;
+    }
+    return "Unknown";
+  };
 
   return (
     <SessionProvider session={session}>
@@ -50,20 +83,19 @@ export default async function WikiEditorPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-secondary hover:bg-secondary">
-                <TableHead className="font-medium">ID</TableHead>
-                <TableHead className="font-medium">Title</TableHead>
-                <TableHead className="font-medium">Type</TableHead>
-                <TableHead className="font-medium">Tags</TableHead>
-                <TableHead className="font-medium">Authors</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Tags</TableHead>
+                <TableHead>Authors</TableHead>
+                <TableHead>Options</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {wikis.map((wiki) => (
                 <TableRow key={wiki.id} data-href="/">
                   <TableCell>{wiki.id}</TableCell>
-                  <TableCell>
-                    <Link href={`/editor/wikis/${wiki.id}`}>{wiki.title}</Link>
-                  </TableCell>
+                  <TableCell>{wiki.title}</TableCell>
                   <TableCell>{wiki.type}</TableCell>
                   <TableCell>
                     {" "}
@@ -71,11 +103,34 @@ export default async function WikiEditorPage() {
                       ? wiki.tags.map((tag) => tag).join(", ")
                       : "No tags"}
                   </TableCell>
-                  {/* <TableCell>
-                    {wiki.authors?.length > 0
-                      ? wiki.authors.map((author) => author.name).join(", ")
-                      : "No Authors"}
-                  </TableCell> */}
+                  <TableCell>{getAuthorDisplayName(wiki)}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <EllipsisVertical />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Options</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <Link
+                            href={`/wiki/${wiki.id}`}
+                            className="w-max flex-1"
+                          >
+                            View
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link
+                            href={`/editor/wikis/${wiki.id}`}
+                            className="w-max flex-1"
+                          >
+                            Edit
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
