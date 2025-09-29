@@ -93,7 +93,7 @@ export default async function MasterMapPage() {
           className="flex border-b p-2 border-b-slate-200  justify-between items-center"
           id="title-row"
         >
-          <h1>Mastermaps</h1>
+          <h1 className="text-xl font-semibold">Mastermaps</h1>
           <div id="actions">
             <Button asChild>
               <Link href={"/editor/mastermaps/create"}>Create</Link>
