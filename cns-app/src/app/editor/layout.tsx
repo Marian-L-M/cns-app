@@ -8,6 +8,7 @@ const menuList = [
   { title: "Maps", url: "/editor/maps" },
   { title: "Mastermaps", url: "/editor/mastermaps" },
   { title: "Wiki", url: "/editor/wikis" },
+  { title: "Media", url: "/editor/media" },
 ];
 
 export default async function EditorLayout({

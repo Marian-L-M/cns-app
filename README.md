@@ -98,6 +98,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. Multi map stories
 1. toggle hide object, area, stories on map
 1. Nested Mastermaps
+1. Add Authorbox to all content types
 
 # Under consideration
 
