@@ -1,307 +1,411 @@
+"use client";
+
+import { MediaItemSchema } from "@/ValidationSchemas/media";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MediaItem } from "@prisma/client";
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { X, FileImage } from "lucide-react";
-import { UploadButton, UploadDropzone } from "@/lib/uploadthing/utils";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Button } from "../ui/button";
+import { UploadMediaItem } from "../ui/uploader";
 
-export function MediaUploadForm() {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [activeFileIndex, setActiveFileIndex] = useState(null);
-  const [metadata, setMetadata] = useState({});
+type MediaFormData = z.infer<typeof MediaItemSchema>;
 
-  const handleUploadComplete = (res) => {
-    console.log("Files uploaded:", res);
-    const newFiles = res.map((file) => ({
-      id: file.key,
-      url: file.url,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      key: file.key,
-    }));
+interface Props {
+  userId: string;
+  mediaItem?: MediaItem;
+}
+export default function MediaUploadForm({ mediaItem, userId }: Props) {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  //   const router = useRouter();
 
-    setUploadedFiles((prev) => [...prev, ...newFiles]);
+  // Set form data
+  const form = useForm<MediaFormData>({
+    resolver: zodResolver(MediaItemSchema),
+    defaultValues: {
+      filename: mediaItem?.filename || "",
+      originalName: mediaItem?.originalName || "",
+      fileKey: mediaItem?.fileKey || "",
 
-    // Initialize metadata for new files
-    const newMetadata = {};
-    newFiles.forEach((file) => {
-      newMetadata[file.id] = {
-        title: "",
-        alt: "",
-        caption: "",
-        tags: "",
-      };
-    });
-    setMetadata((prev) => ({ ...prev, ...newMetadata }));
-  };
+      mimeType: mediaItem?.mimeType || "",
+      fileSize: mediaItem?.fileSize || 0,
+      width: mediaItem?.width || undefined,
+      height: mediaItem?.height || undefined,
 
-  const handleUploadError = (error) => {
-    console.error("Upload error:", error);
-    alert(`Upload failed: ${error.message}`);
-  };
+      provider: mediaItem?.provider || "",
+      url: mediaItem?.url || "",
+      thumbnailUrl: mediaItem?.thumbnailUrl || "",
 
-  const removeFile = (fileId) => {
-    setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
-    setMetadata((prev) => {
-      const newMetadata = { ...prev };
-      delete newMetadata[fileId];
-      return newMetadata;
-    });
-    if (
-      activeFileIndex !== null &&
-      uploadedFiles[activeFileIndex]?.id === fileId
-    ) {
-      setActiveFileIndex(null);
-    }
-  };
+      title: mediaItem?.title || "",
+      alt: mediaItem?.alt || "",
+      caption: mediaItem?.caption || "",
+      tags: mediaItem?.tags || [],
+    },
+  });
 
-  const updateMetadata = (fileId, field, value) => {
-    setMetadata((prev) => ({
-      ...prev,
-      [fileId]: {
-        ...prev[fileId],
-        [field]: value,
-      },
-    }));
-  };
+  const originalImg = form.watch("url");
+  const thumbImg = form.watch("thumbnailUrl");
 
-  const saveMediaItems = async () => {
+  // Submission logic
+  async function onSubmit(values: MediaFormData) {
     try {
-      const mediaItems = uploadedFiles.map((file) => ({
-        fileKey: file.key,
-        filename: file.name,
-        originalName: file.name,
-        mimeType: file.type,
-        fileSize: file.size,
-        url: file.url,
-        provider: "uploadthing",
-        ...metadata[file.id],
-        tags: metadata[file.id]?.tags
-          ? metadata[file.id].tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean)
-          : [],
-      }));
-
-      const response = await fetch("/api/media", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mediaItems }),
-      });
-
-      if (!response.ok) throw new Error("Failed to save media items");
-
-      alert("Media items saved successfully!");
-      setUploadedFiles([]);
-      setMetadata({});
-      setActiveFileIndex(null);
+      setIsSubmitting(true);
+      setError("");
+      console.log("Submitting data:", values);
+      if (mediaItem) {
+        await axios.patch(`/api/media/${mediaItem.id}`, values);
+        router.push(`/editor/media/${mediaItem.id}`);
+        router.refresh();
+        toast.success("Media item updated succesfully");
+      } else {
+        const response = await axios.post("/api/media", values);
+        const newMedia = response.data;
+        router.push(`/editor/media/${newMedia.id}`);
+        router.refresh();
+        toast.success("Media item created succesfully");
+      }
+      setIsSubmitting(false);
     } catch (error) {
-      console.error("Save error:", error);
-      alert("Failed to save media items");
+      setError("Unknown error occurred");
+      setIsSubmitting(false);
+      toast.error("Area update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     }
-  };
-
-  const activeFile =
-    activeFileIndex !== null ? uploadedFiles[activeFileIndex] : null;
-  const activeMetadata = activeFile ? metadata[activeFile.id] : null;
+  }
 
   return (
-    <div className="w-full grid grid-cols-8 gap-6">
-      {/* Upload Section */}
-      <Card className="col-span-5">
-        <CardHeader>
-          <CardTitle>Upload Images</CardTitle>
-          <CardDescription>
-            Choose files or drag and drop to upload
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Upload Button */}
-          <div className="flex flex-col items-center gap-4 p-6 border-2 border-dashed rounded-lg">
-            <FileImage className="w-12 h-12 text-muted-foreground" />
-            <UploadButton
-              endpoint="imageUploader"
-              onClientUploadComplete={handleUploadComplete}
-              onUploadError={handleUploadError}
-            />
-          </div>
-
-          {/* Upload Dropzone */}
-          <div className="relative">
-            <div className="absolute inset-x-0 top-1/2 h-px bg-border" />
-            <div className="relative flex justify-center">
-              <span className="bg-background px-4 text-sm text-muted-foreground">
-                or
-              </span>
-            </div>
-          </div>
-
-          <UploadDropzone
-            endpoint="imageUploader"
-            onClientUploadComplete={handleUploadComplete}
-            onUploadError={handleUploadError}
-            className="border-2 border-dashed ut-button:bg-primary ut-button:ut-readying:bg-primary/50"
-          />
-
-          {/* Uploaded Files Grid */}
-          {uploadedFiles.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="font-semibold">
-                Uploaded Files ({uploadedFiles.length})
-              </h3>
-              <div className="grid grid-cols-4 gap-4">
-                {uploadedFiles.map((file, index) => (
-                  <div
-                    key={file.id}
-                    className={`relative group cursor-pointer rounded-lg overflow-hidden border-2 transition-colors ${
-                      activeFileIndex === index
-                        ? "border-primary"
-                        : "border-transparent hover:border-muted-foreground"
-                    }`}
-                    onClick={() => setActiveFileIndex(index)}
-                  >
-                    <div className="aspect-square">
-                      <img
-                        src={file.url}
-                        alt={file.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeFile(file.id);
-                      }}
-                      className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                    <div className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs p-2 truncate">
-                      {file.name}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Metadata Editor */}
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>Image Details</CardTitle>
-          <CardDescription>
-            {activeFile
-              ? "Edit metadata for selected image"
-              : "Select an image to edit details"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {activeFile ? (
-            <div className="space-y-4">
-              {/* Preview */}
-              <div className="aspect-video rounded-lg overflow-hidden border">
-                <img
-                  src={activeFile.url}
-                  alt={activeFile.name}
-                  className="w-full h-full object-contain bg-muted"
+    <div className="flex flex-col gap-8 col-span-2">
+      <div className="w-full">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="relative z-20 col-span-2 flex flex-col gap-4 text-black"
+          >
+            <div className="w-full flex flex-col gap-4">
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="filename"
+                  defaultValue={mediaItem?.filename || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Filename</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="Filename" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
                 />
               </div>
-
-              {/* Metadata Form */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    placeholder="Enter image title"
-                    value={activeMetadata?.title || ""}
-                    onChange={(e) =>
-                      updateMetadata(activeFile.id, "title", e.target.value)
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="alt">Alt Text</Label>
-                  <Input
-                    id="alt"
-                    placeholder="Describe the image for accessibility"
-                    value={activeMetadata?.alt || ""}
-                    onChange={(e) =>
-                      updateMetadata(activeFile.id, "alt", e.target.value)
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="caption">Caption</Label>
-                  <Textarea
-                    id="caption"
-                    placeholder="Optional caption"
-                    value={activeMetadata?.caption || ""}
-                    onChange={(e) =>
-                      updateMetadata(activeFile.id, "caption", e.target.value)
-                    }
-                    rows={3}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="tags">Tags</Label>
-                  <Input
-                    id="tags"
-                    placeholder="tag1, tag2, tag3"
-                    value={activeMetadata?.tags || ""}
-                    onChange={(e) =>
-                      updateMetadata(activeFile.id, "tags", e.target.value)
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Separate tags with commas
-                  </p>
-                </div>
-
-                {/* File Info */}
-                <div className="pt-4 border-t space-y-1 text-sm text-muted-foreground">
-                  <p>File: {activeFile.name}</p>
-                  <p>Size: {(activeFile.size / 1024).toFixed(2)} KB</p>
-                  <p>Type: {activeFile.type}</p>
-                </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="originalName"
+                  defaultValue={mediaItem?.originalName || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Original Name</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input
+                          placeholder="Original Name"
+                          {...field}
+                          disabled
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="fileKey"
+                  defaultValue={mediaItem?.fileKey || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>File Key</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="filekey" {...field} disabled />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-              <FileImage className="w-16 h-16 mb-4" />
-              <p>No image selected</p>
-              <p className="text-sm">
-                Upload and select an image to edit its details
-              </p>
+            <div className="w-full flex flex-col gap-4">
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="mimeType"
+                  defaultValue={mediaItem?.mimeType || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mime Type</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="mimeType" {...field} disabled />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="fileSize"
+                  defaultValue={mediaItem?.fileSize || 0}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>File Size</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="File Size"
+                          {...field}
+                          disabled
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="width"
+                  defaultValue={mediaItem?.width || 0}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Width</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input type="number" placeholder="Width" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="height"
+                  defaultValue={mediaItem?.height || 0}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Height</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input type="number" placeholder="Height" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="provider"
+                  defaultValue={mediaItem?.provider}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Provider</FormLabel>
+                      <FormMessage />
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue defaultValue={mediaItem?.provider} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="uploadthing">
+                            Uploadthing
+                          </SelectItem>
+                          {/* <SelectItem value="bunny">Bunny</SelectItem>
+                          <SelectItem value="aws">AWS</SelectItem>
+                          <SelectItem value="other">Other</SelectItem> */}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <div className="upload-field">
+                  <h4>Image</h4>
+                  <UploadMediaItem
+                    image={originalImg || ""}
+                    form={form}
+                    fieldName="url"
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="url"
+                  defaultValue={mediaItem?.url || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Url</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="url" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="thumbnailUrl"
+                  defaultValue={mediaItem?.thumbnailUrl || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thumbnail Url</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="thumbnailUrl" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  defaultValue={mediaItem?.title || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="title" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="alt"
+                  defaultValue={mediaItem?.alt || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Alt</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="alt" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="caption"
+                  defaultValue={mediaItem?.caption || ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Caption</FormLabel>
+                      <FormMessage />
+                      <FormControl>
+                        <Input placeholder="caption" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="tags"
+                  defaultValue={mediaItem?.tags || []}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tags</FormLabel>
+                      <FormControl>
+                        <div>
+                          {(field.value || []).map((tag, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center space-x-2 mb-2"
+                            >
+                              <Input
+                                value={tag}
+                                onChange={(e) => {
+                                  const newTags = [...(field.value || [])];
+                                  newTags[index] = e.target.value;
+                                  field.onChange(newTags);
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const newTags = [...(field.value || [])];
+                                  newTags.splice(index, 1);
+                                  field.onChange(newTags);
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              field.onChange([...(field.value || []), ""]);
+                            }}
+                          >
+                            Add Tag
+                          </Button>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Save Button */}
-      {uploadedFiles.length > 0 && (
-        <div className="col-span-8 flex justify-end">
-          <Button onClick={saveMediaItems} size="lg">
-            Save {uploadedFiles.length}{" "}
-            {uploadedFiles.length === 1 ? "Image" : "Images"} to Library
-          </Button>
-        </div>
-      )}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }

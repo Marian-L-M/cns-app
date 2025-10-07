@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import MediaUploadComponent from "./MediaUploadComponent";
 
 function mediaPage() {
   return (
@@ -13,6 +14,7 @@ function mediaPage() {
           <div className="w-full grid grid-cols-8 gap-4 mx-auto relative">
             <div className="col-span-8">
               <h1>Media Upload</h1>
+              <MediaUploadComponent />
             </div>
           </div>
         </TabsContent>

@@ -146,7 +146,6 @@ export default function GlobalObjectForm({ map, globalObject }: Props) {
         router.refresh();
         toast.success("Object updated succesfully");
       } else {
-        await axios.post("/api/globalobject", submissionValues);
         const response = await axios.post(
           "/api/globalobject",
           submissionValues

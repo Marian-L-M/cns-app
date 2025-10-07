@@ -11,20 +11,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { mediaItems } = await req.json();
+    const data = await req.json();
 
-    const created = await prisma.mediaItem.createMany({
-      data: mediaItems.map((item: any) => ({
-        ...item,
+    const created = await prisma.mediaItem.create({
+      data: {
+        ...data,
         uploadedById: session.user.id,
-      })),
+      },
     });
 
-    return NextResponse.json({ success: true, count: created.count });
+    return NextResponse.json(created);
   } catch (error) {
     console.error("Media save error:", error);
     return NextResponse.json(
-      { error: "Failed to save media items" },
+      { error: "Failed to save media item" },
       { status: 500 }
     );
   }
