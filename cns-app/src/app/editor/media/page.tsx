@@ -1,20 +1,51 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 import MediaUploadForm from "@/components/forms/MediaUploadForm";
 import prisma from "@/../prisma/db";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
+import { MediaItem } from "@prisma/client";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default async function mediaPage() {
   const session = await requireAuthorOrAdmin();
+  let mediaItems: MediaItem[];
 
-  const mediaItems = await prisma.mediaItem.findMany();
+  if (session.user.role === "ADMIN") {
+    mediaItems = await prisma.mediaItem.findMany();
+  } else {
+    mediaItems = await prisma.mediaItem.findMany({
+      where: {
+        uploadedById: session.user.id,
+      },
+    });
+  }
 
   return (
     <div className="flex gap-4">
       <div className="flex-[3] flex flex-col gap-4">
-        <h2 className="text-md font-semibold">Media Library</h2>
+        <div>
+          <h1 className="text-lg font-semibold">Media</h1>
+          <Breadcrumb>
+            <BreadcrumbList className="text-xs">
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/editor">Editor</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Media</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <h2 className="text-lg font-semibold">Media Library</h2>
         <div className="card-container w-full grid grid-cols-6 col-span-6 gap-2 ">
           {mediaItems.map((media) => (
             <Link key={`media-${media.id}`} href={`/editor/media/${media.id}`}>
@@ -35,7 +66,7 @@ export default async function mediaPage() {
         </div>
       </div>
       <div className="flex-1 flex flex-col gap-4">
-        <h2 className="text-md font-semibold">Media Upload</h2>
+        <h2 className="text-lg font-semibold">Media Upload</h2>
         <div className="text-xs">
           <MediaUploadForm />
         </div>

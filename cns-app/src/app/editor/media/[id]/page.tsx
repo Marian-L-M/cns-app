@@ -1,7 +1,14 @@
 import MediaUploadForm from "@/components/forms/MediaUploadForm";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/../prisma/db";
-import { Meie_Script } from "next/font/google";
+import { requireMediaOwnerOrAdmin } from "@/lib/auth-guards";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -28,29 +35,34 @@ export default async function EditMediaPage({ params }: Props) {
     return <div className="flex flex-col gap-20 w-full">Media not found</div>;
   }
 
+  const session = await requireMediaOwnerOrAdmin({ mediaItem });
+
   return (
     <div className="flex flex-col gap-20 w-full">
-      <Tabs defaultValue="upload" className="w-full">
-        <TabsList>
-          <TabsTrigger value="upload">Upload</TabsTrigger>
-          <TabsTrigger value="library">Library</TabsTrigger>
-        </TabsList>
-        <TabsContent className="flex flex-col gap-8" value="upload">
-          <div className="w-full grid grid-cols-8 gap-4 mx-auto relative">
-            <div className="col-span-8">
-              <h1>Media Upload</h1>
-              <MediaUploadForm mediaItem={mediaItem} />
-            </div>
-          </div>
-        </TabsContent>
-        <TabsContent className="flex flex-col gap-8" value="library">
-          <div className="w-full grid grid-cols-8 gap-4 mx-auto relative">
-            <div className="col-span-8">
-              <h1>Media Library</h1>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+      <div className="w-full grid grid-cols-12 gap-4 mx-auto relative">
+        <div className="col-span-8">
+          <h1 className="text-lg font-semibold">Edit Media</h1>
+          <Breadcrumb>
+            <BreadcrumbList className="text-xs">
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/editor">Editor</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/editor/media">Media</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{mediaItem.title}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <MediaUploadForm mediaItem={mediaItem} />
+        </div>
+        <div className="col-span-4">
+          <h2 className="text-lg font-semibold">Used in</h2>
+        </div>
+      </div>
     </div>
   );
 }

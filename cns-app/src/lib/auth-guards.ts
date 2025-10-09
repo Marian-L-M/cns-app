@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { ContentRole } from "@prisma/client";
+import { ContentRole, MediaItem } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 type UserJunctionType = {
@@ -56,6 +56,33 @@ export async function requireOwnerOrAdmin({
   const isEditor = userRelation?.role === "EDITOR";
 
   if (!isAdmin && !isOwner && !isEditor) {
+    redirect("/unauthorized");
+  }
+
+  return session;
+}
+
+export async function requireMediaOwnerOrAdmin({
+  mediaItem,
+}: {
+  mediaItem: MediaItem | undefined;
+}) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  if (!mediaItem) {
+    redirect("/unauthorized");
+  }
+
+  const sessionId = session.user.id;
+  const isAdmin = session.user.role === "ADMIN";
+
+  const isOwner = sessionId === mediaItem.uploadedById;
+
+  if (!isAdmin && !isOwner) {
     redirect("/unauthorized");
   }
 
