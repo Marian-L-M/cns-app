@@ -102,7 +102,7 @@ export function UploadMediaItem<T extends FieldValues>({
   };
 
   return (
-    <Card>
+    <Card className="border-none shadow-none">
       <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
         {image && (
           <Image
