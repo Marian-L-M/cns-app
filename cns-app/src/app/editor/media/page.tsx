@@ -46,7 +46,7 @@ export default async function mediaPage() {
           </Breadcrumb>
         </div>
         <h2 className="text-lg font-semibold">Media Library</h2>
-        <div className="card-container w-full grid grid-cols-6 col-span-6 gap-2 ">
+        <div className="w-full grid grid-cols-6 col-span-6 gap-2 ">
           {mediaItems.map((media) => (
             <Link key={`media-${media.id}`} href={`/editor/media/${media.id}`}>
               <Card className="flex flex-col items-center p-4 gap-4 w-full hover:opacity-80 overflow-hidden rounded-md border-slate-100">

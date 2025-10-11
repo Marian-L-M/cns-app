@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -24,12 +25,11 @@ import { mapSchema } from "@/ValidationSchemas/maps";
 
 import "easymde/dist/easymde.min.css";
 import { UploadComponent } from "../ui/uploader";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
+import { Card, CardContent } from "../ui/card";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
-
-//250821 to do: issue form does not rerender on submission.
-// Image size is not integrated into render logic
 
 type MapFormData = z.infer<typeof mapSchema>;
 
@@ -132,19 +132,42 @@ export default function MapForm({ map }: Props) {
           />
           <h3>Images</h3>
           <div className="flex gap-8 mb-8">
-            <div className="upload-field">
-              <h4 className=" text-sm font-semibold">Map Image</h4>
-              <UploadComponent image={mapImg} form={form} fieldName="mapUrl" />
-            </div>
-            <div className="upload-field">
-              <h4 className=" text-sm font-semibold">Thumbnail Image</h4>
-              <UploadComponent
-                image={thumbImg}
-                form={form}
-                fieldName="imageUrl"
-              />
-            </div>
+            {mapImg && (
+              <Card>
+                <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
+                  <h4 className=" text-sm font-semibold">Map Image</h4>
+                  <Image
+                    src={mapImg}
+                    alt={"mapUrl"}
+                    className="object-cover object-center"
+                    width={240}
+                    height={240}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            {thumbImg && (
+              <Card>
+                <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
+                  <h4 className=" text-sm font-semibold">Thumbnail Image</h4>
+                  <Image
+                    src={thumbImg}
+                    alt={"thumbUrl"}
+                    className="object-cover object-center"
+                    width={240}
+                    height={240}
+                  />
+                </CardContent>
+              </Card>
+            )}
           </div>
+          <MediaLibrary
+            form={form}
+            image={mapImg}
+            imageFieldName="mapUrl"
+            thumbnail={thumbImg}
+            thumbnailFieldName="imageUrl"
+          />
           <FormField
             control={form.control}
             name="mapTime"
