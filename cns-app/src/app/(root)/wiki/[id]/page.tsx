@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ReactMarkDown from "react-markdown";
 
 import prisma from "@/../prisma/db";
@@ -70,6 +71,17 @@ export default async function WikiPage({ params }: WikiPageProps) {
         </TabsList> */}
         <TabsContent className="flex flex-col gap-8 px-6 py-4" value="article">
           <div className="w-full flex flex-col gap-8">
+            {wiki.bannerUrl && (
+              <div className="w-full h-64 relative">
+                <Image
+                  src={wiki.bannerUrl}
+                  alt={`${wiki.title}-banner`}
+                  fill={true}
+                  className="relative"
+                  style={{ objectFit: "cover" }}
+                />
+              </div>
+            )}
             <div
               className="top-content flex justify-between align-bottom"
               id="top-content"

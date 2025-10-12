@@ -50,7 +50,6 @@ export function useMasterMapEditor({ childMaps }: MasterMapMakerProps) {
     if (childMaps) {
       childMaps.forEach((map) => {
         const styles = getValueFirstOfEachStyleType(map.canvasStyles);
-        console.log(styles);
         drawMasterMapArea(ctx, map, styles, cw, ch);
       });
     }

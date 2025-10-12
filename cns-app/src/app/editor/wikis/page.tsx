@@ -72,7 +72,7 @@ export default async function WikiEditorPage() {
           className="flex border-b p-2 border-b-slate-200  justify-between items-center"
           id="title-row"
         >
-          <h1>Wikis</h1>
+          <h1 className="text-xl font-semibold">Wikis</h1>
           <div id="actions">
             <Button asChild>
               <Link href={"/editor/wikis/create"}>Create</Link>

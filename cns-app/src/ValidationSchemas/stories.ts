@@ -4,6 +4,7 @@ export const StoriesSchema = z.object({
   id: z.number().int().optional(),
   title: z.string().min(1, "Title is required").max(255),
   description: z.string().min(1, "Description is required").max(65535),
+  bannerUrl: z.string().optional(),
   imageUrl: z.string().min(1, "image url").max(255).optional(),
   category: z.string().min(1, "category").max(255).optional(),
   tags: z.array(z.string().max(128)).optional(),

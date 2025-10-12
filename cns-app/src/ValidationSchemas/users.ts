@@ -37,7 +37,7 @@ export const userProfileSchema = z.object({
   thumbnail: z.string().optional(),
   banner: z.string().optional(),
   socials: z.array(socialSchema).default([]),
-  userId: z.string().min(1, "Map ID is required"),
+  userId: z.string().min(1, "User ID is required"),
 });
 
 export const updateUserSettingsSchema = z.object({

@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -34,7 +35,8 @@ import { toast } from "sonner";
 
 import "easymde/dist/easymde.min.css";
 import { Checkbox } from "../ui/checkbox";
-import { UploadComponent } from "../ui/uploader";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
+import { Card, CardContent } from "../ui/card";
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -79,6 +81,7 @@ export default function StoryForm({ story, substories }: Props) {
       title: story?.title || "",
       description: story?.description || "",
       imageUrl: story?.imageUrl || "",
+      bannerUrl: story?.bannerUrl || "",
       storyTime: story?.storyTime || 1000,
       status: story?.status || "UPCOMING",
       category: story?.category || "",
@@ -112,7 +115,7 @@ export default function StoryForm({ story, substories }: Props) {
         const newStory = response.data;
         router.push(`/editor/stories/${newStory.id}`);
         router.refresh();
-        toast.success("Map created succesfully");
+        toast.success("Story created succesfully");
       }
       setIsSubmitting(false);
     } catch (error) {
@@ -126,6 +129,7 @@ export default function StoryForm({ story, substories }: Props) {
   }
 
   const thumbImg = form.watch("imageUrl");
+  const bannerImg = form.watch("bannerUrl");
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -186,36 +190,6 @@ export default function StoryForm({ story, substories }: Props) {
                   </FormItem>
                 )}
               />
-              {/* <FormField
-                control={form.control}
-                name="rating"
-                defaultValue={story?.rating}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rating</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={(field.value ?? 1).toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder="Rating..."
-                            defaultValue={story?.rating}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
-                        <SelectItem value="4">4</SelectItem>
-                        <SelectItem value="5">5</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              /> */}
               <FormField
                 control={form.control}
                 name="storyTime"
@@ -237,12 +211,63 @@ export default function StoryForm({ story, substories }: Props) {
                 )}
               />
             </div>
-            <div className="upload-field">
-              <h4>Thumbnail Image</h4>
-              <UploadComponent
-                image={thumbImg || ""}
+            <div className="flex flex-col gap-2">
+              <h3>Images</h3>
+              <div className="flex gap-8 mb-8">
+                {bannerImg && (
+                  <Card>
+                    <CardContent className=" flex flex-col p-4">
+                      <h4 className=" text-sm font-semibold mb-1">
+                        Banner Image
+                      </h4>
+                      <Image
+                        src={bannerImg}
+                        alt={"bannerImg"}
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => form.setValue("bannerUrl", "")}
+                      >
+                        Remove
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+                {thumbImg && (
+                  <Card>
+                    <CardContent className=" flex flex-col p-4">
+                      <h4 className=" text-sm font-semibold mb-1">
+                        Thumbnail Image
+                      </h4>
+                      <Image
+                        src={thumbImg}
+                        alt={"thumbUrl"}
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                      <Button
+                        className="p-0"
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => form.setValue("imageUrl", "")}
+                      >
+                        Remove
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+              <MediaLibrary
                 form={form}
-                fieldName="imageUrl"
+                imageFieldName="bannerUrl"
+                thumbnailFieldName="imageUrl"
               />
             </div>
             <FormField

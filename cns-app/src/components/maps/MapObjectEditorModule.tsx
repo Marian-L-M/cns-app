@@ -2,12 +2,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useMapObjectEditor } from "@/hooks/useMapEditor";
-import {
-  CanvasStyleItem,
-  GlobalObject,
-  MapAreaType,
-  MapObjectType,
-} from "@prisma/client";
+import { CanvasStyleItem, MapAreaType, MapObjectType } from "@prisma/client";
 
 import GlobalObjectForm from "../forms/ObjectForm";
 import { JsonValue } from "@prisma/client/runtime/library";
@@ -21,6 +16,7 @@ interface Props {
     title: string;
     description: string;
     iconUrl: string;
+    bannerUrl: string;
     thumbUrl: string;
     objectTime: number;
     x: number;
@@ -38,6 +34,7 @@ interface Props {
         updatedAt: Date;
         title: string;
         description: string;
+        bannerUrl: string;
         imageUrl: string;
         nodes?: JsonValue;
         objectTime: number;

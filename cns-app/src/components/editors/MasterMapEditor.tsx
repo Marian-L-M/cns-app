@@ -45,7 +45,8 @@ import { fetchMapName } from "@/lib/fetchMapData";
 
 import "easymde/dist/easymde.min.css";
 import { Checkbox } from "../ui/checkbox";
-import { UploadComponent } from "../ui/uploader";
+import { Card, CardContent } from "../ui/card";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -316,24 +317,44 @@ export default function MasterMapEditor({ MasterMap }: Props) {
                   </FormItem>
                 )}
               />
-              {/* Thumbnail image */}
-              <div className="upload-field">
-                <h5 className="font-bold">Thumbnail Image</h5>
-                <UploadComponent
-                  image={thumbImg || ""}
-                  form={form}
-                  fieldName="imageUrl"
-                />
+              <h3>Images</h3>
+              <div className="flex gap-8 mb-8">
+                {bannerImg && (
+                  <Card>
+                    <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
+                      <h4 className=" text-sm font-semibold">Banner Image</h4>
+                      <Image
+                        src={bannerImg}
+                        alt={"mapUrl"}
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
+                {thumbImg && (
+                  <Card>
+                    <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
+                      <h4 className=" text-sm font-semibold">
+                        Thumbnail Image
+                      </h4>
+                      <Image
+                        src={thumbImg}
+                        alt={"thumbUrl"}
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
               </div>
-              {/* Banner Image */}
-              <div className="upload-field">
-                <h5 className="font-bold">Banner Image</h5>
-                <UploadComponent
-                  image={bannerImg || ""}
-                  form={form}
-                  fieldName="bannerUrl"
-                />
-              </div>
+              <MediaLibrary
+                form={form}
+                imageFieldName="bannerUrl"
+                thumbnailFieldName="imageUrl"
+              />
               {MasterMap && (
                 <section className="rounded-md border w-full p-4 flex flex-col gap-4">
                   <h5 className="font-bold">Collaborators</h5>

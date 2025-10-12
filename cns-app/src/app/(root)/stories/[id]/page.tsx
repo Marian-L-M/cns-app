@@ -1,3 +1,4 @@
+import Image from "next/image";
 import prisma from "@/../prisma/db";
 import StatusContextProvider from "@/store/statusContext";
 import StoryDisplayModule from "@/components/displays/StoryDisplayModule";
@@ -53,15 +54,28 @@ export default async function ViewStory({
   }
 
   return (
-    <div className="w-full flex gap-4">
-      <div className="col-span-6">
-        <StatusContextProvider>
-          <StoryDisplayModule mapData={mapData} story={storyDisplayData} />
-        </StatusContextProvider>
-      </div>
-      <div className="col-span-3 flex flex-col gap-4">
-        <h2 className="text-2xl">{story.title}</h2>
-        <div id="description">{story.description}</div>
+    <div className="w-full flex flex-col gap-4">
+      {story.bannerUrl && (
+        <div className="w-full h-64 relative">
+          <Image
+            src={story.bannerUrl}
+            alt={`${story.title}-banner`}
+            fill={true}
+            className="relative"
+            style={{ objectFit: "cover" }}
+          />
+        </div>
+      )}
+      <div className="w-full flex gap-4">
+        <div className="col-span-6">
+          <StatusContextProvider>
+            <StoryDisplayModule mapData={mapData} story={storyDisplayData} />
+          </StatusContextProvider>
+        </div>
+        <div className="col-span-3 flex flex-col gap-4">
+          <h2 className="text-2xl">{story.title}</h2>
+          <div id="description">{story.description}</div>
+        </div>
       </div>
     </div>
   );

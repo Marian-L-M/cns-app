@@ -8,6 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import Image from "next/image";
 import Link from "next/link";
 import InfoboxDisplayModule from "../InfoboxDisplayModule";
 
@@ -17,6 +18,7 @@ interface Props {
   infoData: {
     title?: string;
     description?: string;
+    bannerUrl?: string;
     wikiId?: number;
     wiki?: {
       infoboxItems?: any;
@@ -32,7 +34,17 @@ export default function InfoboxSheet({
 }: Props) {
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-      <SheetContent className="flex flex-col gap-8">
+      <SheetContent className="flex flex-col gap-8 overflow-y-scroll">
+        {infoData?.bannerUrl && (
+          <div className="w-full aspect-2/3 relative max-h-48">
+            <Image
+              src={infoData?.bannerUrl}
+              alt={"bannerImg"}
+              className="object-cover object-center"
+              fill={true}
+            />
+          </div>
+        )}
         <SheetHeader>
           <SheetTitle>{infoData?.title}</SheetTitle>
           <SheetDescription>{infoData?.description}</SheetDescription>

@@ -17,7 +17,7 @@ import axios from "axios";
 import { Trash } from "lucide-react";
 
 interface Props {
-  objectId: number;
+  objectId: number | string;
   type: string;
   path: string;
   redirect: string;
