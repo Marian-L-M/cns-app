@@ -19,16 +19,6 @@ export default async function EditMediaPage({ params }: Props) {
 
   const mediaItem = await prisma.mediaItem.findUnique({
     where: { id: resolvedParams.id },
-    include: {
-      storyMedia: true,
-      mapMedia: true,
-      wikiMedia: true,
-      globalObjectMedia: true,
-      globalAreaMedia: true,
-      userProfileMedia: true,
-      settingsMedia: true,
-      MapHierarchyMedia: true,
-    },
   });
 
   if (!mediaItem) {
@@ -58,9 +48,6 @@ export default async function EditMediaPage({ params }: Props) {
             </BreadcrumbList>
           </Breadcrumb>
           <MediaUploadForm mediaItem={mediaItem} />
-        </div>
-        <div className="col-span-4">
-          <h2 className="text-lg font-semibold">Used in</h2>
         </div>
       </div>
     </div>

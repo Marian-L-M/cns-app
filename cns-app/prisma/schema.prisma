@@ -86,15 +86,15 @@ enum MapAreaType {
 }
 
 model AdminSettings {
-  id            Int               @id @default(autoincrement())
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  order         Int               @default(1)
-  category      AdminSettingsType @default(OTHER)
-  subCategory   String?           @default("")
-  type          String            @default("") @db.Text
-  value         String            @default("")
-  SettingsMedia SettingsMedia[]
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  order       Int               @default(1)
+  category    AdminSettingsType @default(OTHER)
+  subCategory String?           @default("")
+  type        String            @default("") @db.Text
+  value       String            @default("")
+  // SettingsMedia SettingsMedia[]
 }
 
 model Account {
@@ -174,9 +174,9 @@ model UserProfile {
   thumbnail String?
   socials   Json[]  @default([]) @db.Json
 
-  userId           String             @unique
-  relatedUser      User               @relation("userProfile", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  UserProfileMedia UserProfileMedia[]
+  userId      String @unique
+  relatedUser User   @relation("userProfile", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // UserProfileMedia UserProfileMedia[]
 
   @@index([userId])
 }
@@ -279,7 +279,7 @@ model Map {
   canvasStyles    CanvasStyleItem[]
 
   userMaps UserMap[]
-  MapMedia MapMedia[]
+  // MapMedia MapMedia[]
 
   parentInHierarchies MapHierarchyMaster[] @relation("ParentMap")
   childInHierarchies  MapHierarchyChild[]  @relation("ChildMap")
@@ -299,7 +299,7 @@ model MapHierarchyMaster {
   parentMap   Map                 @relation("ParentMap", fields: [parentMapId], references: [id], onUpdate: Cascade)
   childMaps   MapHierarchyChild[]
 
-  MapHierarchyMedia  MapHierarchyMedia[]
+  // MapHierarchyMedia  MapHierarchyMedia[]
   userMapHierarchies UserMapHierarchy[]
 
   @@index([parentMapId])
@@ -342,7 +342,7 @@ model Story {
   tags     String[]
   featured Boolean  @default(false)
 
-  StoryMedia StoryMedia[]
+  // StoryMedia StoryMedia[]
   userStories UserStory[]
 
   status          Status     @default(UPCOMING)
@@ -350,7 +350,7 @@ model Story {
   assignedToMapID Int?
   assignedToMap   Map?       @relation(fields: [assignedToMapID], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  rating     Int          @default(0)
+  rating Int @default(0)
 
   @@index([assignedToMapID])
 }
@@ -388,8 +388,8 @@ model GlobalObject {
   wikiId      Int?
   type        MapObjectType @default(LOCATION)
 
-  canvasStyles      CanvasStyleItem[]
-  GlobalObjectMedia GlobalObjectMedia[]
+  canvasStyles CanvasStyleItem[]
+  // GlobalObjectMedia GlobalObjectMedia[]
 
   @@index([mapId])
   @@index([wikiId])
@@ -410,8 +410,8 @@ model GlobalArea {
   wikiId      Int?
   type        MapAreaType @default(GEOGRAPHY)
 
-  canvasStyles    CanvasStyleItem[]
-  GlobalAreaMedia GlobalAreaMedia[]
+  canvasStyles CanvasStyleItem[]
+  // GlobalAreaMedia GlobalAreaMedia[]
 
   @@index([mapId])
   @@index([wikiId])
@@ -437,7 +437,7 @@ model Wiki {
 
   userWikis    UserWiki[]
   infoboxItems WikiInfoboxItem[]
-  WikiMedia    WikiMedia[]
+  // WikiMedia    WikiMedia[]
 }
 
 model WikiInfoboxItem {
@@ -510,15 +510,17 @@ model MediaItem {
   uploadedById String
   uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
 
-  // Relations to junction tables
-  storyMedia        StoryMedia[]
-  mapMedia          MapMedia[]
-  wikiMedia         WikiMedia[]
-  globalObjectMedia GlobalObjectMedia[]
-  globalAreaMedia   GlobalAreaMedia[]
-  userProfileMedia  UserProfileMedia[]
-  settingsMedia     SettingsMedia[]
-  MapHierarchyMedia MapHierarchyMedia[]
+  // 251012 Disable media junction for now
+  // Complexity issues + for now media item info is not really needed 
+  // // Relations to junction tables
+  // storyMedia        StoryMedia[]
+  // mapMedia          MapMedia[]
+  // wikiMedia         WikiMedia[]
+  // globalObjectMedia GlobalObjectMedia[]
+  // globalAreaMedia   GlobalAreaMedia[]
+  // userProfileMedia  UserProfileMedia[]
+  // settingsMedia     SettingsMedia[]
+  // MapHierarchyMedia MapHierarchyMedia[]
 
   @@index([uploadedById])
   @@index([provider])
@@ -527,130 +529,130 @@ model MediaItem {
 }
 
 // Junction Tables
-model StoryMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model StoryMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  storyId Int
-  story   Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+//   storyId Int
+//   story   Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([storyId, mediaItemId])
-  @@index([storyId])
-  @@index([mediaItemId])
-  @@map("story_media")
-}
+//   @@unique([storyId, mediaItemId])
+//   @@index([storyId])
+//   @@index([mediaItemId])
+//   @@map("story_media")
+// }
 
-model MapMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model MapMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  mapId Int
-  map   Map @relation(fields: [mapId], references: [id], onDelete: Cascade)
+//   mapId Int
+//   map   Map @relation(fields: [mapId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([mapId, mediaItemId])
-  @@index([mapId])
-  @@index([mediaItemId])
-  @@map("map_media")
-}
+//   @@unique([mapId, mediaItemId])
+//   @@index([mapId])
+//   @@index([mediaItemId])
+//   @@map("map_media")
+// }
 
-model MapHierarchyMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model MapHierarchyMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  mapHierarchyId Int
-  mapHierarchy   MapHierarchyMaster @relation(fields: [mapHierarchyId], references: [id], onDelete: Cascade)
+//   mapHierarchyId Int
+//   mapHierarchy   MapHierarchyMaster @relation(fields: [mapHierarchyId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([mapHierarchyId, mediaItemId])
-  @@index([mapHierarchyId])
-  @@index([mediaItemId])
-  @@map("map_hierarchy_media")
-}
+//   @@unique([mapHierarchyId, mediaItemId])
+//   @@index([mapHierarchyId])
+//   @@index([mediaItemId])
+//   @@map("map_hierarchy_media")
+// }
 
-model WikiMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model WikiMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  wikiId Int
-  wiki   Wiki @relation(fields: [wikiId], references: [id], onDelete: Cascade)
+//   wikiId Int
+//   wiki   Wiki @relation(fields: [wikiId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([wikiId, mediaItemId])
-  @@index([wikiId])
-  @@index([mediaItemId])
-  @@map("wiki_media")
-}
+//   @@unique([wikiId, mediaItemId])
+//   @@index([wikiId])
+//   @@index([mediaItemId])
+//   @@map("wiki_media")
+// }
 
-model GlobalObjectMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model GlobalObjectMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  globalObjectId Int
-  globalObject   GlobalObject @relation(fields: [globalObjectId], references: [id], onDelete: Cascade)
+//   globalObjectId Int
+//   globalObject   GlobalObject @relation(fields: [globalObjectId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([globalObjectId, mediaItemId])
-  @@index([globalObjectId])
-  @@index([mediaItemId])
-  @@map("global_object_media")
-}
+//   @@unique([globalObjectId, mediaItemId])
+//   @@index([globalObjectId])
+//   @@index([mediaItemId])
+//   @@map("global_object_media")
+// }
 
-model GlobalAreaMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model GlobalAreaMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  globalAreaId Int
-  globalArea   GlobalArea @relation(fields: [globalAreaId], references: [id], onDelete: Cascade)
+//   globalAreaId Int
+//   globalArea   GlobalArea @relation(fields: [globalAreaId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([globalAreaId, mediaItemId])
-  @@index([globalAreaId])
-  @@index([mediaItemId])
-  @@map("global_area_media")
-}
+//   @@unique([globalAreaId, mediaItemId])
+//   @@index([globalAreaId])
+//   @@index([mediaItemId])
+//   @@map("global_area_media")
+// }
 
-model UserProfileMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model UserProfileMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  userProfileId Int
-  userProfile   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+//   userProfileId Int
+//   userProfile   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([userProfileId, mediaItemId])
-  @@index([userProfileId])
-  @@index([mediaItemId])
-  @@map("user_profile_media")
-}
+//   @@unique([userProfileId, mediaItemId])
+//   @@index([userProfileId])
+//   @@index([mediaItemId])
+//   @@map("user_profile_media")
+// }
 
-model SettingsMedia {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+// model SettingsMedia {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
 
-  AdminSettingsId Int
-  adminSettings   AdminSettings @relation(fields: [AdminSettingsId], references: [id], onDelete: Cascade)
+//   AdminSettingsId Int
+//   adminSettings   AdminSettings @relation(fields: [AdminSettingsId], references: [id], onDelete: Cascade)
 
-  mediaItemId String
-  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+//   mediaItemId String
+//   mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
 
-  @@unique([AdminSettingsId, mediaItemId])
-  @@index([AdminSettingsId])
-  @@index([mediaItemId])
-  @@map("settings_media")
-}
+//   @@unique([AdminSettingsId, mediaItemId])
+//   @@index([AdminSettingsId])
+//   @@index([mediaItemId])
+//   @@map("settings_media")
+// }
