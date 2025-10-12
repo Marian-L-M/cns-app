@@ -9,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import DeleteButton from "@/components/buttons/DeleteButton";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -48,6 +49,14 @@ export default async function EditMediaPage({ params }: Props) {
             </BreadcrumbList>
           </Breadcrumb>
           <MediaUploadForm mediaItem={mediaItem} />
+          <div className="w-full flex justify-end">
+            <DeleteButton
+              objectId={mediaItem.id}
+              type="Media Item"
+              path="media"
+              redirect={`/editor/media`}
+            />
+          </div>
         </div>
       </div>
     </div>
