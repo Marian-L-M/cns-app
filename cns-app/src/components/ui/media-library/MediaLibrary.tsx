@@ -14,38 +14,48 @@ import { MediaItem } from "@prisma/client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getMediaItems } from "@/lib/actions/media.actions";
-import Link from "next/link";
 import { Card } from "../card";
 import MediaUploadForm from "@/components/forms/MediaUploadForm";
 
 interface MediaLibraryProps<T extends FieldValues> {
   form: UseFormReturn<T>;
-  image: string;
   imageFieldName: Path<T>;
-  thumbnail: string;
   thumbnailFieldName: Path<T>;
 }
 
 export default function MediaLibrary<T extends FieldValues>({
   form,
-  image,
   imageFieldName,
-  thumbnail,
   thumbnailFieldName,
 }: MediaLibraryProps<T>) {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("library");
+
+  // Refresh media items
+  const refreshMediaItems = async () => {
+    setIsLoading(true);
+    try {
+      const items = await getMediaItems();
+      setMediaItems(items);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Initialize library
   useEffect(() => {
     if (isOpen && mediaItems.length === 0) {
-      setIsLoading(true);
-      getMediaItems()
-        .then(setMediaItems)
-        .finally(() => setIsLoading(false));
+      refreshMediaItems();
     }
   }, [isOpen, mediaItems.length]);
+
+  // Handle successful upload
+  const handleUploadSuccess = async (newMedia: MediaItem) => {
+    await refreshMediaItems();
+    setActiveTab("library");
+  };
 
   // Set form
   const formSetValue = form.setValue as any;
@@ -61,12 +71,16 @@ export default function MediaLibrary<T extends FieldValues>({
       <DialogTrigger asChild>
         <Button>Toggle Media Library</Button>
       </DialogTrigger>
-      <DialogContent className="w-[80vw] h-[80vh] max-w-none p-4 flex flex-col">
+      <DialogContent className="w-[92vw] h-[92vh] overflow-y-scroll max-h-screen max-w-none p-4 flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle>Media Library</DialogTitle>
           <DialogDescription>Select or upload an image</DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="library" className="w-full flex-1">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full flex-1"
+        >
           <TabsList>
             <TabsTrigger value="library">Library</TabsTrigger>
             <TabsTrigger value="upload">Upload</TabsTrigger>
@@ -102,7 +116,7 @@ export default function MediaLibrary<T extends FieldValues>({
           <TabsContent value="upload">
             <div className="w-full p-4 flex flex-col items-center gap-4">
               <div className="w-1/2">
-                <MediaUploadForm />
+                <MediaUploadForm onSuccess={handleUploadSuccess} />
               </div>
             </div>
           </TabsContent>

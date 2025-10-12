@@ -163,9 +163,7 @@ export default function MapForm({ map }: Props) {
           </div>
           <MediaLibrary
             form={form}
-            image={mapImg}
             imageFieldName="mapUrl"
-            thumbnail={thumbImg}
             thumbnailFieldName="imageUrl"
           />
           <FormField

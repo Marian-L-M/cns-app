@@ -31,12 +31,12 @@ type MediaFormData = z.infer<typeof MediaItemSchema>;
 
 interface Props {
   mediaItem?: MediaItem;
+  onSuccess?: (newMedia: MediaItem) => void; // Callback
 }
-export default function MediaUploadForm({ mediaItem }: Props) {
+export default function MediaUploadForm({ mediaItem, onSuccess }: Props) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  //   const router = useRouter();
 
   // Set form data
   const form = useForm<MediaFormData>({
@@ -70,18 +70,43 @@ export default function MediaUploadForm({ mediaItem }: Props) {
     try {
       setIsSubmitting(true);
       setError("");
-      console.log("Submitting data:", values);
       if (mediaItem) {
-        await axios.patch(`/api/media/${mediaItem.id}`, values);
-        router.push(`/editor/media/${mediaItem.id}`);
+        const response = await axios.patch(
+          `/api/media/${mediaItem.id}`,
+          values
+        );
         router.refresh();
         toast.success("Media item updated succesfully");
+
+        if (onSuccess) {
+          onSuccess(response.data);
+        }
       } else {
         const response = await axios.post("/api/media", values);
         const newMedia = response.data;
-        router.push(`/editor/media/${newMedia.id}`);
         router.refresh();
         toast.success("Media item created succesfully");
+
+        form.reset({
+          filename: "",
+          originalName: "",
+          fileKey: "",
+          mimeType: "",
+          fileSize: 0,
+          width: undefined,
+          height: undefined,
+          provider: "",
+          url: "",
+          thumbnailUrl: "",
+          title: "",
+          alt: "",
+          caption: "",
+          tags: [],
+        });
+
+        if (onSuccess) {
+          onSuccess(newMedia);
+        }
       }
       setIsSubmitting(false);
     } catch (error) {
@@ -104,7 +129,7 @@ export default function MediaUploadForm({ mediaItem }: Props) {
           >
             <div className="upload-field">
               <UploadMediaItem
-                image={originalImg || ""}
+                image={thumbImg || originalImg || ""}
                 form={form}
                 fieldName="url"
               />
