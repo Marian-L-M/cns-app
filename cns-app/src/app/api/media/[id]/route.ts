@@ -6,11 +6,10 @@ import { auth } from "@/auth";
 // GET - Fetch a single media item
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
-
+    const { id } = await params;
     const mediaItem = await prisma.mediaItem.findUnique({
       where: { id },
       include: {
@@ -44,7 +43,7 @@ export async function GET(
 // PATCH - Update a media item
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -53,7 +52,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const data = await request.json();
 
     // Check if media item exists and user has permission
@@ -99,7 +98,7 @@ export async function PATCH(
 // DELETE - Delete a media item
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -108,7 +107,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if media item exists and user has permission
     const existingMedia = await prisma.mediaItem.findUnique({
