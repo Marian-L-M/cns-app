@@ -147,6 +147,7 @@ export default function AdminSettingsGlobalForm({
                 {type == "logo" && (
                   <div className="upload-field">
                     <h5 className="font-bold">{type}</h5>
+                    {/* Upload without registering media item */}
                     <UploadComponent
                       image={uploadImg || ""}
                       form={form}

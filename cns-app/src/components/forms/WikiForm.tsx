@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -38,7 +39,8 @@ import InfoboxEditListModule from "../displays/InfoboxEditListModule";
 
 import { Plus, Trash } from "lucide-react";
 import Link from "next/link";
-import { UploadComponent } from "../ui/uploader";
+import { Card, CardContent } from "../ui/card";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -79,6 +81,7 @@ export default function WikiForm({ wiki, infobox }: Props) {
       title: wiki?.title || "",
       description: wiki?.description || "",
       wikiText: wiki?.wikiText || "",
+      bannerUrl: wiki?.bannerUrl || "",
       thumbUrl: wiki?.thumbUrl || "",
       category: wiki?.category || "",
       type: wiki?.type || "GENERAL",
@@ -88,6 +91,7 @@ export default function WikiForm({ wiki, infobox }: Props) {
   });
 
   const thumbImg = form.watch("thumbUrl");
+  const bannerImg = form.watch("bannerUrl");
 
   // 250604 => Next action: Autho fields, featured field still missing + API not set up + authentication
   // Submission logic
@@ -296,14 +300,64 @@ export default function WikiForm({ wiki, infobox }: Props) {
                         )}
                       />
                     </div>
-                    <div className="w-full" id="thumbnail-container">
-                      <h4>Thumbnail Image</h4>
-                      <UploadComponent
-                        image={thumbImg || ""}
-                        form={form}
-                        fieldName="thumbUrl"
-                      />
+                    <h3>Images</h3>
+                    <div className="flex gap-8 mb-8">
+                      {bannerImg && (
+                        <Card>
+                          <CardContent className=" flex flex-col p-4">
+                            <h4 className="text-sm font-semibold mb-1">
+                              Banner Image
+                            </h4>
+                            <Image
+                              src={bannerImg}
+                              alt={"bannerUrl"}
+                              className="object-cover object-center"
+                              width={240}
+                              height={240}
+                            />
+                            <Button
+                              className="p-0"
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => form.setValue("bannerUrl", "")}
+                            >
+                              Remove
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )}
+                      {thumbImg && (
+                        <Card>
+                          <CardContent className=" flex flex-col p-4">
+                            <h4 className="text-sm font-semibold mb-1">
+                              Thumbnail Image
+                            </h4>
+                            <Image
+                              src={thumbImg}
+                              alt={"thumbUrl"}
+                              className="object-cover object-center"
+                              width={240}
+                              height={240}
+                            />
+                            <Button
+                              className="p-0"
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => form.setValue("thumbUrl", "")}
+                            >
+                              Remove
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )}
                     </div>
+                    <MediaLibrary
+                      form={form}
+                      imageFieldName="bannerUrl"
+                      thumbnailFieldName="thumbUrl"
+                    />
                     <div className="markdown-group">
                       <h4 className="font-bold">Description</h4>
                       <p className="text-sm text-muted-foreground">

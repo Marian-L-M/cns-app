@@ -335,8 +335,10 @@ model Story {
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(255)
   description String   @db.Text
-  imageUrl    String
-  storyTime   Int      @default(0)
+
+  bannerUrl String @default("")
+  imageUrl  String
+  storyTime Int    @default(0)
 
   category String?
   tags     String[]
@@ -372,21 +374,23 @@ model SubStory {
 }
 
 model GlobalObject {
-  id          Int           @id @default(autoincrement())
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  title       String        @db.VarChar(255)
-  description String        @db.Text
-  thumbUrl    String        @default("")
-  iconUrl     String        @default("")
-  x           Int
-  y           Int
-  objectTime  Int
-  map         Map           @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  mapId       Int
-  wiki        Wiki?         @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  wikiId      Int?
-  type        MapObjectType @default(LOCATION)
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+
+  bannerUrl  String        @default("")
+  thumbUrl   String        @default("")
+  iconUrl    String        @default("")
+  x          Int
+  y          Int
+  objectTime Int
+  map        Map           @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mapId      Int
+  wiki       Wiki?         @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  wikiId     Int?
+  type       MapObjectType @default(LOCATION)
 
   canvasStyles CanvasStyleItem[]
   // GlobalObjectMedia GlobalObjectMedia[]
@@ -396,19 +400,22 @@ model GlobalObject {
 }
 
 model GlobalArea {
-  id          Int         @id @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  title       String      @db.VarChar(255)
-  description String      @db.Text
-  imageUrl    String
-  nodes       Json?
-  objectTime  Int
-  map         Map         @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  mapId       Int
-  wiki        Wiki?       @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  wikiId      Int?
-  type        MapAreaType @default(GEOGRAPHY)
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+
+  bannerUrl String @default("")
+  imageUrl  String
+
+  nodes      Json?
+  objectTime Int
+  map        Map         @relation(fields: [mapId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mapId      Int
+  wiki       Wiki?       @relation(fields: [wikiId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  wikiId     Int?
+  type       MapAreaType @default(GEOGRAPHY)
 
   canvasStyles CanvasStyleItem[]
   // GlobalAreaMedia GlobalAreaMedia[]
@@ -418,14 +425,16 @@ model GlobalArea {
 }
 
 model Wiki {
-  id          Int      @id @default(autoincrement())
-  slug        String?  @unique(map: "wiki_slug_idx")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  thumbUrl    String   @default("")
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  wikiText    String   @default("") @db.Text
+  id        Int      @id @default(autoincrement())
+  slug      String?  @unique(map: "wiki_slug_idx")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bannerUrl   String @default("")
+  thumbUrl    String @default("")
+  title       String @db.VarChar(255)
+  description String @db.Text
+  wikiText    String @default("") @db.Text
 
   category String?
   tags     String[]

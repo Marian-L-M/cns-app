@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -22,9 +23,10 @@ import { Input } from "@/components/ui/input";
 import { userProfileSchema } from "@/ValidationSchemas/users";
 import { Button } from "@/components/ui/button";
 import SocialsForm from "./SocialsForm";
-import { UploadComponent } from "../ui/uploader";
 
 import "easymde/dist/easymde.min.css";
+import { Card, CardContent } from "../ui/card";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
@@ -164,23 +166,61 @@ export default function UserProfileForm({ user }: Props) {
               )}
             />
           </div>
-          {/* Thumbnail upload */}
-          <div className="upload-field">
-            <h4>Thumbnail Image</h4>
-            <UploadComponent
-              image={thumbUrl || ""}
-              form={form}
-              fieldName="thumbnail"
-            />
-          </div>
-          {/* Banner upload field */}
-          <div className="upload-field">
-            <h4>Banner Image</h4>
-            <UploadComponent
-              image={bannerUrl || ""}
-              form={form}
-              fieldName="banner"
-            />
+          <div className="flex flex-col gap-2">
+            <h3>Images</h3>
+            <div className="flex gap-8 mb-8">
+              <div className="flex flex-col gap-2">
+                <h4 className=" text-sm font-semibold mb-1">Banner Image</h4>
+                {bannerUrl && (
+                  <Card>
+                    <CardContent className=" flex flex-col p-4">
+                      <Image
+                        src={bannerUrl}
+                        alt={"banner"}
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => form.setValue("banner", "")}
+                      >
+                        Remove
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+                <MediaLibrary form={form} imageFieldName="banner" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h4 className=" text-sm font-semibold mb-1">Thumbnail Image</h4>
+                {thumbUrl && (
+                  <Card>
+                    <CardContent className=" flex flex-col p-4">
+                      <Image
+                        src={thumbUrl}
+                        alt={"thumbnail"}
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                      <Button
+                        className="p-0"
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => form.setValue("thumbnail", "")}
+                      >
+                        Remove
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+                <MediaLibrary form={form} imageFieldName="thumbnail" />
+              </div>
+            </div>
           </div>
           <SocialsForm socialIcons={(profile?.socials || []) as Social[]} />
           <Button type="submit" disabled={isSubmitting}>

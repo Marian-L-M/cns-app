@@ -20,7 +20,7 @@ import MediaUploadForm from "@/components/forms/MediaUploadForm";
 interface MediaLibraryProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   imageFieldName: Path<T>;
-  thumbnailFieldName: Path<T>;
+  thumbnailFieldName?: Path<T>;
 }
 
 export default function MediaLibrary<T extends FieldValues>({
@@ -62,14 +62,18 @@ export default function MediaLibrary<T extends FieldValues>({
 
   function setFormImage(media: MediaItem) {
     formSetValue(imageFieldName, media.url);
-    formSetValue(thumbnailFieldName, media.thumbnailUrl);
+    if (thumbnailFieldName) {
+      formSetValue(thumbnailFieldName, media.thumbnailUrl);
+    }
     setIsOpen(false);
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Toggle Media Library</Button>
+        <Button variant={"secondary"} className="max-w-48">
+          Toggle Media Library
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-[92vw] h-[92vh] overflow-y-scroll max-h-screen max-w-none p-4 flex flex-col">
         <DialogHeader className="shrink-0">

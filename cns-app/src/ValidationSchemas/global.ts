@@ -12,6 +12,7 @@ export const MapAreaTypeList = z.enum(
 export const GlobalObjectsSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   description: z.string().min(1, "Description is required").max(65535),
+  bannerUrl: z.string().optional(),
   thumbUrl: z.string().min(1, "thumbnail url"),
   iconUrl: z.string().min(1, "icon url"),
   x: z.number().min(0, "Global X").max(1000).optional(),
@@ -25,6 +26,7 @@ export const GlobalObjectsSchema = z.object({
 export const GlobalAreasSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   description: z.string().min(1, "Description is required"),
+  bannerUrl: z.string().optional(),
   imageUrl: z.string(),
   mapId: z.number().int().positive("Map ID is required"),
   wikiId: z.number().int().positive().optional(),

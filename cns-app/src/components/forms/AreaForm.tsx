@@ -2,6 +2,7 @@
 import axios from "axios";
 import { Plus } from "lucide-react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -38,6 +39,8 @@ import { JsonValue } from "@prisma/client/runtime/library";
 import { UploadComponent } from "../ui/uploader";
 
 import "easymde/dist/easymde.min.css";
+import { Card, CardContent } from "../ui/card";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
 
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
@@ -53,6 +56,7 @@ interface Props {
         updatedAt: Date;
         title: string;
         description: string;
+        bannerUrl: string;
         imageUrl: string;
         // nodes?: areaNode[];
         nodes?: JsonValue;
@@ -103,6 +107,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
     defaultValues: {
       title: globalArea?.title || "",
       description: globalArea?.description || "",
+      bannerUrl: globalArea?.bannerUrl || "",
       imageUrl: globalArea?.imageUrl || "",
       mapId: globalArea?.mapId || map.id,
       wikiId: globalArea?.wikiId ?? undefined,
@@ -130,6 +135,7 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
   }, [selectedWikiId, form]);
 
   const thumbImg = form.watch("imageUrl");
+  const bannerImg = form.watch("bannerUrl");
 
   async function onSubmit(values: GlobalAreaFormData) {
     if (editorCtx.nodeList.length < 1) {
@@ -252,12 +258,63 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                       )}
                     />
                   </div>
-                  <div className="upload-field">
-                    <h4>Thumbnail Image</h4>
-                    <UploadComponent
-                      image={thumbImg || ""}
+                  <div className="flex flex-col gap-2">
+                    <h3>Images</h3>
+                    <div className="flex gap-8 mb-8">
+                      {bannerImg && (
+                        <Card>
+                          <CardContent className=" flex flex-col p-4">
+                            <h4 className=" text-sm font-semibold mb-1">
+                              Banner Image
+                            </h4>
+                            <Image
+                              src={bannerImg}
+                              alt={"bannerImg"}
+                              className="object-cover object-center"
+                              width={240}
+                              height={240}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => form.setValue("bannerUrl", "")}
+                            >
+                              Remove
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )}
+                      {thumbImg && (
+                        <Card>
+                          <CardContent className=" flex flex-col p-4">
+                            <h4 className=" text-sm font-semibold mb-1">
+                              Thumbnail Image
+                            </h4>
+                            <Image
+                              src={thumbImg}
+                              alt={"thumbUrl"}
+                              className="object-cover object-center"
+                              width={240}
+                              height={240}
+                            />
+                            <Button
+                              className="p-0"
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => form.setValue("imageUrl", "")}
+                            >
+                              Remove
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                    <MediaLibrary
                       form={form}
-                      fieldName="imageUrl"
+                      imageFieldName="bannerUrl"
+                      thumbnailFieldName="imageUrl"
                     />
                   </div>
                   <div className="w-full" id="timestamp-container">

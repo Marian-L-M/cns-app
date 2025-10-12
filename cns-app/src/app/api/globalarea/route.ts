@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
     const data: any = {
       title: validation.data.title,
       description: validation.data.description,
+      bannerUrl: validation.data.bannerUrl || "",
       imageUrl: validation.data.imageUrl,
       objectTime: validation.data.objectTime,
       type: validation.data.type as MapAreaType,

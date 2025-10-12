@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
     const data: any = {
       title: validation.data.title,
       description: validation.data.description,
+      bannerUrl: validation.data.bannerUrl || "",
       thumbUrl: validation.data.thumbUrl || "",
       iconUrl: validation.data.iconUrl || "",
       x: validation.data.x || 0,

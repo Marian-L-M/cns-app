@@ -28,8 +28,11 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
 import { Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { UploadComponent } from "../ui/uploader";
+import { Card, CardContent } from "../ui/card";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
 
 interface Props {
   wikiId: number;
@@ -235,12 +238,23 @@ export default function InfoboxItemForm({
               {selectedType === "IMAGE" && (
                 <div className="w-full">
                   <div className="w-full flex flex-col gap-2">
-                    <h4>Thumbnail Image</h4>
-                    <UploadComponent
-                      image={thumbImg || ""}
-                      form={form}
-                      fieldName="imageUrl"
-                    />
+                    {thumbImg && (
+                      <Card>
+                        <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
+                          <h4 className=" text-sm font-semibold">
+                            Thumbnail Image
+                          </h4>
+                          <Image
+                            src={thumbImg}
+                            alt={"imageUrl"}
+                            className="object-cover object-center"
+                            width={240}
+                            height={240}
+                          />
+                        </CardContent>
+                      </Card>
+                    )}
+                    <MediaLibrary form={form} imageFieldName="imageUrl" />
                   </div>
                   <div className="w-full">
                     <FormField

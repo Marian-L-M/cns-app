@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import { mapSchema } from "@/ValidationSchemas/maps";
 
 import "easymde/dist/easymde.min.css";
-import { UploadComponent } from "../ui/uploader";
 import MediaLibrary from "../ui/media-library/MediaLibrary";
 import { Card, CardContent } from "../ui/card";
 const SimpleMdeEditor = dynamic(() => import("react-simplemde-editor"), {
@@ -134,8 +133,8 @@ export default function MapForm({ map }: Props) {
           <div className="flex gap-8 mb-8">
             {mapImg && (
               <Card>
-                <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
-                  <h4 className=" text-sm font-semibold">Map Image</h4>
+                <CardContent className=" flex flex-col p-4">
+                  <h4 className="text-sm font-semibold mb-1">Map Image</h4>
                   <Image
                     src={mapImg}
                     alt={"mapUrl"}
@@ -143,13 +142,24 @@ export default function MapForm({ map }: Props) {
                     width={240}
                     height={240}
                   />
+                  <Button
+                    className="p-0"
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => form.setValue("mapUrl", "")}
+                  >
+                    Remove
+                  </Button>
                 </CardContent>
               </Card>
             )}
             {thumbImg && (
               <Card>
-                <CardContent className="space-y-2 mt-2 flex flex-col gap-2">
-                  <h4 className=" text-sm font-semibold">Thumbnail Image</h4>
+                <CardContent className=" flex flex-col p-4">
+                  <h4 className="text-sm font-semibold mb-1">
+                    Thumbnail Image
+                  </h4>
                   <Image
                     src={thumbImg}
                     alt={"thumbUrl"}
@@ -157,6 +167,15 @@ export default function MapForm({ map }: Props) {
                     width={240}
                     height={240}
                   />
+                  <Button
+                    className="p-0"
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => form.setValue("imageUrl", "")}
+                  >
+                    Remove
+                  </Button>
                 </CardContent>
               </Card>
             )}

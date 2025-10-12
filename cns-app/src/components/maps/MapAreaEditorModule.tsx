@@ -17,6 +17,7 @@ interface Props {
         updatedAt: Date;
         title: string;
         description: string;
+        bannerUrl: string;
         imageUrl: string;
         // nodes?: areaNode[];
         nodes?: JsonValue;
