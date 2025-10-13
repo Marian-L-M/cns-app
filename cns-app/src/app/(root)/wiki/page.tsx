@@ -1,4 +1,12 @@
 import prisma from "@/../prisma/db";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import WikiCardContainer from "@/components/wiki/WikiCardContainer";
 import { AdminSettings } from "@prisma/client";
@@ -49,7 +57,18 @@ export default async function Wiki() {
   const exploreWiki = settings.find((item) => item.type === "setExploreWikis");
 
   return (
-    <div className="flex flex-col gap-20 w-full">
+    <div className="flex flex-col gap-2 w-full">
+      <Breadcrumb>
+        <BreadcrumbList className="text-xs">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Wikis</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <Tabs defaultValue="read" className="w-full">
         {/* <TabsList className="absolute top-0 left-0 -translate-y-full">
           <TabsTrigger value="read">Read</TabsTrigger>

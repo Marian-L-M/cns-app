@@ -6,6 +6,14 @@ import prisma from "@/../prisma/db";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import InfoboxDisplayModule from "@/components/displays/InfoboxDisplayModule";
 import AuthorDisplayModule from "@/components/displays/AuthorDisplayModule";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface WikiPageProps {
   params: Promise<{ id: string }>;
@@ -62,7 +70,22 @@ export default async function WikiPage({ params }: WikiPageProps) {
   });
 
   return (
-    <div className="flex flex-col gap-20 w-full">
+    <div className="flex flex-col gap-2 w-full">
+      <Breadcrumb>
+        <BreadcrumbList className="text-xs">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/wiki">Wikis</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{wiki.title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <Tabs defaultValue="article" className="w-full">
         {/* <TabsList className="">
           <TabsTrigger value="article">Article</TabsTrigger>
