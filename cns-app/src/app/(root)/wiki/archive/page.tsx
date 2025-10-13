@@ -106,7 +106,6 @@ export default async function wikiArchivePage({
   return (
     <div className="w-full flex flex-col gap-4">
       <div className="flex-col gap-2">
-        <h1 className="text-2xl font-bold">Wiki Archive</h1>
         <Breadcrumb>
           <BreadcrumbList className="text-xs">
             <BreadcrumbItem>
@@ -124,6 +123,7 @@ export default async function wikiArchivePage({
         </Breadcrumb>
       </div>
       <div className="w-full flex flex-col gap-4 border rounded-md p-4">
+        <h1 className="text-2xl font-bold">Wiki Archive</h1>
         <WikiSearchBar authorList={authorList} />
         <Link href="/wiki/archive">
           <Button>Reset</Button>

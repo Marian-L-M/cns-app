@@ -8,6 +8,14 @@ import AreaObjectOverviewModule from "./AreaObjectOverview";
 import MapDisplayModule from "@/components/displays/MapDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -75,7 +83,24 @@ export default async function EditMapPage({ params, searchParams }: Props) {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-2xl">Edit Map</h1>
+      <div className="flex flex-col gap-2">
+        <Breadcrumb>
+          <BreadcrumbList className="text-xs">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/editor">Editor</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/editor/maps">Maps</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{map.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-2xl">Edit Map</h1>
+      </div>
       <Tabs defaultValue={activeTab} className="w-full">
         <TabsList>
           <TabsTrigger value="setup">Setup</TabsTrigger>

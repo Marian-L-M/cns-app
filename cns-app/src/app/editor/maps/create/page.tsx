@@ -18,8 +18,7 @@ export default async function NewMap() {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div>
-        <h1 className="text-lg font-semibold">Create Map</h1>
+      <div className="flex flex-col gap-2">
         <Breadcrumb>
           <BreadcrumbList className="text-xs">
             <BreadcrumbItem>
@@ -31,6 +30,7 @@ export default async function NewMap() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        <h1 className="text-lg font-semibold">Create Map</h1>
       </div>
       <MapForm />
     </div>

@@ -5,6 +5,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import MapSearchBar from "@/components/maps/searchbar/MapSearchBar";
 import MapCardTable from "@/components/maps/MapCardTable";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export const metadata = {
   title: `Maps Archive`,
@@ -90,8 +98,23 @@ export default async function mapArchivePage({
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Maps Archive</h1>
+      <Breadcrumb>
+        <BreadcrumbList className="text-xs">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/maps">Maps</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Archive</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="w-full flex flex-col gap-4 border rounded-md p-4">
+        <h1 className="text-2xl font-bold">Maps Archive</h1>
         <MapSearchBar authorList={authorList} />
         <Link href="/maps/archive">
           <Button>Reset</Button>

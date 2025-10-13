@@ -107,6 +107,7 @@ export default function MediaLibrary<T extends FieldValues>({
                         src={media.thumbnailUrl || media.url}
                         alt={media.alt || ""}
                         fill={true}
+                        style={{ objectFit: "cover" }}
                       />
                     </div>
                     <h4 className="text-sm">

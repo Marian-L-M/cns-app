@@ -4,6 +4,14 @@ import MasterMapSearchBar from "@/components/mastermaps/searchbar/MasterMapSearc
 import { Button } from "@/components/ui/button";
 import MasterMapCardContainer from "@/components/mastermaps/MasterMapCardTable";
 import { Prisma } from "@prisma/client";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export const metadata = {
   title: `Mastermaps`,
@@ -46,8 +54,19 @@ export default async function MasterMapPage({
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Mastermaps</h1>
+      <Breadcrumb>
+        <BreadcrumbList className="text-xs">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Mastermaps</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="w-full flex flex-col gap-4 border rounded-md p-4">
+        <h1 className="text-2xl font-bold">Mastermaps</h1>
         <MasterMapSearchBar />
         <Link href="/mastermaps">
           <Button>Reset</Button>

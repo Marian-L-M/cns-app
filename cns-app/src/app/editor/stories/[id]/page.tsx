@@ -7,6 +7,14 @@ import { fetchMapData } from "@/lib/fetchMapData";
 import Link from "next/link";
 import StatusContextProvider from "@/store/statusContext";
 import { Plus } from "lucide-react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -87,7 +95,24 @@ export default async function EditStory({ params, searchParams }: Props) {
 
   return (
     <div className="w-full flex flex-col gap-4" id="story-editor-module">
-      <h1 className="text-2xl">Edit Story</h1>
+      <div className="flex flex-col gap-2">
+        <Breadcrumb>
+          <BreadcrumbList className="text-xs">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/editor">Editor</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/editor/stories">Stories</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{story.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-2xl">Edit Story</h1>
+      </div>
       {/* <Tabs defaultValue={activeTab} className="w-full"> */}
       <Tabs defaultValue={activeTab} className="w-full">
         <TabsList>

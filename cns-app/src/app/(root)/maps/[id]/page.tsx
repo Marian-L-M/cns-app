@@ -2,6 +2,14 @@ import ReactMarkDown from "react-markdown";
 import MapDisplayModule from "@/components/displays/MapDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import StatusContextProvider from "@/store/statusContext";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface MapPageProps {
   params: Promise<{ id: string }>;
@@ -31,17 +39,34 @@ export default async function MapPage({ params }: MapPageProps) {
     return <div className="text-destructive">{error}</div>;
   }
   return (
-    <div className="w-full flex gap-4">
-      <div className="col-span-6">
-        <StatusContextProvider>
-          <MapDisplayModule data={data} />
-        </StatusContextProvider>
-      </div>
-      <div className="col-span-3 flex flex-col gap-4">
-        <h2 className="text-2xl">{data.map.title}</h2>
-        <ReactMarkDown className={"prose dark:prose-invert text-md"}>
-          {data.map.description}
-        </ReactMarkDown>
+    <div className="flex flex-col gap-2 w-full">
+      <Breadcrumb>
+        <BreadcrumbList className="text-xs">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/maps">Maps</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{data.map.title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="w-full flex gap-4">
+        <div className="col-span-6">
+          <StatusContextProvider>
+            <MapDisplayModule data={data} />
+          </StatusContextProvider>
+        </div>
+        <div className="col-span-3 flex flex-col gap-4">
+          <h2 className="text-2xl">{data.map.title}</h2>
+          <ReactMarkDown className={"prose dark:prose-invert text-md"}>
+            {data.map.description}
+          </ReactMarkDown>
+        </div>
       </div>
     </div>
   );

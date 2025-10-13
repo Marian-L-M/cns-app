@@ -2,6 +2,22 @@ import prisma from "@/../prisma/db";
 import EditorContextProvider from "@/store/mapEditorContext";
 import StoryEditor from "@/components/editors/StoryEditor";
 import { requireOwnerOrAdmin } from "@/lib/auth-guards";
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 interface substoryProps {
   params: Promise<{
@@ -71,7 +87,39 @@ export default async function SubStoryDetailPage({ params }: substoryProps) {
   };
 
   return (
-    <div className="w-full" id="substory-detail-page">
+    <div className="w-full flex flex-col gap-4" id="substory-detail-page">
+      <div className="flex flex-col gap-2">
+        <Breadcrumb>
+          <BreadcrumbList className="text-xs">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/editor">Editor</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <BreadcrumbEllipsis />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem>
+                    <Link href="/editor/stories">Stories</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href={`/editor/stories/${story.id}`}>
+                      {story.title}
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{subStoryData.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-2xl">Edit Substory</h1>
+      </div>
       <EditorContextProvider>
         <StoryEditor story={story} substory={subStoryData} map={map} />
       </EditorContextProvider>

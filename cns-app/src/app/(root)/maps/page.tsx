@@ -9,6 +9,14 @@ import CursorContextProvider from "@/store/cursorContext";
 import MastermapDisplayModule from "@/components/displays/MastermapDisplayModule";
 import MapCardContainer from "@/components/maps/MapCardContainer";
 import MasterMapCardContainer from "@/components/mastermaps/MasterMapCardContainer";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export const metadata = {
   title: `Maps`,
@@ -62,7 +70,18 @@ export default async function Maps() {
   );
 
   return (
-    <div className="flex flex-col gap-20 w-full">
+    <div className="flex flex-col gap-2 w-full">
+      <Breadcrumb>
+        <BreadcrumbList className="text-xs">
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Maps</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <Tabs defaultValue="read" className="w-full">
         {/* <TabsList className="absolute top-0 left-0 -translate-y-full">
           <TabsTrigger value="read">Read</TabsTrigger>

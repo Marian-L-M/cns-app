@@ -5,6 +5,14 @@ import { Prisma, Status, Story } from "@prisma/client";
 import StorySearchBar from "@/components/story/searchbar/StorySearchBar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export const metadata = {
   title: `Featured Stories`,
@@ -94,8 +102,25 @@ export default async function featuredStoryPage({
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Featured Stories</h1>
+      <div className="flex-col gap-2">
+        <Breadcrumb>
+          <BreadcrumbList className="text-xs">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/stories">Stories</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Featured</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       <div className="w-full flex flex-col gap-4 border rounded-md p-4">
+        <h1 className="text-2xl font-bold">Featured Stories</h1>
         <StorySearchBar authorList={authorList} />
         <Link href="/stories/featured">
           <Button>Reset</Button>
