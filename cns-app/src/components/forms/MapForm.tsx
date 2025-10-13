@@ -131,60 +131,57 @@ export default function MapForm({ map }: Props) {
           />
           <h3>Images</h3>
           <div className="flex gap-8 mb-8">
-            {mapImg && (
-              <Card>
-                <CardContent className=" flex flex-col p-4">
-                  <h4 className="text-sm font-semibold mb-1">Map Image</h4>
-                  <Image
-                    src={mapImg}
-                    alt={"mapUrl"}
-                    className="object-cover object-center"
-                    width={240}
-                    height={240}
-                  />
-                  <Button
-                    className="p-0"
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => form.setValue("mapUrl", "")}
-                  >
-                    Remove
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-            {thumbImg && (
-              <Card>
-                <CardContent className=" flex flex-col p-4">
-                  <h4 className="text-sm font-semibold mb-1">
-                    Thumbnail Image
-                  </h4>
-                  <Image
-                    src={thumbImg}
-                    alt={"thumbUrl"}
-                    className="object-cover object-center"
-                    width={240}
-                    height={240}
-                  />
-                  <Button
-                    className="p-0"
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => form.setValue("imageUrl", "")}
-                  >
-                    Remove
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+            <Card>
+              <CardContent className=" flex flex-col gap-2 p-4">
+                <h4 className=" text-sm font-semibold mb-1">Map Image</h4>
+                {mapImg && (
+                  <div className="flex flex-col gap-2">
+                    <Image
+                      src={mapImg}
+                      alt={"mapImg"}
+                      className="object-cover object-center"
+                      width={240}
+                      height={240}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => form.setValue("mapUrl", "")}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                )}
+                <MediaLibrary form={form} imageFieldName="mapUrl" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className=" flex flex-col gap-2 p-4">
+                <h4 className=" text-sm font-semibold mb-1">Thumbnail Image</h4>
+                {thumbImg && (
+                  <div className="flex flex-col gap-2">
+                    <Image
+                      src={thumbImg}
+                      alt={"thumbImg"}
+                      className="object-cover object-center"
+                      width={240}
+                      height={240}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => form.setValue("imageUrl", "")}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                )}
+                <MediaLibrary form={form} imageFieldName="imageUrl" />
+              </CardContent>
+            </Card>
           </div>
-          <MediaLibrary
-            form={form}
-            imageFieldName="mapUrl"
-            thumbnailFieldName="imageUrl"
-          />
           <FormField
             control={form.control}
             name="mapTime"

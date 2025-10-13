@@ -6,6 +6,7 @@ import StoryDisplayModule from "@/components/displays/StoryDisplayModule";
 import { fetchMapData } from "@/lib/fetchMapData";
 import Link from "next/link";
 import StatusContextProvider from "@/store/statusContext";
+import { Plus } from "lucide-react";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -103,7 +104,7 @@ export default async function EditStory({ params, searchParams }: Props) {
           </div>
         </TabsContent>
         <TabsContent value="substories">
-          <div className="flex gap-4">
+          <div className="flex gap-4 relative">
             <div className="w-4/5">
               <StatusContextProvider>
                 <StoryDisplayModule
@@ -131,6 +132,12 @@ export default async function EditStory({ params, searchParams }: Props) {
                 </div>
               </div>
             </div>
+            <Link
+              href={`/editor/stories/${story.id}/substories/create`}
+              className="absolute right-0 bottom-0 flex align-middle justify-center p-2 bg-indigo-950 text-slate-50 rounded-full hover:opacity-75"
+            >
+              <Plus width={48} height={48} />
+            </Link>
           </div>
         </TabsContent>
       </Tabs>

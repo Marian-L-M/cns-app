@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,6 +27,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { UploadComponent } from "../ui/uploader";
+import MediaLibrary from "../ui/media-library/MediaLibrary";
 
 interface Props {
   category: AdminSettingsType;
@@ -147,12 +149,16 @@ export default function AdminSettingsGlobalForm({
                 {type == "logo" && (
                   <div className="upload-field">
                     <h5 className="font-bold">{type}</h5>
-                    {/* Upload without registering media item */}
-                    <UploadComponent
-                      image={uploadImg || ""}
-                      form={form}
-                      fieldName="value"
-                    />
+                    {uploadImg && (
+                      <Image
+                        src={uploadImg}
+                        alt={"logo"}
+                        className="object-cover object-center"
+                        width={240}
+                        height={240}
+                      />
+                    )}
+                    <MediaLibrary form={form} imageFieldName="value" />
                   </div>
                 )}
                 {/* Text field */}

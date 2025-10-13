@@ -214,61 +214,62 @@ export default function StoryForm({ story, substories }: Props) {
             <div className="flex flex-col gap-2">
               <h3>Images</h3>
               <div className="flex gap-8 mb-8">
-                {bannerImg && (
-                  <Card>
-                    <CardContent className=" flex flex-col p-4">
-                      <h4 className=" text-sm font-semibold mb-1">
-                        Banner Image
-                      </h4>
-                      <Image
-                        src={bannerImg}
-                        alt={"bannerImg"}
-                        className="object-cover object-center"
-                        width={240}
-                        height={240}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => form.setValue("bannerUrl", "")}
-                      >
-                        Remove
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-                {thumbImg && (
-                  <Card>
-                    <CardContent className=" flex flex-col p-4">
-                      <h4 className=" text-sm font-semibold mb-1">
-                        Thumbnail Image
-                      </h4>
-                      <Image
-                        src={thumbImg}
-                        alt={"thumbUrl"}
-                        className="object-cover object-center"
-                        width={240}
-                        height={240}
-                      />
-                      <Button
-                        className="p-0"
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => form.setValue("imageUrl", "")}
-                      >
-                        Remove
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card>
+                  <CardContent className=" flex flex-col gap-2 p-4">
+                    <h4 className=" text-sm font-semibold mb-1">
+                      Banner Image
+                    </h4>
+                    {bannerImg && (
+                      <div className="flex flex-col gap-2">
+                        <Image
+                          src={bannerImg}
+                          alt={"bannerImg"}
+                          className="object-cover object-center"
+                          width={240}
+                          height={240}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => form.setValue("bannerUrl", "")}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                    <MediaLibrary form={form} imageFieldName="bannerUrl" />
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className=" flex flex-col p-4">
+                    <h4 className=" text-sm font-semibold mb-1">
+                      Thumbnail Image
+                    </h4>
+                    {thumbImg && (
+                      <div className="flex flex-col gap-2">
+                        <Image
+                          src={thumbImg}
+                          alt={"thumbUrl"}
+                          className="object-cover object-center"
+                          width={240}
+                          height={240}
+                        />
+                        <Button
+                          className="p-0"
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => form.setValue("imageUrl", "")}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                    <MediaLibrary form={form} imageFieldName="imageUrl" />
+                  </CardContent>
+                </Card>
               </div>
-              <MediaLibrary
-                form={form}
-                imageFieldName="bannerUrl"
-                thumbnailFieldName="imageUrl"
-              />
             </div>
             <FormField
               control={form.control}

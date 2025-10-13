@@ -36,7 +36,6 @@ import { EditorContext } from "@/store/mapEditorContext";
 import { GlobalAreasSchema, MapAreaTypeList } from "@/ValidationSchemas/global";
 import StyleItemForm from "./StyleItemForm";
 import { JsonValue } from "@prisma/client/runtime/library";
-import { UploadComponent } from "../ui/uploader";
 
 import "easymde/dist/easymde.min.css";
 import { Card, CardContent } from "../ui/card";
@@ -261,61 +260,64 @@ export default function GlobalAreaForm({ map, globalArea }: Props) {
                   <div className="flex flex-col gap-2">
                     <h3>Images</h3>
                     <div className="flex gap-8 mb-8">
-                      {bannerImg && (
-                        <Card>
-                          <CardContent className=" flex flex-col p-4">
-                            <h4 className=" text-sm font-semibold mb-1">
-                              Banner Image
-                            </h4>
-                            <Image
-                              src={bannerImg}
-                              alt={"bannerImg"}
-                              className="object-cover object-center"
-                              width={240}
-                              height={240}
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => form.setValue("bannerUrl", "")}
-                            >
-                              Remove
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      )}
-                      {thumbImg && (
-                        <Card>
-                          <CardContent className=" flex flex-col p-4">
-                            <h4 className=" text-sm font-semibold mb-1">
-                              Thumbnail Image
-                            </h4>
-                            <Image
-                              src={thumbImg}
-                              alt={"thumbUrl"}
-                              className="object-cover object-center"
-                              width={240}
-                              height={240}
-                            />
-                            <Button
-                              className="p-0"
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => form.setValue("imageUrl", "")}
-                            >
-                              Remove
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      )}
+                      <Card>
+                        <CardContent className=" flex flex-col gap-2 p-4">
+                          <h4 className=" text-sm font-semibold mb-1">
+                            Banner Image
+                          </h4>
+                          {bannerImg && (
+                            <div className="flex flex-col gap-2">
+                              <Image
+                                src={bannerImg}
+                                alt={"bannerImg"}
+                                className="object-cover object-center"
+                                width={240}
+                                height={240}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => form.setValue("bannerUrl", "")}
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          )}
+                          <MediaLibrary
+                            form={form}
+                            imageFieldName="bannerUrl"
+                          />
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className=" flex flex-col gap-2 p-4">
+                          <h4 className=" text-sm font-semibold mb-1">
+                            Thumbnail Image
+                          </h4>
+                          {thumbImg && (
+                            <div className="flex flex-col gap-2">
+                              <Image
+                                src={thumbImg}
+                                alt={"thumbImg"}
+                                className="object-cover object-center"
+                                width={240}
+                                height={240}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => form.setValue("imageUrl", "")}
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          )}
+                          <MediaLibrary form={form} imageFieldName="imageUrl" />
+                        </CardContent>
+                      </Card>
                     </div>
-                    <MediaLibrary
-                      form={form}
-                      imageFieldName="bannerUrl"
-                      thumbnailFieldName="imageUrl"
-                    />
                   </div>
                   <div className="w-full" id="timestamp-container">
                     <FormField

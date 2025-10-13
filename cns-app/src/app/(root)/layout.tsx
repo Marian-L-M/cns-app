@@ -6,6 +6,7 @@ import Header from "@/components/shared/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
 import prisma from "../../../prisma/db";
+import { Toaster } from "sonner";
 
 export default async function RootLayout({
   children,
@@ -82,6 +83,7 @@ export default async function RootLayout({
             <Footer />
           </SidebarInset>
         </div>
+        <Toaster />
       </div>
     </SidebarProvider>
   );
