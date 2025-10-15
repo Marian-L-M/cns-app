@@ -1,6 +1,6 @@
 import { requireAdmin } from "@/lib/auth-guards";
 import prisma from "@/../prisma/db";
-import UserProfileForm from "@/components/forms/UserProfileForm";
+import UserAdminForm from "@/app/admin/users/UserAdminForm";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,25 +15,13 @@ interface Props {
 }
 
 export const metadata = {
-  title: "Edit Profile",
+  title: "Admin",
 };
 
-export default async function userProfilePage({ params }: Props) {
+export default async function adminUserPage({ params }: Props) {
   await requireAdmin();
   const resolvedParams = await params;
 
-  const user = await prisma?.user.findUnique({
-    where: { id: resolvedParams.id },
-    include: {
-      userProfile: true,
-    },
-  });
-
-  if (!user) {
-    return <p className="text-destrucive">User Not Found</p>;
-  }
-  // Overwrite password with empty string on the server side
-  user.password = "";
   return (
     <div className="w-full flex flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -48,19 +36,13 @@ export default async function userProfilePage({ params }: Props) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/admin/users/${user.id}`}>
-                {user.name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Profile</BreadcrumbPage>
+              <BreadcrumbPage>Create</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-2xl">Edit User Profile</h1>
+        <h1 className="text-2xl">Edit User</h1>
       </div>
-      <UserProfileForm user={user} />
+      <UserAdminForm />
     </div>
   );
 }

@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import DeleteUserButton from "@/components/buttons/DeleteUserButton";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type UserFormData = z.infer<typeof userSchema>;
 
@@ -49,16 +50,24 @@ export default function UserAdminForm({ user }: Props) {
       setError("");
       if (user) {
         await axios.patch(`/api/users/${user.id}`, values);
+        router.push(`/admin/users/${user.id}`);
+        router.refresh();
+        toast.success("User updated succesfully");
       } else {
-        await axios.post("/api/users", values);
+        const response = await axios.post("/api/users", values);
+        const newUser = response.data;
+        router.push(`/admin/users/${newUser.id}`);
+        router.refresh();
+        toast.success("User created succesfully");
       }
       setIsSubmitting(false);
-      router.push("/admin/users");
-      router.refresh();
     } catch (error) {
       setError("Unknown error occurred");
       setIsSubmitting(false);
-      console.log(error);
+      toast.error("User update failed", {
+        className: "error",
+        description: `ERROR! ${error}`,
+      });
     }
   }
   return (

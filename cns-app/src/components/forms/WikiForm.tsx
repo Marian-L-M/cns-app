@@ -124,10 +124,7 @@ export default function WikiForm({ wiki, infobox }: Props) {
 
   return (
     <div className="flex flex-col gap-10 w-full">
-      <div className="w-full flex items-center justify-between">
-        <h1 className="text-3xl">
-          {wiki ? "Update Wiki entry" : "Add new Wiki entry"}
-        </h1>
+      <div className="w-full flex items-center justify-end gap-4">
         {wiki && (
           <Button variant={"outline"} asChild>
             <Link href={`/wiki/${wiki.id}`}>View article</Link>

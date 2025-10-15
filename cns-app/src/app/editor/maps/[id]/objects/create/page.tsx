@@ -3,6 +3,22 @@ import { requireOwnerOrAdmin } from "@/lib/auth-guards";
 import { fetchMapAuthorId } from "@/lib/fetchMapData";
 import EditorContextProvider from "@/store/mapEditorContext";
 import MapObjectEditorModule from "@/components/maps/MapObjectEditorModule";
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -25,8 +41,42 @@ export default async function AddMapObject({ params }: Props) {
   });
 
   return (
-    <EditorContextProvider>
-      <MapObjectEditorModule map={map} />
-    </EditorContextProvider>
+    <div className="w-full flex flex-col gap-4" id="substory-detail-page">
+      <div className="flex flex-col gap-2">
+        <Breadcrumb>
+          <BreadcrumbList className="text-xs">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/editor">Editor</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <BreadcrumbEllipsis />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem>
+                    <Link href="/editor/maps">Maps</Link>
+                  </DropdownMenuItem>
+                  {map && (
+                    <DropdownMenuItem>
+                      <Link href={`/editor/maps/${map.id}`}>{map.title}</Link>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Create Map Object</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-2xl">Create Map Object</h1>
+      </div>
+      <EditorContextProvider>
+        <MapObjectEditorModule map={map} />
+      </EditorContextProvider>
+    </div>
   );
 }
