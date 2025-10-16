@@ -43,11 +43,11 @@ export default async function AreaObjectOverviewModule({
 
   return (
     <StatusContextProvider>
-      <div className="w-full grid grid-cols-9 gap-4">
+      <div className="w-full grid grid-cols-12 gap-4">
         <div className="col-span-7">
           <MapDisplayModule data={data} settings={settings.type} />
         </div>
-        <div className="col-span-2">
+        <div className="col-span-5">
           <AreaObjectList
             dataList={dataList()}
             label={settings.label}

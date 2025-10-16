@@ -6,6 +6,7 @@ import {
   getValueFirstOfEachObjectType,
   getValueFirstOfEachStyleType,
 } from "@/lib/utils";
+import { getScaling } from "@/lib/draw/utils";
 
 interface IconBounds {
   left: number;
@@ -60,8 +61,8 @@ export function useAreaEditor(globalArea: any) {
     const canvas = canvasRef.current;
 
     // Canvas values
-    const cw = canvas.width / 1000;
-    const ch = canvas.height / 1000;
+    // const cw = canvas.width / 1000;
+    // const ch = canvas.height / 1000;
 
     // Get context
     const ctx = canvas.getContext("2d");
@@ -74,6 +75,7 @@ export function useAreaEditor(globalArea: any) {
     let idCounter = editorCtx.nodeList.length;
 
     const redrawCanvas = () => {
+      const { cw, ch } = getScaling(canvas);
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -111,6 +113,7 @@ export function useAreaEditor(globalArea: any) {
     // 250116 Todo: Add fix broken exit editor node functionality (Enter needs to be pressed twice)
     // Draw new ares on click
     canvas.onmousedown = (e) => {
+      const { cw, ch } = getScaling(canvas);
       const mouseX = e.clientX - r.x;
       const mouseY = e.clientY - r.y;
       let updatedNodes = [...editorCtx.nodeList];
@@ -138,7 +141,7 @@ export function useAreaEditor(globalArea: any) {
 
       // Add node if not editing or clicking on existing node
       if (!nodeClicked && !isActiveFlag) {
-        updatedNodes.push({ id: idCounter++, x: mouseX, y: mouseY });
+        updatedNodes.push({ id: idCounter++, x: mouseX / cw, y: mouseY / ch });
       }
 
       // Update context with any changes
@@ -218,8 +221,7 @@ export function useObjectEditor(globalObject: any) {
     const canvas = canvasRef.current;
 
     // Canvas values
-    const cw = canvas.width / 1000;
-    const ch = canvas.height / 1000;
+    const { cw, ch } = getScaling(canvas);
     const rect = canvas.getBoundingClientRect();
 
     // Get context
@@ -312,8 +314,7 @@ export function redrawCanvas(
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
-  const cw = canvas.width / 1000;
-  const ch = canvas.height / 1000;
+  const { cw, ch } = getScaling(canvas);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawIcon(thumbSize, opacity, ctx, globalObject, cw, ch);

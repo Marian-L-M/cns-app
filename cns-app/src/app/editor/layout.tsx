@@ -29,9 +29,7 @@ export default async function EditorLayout({
     <>
       <div className="flex w-full flex-col gap-4">
         <EditorHeader menuList={menuList} settings={settings} />
-        <div className="flex-1 space-y-4 p-8 pt-6 container mx-auto">
-          {children}
-        </div>
+        <div className="w-full space-y-4 p-8 pt-6  mx-auto">{children}</div>
       </div>
       <Toaster />
     </>

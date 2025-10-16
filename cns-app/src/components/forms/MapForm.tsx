@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -182,6 +183,29 @@ export default function MapForm({ map }: Props) {
               </CardContent>
             </Card>
           </div>
+
+          <FormField
+            control={form.control}
+            name="canvasAspectRatio"
+            defaultValue={map?.canvasAspectRatio}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Canvas Aspect Ratio: {field.value}</FormLabel>
+                <FormDescription>Height unit per width unit</FormDescription>
+                <FormControl>
+                  <Input
+                    type="range"
+                    placeholder="0.5-2"
+                    {...field}
+                    min={0.5}
+                    max={2}
+                    step={0.01}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="mapTime"

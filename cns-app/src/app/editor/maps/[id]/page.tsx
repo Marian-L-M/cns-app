@@ -108,13 +108,13 @@ export default async function EditMapPage({ params, searchParams }: Props) {
           <TabsTrigger value="objects">Objects</TabsTrigger>
         </TabsList>
         <TabsContent value="setup">
-          <div className="flex flex-wrap gap-4">
-            <div className="w-4xl max-w-full flex-1">
+          <div className="w-full grid grid-cols-12 gap-4">
+            <div className="col-span-7">
               <StatusContextProvider>
                 <MapDisplayModule data={data} />
               </StatusContextProvider>
             </div>
-            <div className="w-sm max-w-full flex-1">
+            <div className="col-span-5">
               <MapForm map={map} />
             </div>
           </div>

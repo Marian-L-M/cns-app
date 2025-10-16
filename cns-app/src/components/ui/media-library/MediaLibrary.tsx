@@ -113,6 +113,24 @@ export default function MediaLibrary<T extends FieldValues>({
                     <h4 className="text-sm">
                       {media.title ? media.title : media.filename}
                     </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {media.width && (
+                        <p className="text-xs text-slate-500">
+                          w: {media.width}
+                        </p>
+                      )}
+                      {media.height && (
+                        <p className="text-xs text-slate-500">
+                          h: {media.height}
+                        </p>
+                      )}
+                      {media.width && media.height && (
+                        <p className="text-xs text-slate-500">
+                          Ratio:{" "}
+                          {Math.round((media.width / media.height) * 100) / 100}
+                        </p>
+                      )}
+                    </div>
                   </Card>
                 ))}
               </div>
