@@ -7,7 +7,7 @@ const menuList = [
   { title: "General", url: "/admin/general" },
   { title: "Users", url: "/admin/users" },
   { title: "Page", url: "/admin/page" },
-  { title: "Settings", url: "/admin/settings" },
+  { title: "Backup", url: "/admin/backup" },
 ];
 
 export default async function AdminLayout({
