@@ -8,6 +8,8 @@ export const SERVER_URL = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : `http://localhost:3000`;
 
+export const DATABASE_URL_UNPOOLED = process.env.DATABASE_CONNECTION;
+
 export const PROJECT_URL = `https://cloudsandspaceships.com`;
 export const PROJECT_NAME = `Clouds and Spaceships`;
 
