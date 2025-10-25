@@ -55,7 +55,7 @@ export default async function MapCardContainer({ amount, type }: Props) {
           key={`featured-article-${article.id}`}
         >
           <div className="img-container relative w-full h-36">
-            <Link href={`/maps/${article.id}`}>
+            <Link href={`/maps/${article.slug}`}>
               {article.imageUrl ? (
                 <Image
                   src={article.imageUrl}
@@ -77,7 +77,7 @@ export default async function MapCardContainer({ amount, type }: Props) {
             <h4 className="text-lg font-semibold">{article.title}</h4>
             <p className="text-sm">{article.description}</p>
             <Link
-              href={`/maps/${article.id}`}
+              href={`/maps/${article.slug}`}
               className="flex gap-1 self-end mt-4 hover:opacity-70"
             >
               <SquareChevronRight /> View More

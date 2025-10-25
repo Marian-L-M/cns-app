@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
 import { mapSchema } from "@/ValidationSchemas/maps";
 import { auth } from "@/auth";
+import { generateUniqueSlug } from "@/lib/slug";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,10 +23,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
 
+    // Generate slug from title
+    const slug = await generateUniqueSlug(validation.data.title, prisma, "map");
+
     // Create the map and user map for owner
     const result = await prisma.$transaction(async (tx) => {
       const newMap = await tx.map.create({
-        data: body,
+        data: { ...body, slug },
       });
 
       await tx.userMap.create({

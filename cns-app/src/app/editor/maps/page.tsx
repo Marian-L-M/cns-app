@@ -1,4 +1,4 @@
-import { getLatestMaps } from "@/lib/actions/map.actions";
+import { getAllMaps, getLatestMaps } from "@/lib/actions/map.actions";
 import MapTable from "./MapTable";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -6,7 +6,7 @@ import { requireAuthorOrAdmin } from "@/lib/auth-guards";
 
 export default async function Maps() {
   const session = await requireAuthorOrAdmin();
-  const maps = await getLatestMaps(9); // Add proper filter functionality
+  const maps = await getAllMaps({ limit: 100, page: 12 }); // Add proper filter functionality
 
   return (
     <div className="w-full">
@@ -21,7 +21,7 @@ export default async function Maps() {
           </Button>
         </div>
       </div>
-      <MapTable maps={maps} />
+      <MapTable maps={maps.data} />
     </div>
   );
 }

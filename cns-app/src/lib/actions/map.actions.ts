@@ -12,26 +12,22 @@ export async function getLatestMaps(limit: number) {
     orderBy: { createdAt: `desc` },
   });
 
-  return convertToPlainObject(data);
+  // return convertToPlainObject(data);
+  return data;
 }
 
 export async function getAllMaps({
-  query,
-  //   limit = PAGE_SIZE,
   limit,
   page,
-  category,
 }: {
-  query: string;
   limit: number;
   page: number;
-  category: string;
 }) {
   const prisma = new PrismaClient();
 
   const data = await prisma.map.findMany({
-    skip: (page - 1) * limit,
-    take: limit,
+    // skip: (page - 1) * limit,
+    // take: limit,
   });
 
   const dataCount = await prisma.map.count();
