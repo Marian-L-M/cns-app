@@ -1,3 +1,5 @@
+import { title } from "process";
+
 // Transform title to slug format
 export function generateSlug(title: string): string {
   return title
@@ -13,32 +15,55 @@ export async function generateUniqueSlug(
   title: string,
   prisma: any,
   dataType: string, // Change to enumeration
-  existingId?: number
+  currentId?: number
 ): Promise<string> {
   let slug = generateSlug(title);
   let counter = 1;
-  let isUnique = false;
 
-  while (!isUnique) {
-    switch (dataType) {
-      case "map":
-        const existing = await prisma.map.findUnique({
-          where: { slug },
-          select: { id: true },
-        });
+  // If existing object, check if slug has changed, update if changed
+  if (currentId) {
+    // Check if object exists at id
+    const existing = await prisma[dataType].findUnique({
+      where: { id: currentId },
+      select: { id: true, slug: true },
+    });
 
-        // Check if unique else add counter
-        if (!existing || existing.id === existingId) {
-          isUnique = true;
-        } else {
-          slug = `${generateSlug(title)}-${counter}`;
-          counter++;
-        }
-        break;
-      default:
-        break;
+    // Check if slug update needed
+    if (!existing || existing.slug == slug) return slug;
+    else {
+      slug = await checkOrGenerateUnique(dataType, prisma, slug, counter);
     }
+
+    return slug;
+  } else {
+    slug = await checkOrGenerateUnique(dataType, prisma, slug, counter);
   }
 
   return slug;
+}
+
+async function checkOrGenerateUnique(
+  dataType: any,
+  prisma: any,
+  slug: string,
+  counter: number
+) {
+  let isUnique = false;
+  let newSlug = slug;
+
+  while (!isUnique) {
+    const existing = await prisma[dataType].findUnique({
+      where: { slug: newSlug },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      isUnique = true;
+    } else {
+      newSlug = `${generateSlug(title)}-${counter}`;
+      counter++;
+    }
+  }
+
+  return newSlug;
 }

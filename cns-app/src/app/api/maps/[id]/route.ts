@@ -53,7 +53,7 @@ export async function PATCH(request: NextRequest, { params }: Props) {
   }
 
   // Regenerate slug from title
-  const slug = await generateUniqueSlug(validation.data.title, prisma, "map");
+  const slug = await generateUniqueSlug(map.title, prisma, "map", map.id);
 
   // Map author ids back to user objects
   const { authors, ...fields } = body;
