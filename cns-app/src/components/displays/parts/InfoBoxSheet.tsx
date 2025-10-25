@@ -32,6 +32,7 @@ export default function InfoboxSheet({
   setSheetOpen,
   infoData,
 }: Props) {
+  console.log(infoData);
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetContent className="flex flex-col gap-8 overflow-y-scroll">
@@ -54,7 +55,7 @@ export default function InfoboxSheet({
         )}
         <SheetFooter>
           {infoData?.wikiId && (
-            <Link href={`/wiki/${infoData?.wikiId}`}>
+            <Link href={`/wiki/${infoData?.wiki?.slug}`}>
               <Button>Read the full wiki</Button>
             </Link>
           )}

@@ -121,8 +121,8 @@ export function useMasterMapMaker({
       // Go to clicked map
       const hitArea = checkHitbox(e, canvas, childMaps, ctx, cw, ch);
       if (hitArea && !(hitArea.length == 0)) {
-        const { id } = hitArea[0];
-        router.push(`/maps/${id}`);
+        const { id, slug } = hitArea[0];
+        router.push(`/maps/${slug}`);
         router.refresh();
       }
     };
