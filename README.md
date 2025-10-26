@@ -75,6 +75,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. Mastermap editor frame repositioning blasts rerendering logic
 1. Improve map interactiveness (e.g. cursor on clickable events)
 1. Image alt properties
+1. Admin reroutes to personal profile after editing user profile
 
 # Roadmap for further development
 
