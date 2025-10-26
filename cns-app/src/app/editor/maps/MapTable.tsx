@@ -47,7 +47,7 @@ export default function MapTable({ maps }: Props) {
               <Link href={`/editor/maps/${mapObject.id}`}>
                 <Button variant="outline">Edit</Button>
               </Link>
-              <Link href={`/maps/${mapObject.id}`}>
+              <Link href={`/maps/${mapObject.slug}`}>
                 <Button variant="outline">View</Button>
               </Link>
             </CardFooter>

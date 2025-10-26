@@ -60,6 +60,75 @@ export async function fetchMapData(mapId: string | number) {
   return { map, mapAreas, mapObjects };
 }
 
+export async function fetchMapDataBySlug(mapSlug: string) {
+  const slug = mapSlug;
+
+  const map = await prisma.map.findFirst({
+    where: { slug: slug },
+  });
+
+  if (!map) return { map: null, mapAreas: [], mapObjects: [] };
+
+  const mapAreas = await prisma.globalArea.findMany({
+    where: { mapId: map.id },
+    include: {
+      wiki: {
+        select: {
+          slug: true,
+          infoboxItems: true,
+        },
+      },
+      canvasStyles: true,
+    },
+  });
+
+  const mapObjects = await prisma.globalObject.findMany({
+    where: { mapId: map.id },
+    include: {
+      wiki: {
+        select: {
+          slug: true,
+          infoboxItems: true,
+        },
+      },
+      canvasStyles: true,
+    },
+  });
+
+  return { map, mapAreas, mapObjects };
+}
+
+export async function fetchMasterMapBySlug(masterMapSlug: string) {
+  const masterMap = await prisma.mapHierarchyMaster.findUnique({
+    where: { slug: masterMapSlug },
+    include: {
+      parentMap: true,
+      childMaps: {
+        include: {
+          childMap: true,
+          canvasStyles: true,
+        },
+      },
+    },
+  });
+
+  if (!masterMap) return null;
+
+  return {
+    ...masterMap,
+    childMaps: masterMap.childMaps.map((child) => ({
+      ...child.childMap,
+      hierarchyChildId: child.id,
+      hierarchyParentId: child.hierarchyId,
+      x: child.x,
+      y: child.y,
+      wx: child.wx,
+      wy: child.wy,
+      canvasStyles: child.canvasStyles,
+    })),
+  };
+}
+
 export async function fetchMasterMap(masterMapId: number) {
   const masterMap = await prisma.mapHierarchyMaster.findUnique({
     where: { id: masterMapId },

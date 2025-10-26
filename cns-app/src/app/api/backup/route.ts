@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
     const backupFilename = `backup_${timestamp}.dump`;
     const backupPath = path.join(process.cwd(), "public", backupFilename);
 
+    // Issue: Approach is not working on vercel. Switch to API/CSV based approach.
     execSync(
       `pg_dump --dbname=${DATABASE_URL_UNPOOLED} --format=custom --file=${backupPath}`
     );

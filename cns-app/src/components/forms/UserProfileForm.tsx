@@ -97,7 +97,10 @@ export default function UserProfileForm({ user }: Props) {
       setIsSubmitting(true);
       setError("");
       if (profile) {
-        await axios.patch(`/api/profile/${profile.id}`, values);
+        const response = await axios.patch(
+          `/api/profile/${profile.id}`,
+          values
+        );
         toast.success("Profile updated succesfully");
       } else {
         await axios.post(`/api/profile/`, values);

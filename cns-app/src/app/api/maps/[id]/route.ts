@@ -1,6 +1,7 @@
 import { mapSchema } from "@/ValidationSchemas/maps";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
+import { generateUniqueSlug } from "@/lib/slug";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -51,9 +52,12 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Map not found" }, { status: 404 });
   }
 
+  // Regenerate slug from title
+  const slug = await generateUniqueSlug(map.title, prisma, "map", map.id);
+
   // Map author ids back to user objects
   const { authors, ...fields } = body;
-  const updateData: any = { ...fields };
+  const updateData: any = { ...fields, slug };
 
   // Handle authors field if it exists
   if (authors !== undefined) {

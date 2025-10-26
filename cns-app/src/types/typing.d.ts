@@ -65,6 +65,7 @@ type DrawMapObject = {
 // For status response
 type ClickStatus = {
   title: string;
+  slug: string;
   type: string;
   id: number;
 };

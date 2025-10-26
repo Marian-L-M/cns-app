@@ -2,6 +2,7 @@ import { wikiSchema } from "@/ValidationSchemas/wiki";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
 import { auth } from "@/auth";
+import { generateUniqueSlug } from "@/lib/slug";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,10 +23,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
 
+    // Generate slug from title
+    const slug = await generateUniqueSlug(
+      validation.data.title,
+      prisma,
+      "wiki"
+    );
+
     // Create wiki and user junction for owner
     const result = await prisma.$transaction(async (tx) => {
       const newWiki = await tx.wiki.create({
-        data: body,
+        data: { ...body, slug },
       });
 
       await tx.userWiki.create({

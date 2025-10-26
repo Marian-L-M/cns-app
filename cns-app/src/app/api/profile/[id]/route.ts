@@ -1,6 +1,7 @@
 import { userProfileSchema } from "@/ValidationSchemas/users";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
+import { generateUniqueSlug } from "@/lib/slug";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -51,10 +52,18 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Profile not found" }, { status: 404 });
   }
 
+  // Regenerate slug from title
+  const slug = await generateUniqueSlug(
+    profile.displayName,
+    prisma,
+    "userProfile",
+    profile.id
+  );
+
   try {
     const updateProfile = await prisma.userProfile.update({
       where: { id: profile.id },
-      data: body,
+      data: { ...body, slug },
     });
 
     return NextResponse.json(updateProfile, { status: 200 });

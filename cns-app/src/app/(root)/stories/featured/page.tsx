@@ -1,6 +1,6 @@
 import React from "react";
 import prisma from "@/../prisma/db";
-import StoryCardTable from "../StoyCardTable";
+import StoryCardTable from "../../../../components/story/StoyCardTable";
 import { Prisma, Status, Story } from "@prisma/client";
 import StorySearchBar from "@/components/story/searchbar/StorySearchBar";
 import Link from "next/link";

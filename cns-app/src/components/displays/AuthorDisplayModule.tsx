@@ -71,7 +71,7 @@ export default function AuthorDisplayModule({ authors }: Props) {
             className="w-full flex p-2 justify-between items-center"
           >
             <h5>{author.user.userProfile?.displayName}</h5>
-            <Link href={`/authors/${author.id}`}>
+            <Link href={`/authors/${author.user.userProfile?.slug}`}>
               <Button variant={`outline`} className="text-xs h-6 p-1">
                 <ChevronRight />
                 Profile

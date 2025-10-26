@@ -2,6 +2,7 @@ import { wikiSchema } from "@/ValidationSchemas/wiki";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/../prisma/db";
 import { auth } from "@/auth";
+import { generateUniqueSlug } from "@/lib/slug";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -35,21 +36,6 @@ export async function GET(request: NextRequest, { params }: Props) {
 
 // Todo 240823 rework  to allow name as slug
 export async function PATCH(request: NextRequest, { params }: Props) {
-  // // Map author ids back to user objects
-  // const { authors, ...fields } = body;
-  // const updateData: any = { ...fields };
-
-  // // Handle authors field if it exists
-  // if (authors !== undefined) {
-  //   if (Array.isArray(authors)) {
-  //     updateData.authors = {
-  //       set: authors.map((authorId: string) => ({
-  //         id: authorId,
-  //       })),
-  //     };
-  //   }
-  // }
-
   try {
     const session = await auth();
 
@@ -77,9 +63,12 @@ export async function PATCH(request: NextRequest, { params }: Props) {
       return NextResponse.json({ error: "Wiki not found" }, { status: 404 });
     }
 
+    // Regenerate slug from title
+    const slug = await generateUniqueSlug(wiki.title, prisma, "wiki", wiki.id);
+
     const updateWiki = await prisma.wiki.update({
       where: { id: wiki.id },
-      data: body,
+      data: { ...body, slug },
     });
 
     return NextResponse.json(updateWiki, { status: 200 });

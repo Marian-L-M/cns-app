@@ -19,7 +19,7 @@ export const metadata = {
 };
 
 export default async function userProfilePage({ params }: Props) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const resolvedParams = await params;
 
   const user = await prisma?.user.findUnique({

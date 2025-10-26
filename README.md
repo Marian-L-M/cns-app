@@ -66,6 +66,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. Multiple substory routes in the same story will trigger at the same time. (Make it a feature instead of a bug)
 1. Activate mail confirmation logic and enable system messages
 1. Author specific prefiltering for editor pages
+1. Editor story voerview filters out completed stories by defualt
 
 ## Minor
 

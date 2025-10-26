@@ -53,7 +53,7 @@ export default async function authorArchivePage() {
           {authorList.map((author) => (
             <div
               className="w-full flex flex-col items-center gap-2 rounded-xl p-4 overflow-hidden border border-gray-200  "
-              key={`author-${author.userProfile?.id}`}
+              key={`author-${author.userProfile?.slug}`}
             >
               <Image
                 className="rounded-full"
@@ -67,7 +67,9 @@ export default async function authorArchivePage() {
               </h3>
               <p className="text-sm">{author.userProfile?.profileCatch}</p>
               <Button variant={"outline"} className="text-sm" asChild>
-                <Link href={`/authors/${author.userProfile?.id}`}>Profile</Link>
+                <Link href={`/authors/${author.userProfile?.slug}`}>
+                  Profile
+                </Link>
               </Button>
             </div>
           ))}

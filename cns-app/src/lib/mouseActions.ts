@@ -9,6 +9,7 @@ interface MapWithRectangularArea extends Map, PointRectangularArea {}
 
 interface hitArea {
   id: number;
+  slug: string;
   title: string;
 }
 
@@ -36,6 +37,7 @@ export function checkHover(
     if (ctx.isPointInPath(mouseX, mouseY)) {
       hoverArea.push({
         id: areaSet.id,
+        slug: areaSet.slug,
         title: areaSet.title,
         type: "GlobalAreaType",
       });
@@ -66,6 +68,7 @@ export function checkHitbox(
     if (ctx.isPointInPath(mouseX, mouseY)) {
       hitArea.push({
         id: area.id,
+        slug: area.slug || "",
         title: area.title,
       });
     }
@@ -96,6 +99,7 @@ export function checkClick(
     if (ctx.isPointInPath(mouseX, mouseY)) {
       clickedArea.push({
         id: areaSet.id,
+        slug: areaSet.slug,
         title: areaSet.title,
         type: "GlobalAreaType",
       });
@@ -133,6 +137,7 @@ export function checkObjectClick(
     if (ctx.isPointInPath(mouseX, mouseY)) {
       clickedObject.push({
         id: objectSet.id,
+        slug: objectSet.slug,
         title: objectSet.title,
         type: "GlobalObjectType",
       });

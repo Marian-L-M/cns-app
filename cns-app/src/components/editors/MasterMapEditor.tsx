@@ -120,6 +120,8 @@ export default function MasterMapEditor({ MasterMap }: Props) {
       parentMapId: MasterMap?.parentMapId || 0,
       description: MasterMap?.description || "",
       featured: MasterMap?.featured || false,
+      imageUrl: MasterMap?.imageUrl || "",
+      bannerUrl: MasterMap?.bannerUrl || "",
     },
   });
 

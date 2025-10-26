@@ -2,6 +2,7 @@ import { StoriesSchema } from "@/ValidationSchemas/stories";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/../prisma/db";
+import { generateUniqueSlug } from "@/lib/slug";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,10 +23,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
 
+    // Generate slug from title
+    const slug = await generateUniqueSlug(
+      validation.data.title,
+      prisma,
+      "story"
+    );
+
     // Create the story and user story for owner
     const result = await prisma.$transaction(async (tx) => {
       const newStory = await tx.story.create({
-        data: body,
+        data: { ...body, slug },
       });
 
       await tx.userStory.create({
