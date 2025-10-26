@@ -1,11 +1,12 @@
 import prisma from "@/../prisma/db";
+import { UserProfile } from "@prisma/client";
 import { Facebook, Globe, House, SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkDown from "react-markdown";
 
 interface Props {
-  id: number;
+  profile: UserProfile;
 }
 
 // Type guard to check if a JsonValue is a valid Social object
@@ -24,21 +25,7 @@ function isSocialsArray(socials: any): socials is Social[] {
   return Array.isArray(socials) && socials.every(isSocial);
 }
 
-export default async function UserProfileDisplay({ id }: Props) {
-  const profile = await prisma.userProfile.findUnique({
-    where: {
-      id: id,
-    },
-  });
-
-  if (!profile) {
-    return (
-      <div className="w-full flex flex-col gap-4">
-        <p className="alert">No profile found</p>
-      </div>
-    );
-  }
-
+export default async function UserProfileDisplay({ profile }: Props) {
   const socials: Social[] = isSocialsArray(profile.socials)
     ? profile.socials
     : [];

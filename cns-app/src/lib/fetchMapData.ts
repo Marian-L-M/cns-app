@@ -98,6 +98,37 @@ export async function fetchMapDataBySlug(mapSlug: string) {
   return { map, mapAreas, mapObjects };
 }
 
+export async function fetchMasterMapBySlug(masterMapSlug: string) {
+  const masterMap = await prisma.mapHierarchyMaster.findUnique({
+    where: { slug: masterMapSlug },
+    include: {
+      parentMap: true,
+      childMaps: {
+        include: {
+          childMap: true,
+          canvasStyles: true,
+        },
+      },
+    },
+  });
+
+  if (!masterMap) return null;
+
+  return {
+    ...masterMap,
+    childMaps: masterMap.childMaps.map((child) => ({
+      ...child.childMap,
+      hierarchyChildId: child.id,
+      hierarchyParentId: child.hierarchyId,
+      x: child.x,
+      y: child.y,
+      wx: child.wx,
+      wy: child.wy,
+      canvasStyles: child.canvasStyles,
+    })),
+  };
+}
+
 export async function fetchMasterMap(masterMapId: number) {
   const masterMap = await prisma.mapHierarchyMaster.findUnique({
     where: { id: masterMapId },

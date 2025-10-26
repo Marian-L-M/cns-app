@@ -7,21 +7,21 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { fetchMasterMap } from "@/lib/fetchMapData";
+import { fetchMasterMap, fetchMasterMapBySlug } from "@/lib/fetchMapData";
 import CursorContextProvider from "@/store/cursorContext";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import ReactMarkDown from "react-markdown";
 
 interface MapPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function MasterMapPage({ params }: MapPageProps) {
   const resolvedParams = await params;
-  const { id } = resolvedParams;
+  const { slug } = resolvedParams;
 
-  const masterMap = await fetchMasterMap(parseInt(id));
+  const masterMap = await fetchMasterMapBySlug(slug);
 
   if (!masterMap) {
     return <div className="text-destructive">No Mastermaps found</div>;
@@ -60,11 +60,11 @@ export default async function MasterMapPage({ params }: MapPageProps) {
               </ReactMarkDown>
             </div>
             <div className="flex flex-col gap-2" id="submaps">
-              <h4 className="text-lg font-semibold">Childmaps1</h4>
+              <h4 className="text-lg font-semibold">Childmaps</h4>
               {masterMap.childMaps.map((childMap) => (
                 <Link
                   key={`childmap-${childMap.id}`}
-                  href={`/maps/${childMap.id}`}
+                  href={`/maps/${childMap.slug}`}
                   className="w-full flex items-center justify-between gap-2 border border-slate-100 px-2 py-1 rounded-md hover:opacity-80"
                 >
                   {childMap.title}
