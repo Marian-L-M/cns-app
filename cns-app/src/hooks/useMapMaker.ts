@@ -166,12 +166,13 @@ export function useMapMaker({ data, settings, fullscreen }: Props) {
       const hoverArea = checkHover(e, canvas, mapAreas, ctx, cw, ch);
       if (!hoverArea || hoverArea.length == 0) return;
       checkHover(e, canvas, mapAreas, ctx, cw, ch); // WHy check twice?
-      const { title, id, type } = hoverArea[0];
+      const { title, id, type, slug } = hoverArea[0];
       // 250630 to do remove
       statusCtx.showStatusBar({
         title: title,
         id: id,
         type: type,
+        slug: slug,
       });
     };
 
@@ -183,11 +184,12 @@ export function useMapMaker({ data, settings, fullscreen }: Props) {
       // Check areas
       const clickedArea = checkClick(e, canvas, mapAreas, ctx, cw, ch);
       if (clickedArea && !(clickedArea.length == 0)) {
-        const { title, id, type } = clickedArea[0];
+        const { title, id, type, slug } = clickedArea[0];
         statusCtx.showInfoBox({
           title: title,
           id: id,
           type: type,
+          slug: slug,
         });
         return;
       }
@@ -202,11 +204,12 @@ export function useMapMaker({ data, settings, fullscreen }: Props) {
         ch
       );
       if (clickedObjects && !(clickedObjects.length == 0)) {
-        const { title, id, type } = clickedObjects[0];
+        const { title, id, type, slug } = clickedObjects[0];
         statusCtx.showInfoBox({
           title: title,
           id: id,
           type: type,
+          slug: slug,
         });
       }
     };
