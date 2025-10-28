@@ -7,13 +7,13 @@ import { VERSION_NUMBER } from "@/lib/constants";
 export async function GET(req: Request) {
   const session = await auth();
 
-  // Check admin permission
   if (session?.user?.role !== "ADMIN") {
     return Response.json({ error: "Unauthorized" }, { status: 403 });
   }
 
   try {
-    // Fetch ALL data from all tables
+    // Fetch All data tables
+    // Remember to update upon changes to prisma schema
     const [
       users,
       userProfiles,
@@ -31,7 +31,6 @@ export async function GET(req: Request) {
       canvasStyleItems,
       mediaItems,
       adminSettings,
-      // Junction tables
       userStories,
       userMaps,
       userMapHierarchies,
@@ -65,7 +64,7 @@ export async function GET(req: Request) {
         timestamp: new Date().toISOString(),
         exportedBy: session.user.id,
         database: "postgresql",
-        prismaVersion: "5.x", // Could extract from package.json
+        prismaVersion: "5.x", // Should extract from package.json
         recordCounts: {
           users: users.length,
           stories: stories.length,

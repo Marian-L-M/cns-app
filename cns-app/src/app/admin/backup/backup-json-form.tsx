@@ -3,15 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function BackupJsonPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleExport = async () => {
     setIsExporting(true);
-    setMessage("");
 
     try {
       const response = await fetch("/api/backup/json");
@@ -30,9 +29,12 @@ export default function BackupJsonPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      setMessage("Backup exported successfully!");
+      toast.success(`Backup exported successfully!`);
     } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
+      toast.error("Backup failed", {
+        className: "error",
+        description: `ERROR! ${error.message}`,
+      });
     } finally {
       setIsExporting(false);
     }
@@ -43,7 +45,6 @@ export default function BackupJsonPage() {
     if (!file) return;
 
     setIsImporting(true);
-    setMessage("");
 
     try {
       const text = await file.text();
@@ -51,7 +52,7 @@ export default function BackupJsonPage() {
 
       // Show confirmation dialog
       const confirmed = window.confirm(
-        `⚠️ WARNING: This will DELETE ALL existing data and restore from backup.\n\n` +
+        `WARNING: This will DELETE ALL existing data and restore from backup.\n\n` +
           `Backup date: ${new Date(
             backup.metadata.timestamp
           ).toLocaleString()}\n` +
@@ -78,16 +79,19 @@ export default function BackupJsonPage() {
         throw new Error(result.error || "Restore failed");
       }
 
-      setMessage(
-        `✅ Database restored successfully! ${JSON.stringify(result.restored)}`
+      toast.success(
+        `Database restored successfully! ${JSON.stringify(result.restored)}`
       );
 
-      // Optionally refresh the page after a delay
+      // Refresh after success to avoid confusion
       setTimeout(() => {
         window.location.reload();
       }, 3000);
     } catch (error: any) {
-      setMessage(`❌ Error: ${error.message}`);
+      toast.error("Database import failed", {
+        className: "error",
+        description: `ERROR! ${error.message}`,
+      });
     } finally {
       setIsImporting(false);
     }
@@ -95,15 +99,6 @@ export default function BackupJsonPage() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">Database Backup & Restore</h1>
-
-      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
-        <p className="text-yellow-700">
-          ⚠️ <strong>Warning:</strong> Restoring a backup will DELETE ALL
-          existing data. Make sure to create a backup before restoring.
-        </p>
-      </div>
-
       <div className="space-y-6">
         {/* Export Section */}
         <div className="border rounded-lg p-6">
@@ -121,11 +116,18 @@ export default function BackupJsonPage() {
         </div>
 
         {/* Import Section */}
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
+          <p className="text-yellow-700">
+            ⚠️ <strong>Warning:</strong> Restoring a backup will DELETE ALL
+            existing data. Make sure to create a backup before restoring and
+            making changes to the Database schema.
+          </p>
+        </div>
         <div className="border rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Restore Database</h2>
           <p className="text-gray-600 mb-4">
-            Upload a backup file to restore your database. This will replace ALL
-            current data.
+            Upload a backup JSON file to restore your database. This will
+            replace ALL current data.
           </p>
           <div className="flex gap-2">
             <Input
@@ -151,19 +153,6 @@ export default function BackupJsonPage() {
             </p>
           )}
         </div>
-
-        {/* Status Message */}
-        {message && (
-          <div
-            className={`p-4 rounded ${
-              message.includes("Error") || message.includes("❌")
-                ? "bg-red-50 text-red-700"
-                : "bg-green-50 text-green-700"
-            }`}
-          >
-            {message}
-          </div>
-        )}
       </div>
     </div>
   );

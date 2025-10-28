@@ -1,4 +1,3 @@
-// pages/api/backup.ts
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
@@ -22,7 +21,6 @@ export async function GET(req: NextRequest) {
     const backupFilename = `backup_${timestamp}.dump`;
     const backupPath = path.join(process.cwd(), "public", backupFilename);
 
-    // Issue: Approach is not working on vercel. Switch to API/CSV based approach.
     execSync(
       `pg_dump --dbname=${DATABASE_URL_UNPOOLED} --format=custom --file=${backupPath}`
     );
@@ -53,7 +51,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Restore database from SQL backup
+// Restore database from PSQL backup
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
