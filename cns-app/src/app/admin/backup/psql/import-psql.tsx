@@ -28,7 +28,7 @@ export default function ImportForm() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await axios.post("/api/backup", formData);
+      const response = await axios.post("/api/backup/psql", formData);
       toast.success("Backup imported successfully.");
       setFile(null);
       form.reset(); // Use the captured reference

@@ -75,14 +75,15 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. Mastermap editor frame repositioning blasts rerendering logic
 1. Improve map interactiveness (e.g. cursor on clickable events)
 1. Image alt properties
+1. Admin reroutes to personal profile after editing user profile
 
 # Roadmap for further development
 
 1. Implementing a medialibrary for deletion✅, reusing✅, and management✅ of image assets. Also the ability to toggle image upload services.
    1. Improve medialibrary QOL: Search, Pagination
-1. An in-system data export functionality
+1. An in-system data export functionality✅
 1. NPM package
-1. Breadcrumbs
+1. Breadcrumbs✅
 1. Clean up and refactoring, as their are a lot of duplicated structures and functions
 1. Unify api route writing patterns
 1. Collaborative writing functionality (Currently only original author is selected. Needs functionality to share and edit as an extra author)
@@ -101,6 +102,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. toggle hide object, area, stories on map
 1. Nested Mastermaps
 1. Add Authorbox to all content types
+1. Add proper category and tag handling
 
 # Under consideration
 
@@ -114,3 +116,38 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. Icons upload does not work like this -> Make static for now
 1. Creating a progressive web app
 1. Cookies & GDPR
+
+# Import Export
+
+Currently import and export functionality manually defines every table from db. Remember to update the respective api routes when making changes to the prisma schema
+You can find the API routes in:
+
+### Backup to JSON:
+
+/src/app/api/json/route.ts
+
+### Restore from JSON:
+
+/src/app/api/json/restore/route.ts
+
+## Important
+
+Note that **importing drops all items from database before restoring.** So remember to properly backup your database before migrating changes, as a misalignment of your new export data might lead to a complete loss when re-importing. The JSON import-export is mainly intended for stable versions to be operated by non-tech-literate users in ui.
+
+If you are a developer and have access to the server (may be limited on services such as NEON), it is advised to just dump/restore the postgre database. Running the following commands:
+
+### Export to PSQL
+
+```
+`pg_dump --dbname=DATABASE_URL_UNPOOLED --format=custom --file=BACKUP_FILE_PATH`
+```
+
+### Import from PSQL
+
+```
+`pg_restore --dbname=DATABASE_URL_UNPOOLED --clean UPLOAD_FILE_PATH`,
+```
+
+### Templates
+
+A template for exporting and for importing exists in /src/app/admin/backup/psql

@@ -5,13 +5,13 @@ import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function BackupForm() {
+export default function BackupPsqlForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleBackup() {
     try {
       setIsLoading(true);
-      const response = await axios.get("/api/backup", {
+      const response = await axios.get("/api/backup/psql", {
         responseType: "blob",
       });
 

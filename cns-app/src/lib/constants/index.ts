@@ -24,3 +24,5 @@ export const signUpDefaultValues = {
   password: "",
   confirmPassword: "",
 };
+
+export const VERSION_NUMBER = "1.0.0";
