@@ -57,6 +57,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 
 ## Major
 
+1. Remove Simplemde in favor of easy mde
 1. Object editor items broken
 1. Clean up inconsitent and inaccurate naming practices
 1. Mastermap childmap submission breaks on the second childmap
@@ -79,6 +80,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 
 # Roadmap for further development
 
+1. Look into how useState - useEffect link up is supposed to be handled in React19
 1. Implementing a medialibrary for deletion✅, reusing✅, and management✅ of image assets. Also the ability to toggle image upload services.
    1. Improve medialibrary QOL: Search, Pagination
 1. An in-system data export functionality✅
@@ -103,6 +105,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. Nested Mastermaps
 1. Add Authorbox to all content types
 1. Add proper category and tag handling
+1. Integration for Patreon and other support platforms
 
 # Under consideration
 
