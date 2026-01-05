@@ -67,6 +67,7 @@ In the long run setting up an npm package is planned. In the very long run a ful
 1. Activate mail confirmation logic and enable system messages
 1. Author specific prefiltering for editor pages
 1. Editor story voerview filters out completed stories by defualt
+1. Upgrade to primsa 7
 
 ## Minor
 
