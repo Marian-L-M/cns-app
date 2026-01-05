@@ -26,6 +26,7 @@ const nextConfig = {
     };
     return config;
   },
+  turbopack: {}, // Empty config - Turbopack handles TS extension resolution automatically
 };
 
 export default nextConfig;
