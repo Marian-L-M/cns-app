@@ -164,7 +164,6 @@ type CanvasStyleItemType =
   | "strokeStyle";
 type LineStyleItemType = "lineArrow" | "lineType" | "strokeStyle" | "lineWidth";
 type ObjectStyleItemType = "size" | "opacity";
-type SubstoryNodeType = "square" | "Circle" | "diamond" | "icon";
 
 // User
 type Social = {
